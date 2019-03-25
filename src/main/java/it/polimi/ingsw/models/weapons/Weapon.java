@@ -11,8 +11,9 @@ public class Weapon implements Card {
     private AmmoConsumption secondOptionalAmmoConsumption;
     private AmmoConsumption alternateAmmoConsumption;
 
-    public Weapon(Type type, @NotNull AmmoConsumption pickUpAmmoConsumption, AmmoConsumption firstOptionalAmmoConsumption, AmmoConsumption secondOptionalAmmoConsumption, AmmoConsumption alternateAmmoConsumption) {
+    public Weapon(Type type, ColorRDY color, @NotNull AmmoConsumption pickUpAmmoConsumption, AmmoConsumption firstOptionalAmmoConsumption, AmmoConsumption secondOptionalAmmoConsumption, AmmoConsumption alternateAmmoConsumption) {
         this.type = type;
+        this.color = color;
         this.pickUpAmmoConsumption = pickUpAmmoConsumption;
         this.firstOptionalAmmoConsumption = firstOptionalAmmoConsumption;
         this.secondOptionalAmmoConsumption = secondOptionalAmmoConsumption;
