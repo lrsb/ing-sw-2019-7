@@ -25,7 +25,7 @@ public class Weapon implements Card {
     }
 
     public Type getType() {
-        return type;
+        return this.type;
     }
 
     public boolean isCharged(){ return this.isCharged; }
@@ -54,5 +54,4 @@ public class Weapon implements Card {
         VORTEX_CANNON, FURNACE, HEATSEEKER, HELLION, FLAMETHROWER, GRENADE_LAUNCHER, ROCKET_LAUNCHER,
         RAILGUN, CYBERBLADE, ZX2, SHOTGUN, POWER_GLOVE, SHOCKWAVE, SLEDGEHAMMER
     }
-
 }
