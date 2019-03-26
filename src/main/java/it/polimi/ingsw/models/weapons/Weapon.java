@@ -2,49 +2,42 @@ package it.polimi.ingsw.models.weapons;
 
 import it.polimi.ingsw.models.cards.AmmoCard;
 import it.polimi.ingsw.models.cards.Card;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Weapon implements Card {
     private Type type;
-    private boolean isCharged = true;
-    private ArrayList<AmmoCard.Color> color; //serve perchè un cubo "color" si aggiunge al costo per "pickUp" al fine di caricare l'arma
-    private ArrayList<AmmoCard.Color> reloadAmmoConsumption;  //esiste un costo per tirarla su, ma non uno per la mod basic
-    private ArrayList<AmmoCard.Color> firstOptionalAmmoConsumption;
-    private ArrayList<AmmoCard.Color> secondOptionalAmmoConsumption;
-    private ArrayList<AmmoCard.Color> alternateAmmoConsumption;
+    private ArrayList<AmmoCard.Color> ammoConsumption = new ArrayList<>();
+    private ArrayList<AmmoCard.Color> firstOptionalAmmoConsumption = new ArrayList<>();
+    private ArrayList<AmmoCard.Color> secondOptionalAmmoConsumption = new ArrayList<>();
+    private ArrayList<AmmoCard.Color> alternateAmmoConsumption = new ArrayList<>();
 
-    public Weapon(Type type, ArrayList<AmmoCard.Color> color, @NotNull ArrayList<AmmoCard.Color> reloadAmmoConsumption, ArrayList<AmmoCard.Color> firstOptionalAmmoConsumption, ArrayList<AmmoCard.Color> secondOptionalAmmoConsumption, ArrayList<AmmoCard.Color> alternateAmmoConsumption) {
+    public Weapon(Type type, List<AmmoCard.Color> ammoConsumption, List<AmmoCard.Color> firstOptionalAmmoConsumption, List<AmmoCard.Color> secondOptionalAmmoConsumption, List<AmmoCard.Color> alternateAmmoConsumption) {
         this.type = type;
-        this.color = color;
-        this.reloadAmmoConsumption = reloadAmmoConsumption;
-        this.firstOptionalAmmoConsumption = firstOptionalAmmoConsumption;
-        this.secondOptionalAmmoConsumption = secondOptionalAmmoConsumption;
-        this.alternateAmmoConsumption = alternateAmmoConsumption;
+        this.ammoConsumption.addAll(ammoConsumption);
+        this.firstOptionalAmmoConsumption.addAll(firstOptionalAmmoConsumption);
+        this.secondOptionalAmmoConsumption.addAll(secondOptionalAmmoConsumption);
+        this.alternateAmmoConsumption.addAll(alternateAmmoConsumption);
     }
 
     public Type getType() {
-        return this.type;
+        return type;
     }
 
-    public boolean isCharged(){ return this.isCharged; }
-
-    public ArrayList<AmmoCard.Color> getColor(){ return this.color; }
-
-    public ArrayList<AmmoCard.Color> getReloadAmmoConsumption() {
-        return reloadAmmoConsumption;
+    public List<AmmoCard.Color> getAmmoConsumption() {
+        return ammoConsumption;
     }
 
-    public ArrayList<AmmoCard.Color> getFirstOptionalAmmoConsumption() {
+    public List<AmmoCard.Color> getFirstOptionalAmmoConsumption() {
         return firstOptionalAmmoConsumption;
     }
 
-    public ArrayList<AmmoCard.Color> getSecondOptionalAmmoConsumption() {
+    public List<AmmoCard.Color> getSecondOptionalAmmoConsumption() {
         return secondOptionalAmmoConsumption;
     }
 
-    public ArrayList<AmmoCard.Color> getAlternateAmmoConsumption() {
+    public List<AmmoCard.Color> getAlternateAmmoConsumption() {
         return alternateAmmoConsumption;
     }
 

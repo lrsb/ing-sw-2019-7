@@ -29,7 +29,7 @@ public class AmmoCard implements Card {
     }
 
     enum Type {
-        RED, YELLOW, BLUE, POWERUP
+        RED, YELLOW, BLUE, POWER_UP
     }
 
     public enum Color {

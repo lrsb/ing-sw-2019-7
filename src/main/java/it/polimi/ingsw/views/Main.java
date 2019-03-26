@@ -5,6 +5,8 @@ import javax.swing.*;
 public class Main {
     private JButton button1;
     private JPanel panel1;
+    private JButton button2;
+    private JButton button3;
 
     public static void main(String[] args) {
         var frame = new JFrame("Main");
