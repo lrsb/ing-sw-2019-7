@@ -32,7 +32,7 @@ public class AmmoCard implements Card {
         RED, YELLOW, BLUE, POWERUP
     }
 
-    enum Color {
+    public enum Color {
         RED, YELLOW, BLUE
     }
 }
