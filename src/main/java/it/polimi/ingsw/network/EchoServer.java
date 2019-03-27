@@ -9,7 +9,7 @@ public class EchoServer {
 
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(PORT);
-        System.out.println("EchoServer: started ");
+        System.out.println("Adrenaline Server started...");
         System.out.println("Server Socket: " + serverSocket);
         Socket clientSocket = null;
         BufferedReader in = null;
@@ -36,11 +36,12 @@ public class EchoServer {
             System.err.println("Accept failed");
             System.exit(1);
         } finally {
-            System.out.println("EchoServer: closing...");
+            System.out.println("Adrenaline Server closing...");
             out.close();
             in.close();
             clientSocket.close();
             serverSocket.close();
+            System.out.println("Connection closed.");
         }
     }
 }
