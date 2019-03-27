@@ -37,3 +37,6 @@ W
 -src/main/java/it/polimi/ingsw/views/Main.form,b/4/b4d8aceb5e686d4b80e1df1adc9358d3ff1791d8
 ]
 -src/main/java/it/polimi/ingsw/views/Main.java,e/1/e16ddaa0a7ff583b47a5bd2acf943d1af0bd731e
+:
+
+.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302

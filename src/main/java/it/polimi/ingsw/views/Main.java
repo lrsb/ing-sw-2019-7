@@ -1,18 +1,20 @@
 package it.polimi.ingsw.views;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Main {
-    private JButton button1;
-    private JPanel panel1;
-    private JButton button2;
-    private JButton button3;
+    private JPanel panel;
+    private JButton elencoPartiteButton;
+    private JButton nuovaPartitaButton;
+    private JButton opzioniButton;
 
     public static void main(String[] args) {
         var frame = new JFrame("Main");
         var main = new Main();
-        frame.setContentPane(main.panel1);
-        main.button1.addActionListener(e -> JOptionPane.showMessageDialog(null, "adrenailne merda"));
+        frame.setContentPane(main.panel);
+        frame.setPreferredSize(new Dimension(400, 300));
+        main.elencoPartiteButton.addActionListener(e -> JOptionPane.showMessageDialog(null, "adrenailne merda"));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
