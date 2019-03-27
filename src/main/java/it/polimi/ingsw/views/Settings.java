@@ -9,6 +9,7 @@ public class Settings extends JFrame {
     private JButton button3;
     private JButton button4;
     private JTextField ServerIP;
+    private JButton backButton;
 
     public Settings() {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
