@@ -31,8 +31,6 @@ e
 5src/main/java/it/polimi/ingsw/network/EchoServer.java,1/d/1dd3ba374041203491ef6f6e21cacf19e8913c8c
 7
 pom.xml,4/4/442292b8a7efeabbe4cc176709b833b1792140ec
-W
-'src/main/java/it/polimi/ingsw/Main.java,c/3/c3549eb24657793e553958f7ba13d4c08cf23630
 ]
 -src/main/java/it/polimi/ingsw/views/Main.form,b/4/b4d8aceb5e686d4b80e1df1adc9358d3ff1791d8
 ]
