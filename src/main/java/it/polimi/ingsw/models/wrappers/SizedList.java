@@ -49,8 +49,7 @@ public class SizedList<E> extends AbstractList<E> {
     @Contract(pure = true)
     @Override
     public E get(int index) {
-        if (index < capacity) return list.get(index);
-        throw new IndexOutOfBoundsException();
+        return list.get(index % capacity);
     }
 
     @Contract(pure = true)

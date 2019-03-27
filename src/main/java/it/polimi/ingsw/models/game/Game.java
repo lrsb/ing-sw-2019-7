@@ -8,11 +8,14 @@ import it.polimi.ingsw.models.wrappers.SizedList;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 public class Game {
     private static final int MAX_PLAYERS = 5;
 
     private Cell[][] cells;//x,y
     private SizedList<Player> players = new SizedList<>(MAX_PLAYERS);
+    private int seqPlay = 0;
 
     private int skulls = 5;//da 5 a 8
 
@@ -29,8 +32,12 @@ public class Game {
         redWeapons.addAll(weaponsDeck.exitCards(3));
         blueWeapons.addAll(weaponsDeck.exitCards(3));
         yellowWeapons.addAll(weaponsDeck.exitCards(3));
-        for (var row : cells) for (var cell : row) if (!cell.isSpawnPoint()) cell.setAmmoCard(ammoDeck.exitCard());
+        Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(ammoDeck.exitCard())));
 
+    }
+
+    public Player getActualPlayer() {
+        return players.get(seqPlay);
     }
 
     public void addPlayer(Player player) {
