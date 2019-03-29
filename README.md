@@ -1,4 +1,9 @@
 # Ingegneria del Software project
+<p align="left">
+    <a href="https://travis-ci.com/lrsb/ing-sw-2019-7.svg?token=yNsiH96VqTJK1Jj3JizM&branch=master" alt="Build status">
+        <img src="https://travis-ci.com/lrsb/ing-sw-2019-7.svg?token=yNsiH96VqTJK1Jj3JizM&branch=master" /></a>
+</p>
+
 A Java implementation of Adrenaline board game, for [085923 - PROVA FINALE (PROGETTO DI INGEGNERIA DEL SOFTWARE)][1].
 
 Docs [here][2].
