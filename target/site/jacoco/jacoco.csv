@@ -1,0 +1,10 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+swingproject,deck,Card,0,3,0,0,0,2,0,1,0,1
+swingproject,deck,CharacterDeck,0,3,0,0,0,2,0,1,0,1
+swingproject,deck,CharacterDeckCreator,36,47,4,4,9,11,3,4,1,2
+swingproject,deck,Deck,52,26,4,0,13,9,7,4,5,4
+swingproject,deck,HumanCard,0,3,0,0,0,2,0,1,0,1
+swingproject,deck,DeckCreator,0,3,0,0,0,2,0,1,0,1
+swingproject,deck,CharacterCard,0,3,0,0,0,2,0,1,0,1
+swingproject,deck,AlienCard,0,3,0,0,0,2,0,1,0,1
+swingproject,it.polimi.ingsw,Main,7,0,0,0,3,0,2,0,2,0
