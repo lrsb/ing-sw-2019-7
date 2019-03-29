@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client {
+public class AdrenalineClient {
     public static void main(String args[]) throws IOException {
         System.out.println("Enter Adrenaline Server IP address: ");
         Scanner stdin = new Scanner(System.in);

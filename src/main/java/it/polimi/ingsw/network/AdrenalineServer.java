@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class EchoServer {
+public class AdrenalineServer {
     public static final int PORT = 1050; // porta al di fuori del range 1-1024 !
 
     public static void main(String[] args) throws IOException {
