@@ -33,7 +33,6 @@ public class Deck<E extends Card> {
 
     public List<E> exitCards(int n) {
         if (playableCards.isEmpty()) shuffleDeck();
-        //if (playableCards.size() < n) throw new SizeLimitExceededException();
         var list = new ArrayList<E>();
         for (int i = 0; i < n; i++) {
             var exitedCard = playableCards.remove(0);
@@ -56,9 +55,6 @@ public class Deck<E extends Card> {
 
     public static class Creator {
         //TODO: implementare tutto quanto
-        private Creator() {
-        }
-
         @NotNull
         @Contract(" -> new")
         public static Deck<AmmoCard> ammoDeck() {

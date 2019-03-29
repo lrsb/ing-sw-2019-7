@@ -12,4 +12,8 @@ public class GameFrame extends JNavigationFrame {
         super(1000, 800, false);
         setContentPane(panel);
     }
+
+    public JLabel getGameLabel() {
+        return gameLabel;
+    }
 }
