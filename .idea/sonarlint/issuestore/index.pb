@@ -25,10 +25,6 @@ q
 Asrc/main/java/it/polimi/ingsw/models/weapons/AmmoConsumption.java,f/7/f7c03821a5c7b4b90e97dd0b6db7798292e7e345
 h
 8src/main/java/it/polimi/ingsw/models/weapons/Weapon.java,e/d/edfee08f556d3c4eb2dbb6c081cf555f4de8be22
-l
-<src/main/java/it/polimi/ingsw/models/wrappers/SizedList.java,d/a/da31a0baa8abdbe1c3e2d081bf7d5fbf98beb79e
-e
-5src/main/java/it/polimi/ingsw/network/EchoServer.java,1/d/1dd3ba374041203491ef6f6e21cacf19e8913c8c
 7
 pom.xml,4/4/442292b8a7efeabbe4cc176709b833b1792140ec
 :

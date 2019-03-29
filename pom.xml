@@ -5,7 +5,7 @@
     <artifactId>AM7</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>
-    <name>swingproject</name>
+    <name>AM7</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -26,15 +26,10 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <source>12</source>
-                    <target>12</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
-            <!--<plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.6.0.1398</version>
-            </plugin>-->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -61,14 +56,6 @@
             </plugin>
         </plugins>
     </build>
-    <!--<dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>-->
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
