@@ -6,7 +6,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 /**
- * Base class for create a ViewController associated to a view {@link E}.
+ * Base class to create a ViewController associated to a view {@link E}.
  *
  * @param <E> The view associated
  */
@@ -72,6 +72,13 @@ public abstract class BaseViewController<E extends JNavigationFrame> {
      */
     public NavigationController getNavigationController() {
         return navigationController;
+    }
+
+    /**
+     * @return true if this view controller is attached to a {@link NavigationController}. True not means the controller is visible.
+     */
+    public boolean isAttachedToNavigationController() {
+        return navigationController != null;
     }
 
     /**

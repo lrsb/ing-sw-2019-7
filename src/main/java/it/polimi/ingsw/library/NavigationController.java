@@ -3,7 +3,7 @@ package it.polimi.ingsw.library;
 import java.util.ArrayList;
 
 /**
- * Tou can use NavigationController to create a root-child navigation behaviour between BaseViewController(s), with a LIFO logic.
+ * You can use NavigationController to create a root-child navigation behaviour between BaseViewController(s), with a LIFO logic.
  */
 public class NavigationController {
     private ArrayList<BaseViewController> baseViewControllers = new ArrayList<>();
@@ -38,7 +38,9 @@ public class NavigationController {
     public void popViewController() {
         if (baseViewControllers.size() < 2) baseViewControllers.get(0).getFrame().dispose();
         else {
-            baseViewControllers.remove(baseViewControllers.size() - 1).getFrame().setVisible(false);
+            var viewController = baseViewControllers.remove(baseViewControllers.size() - 1);
+            viewController.getFrame().setVisible(false);
+            viewController.setNavigationController(null);
             baseViewControllers.get(baseViewControllers.size() - 1).getFrame().setVisible(true);
         }
     }
@@ -48,7 +50,13 @@ public class NavigationController {
      */
     public void popToRootViewController() {
         if (baseViewControllers.size() < 2) return;
-        baseViewControllers.remove(baseViewControllers.size() - 1).getFrame().setVisible(false);
-        baseViewControllers.get(0).getFrame().setVisible(true);
+        var rootViewController = baseViewControllers.remove(0);
+        rootViewController.getFrame().setVisible(true);
+        baseViewControllers.forEach(e -> {
+            e.getFrame().setVisible(false);
+            e.setNavigationController(null);
+        });
+        baseViewControllers.clear();
+        baseViewControllers.add(rootViewController);
     }
 }

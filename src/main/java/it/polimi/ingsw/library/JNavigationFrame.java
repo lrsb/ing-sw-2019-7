@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Base class for create a frame, that will be associated to a {@link BaseViewController}.
+ * Base class to create a frame, that will be associated to a {@link BaseViewController}.
  */
 public abstract class JNavigationFrame extends JFrame {
     public JNavigationFrame(int width, int height, boolean isInitialFrame) {
