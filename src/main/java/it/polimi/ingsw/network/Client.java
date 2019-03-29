@@ -5,30 +5,44 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
-    private PrintWriter out;
-    private String Frase;
-    private String IPServer;
-    private int PortGame;
-    public void main(String args[]) throws IOException {
+    public static void main(String args[]) throws IOException {
         System.out.println("Enter Adrenaline Server IP address: ");
         Scanner stdin = new Scanner(System.in);
-        IPServer = stdin.next();
+        String IPServer = stdin.next();
         System.out.println("Enter Adrenaline Port: ");
-        PortGame = stdin.nextInt();
+        int PortGame = stdin.nextInt();
         System.out.println("OK...connecting to IP: " + IPServer + " Port: " + PortGame);
-        Socket sc = new Socket(IPServer, PortGame);
-        InputStreamReader isr = new InputStreamReader(sc.getInputStream());
-        BufferedReader br = new BufferedReader(isr);
-        out = new PrintWriter(sc.getOutputStream());
-        System.out.println("Talking to the Adrenaline Server...");
-        while(true) {
-            System.out.println("You: ");
-            Frase = stdin.next();
-            out.println(Frase);
-            out.flush();
-            System.out.println("Waiting for an answer...");
-            Frase = br.readLine();
-            System.out.println("A.Server: " + Frase);
+        Socket socketClient = null;
+        BufferedReader brClient = null;
+        PrintWriter pwClient = null;
+        try{
+            socketClient = new Socket(IPServer, PortGame);
+            InputStreamReader isrClient = new InputStreamReader(socketClient.getInputStream());
+            brClient = new BufferedReader(isrClient);
+            OutputStreamWriter oswClient = new OutputStreamWriter(socketClient.getOutputStream());
+            BufferedWriter bwClient = new BufferedWriter(oswClient);
+            pwClient = new PrintWriter(bwClient);
+            String Msg = null;
+            System.out.println("Talking to the Adrenaline Server...");
+            while(true) {
+                System.out.println("You: ");
+                Msg = stdin.next();
+                pwClient.println(Msg);
+                pwClient.flush();
+                if(Msg.equals("END")) break;
+                System.out.println("Waiting for an answer...");
+                Msg = brClient.readLine();
+                System.out.println("A.Server: " + Msg);
+            }
+        } catch (IOException IOE){
+            System.err.println("Connection Failed.");
+            System.exit(1);
+        } finally {
+            System.out.println("Closing channel.");
+            brClient.close();
+            pwClient.close();
+            socketClient.close();
+            System.out.println("Channel is closed.");
         }
     }
 }
