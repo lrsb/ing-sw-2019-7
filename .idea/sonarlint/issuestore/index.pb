@@ -31,12 +31,12 @@ e
 5src/main/java/it/polimi/ingsw/network/EchoServer.java,1/d/1dd3ba374041203491ef6f6e21cacf19e8913c8c
 7
 pom.xml,4/4/442292b8a7efeabbe4cc176709b833b1792140ec
-W
-'src/main/java/it/polimi/ingsw/Main.java,c/3/c3549eb24657793e553958f7ba13d4c08cf23630
-]
--src/main/java/it/polimi/ingsw/views/Main.form,b/4/b4d8aceb5e686d4b80e1df1adc9358d3ff1791d8
-]
--src/main/java/it/polimi/ingsw/views/Main.java,e/1/e16ddaa0a7ff583b47a5bd2acf943d1af0bd731e
 :
 
 .gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
+b
+2src/main/java/it/polimi/ingsw/views/MainFrame.form,f/2/f27601729f02ab8eee6337f10cfd2e69b03e7ad7
+b
+2src/main/java/it/polimi/ingsw/views/MainFrame.java,6/e/6e873816bb21c24a66e227f5c3440a038dfc284d
+Y
+)src/main/java/it/polimi/ingsw/Client.java,3/e/3ebd4d9c8d26687c43f7018320ca9dc3e4d548e3

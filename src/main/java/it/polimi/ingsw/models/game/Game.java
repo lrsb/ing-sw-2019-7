@@ -1,20 +1,21 @@
 package it.polimi.ingsw.models.game;
 
+import it.polimi.ingsw.library.Triplet;
 import it.polimi.ingsw.models.cards.AmmoCard;
 import it.polimi.ingsw.models.cards.Deck;
 import it.polimi.ingsw.models.cards.PowerUp;
 import it.polimi.ingsw.models.weapons.Weapon;
-import it.polimi.ingsw.models.wrappers.SizedList;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Game {
     private static final int MAX_PLAYERS = 5;
 
     private Cell[][] cells;//x,y
-    private SizedList<Player> players = new SizedList<>(MAX_PLAYERS);
+    private ArrayList<Player> players = new ArrayList<>();
     private int seqPlay = 0;
 
     private int skulls = 5;//da 5 a 8
@@ -23,15 +24,15 @@ public class Game {
     private Deck<PowerUp> powerUpsDeck = Deck.Creator.powerUpsDeck();
     private Deck<Weapon> weaponsDeck = Deck.Creator.weaponsDeck();
 
-    private SizedList<Weapon> redWeapons = new SizedList<>(3);
-    private SizedList<Weapon> blueWeapons = new SizedList<>(3);
-    private SizedList<Weapon> yellowWeapons = new SizedList<>(3);
+    private Triplet<Weapon> redWeapons;
+    private Triplet<Weapon> blueWeapons;
+    private Triplet<Weapon> yellowWeapons;
 
     private Game(@NotNull Cell[][] cells) {
         this.cells = cells;
-        redWeapons.addAll(weaponsDeck.exitCards(3));
-        blueWeapons.addAll(weaponsDeck.exitCards(3));
-        yellowWeapons.addAll(weaponsDeck.exitCards(3));
+        redWeapons = new Triplet<>(weaponsDeck.exitCards(3));
+        blueWeapons = new Triplet<>(weaponsDeck.exitCards(3));
+        yellowWeapons = new Triplet<>(weaponsDeck.exitCards(3));
         Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(ammoDeck.exitCard())));
 
     }
@@ -45,6 +46,7 @@ public class Game {
     }
 
     public static class Creator {
+        @Contract(pure = true)
         private Creator() {
         }
 

@@ -7,6 +7,7 @@ public class AmmoConsumption {
     private int yellowAmmos;
     private int blueAmmos;
 
+    @Contract(pure = true)
     public AmmoConsumption(int redAmmos, int yellowAmmos, int blueAmmos) {
         this.redAmmos = redAmmos;
         this.yellowAmmos = yellowAmmos;

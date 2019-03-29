@@ -9,6 +9,7 @@ public class Bounds {
     private Type w;
     private Type e;
 
+    @Contract(pure = true)
     private Bounds(Type n, Type s, Type w, Type e) {
         this.n = n;
         this.s = s;
@@ -16,7 +17,7 @@ public class Bounds {
         this.e = e;
     }
 
-    public Type getType(Direction direction) {
+    public Type getType(@NotNull Direction direction) {
         switch (direction) {
             case N:
                 return n;
@@ -30,7 +31,7 @@ public class Bounds {
         return null;
     }
 
-    public Bounds setType(Direction direction, Type type) {
+    public Bounds setType(@NotNull Direction direction, Type type) {
         switch (direction) {
             case N:
                 n = type;
@@ -56,6 +57,7 @@ public class Bounds {
     }
 
     public static class Creator {
+        @Contract(pure = true)
         private Creator() {
         }
 
