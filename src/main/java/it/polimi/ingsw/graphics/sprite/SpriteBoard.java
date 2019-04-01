@@ -90,9 +90,11 @@ public class SpriteBoard extends JPanel implements SpriteListener {
         public void mousePressed(MouseEvent event) {
             sprites.parallelStream().filter(e -> !e.isHidden() && e.isDraggable())
                     .filter(f -> contained(f, event)).findFirst().ifPresent(g -> {
-                sprites.remove(g);
-                sprites.add(g);
-                repaint();
+                if (g.isClickable()) {
+                    sprites.remove(g);
+                    sprites.add(g);
+                    repaint();
+                }
                 draggingSprite = g;
                 relativePoint = new Point((int) (event.getX() - g.getX()), (int) (event.getY() - g.getY()));
             });
