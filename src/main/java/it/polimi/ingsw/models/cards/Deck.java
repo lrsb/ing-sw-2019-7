@@ -1,5 +1,6 @@
 package it.polimi.ingsw.models.cards;
 
+import it.polimi.ingsw.models.interfaces.Card;
 import it.polimi.ingsw.models.weapons.Weapon;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

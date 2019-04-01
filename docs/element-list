@@ -1,1 +1,11 @@
-it.polimi.ingsw.library
+it.polimi.ingsw.controllers.base
+it.polimi.ingsw.graphics
+it.polimi.ingsw.graphics.sprite
+it.polimi.ingsw.models.cards
+it.polimi.ingsw.models.game
+it.polimi.ingsw.models.interfaces
+it.polimi.ingsw.models.weapons
+it.polimi.ingsw.rmi
+it.polimi.ingsw.socket
+it.polimi.ingsw.views.base
+it.polimi.ingsw.wrappers

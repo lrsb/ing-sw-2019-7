@@ -1,7 +1,7 @@
 package it.polimi.ingsw.models.weapons;
 
 import it.polimi.ingsw.models.cards.AmmoCard;
-import it.polimi.ingsw.models.cards.Card;
+import it.polimi.ingsw.models.interfaces.Card;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.views;
 
-import it.polimi.ingsw.library.JNavigationFrame;
+import it.polimi.ingsw.views.base.JNavigationFrame;
 
 import javax.swing.*;
 

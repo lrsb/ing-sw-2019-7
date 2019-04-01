@@ -1,10 +1,10 @@
 package it.polimi.ingsw.models.game;
 
-import it.polimi.ingsw.library.Triplet;
 import it.polimi.ingsw.models.cards.AmmoCard;
 import it.polimi.ingsw.models.cards.Deck;
 import it.polimi.ingsw.models.cards.PowerUp;
 import it.polimi.ingsw.models.weapons.Weapon;
+import it.polimi.ingsw.wrappers.Triplet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

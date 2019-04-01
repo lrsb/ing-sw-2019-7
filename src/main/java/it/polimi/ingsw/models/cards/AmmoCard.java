@@ -1,6 +1,7 @@
 package it.polimi.ingsw.models.cards;
 
-import it.polimi.ingsw.models.interfaces.Displayable;
+import it.polimi.ingsw.graphics.Displayable;
+import it.polimi.ingsw.models.interfaces.Card;
 import org.jetbrains.annotations.Contract;
 
 import javax.imageio.ImageIO;

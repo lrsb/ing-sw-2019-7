@@ -1,6 +1,6 @@
 package it.polimi.ingsw.controllers;
 
-import it.polimi.ingsw.library.BaseViewController;
+import it.polimi.ingsw.controllers.base.BaseViewController;
 import it.polimi.ingsw.views.SettingsFrame;
 
 public class SettingsViewController extends BaseViewController<SettingsFrame> {

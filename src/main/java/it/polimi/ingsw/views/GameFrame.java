@@ -1,19 +1,24 @@
 package it.polimi.ingsw.views;
 
-import it.polimi.ingsw.library.JNavigationFrame;
+import it.polimi.ingsw.graphics.sprite.SpriteBoard;
+import it.polimi.ingsw.views.base.JNavigationFrame;
 
 import javax.swing.*;
 
 public class GameFrame extends JNavigationFrame {
     private JPanel panel;
-    private JLabel gameLabel;
+    private SpriteBoard spriteBoard;
 
     public GameFrame() {
-        super(1000, 800, false);
+        super(1300, 800, false);
         setContentPane(panel);
     }
 
-    public JLabel getGameLabel() {
-        return gameLabel;
+    public SpriteBoard getSpriteBoard() {
+        return spriteBoard;
+    }
+
+    private void createUIComponents() {
+        spriteBoard = new SpriteBoard();
     }
 }

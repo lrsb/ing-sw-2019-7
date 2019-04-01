@@ -1,5 +1,6 @@
 package it.polimi.ingsw.models.cards;
 
+import it.polimi.ingsw.models.interfaces.Card;
 import org.jetbrains.annotations.Contract;
 
 public class PowerUp implements Card {
