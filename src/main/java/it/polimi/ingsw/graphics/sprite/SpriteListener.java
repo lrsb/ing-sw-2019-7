@@ -1,5 +1,9 @@
 package it.polimi.ingsw.graphics.sprite;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface SpriteListener {
-    void onSpriteUpdated(Sprite sprite);
+    void onSpriteUpdated(@NotNull Sprite sprite);
+
+    void autoRemove(Sprite sprite);
 }

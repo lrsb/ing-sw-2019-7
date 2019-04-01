@@ -12,26 +12,23 @@ import java.util.Optional;
 import java.util.Scanner;
 
 public class AdrenalineSocket extends Socket {
-    @Nullable
-    private AdrenalineSocketListener listener;
-    @Nullable
-    private Scanner scanner;
-    @Nullable
-    private PrintWriter writer;
-    @Nullable
-    private Thread thread;
+    private @Nullable AdrenalineSocketListener listener;
+    private @Nullable Scanner scanner;
+    private @Nullable PrintWriter writer;
+    private @Nullable Thread thread;
 
     AdrenalineSocket(SocketImpl socketImpl) throws SocketException {
         super(socketImpl);
     }
 
-    public AdrenalineSocket(@NotNull String ip, @Nullable AdrenalineSocketListener listener) throws IOException {
+    public AdrenalineSocket(@NotNull String ip, @NotNull AdrenalineSocketListener listener) throws IOException {
         super(ip, AdrenalineServerSocket.PORT);
         this.listener = listener;
         bindStreams();
     }
 
     void bindStreams() throws IOException {
+        if (thread != null) return;
         scanner = new Scanner(new BufferedReader(new InputStreamReader(getInputStream())));
         writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(getOutputStream())));
         thread = new Thread(() -> {
@@ -41,8 +38,8 @@ public class AdrenalineSocket extends Socket {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            else if (listener != null)
-                this.listener.onNewObject(new Gson().fromJson(scanner.nextLine(), AdrenalinePacket.class));
+            else Optional.ofNullable(listener)
+                        .ifPresent(e -> e.onNewObject(new Gson().fromJson(scanner.nextLine(), AdrenalinePacket.class)));
         });
         thread.start();
     }

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.graphics.sprite;
 
 import it.polimi.ingsw.graphics.Displayable;
+import it.polimi.ingsw.graphics.interpolator.Interpolator;
+import it.polimi.ingsw.graphics.interpolator.TimestampOutOfRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,21 +10,19 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Sprite implements Displayable {
-    private float x;
-    private float y;
-    private Dimension dimension;
-    private BufferedImage image;
+    private int x;
+    private int y;
+    private @NotNull Dimension dimension;
+    private @NotNull BufferedImage image;
     private boolean hidden = false;
     private boolean draggable = false;
     private boolean clickable = true;
-    @Nullable
-    private SpriteListener spriteListener;
+    private @Nullable SpriteListener spriteListener;
+    private @Nullable Interpolator interpolator;
 
-    public Sprite(float x, float y, Dimension dimension, @NotNull Displayable displayable) throws IOException {
+    public Sprite(int x, int y, @NotNull Dimension dimension, @NotNull Displayable displayable) throws IOException {
         this.x = x;
         this.y = y;
         this.dimension = dimension;
@@ -30,64 +30,50 @@ public class Sprite implements Displayable {
     }
 
     @Override
-    public BufferedImage getImage() {
+    public @NotNull BufferedImage getImage() {
         return image;
     }
 
-    public float getX() {
+    public int getX() {
         return x;
     }
 
-    public void setX(float x) {
+    public void setX(int x) {
         this.x = x;
         updated();
     }
 
-    public float getY() {
+    public int getY() {
         return y;
     }
 
-    public void setY(float y) {
+    public void setY(int y) {
         this.y = y;
         updated();
     }
 
-    public void move(float dx, float dy) {
+    public void move(int dx, int dy) {
         x += dx;
         y += dy;
         updated();
     }
 
-    public void moveTo(float x, float y) {
+    public void moveTo(int x, int y) {
         this.x = x;
         this.y = y;
         updated();
     }
 
-    public void moveTo(float x, float y, long inMillis) {
-        var xdt = Math.abs(this.x - x) / inMillis * 20;
-        var ydt = Math.abs(this.y - y) / inMillis * 20;
-        var timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                move(xdt, ydt);
-            }
-        }, 0, 20);
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                timer.cancel();
-                moveTo(x, y);
-            }
-        }, inMillis);
+    public void moveTo(@NotNull Interpolator interpolator) {
+        this.interpolator = interpolator;
+        updated();
     }
 
-    public Dimension getDimension() {
+    public @NotNull Dimension getDimension() {
         return dimension;
     }
 
-    public void setDimension(Dimension dimension) {
+    public void setDimension(@NotNull Dimension dimension) {
         this.dimension = dimension;
         updated();
     }
@@ -101,7 +87,7 @@ public class Sprite implements Displayable {
     }
 
     public boolean isDraggable() {
-        return draggable;
+        return draggable && interpolator == null;
     }
 
     public void setDraggable(boolean draggable) {
@@ -116,8 +102,7 @@ public class Sprite implements Displayable {
         this.clickable = clickable;
     }
 
-    @Nullable
-    public SpriteListener getSpriteListener() {
+    public @Nullable SpriteListener getSpriteListener() {
         return spriteListener;
     }
 
@@ -125,7 +110,36 @@ public class Sprite implements Displayable {
         this.spriteListener = spriteListener;
     }
 
+    public @NotNull Point getPosition() {
+        return new Point(x, y);
+    }
+
+    public void remove() {
+        Optional.ofNullable(spriteListener).ifPresent(e -> e.autoRemove(this));
+    }
+
+    void interpolate() {
+        if (interpolator != null) {
+            if (interpolator.getEndMillis() < System.currentTimeMillis()) {
+                x = interpolator.getEndPoint().x;
+                y = interpolator.getEndPoint().y;
+                interpolator.onInterpolationCompleted();
+                interpolator = null;
+            } else try {
+                var point = interpolator.interpolate(System.currentTimeMillis());
+                x = point.x;
+                y = point.y;
+            } catch (TimestampOutOfRange timestampOutOfRange) {
+                timestampOutOfRange.printStackTrace();
+                interpolator.onInterpolationCompleted();
+                interpolator = null;
+            }
+            Optional.ofNullable(spriteListener).ifPresent(e -> e.onSpriteUpdated(this));
+        }
+    }
+
     private void updated() {
+        interpolate();
         Optional.ofNullable(spriteListener).ifPresent(e -> e.onSpriteUpdated(this));
     }
 }

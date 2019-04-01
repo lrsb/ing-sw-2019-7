@@ -2,9 +2,11 @@ package it.polimi.ingsw.controllers.base;
 
 import it.polimi.ingsw.views.base.JNavigationFrame;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Optional;
 
 /**
  * Base class to create a ViewController associated to a view {@link E}.
@@ -13,7 +15,7 @@ import java.awt.event.WindowListener;
  */
 public abstract class BaseViewController<E extends JNavigationFrame> {
     private E frame;
-    private NavigationController navigationController;
+    private @Nullable NavigationController navigationController;
 
     /**
      * Attach the frame E to this controller.
@@ -31,7 +33,7 @@ public abstract class BaseViewController<E extends JNavigationFrame> {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                getNavigationController().popViewController();
+                Optional.ofNullable(getNavigationController()).ifPresent(NavigationController::popViewController);
             }
 
             @Override
@@ -71,7 +73,7 @@ public abstract class BaseViewController<E extends JNavigationFrame> {
     /**
      * @return The {@link NavigationController} associated with this controller.
      */
-    public NavigationController getNavigationController() {
+    public @Nullable NavigationController getNavigationController() {
         return navigationController;
     }
 
@@ -85,7 +87,7 @@ public abstract class BaseViewController<E extends JNavigationFrame> {
     /**
      * NEVER USE THIS METHOD.
      */
-    void setNavigationController(NavigationController navigationController) {
+    void setNavigationController(@Nullable NavigationController navigationController) {
         this.navigationController = navigationController;
     }
 }

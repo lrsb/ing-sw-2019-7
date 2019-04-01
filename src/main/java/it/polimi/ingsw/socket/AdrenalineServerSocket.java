@@ -1,14 +1,16 @@
 package it.polimi.ingsw.socket;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
 
 public class AdrenalineServerSocket extends ServerSocket {
-    static final int PORT = 0xCAFE;
-    private Thread thread;
+    public static final int PORT = 0xCAFE;
+    private @NotNull Thread thread;
 
-    public AdrenalineServerSocket(AdrenalineServerSocketListener listener) throws IOException {
+    public AdrenalineServerSocket(@NotNull AdrenalineServerSocketListener listener) throws IOException {
         super(PORT);
         thread = new Thread(() -> {
             while (!isClosed()) try {

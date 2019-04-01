@@ -1,19 +1,21 @@
 package it.polimi.ingsw.controllers.base;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 /**
  * You can use NavigationController to create a root-child navigation behaviour between BaseViewController(s), with a LIFO logic.
  */
 public class NavigationController {
-    private ArrayList<BaseViewController> baseViewControllers = new ArrayList<>();
+    private @NotNull ArrayList<BaseViewController> baseViewControllers = new ArrayList<>();
 
     /**
      * Crate new NavigationController with as root specified.
      *
      * @param rootViewController The root view controller, a BaseViewController can't be reused.
      */
-    public NavigationController(BaseViewController rootViewController) {
+    public NavigationController(@NotNull BaseViewController rootViewController) {
         baseViewControllers.add(rootViewController);
         rootViewController.getFrame().setVisible(true);
         rootViewController.setNavigationController(this);
@@ -25,7 +27,7 @@ public class NavigationController {
      *
      * @param viewController The BaseViewController to present.
      */
-    public void presentViewController(BaseViewController viewController) {
+    public void presentViewController(@NotNull BaseViewController viewController) {
         baseViewControllers.get(baseViewControllers.size() - 1).getFrame().setVisible(false);
         baseViewControllers.add(viewController);
         viewController.getFrame().setVisible(true);

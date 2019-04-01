@@ -1,6 +1,5 @@
 package it.polimi.ingsw;
 
-import com.google.gson.Gson;
 import it.polimi.ingsw.models.weapons.Weapon;
 import it.polimi.ingsw.socket.*;
 import org.jetbrains.annotations.NotNull;
@@ -34,12 +33,10 @@ public class Server implements AdrenalineServerSocketListener {
             public void onNewObject(@NotNull AdrenalinePacket object) {
                 switch (object.getType()) {
                     case REQUEST_GAMES_LIST:
-                        var weapon = new Gson().fromJson(object.getAssociatedJsonObject(), Weapon.class);
-                        System.out.println(weapon);
+                        System.out.println(object.getAssociatedObject(Weapon.class));
                         break;
                     case JOIN_GAME:
-                        var weapon1 = new Gson().fromJson(object.getAssociatedJsonObject(), Weapon.class);
-                        System.out.println(weapon1);
+                        System.out.println(object.getAssociatedObject(Weapon.class));
                         break;
                 }
             }

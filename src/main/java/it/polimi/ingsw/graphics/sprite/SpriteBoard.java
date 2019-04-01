@@ -9,16 +9,35 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class SpriteBoard extends JPanel implements SpriteListener {
-    private ArrayList<Sprite> sprites = new ArrayList<>();
-    @Nullable
-    private SpriteBoardListener boardListener;
+public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable {
+    private static final int FRAMERATE = 60;
+    private @NotNull
+    final ArrayList<Sprite> sprites = new ArrayList<>();
+    private @Nullable SpriteBoardListener boardListener;
+    private @NotNull AtomicBoolean needRepaint = new AtomicBoolean(true);
+    private @NotNull Thread thread = new Thread(() -> {
+        while (true) {
+            //noinspection ForLoopReplaceableByForEach
+            for (int i = 0; i < sprites.size(); i++) sprites.get(i).interpolate();
+            if (needRepaint.get()) {
+                super.repaint();
+                needRepaint.set(false);
+            }
+            try {
+                Thread.sleep(1000 / FRAMERATE);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    });
 
     public SpriteBoard() {
         var mouseListener = new SpriteMouseAdapter();
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
+        thread.start();
     }
 
     private static boolean isRetina() {
@@ -34,18 +53,16 @@ public class SpriteBoard extends JPanel implements SpriteListener {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
-
         return isRetina;
     }
 
-    public void addSprite(Sprite sprite) {
+    public void addSprite(@NotNull Sprite sprite) {
         sprites.add(sprite);
         sprite.setSpriteListener(this);
         repaint();
     }
 
-    @Nullable
-    public Sprite removeSprite(Sprite sprite) {
+    public @Nullable Sprite removeSprite(@NotNull Sprite sprite) {
         var removed = sprites.remove(sprite);
         if (removed) {
             sprite.setSpriteListener(null);
@@ -60,12 +77,12 @@ public class SpriteBoard extends JPanel implements SpriteListener {
         var graphics = (Graphics2D) g;
         //TODO: Illegal reflective access
         if (isRetina()) graphics.scale(0.5, 0.5);
-        sprites.forEach(e -> graphics.drawImage(e.getImage(), (int) (isRetina() ? e.getX() * 2 : e.getX()), (int) (isRetina() ? e.getY() * 2 : e.getY()), isRetina() ? e.getDimension().width * 2 : e.getDimension().width, isRetina() ? e.getDimension().height * 2 : e.getDimension().height, this));
+        sprites.forEach(e -> graphics.drawImage(e.getImage(), isRetina() ? e.getX() * 2 : e.getX(), isRetina() ? e.getY() * 2 : e.getY(), isRetina() ? e.getDimension().width * 2 : e.getDimension().width, isRetina() ? e.getDimension().height * 2 : e.getDimension().height, this));
         Toolkit.getDefaultToolkit().sync();
     }
 
     @Override
-    public void onSpriteUpdated(Sprite sprite) {
+    public void onSpriteUpdated(@NotNull Sprite sprite) {
         repaint();
     }
 
@@ -73,9 +90,27 @@ public class SpriteBoard extends JPanel implements SpriteListener {
         this.boardListener = boardListener;
     }
 
+    @Override
+    public void autoRemove(Sprite sprite) {
+        sprites.remove(sprite);
+        repaint();
+    }
+
+    @Override
+    public void repaint() {
+        //mah
+        //noinspection ConstantConditions
+        if (needRepaint != null) needRepaint.set(true);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void close() {
+        thread.stop();
+    }
+
     private class SpriteMouseAdapter extends MouseInputAdapter {
-        @Nullable
-        private Sprite draggingSprite;
+        private @Nullable Sprite draggingSprite;
         private Point relativePoint;
         private boolean dragged;
 
@@ -96,22 +131,22 @@ public class SpriteBoard extends JPanel implements SpriteListener {
                     repaint();
                 }
                 draggingSprite = g;
-                relativePoint = new Point((int) (event.getX() - g.getX()), (int) (event.getY() - g.getY()));
+                relativePoint = new Point(event.getX() - g.getX(), event.getY() - g.getY());
             });
         }
 
         @Override
         public void mouseDragged(MouseEvent event) {
-            if (draggingSprite != null) {
+            Optional.ofNullable(draggingSprite).ifPresent(e -> {
                 dragged = true;
-                draggingSprite.moveTo(event.getX() - relativePoint.x, event.getY() - relativePoint.y);
-            }
+                e.moveTo(event.getX() - relativePoint.x, event.getY() - relativePoint.y);
+            });
         }
 
         @Override
         public void mouseReleased(MouseEvent event) {
             Optional.ofNullable(boardListener).ifPresent(e -> {
-                if (draggingSprite != null && dragged) e.onSpriteDragged(draggingSprite);
+                if (dragged) Optional.ofNullable(draggingSprite).ifPresent(f -> e.onSpriteDragged(draggingSprite));
             });
             dragged = false;
             draggingSprite = null;
