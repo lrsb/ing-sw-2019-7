@@ -3,6 +3,7 @@ package it.polimi.ingsw.controllers;
 import it.polimi.ingsw.controllers.base.BaseViewController;
 import it.polimi.ingsw.controllers.base.NavigationController;
 import it.polimi.ingsw.models.client.HandyMannySocketImpl;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class MainViewController extends BaseViewController {
     public JButton opzioniButton;
     public JButton CLIButton;
 
-    public MainViewController(NavigationController navigationController) {
+    public MainViewController(@NotNull NavigationController navigationController) {
         super(400, 300, navigationController);
         setContentPane(panel);
         nuovaPartitaButton.addActionListener(e -> getNavigationController().presentViewController(GameViewController.class));
@@ -36,9 +37,11 @@ public class MainViewController extends BaseViewController {
             }
             //getNavigationController().presentViewController(SettingsViewController.class);
         });
+        CLIButton.addActionListener(e -> getNavigationController().presentViewController(ProvaViewController.class));
     }
 
     @Override
     public void nextViewControllerInstantiated(BaseViewController viewController) {
+        if (viewController instanceof ProvaViewController) ((ProvaViewController) viewController).setName1("ciao");
     }
 }

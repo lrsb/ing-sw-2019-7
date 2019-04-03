@@ -1,5 +1,7 @@
 package it.polimi.ingsw;
 
+import it.polimi.ingsw.controllers.MainViewController;
+import it.polimi.ingsw.controllers.base.NavigationController;
 import it.polimi.ingsw.models.client.GameRmiImpl;
 import it.polimi.ingsw.models.interfaces.IGame;
 
@@ -19,8 +21,8 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        //new NavigationController(MainViewController.class);
-        rmi();
+        new NavigationController(MainViewController.class);
+        //rmi();
     }
 
     public static void rmi() {

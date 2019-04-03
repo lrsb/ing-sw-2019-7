@@ -20,7 +20,7 @@ public class GameViewController extends BaseViewController implements SpriteBoar
     private JPanel panel;
     private SpriteBoard spriteBoard;
 
-    public GameViewController(NavigationController navigationController) {
+    public GameViewController(@NotNull NavigationController navigationController) {
         super(1300, 800, navigationController);
         setContentPane(panel);
         spriteBoard.setBoardListener(this);

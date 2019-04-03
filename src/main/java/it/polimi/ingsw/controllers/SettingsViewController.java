@@ -2,6 +2,7 @@ package it.polimi.ingsw.controllers;
 
 import it.polimi.ingsw.controllers.base.BaseViewController;
 import it.polimi.ingsw.controllers.base.NavigationController;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -14,7 +15,7 @@ public class SettingsViewController extends BaseViewController {
     public JTextField ServerIP;
     public JButton backButton;
 
-    public SettingsViewController(NavigationController navigationController) {
+    public SettingsViewController(@NotNull NavigationController navigationController) {
         super(400, 300, navigationController);
         setContentPane(panel);
         backButton.addActionListener(e -> getNavigationController().popViewController());
