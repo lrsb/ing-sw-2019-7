@@ -29,6 +29,6 @@ public class AdrenalinePacket {
     }
 
     public enum Type {
-        REQUEST_GAMES_LIST, JOIN_GAME, RESPONSE
+        ROOM_LIST, JOIN_ROOM, CREATE_ROOM
     }
 }

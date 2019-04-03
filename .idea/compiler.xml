@@ -9,5 +9,8 @@
         <module name="Swing project" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Swing project" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>

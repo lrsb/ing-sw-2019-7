@@ -3,15 +3,15 @@ memberSearchIndex = [{
     "c": "AdrenalineServerSocket",
     "l": "accept()"
 }, {
-    "p": "it.polimi.ingsw.models.game",
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Game",
     "l": "addPlayer(Player)",
-    "url": "addPlayer(it.polimi.ingsw.models.game.Player)"
+    "url": "addPlayer(it.polimi.ingsw.models.server.game.Player)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "SpriteBoard",
     "l": "addSprite(Sprite)",
-    "url": "addSprite(it.polimi.ingsw.graphics.sprite.Sprite)"
+    "url": "addSprite(it.polimi.ingsw.views.sprite.Sprite)"
 }, {
     "p": "it.polimi.ingsw.socket",
     "c": "AdrenalinePacket",
@@ -28,22 +28,22 @@ memberSearchIndex = [{
     "l": "AdrenalineSocket(String, AdrenalineSocketListener)",
     "url": "%3Cinit%3E(java.lang.String,it.polimi.ingsw.socket.AdrenalineSocketListener)"
 }, {
-    "p": "it.polimi.ingsw.models.game",
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Cell.Creator",
     "l": "ammoCard(AmmoCard)",
-    "url": "ammoCard(it.polimi.ingsw.models.cards.AmmoCard)"
+    "url": "ammoCard(it.polimi.ingsw.models.server.cards.AmmoCard)"
 }, {
-    "p": "it.polimi.ingsw.models.cards",
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "AmmoCard",
     "l": "AmmoCard(AmmoCard.Type, AmmoCard.Color, AmmoCard.Color)",
-    "url": "%3Cinit%3E(it.polimi.ingsw.models.cards.AmmoCard.Type,it.polimi.ingsw.models.cards.AmmoCard.Color,it.polimi.ingsw.models.cards.AmmoCard.Color)"
+    "url": "%3Cinit%3E(it.polimi.ingsw.models.server.cards.AmmoCard.Type,it.polimi.ingsw.models.server.cards.AmmoCard.Color,it.polimi.ingsw.models.server.cards.AmmoCard.Color)"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "AmmoConsumption",
     "l": "AmmoConsumption(int, int, int)",
     "url": "%3Cinit%3E(int,int,int)"
 }, {
-    "p": "it.polimi.ingsw.models.cards",
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "Deck.Creator",
     "l": "ammoDeck()"
 }, {
@@ -51,8 +51,8 @@ memberSearchIndex = [{
     "c": "BaseViewController",
     "l": "BaseViewController(E)",
     "url": "%3Cinit%3E(E)"
-}, {"p": "it.polimi.ingsw.models.cards", "c": "AmmoCard.Color", "l": "BLUE"}, {
-    "p": "it.polimi.ingsw.models.game",
+}, {"p": "it.polimi.ingsw.models.server.cards", "c": "AmmoCard.Color", "l": "BLUE"}, {
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Cell",
     "l": "Cell()",
     "url": "%3Cinit%3E()"
@@ -61,126 +61,126 @@ memberSearchIndex = [{
     "c": "AdrenalineSocket",
     "l": "close()"
 }, {
-    "p": "it.polimi.ingsw.models.game",
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Cell.Creator",
     "l": "color(Cell.Color)",
-    "url": "color(it.polimi.ingsw.models.game.Cell.Color)"
-}, {"p": "it.polimi.ingsw.models.game", "c": "Cell.Creator", "l": "create()"}, {
-    "p": "it.polimi.ingsw.models.cards",
+    "url": "color(it.polimi.ingsw.models.server.game.Cell.Color)"
+}, {"p": "it.polimi.ingsw.models.server.game", "c": "Cell.Creator", "l": "create()"}, {
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "Deck.Creator",
     "l": "Creator()",
     "url": "%3Cinit%3E()"
 }, {
-    "p": "it.polimi.ingsw.models.game",
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Cell.Creator",
     "l": "Creator()",
     "url": "%3Cinit%3E()"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon.Name", "l": "CYBERBLADE"}, {
-    "p": "it.polimi.ingsw.models.cards",
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon.Name", "l": "CYBERBLADE"}, {
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "Deck",
     "l": "discardCard()"
-}, {"p": "it.polimi.ingsw.models.cards", "c": "Deck", "l": "discardCard(E)"}, {
-    "p": "it.polimi.ingsw.models.weapons",
+}, {"p": "it.polimi.ingsw.models.server.cards", "c": "Deck", "l": "discardCard(E)"}, {
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "ELECTROSCYTHE"
-}, {"p": "it.polimi.ingsw.models.cards", "c": "Deck", "l": "exitCard()"}, {
-    "p": "it.polimi.ingsw.models.cards",
+}, {"p": "it.polimi.ingsw.models.server.cards", "c": "Deck", "l": "exitCard()"}, {
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "Deck",
     "l": "exitCards(int)"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "FLAMETHROWER"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon.Name", "l": "FURNACE"}, {
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon.Name", "l": "FURNACE"}, {
     "p": "it.polimi.ingsw.wrappers",
     "c": "Triplet",
     "l": "get(int)"
-}, {"p": "it.polimi.ingsw.models.game", "c": "Game", "l": "getActualPlayer()"}, {
-    "p": "it.polimi.ingsw.models.weapons",
+}, {"p": "it.polimi.ingsw.models.server.game", "c": "Game", "l": "getActualPlayer()"}, {
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon",
     "l": "getAlternateAmmoConsumption()"
-}, {"p": "it.polimi.ingsw.models.game", "c": "Cell", "l": "getAmmoCard()"}, {
-    "p": "it.polimi.ingsw.models.cards",
+}, {"p": "it.polimi.ingsw.models.server.game", "c": "Cell", "l": "getAmmoCard()"}, {
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "PowerUp",
     "l": "getAmmoColor()"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon", "l": "getAmmoConsumption()"}, {
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon", "l": "getAmmoConsumption()"}, {
     "p": "it.polimi.ingsw.socket",
     "c": "AdrenalinePacket",
     "l": "getAssociatedJsonObject()"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "AmmoConsumption",
     "l": "getBlueAmmos()"
-}, {"p": "it.polimi.ingsw.graphics.sprite", "c": "Sprite", "l": "getDimension()"}, {
+}, {"p": "it.polimi.ingsw.views.sprite", "c": "Sprite", "l": "getDimension()"}, {
     "p": "it.polimi.ingsw.wrappers",
     "c": "Triplet",
     "l": "getFirst()"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon",
     "l": "getFirstOptionalAmmoConsumption()"
 }, {
     "p": "it.polimi.ingsw.controllers.base",
     "c": "BaseViewController",
     "l": "getFrame()"
-}, {"p": "it.polimi.ingsw.graphics", "c": "Displayable", "l": "getImage()"}, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+}, {"p": "it.polimi.ingsw.views", "c": "Displayable", "l": "getImage()"}, {
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "getImage()"
-}, {"p": "it.polimi.ingsw.models.cards", "c": "AmmoCard", "l": "getImage()"}, {
-    "p": "it.polimi.ingsw.models.cards",
+}, {"p": "it.polimi.ingsw.models.server.cards", "c": "AmmoCard", "l": "getImage()"}, {
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "AmmoCard",
     "l": "getLeft()"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon", "l": "getName()"}, {
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon", "l": "getName()"}, {
     "p": "it.polimi.ingsw.controllers.base",
     "c": "BaseViewController",
     "l": "getNavigationController()"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "AmmoConsumption",
     "l": "getRedAmmos()"
-}, {"p": "it.polimi.ingsw.models.cards", "c": "AmmoCard", "l": "getRight()"}, {
+}, {"p": "it.polimi.ingsw.models.server.cards", "c": "AmmoCard", "l": "getRight()"}, {
     "p": "it.polimi.ingsw.wrappers",
     "c": "Triplet",
     "l": "getSecond()"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon",
     "l": "getSecondOptionalAmmoConsumption()"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "getSpriteListener()"
 }, {"p": "it.polimi.ingsw.wrappers", "c": "Triplet", "l": "getThird()"}, {
-    "p": "it.polimi.ingsw.models.cards",
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "AmmoCard",
     "l": "getType()"
-}, {"p": "it.polimi.ingsw.models.cards", "c": "PowerUp", "l": "getType()"}, {
+}, {"p": "it.polimi.ingsw.models.server.cards", "c": "PowerUp", "l": "getType()"}, {
     "p": "it.polimi.ingsw.socket",
     "c": "AdrenalinePacket",
     "l": "getType()"
 }, {
-    "p": "it.polimi.ingsw.models.game",
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Bounds",
     "l": "getType(Bounds.Direction)",
-    "url": "getType(it.polimi.ingsw.models.game.Bounds.Direction)"
-}, {"p": "it.polimi.ingsw.graphics.sprite", "c": "Sprite", "l": "getX()"}, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "url": "getType(it.polimi.ingsw.models.server.game.Bounds.Direction)"
+}, {"p": "it.polimi.ingsw.views.sprite", "c": "Sprite", "l": "getX()"}, {
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "getY()"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "AmmoConsumption",
     "l": "getYellowAmmos()"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "GRENADE_LAUNCHER"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "HEATSEEKER"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon.Name", "l": "HELLION"}, {
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon.Name", "l": "HELLION"}, {
     "p": "it.polimi.ingsw.rmi",
     "c": "Hello",
     "l": "hello()"
@@ -209,19 +209,19 @@ memberSearchIndex = [{
     "c": "BaseViewController",
     "l": "isAttachedToNavigationController()"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "isClickable()"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "isDraggable()"
-}, {"p": "it.polimi.ingsw.graphics.sprite", "c": "Sprite", "l": "isHidden()"}, {
-    "p": "it.polimi.ingsw.models.game",
+}, {"p": "it.polimi.ingsw.views.sprite", "c": "Sprite", "l": "isHidden()"}, {
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Cell",
     "l": "isSpawnPoint()"
 }, {
-    "p": "it.polimi.ingsw.views.base",
+    "p": "it.polimi.ingsw.forms.base",
     "c": "JNavigationFrame",
     "l": "JNavigationFrame(int, int, boolean)",
     "url": "%3Cinit%3E(int,int,boolean)"
@@ -230,10 +230,10 @@ memberSearchIndex = [{
     "c": "AdrenalinePacket.Type",
     "l": "JOIN_GAME"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "LOCK_RIFLE"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon.Name", "l": "MACHINE_GUN"}, {
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon.Name", "l": "MACHINE_GUN"}, {
     "p": "it.polimi.ingsw.rmi",
     "c": "HelloClient",
     "l": "main(String[])",
@@ -244,17 +244,17 @@ memberSearchIndex = [{
     "l": "main(String[])",
     "url": "main(java.lang.String[])"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "move(float, float)",
     "url": "move(float,float)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "moveTo(float, float)",
     "url": "moveTo(float,float)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "moveTo(float, float, long)",
     "url": "moveTo(float,float,long)"
@@ -263,7 +263,7 @@ memberSearchIndex = [{
     "c": "NavigationController",
     "l": "NavigationController(BaseViewController)",
     "url": "%3Cinit%3E(it.polimi.ingsw.controllers.base.BaseViewController)"
-}, {"p": "it.polimi.ingsw.models.game", "c": "Game.Creator", "l": "newGame()"}, {
+}, {"p": "it.polimi.ingsw.models.server.game", "c": "Game.Creator", "l": "newGame()"}, {
     "p": "it.polimi.ingsw.socket",
     "c": "AdrenalineSocketListener",
     "l": "onClose(AdrenalineSocket)",
@@ -279,32 +279,32 @@ memberSearchIndex = [{
     "l": "onNewSocket(AdrenalineSocket)",
     "url": "onNewSocket(it.polimi.ingsw.socket.AdrenalineSocket)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "SpriteBoardListener",
     "l": "onSpriteClicked(Sprite)",
-    "url": "onSpriteClicked(it.polimi.ingsw.graphics.sprite.Sprite)"
+    "url": "onSpriteClicked(it.polimi.ingsw.views.sprite.Sprite)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "SpriteBoardListener",
     "l": "onSpriteDragged(Sprite)",
-    "url": "onSpriteDragged(it.polimi.ingsw.graphics.sprite.Sprite)"
+    "url": "onSpriteDragged(it.polimi.ingsw.views.sprite.Sprite)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "SpriteBoard",
     "l": "onSpriteUpdated(Sprite)",
-    "url": "onSpriteUpdated(it.polimi.ingsw.graphics.sprite.Sprite)"
+    "url": "onSpriteUpdated(it.polimi.ingsw.views.sprite.Sprite)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "SpriteListener",
     "l": "onSpriteUpdated(Sprite)",
-    "url": "onSpriteUpdated(it.polimi.ingsw.graphics.sprite.Sprite)"
+    "url": "onSpriteUpdated(it.polimi.ingsw.views.sprite.Sprite)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "SpriteBoard",
     "l": "paintComponent(Graphics)",
     "url": "paintComponent(java.awt.Graphics)"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon.Name", "l": "PLASMA_GUN"}, {
-    "p": "it.polimi.ingsw.models.game",
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon.Name", "l": "PLASMA_GUN"}, {
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Player",
     "l": "Player(String)",
     "url": "%3Cinit%3E(java.lang.String)"
@@ -317,16 +317,16 @@ memberSearchIndex = [{
     "c": "NavigationController",
     "l": "popViewController()"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "POWER_GLOVE"
 }, {
-    "p": "it.polimi.ingsw.models.cards",
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "PowerUp",
     "l": "PowerUp(AmmoCard.Color, PowerUp.Type)",
-    "url": "%3Cinit%3E(it.polimi.ingsw.models.cards.AmmoCard.Color,it.polimi.ingsw.models.cards.PowerUp.Type)"
+    "url": "%3Cinit%3E(it.polimi.ingsw.models.server.cards.AmmoCard.Color,it.polimi.ingsw.models.server.cards.PowerUp.Type)"
 }, {
-    "p": "it.polimi.ingsw.models.cards",
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "Deck.Creator",
     "l": "powerUpsDeck()"
 }, {
@@ -334,15 +334,15 @@ memberSearchIndex = [{
     "c": "NavigationController",
     "l": "presentViewController(BaseViewController)",
     "url": "presentViewController(it.polimi.ingsw.controllers.base.BaseViewController)"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon.Name", "l": "RAILGUN"}, {
-    "p": "it.polimi.ingsw.models.cards",
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon.Name", "l": "RAILGUN"}, {
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "AmmoCard.Color",
     "l": "RED"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "SpriteBoard",
     "l": "removeSprite(Sprite)",
-    "url": "removeSprite(it.polimi.ingsw.graphics.sprite.Sprite)"
+    "url": "removeSprite(it.polimi.ingsw.views.sprite.Sprite)"
 }, {
     "p": "it.polimi.ingsw.socket",
     "c": "AdrenalinePacket.Type",
@@ -351,7 +351,7 @@ memberSearchIndex = [{
     "p": "it.polimi.ingsw.socket",
     "c": "AdrenalinePacket.Type",
     "l": "RESPONSE"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon.Name", "l": "ROCKET_LAUNCHER"}, {
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon.Name", "l": "ROCKET_LAUNCHER"}, {
     "p": "it.polimi.ingsw.socket",
     "c": "AdrenalineSocket",
     "l": "send(AdrenalinePacket)",
@@ -362,70 +362,70 @@ memberSearchIndex = [{
     "l": "setAdrenalineSocketListener(AdrenalineSocketListener)",
     "url": "setAdrenalineSocketListener(it.polimi.ingsw.socket.AdrenalineSocketListener)"
 }, {
-    "p": "it.polimi.ingsw.models.game",
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Cell",
     "l": "setAmmoCard(AmmoCard)",
-    "url": "setAmmoCard(it.polimi.ingsw.models.cards.AmmoCard)"
+    "url": "setAmmoCard(it.polimi.ingsw.models.server.cards.AmmoCard)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "SpriteBoard",
     "l": "setBoardListener(SpriteBoardListener)",
-    "url": "setBoardListener(it.polimi.ingsw.graphics.sprite.SpriteBoardListener)"
+    "url": "setBoardListener(it.polimi.ingsw.views.sprite.SpriteBoardListener)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "setClickable(boolean)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "setDimension(Dimension)",
     "url": "setDimension(java.awt.Dimension)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "setDraggable(boolean)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "setHidden(boolean)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "setSpriteListener(SpriteListener)",
-    "url": "setSpriteListener(it.polimi.ingsw.graphics.sprite.SpriteListener)"
+    "url": "setSpriteListener(it.polimi.ingsw.views.sprite.SpriteListener)"
 }, {
-    "p": "it.polimi.ingsw.models.game",
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Bounds",
     "l": "setType(Bounds.Direction, Bounds.Type)",
-    "url": "setType(it.polimi.ingsw.models.game.Bounds.Direction,it.polimi.ingsw.models.game.Bounds.Type)"
-}, {"p": "it.polimi.ingsw.graphics.sprite", "c": "Sprite", "l": "setX(float)"}, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "url": "setType(it.polimi.ingsw.models.server.game.Bounds.Direction,it.polimi.ingsw.models.server.game.Bounds.Type)"
+}, {"p": "it.polimi.ingsw.views.sprite", "c": "Sprite", "l": "setX(float)"}, {
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "setY(float)"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "SHOCKWAVE"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon.Name", "l": "SHOTGUN"}, {
-    "p": "it.polimi.ingsw.models.weapons",
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon.Name", "l": "SHOTGUN"}, {
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "SLEDGEHAMMER"
 }, {
-    "p": "it.polimi.ingsw.models.game",
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Cell.Creator",
     "l": "spawnPoint(boolean)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "Sprite",
     "l": "Sprite(float, float, Dimension, Displayable)",
-    "url": "%3Cinit%3E(float,float,java.awt.Dimension,it.polimi.ingsw.graphics.Displayable)"
+    "url": "%3Cinit%3E(float,float,java.awt.Dimension,it.polimi.ingsw.views.Displayable)"
 }, {
-    "p": "it.polimi.ingsw.graphics.sprite",
+    "p": "it.polimi.ingsw.views.sprite",
     "c": "SpriteBoard",
     "l": "SpriteBoard()",
     "url": "%3Cinit%3E()"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon.Name", "l": "THOR"}, {
-    "p": "it.polimi.ingsw.models.weapons",
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon.Name", "l": "THOR"}, {
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "TRACTOR_BEAM"
 }, {
@@ -439,12 +439,12 @@ memberSearchIndex = [{
     "l": "Triplet(List<E>)",
     "url": "%3Cinit%3E(java.util.List)"
 }, {
-    "p": "it.polimi.ingsw.models.cards",
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "AmmoCard.Color",
     "l": "valueOf(String)",
     "url": "valueOf(java.lang.String)"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "valueOf(String)",
     "url": "valueOf(java.lang.String)"
@@ -454,38 +454,38 @@ memberSearchIndex = [{
     "l": "valueOf(String)",
     "url": "valueOf(java.lang.String)"
 }, {
-    "p": "it.polimi.ingsw.models.cards",
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "AmmoCard.Color",
     "l": "values()"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon.Name", "l": "values()"}, {
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon.Name", "l": "values()"}, {
     "p": "it.polimi.ingsw.socket",
     "c": "AdrenalinePacket.Type",
     "l": "values()"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "VORTEX_CANNON"
 }, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon",
     "l": "Weapon(Weapon.Name, List<AmmoCard.Color>, List<AmmoCard.Color>, List<AmmoCard.Color>, List<AmmoCard.Color>)",
-    "url": "%3Cinit%3E(it.polimi.ingsw.models.weapons.Weapon.Name,java.util.List,java.util.List,java.util.List,java.util.List)"
+    "url": "%3Cinit%3E(it.polimi.ingsw.models.server.weapons.Weapon.Name,java.util.List,java.util.List,java.util.List,java.util.List)"
 }, {
-    "p": "it.polimi.ingsw.models.cards",
+    "p": "it.polimi.ingsw.models.server.cards",
     "c": "Deck.Creator",
     "l": "weaponsDeck()"
-}, {"p": "it.polimi.ingsw.models.weapons", "c": "Weapon.Name", "l": "WHISPER"}, {
-    "p": "it.polimi.ingsw.models.game",
+}, {"p": "it.polimi.ingsw.models.server.weapons", "c": "Weapon.Name", "l": "WHISPER"}, {
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Cell.Creator",
     "l": "withBounds(String)",
     "url": "withBounds(java.lang.String)"
 }, {
-    "p": "it.polimi.ingsw.models.game",
+    "p": "it.polimi.ingsw.models.server.game",
     "c": "Bounds.Creator",
     "l": "withType(Bounds.Type)",
-    "url": "withType(it.polimi.ingsw.models.game.Bounds.Type)"
-}, {"p": "it.polimi.ingsw.models.cards", "c": "AmmoCard.Color", "l": "YELLOW"}, {
-    "p": "it.polimi.ingsw.models.weapons",
+    "url": "withType(it.polimi.ingsw.models.server.game.Bounds.Type)"
+}, {"p": "it.polimi.ingsw.models.server.cards", "c": "AmmoCard.Color", "l": "YELLOW"}, {
+    "p": "it.polimi.ingsw.models.server.weapons",
     "c": "Weapon.Name",
     "l": "ZX2"
 }];

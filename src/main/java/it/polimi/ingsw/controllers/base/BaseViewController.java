@@ -1,31 +1,21 @@
 package it.polimi.ingsw.controllers.base;
 
-import it.polimi.ingsw.views.base.JNavigationFrame;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.Optional;
 
-/**
- * Base class to create a ViewController associated to a view {@link E}.
- *
- * @param <E> The view associated
- */
-public abstract class BaseViewController<E extends JNavigationFrame> {
-    private E frame;
-    private @Nullable NavigationController navigationController;
+public abstract class BaseViewController extends JFrame {
+    private @NotNull NavigationController navigationController;
 
-    /**
-     * Attach the frame E to this controller.
-     * A frame must be unique, so it can't be reused between navigation controllers.
-     *
-     * @param frame The frame
-     */
-    public BaseViewController(@NotNull E frame) {
-        this.frame = frame;
-        frame.addWindowListener(new WindowListener() {
+    public BaseViewController(int width, int height, @NotNull NavigationController navigationController) {
+        this.navigationController = navigationController;
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setBounds(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 - height / 2, width, height);
+        setResizable(false);
+        addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {
 
@@ -33,7 +23,7 @@ public abstract class BaseViewController<E extends JNavigationFrame> {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                Optional.ofNullable(getNavigationController()).ifPresent(NavigationController::popViewController);
+                navigationController.popViewController();
             }
 
             @Override
@@ -63,31 +53,10 @@ public abstract class BaseViewController<E extends JNavigationFrame> {
         });
     }
 
-    /**
-     * @return The frame associated with this controller.
-     */
-    public E getFrame() {
-        return frame;
-    }
-
-    /**
-     * @return The {@link NavigationController} associated with this controller.
-     */
-    public @Nullable NavigationController getNavigationController() {
+    protected @NotNull NavigationController getNavigationController() {
         return navigationController;
     }
 
-    /**
-     * @return true if this view controller is attached to a {@link NavigationController}. True not means the controller is visible.
-     */
-    public boolean isAttachedToNavigationController() {
-        return navigationController != null;
-    }
-
-    /**
-     * NEVER USE THIS METHOD.
-     */
-    void setNavigationController(@Nullable NavigationController navigationController) {
-        this.navigationController = navigationController;
+    public void nextViewControllerInstantiated(BaseViewController viewController) {
     }
 }
