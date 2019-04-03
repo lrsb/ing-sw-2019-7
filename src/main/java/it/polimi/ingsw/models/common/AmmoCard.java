@@ -9,29 +9,29 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class AmmoCard implements Displayable {
-    private Type type;
-    private Color left;
-    private Color right;
+    private @NotNull Type type;
+    private @NotNull Color left;
+    private @NotNull Color right;
 
     @Contract(pure = true)
-    public AmmoCard(Type type, Color left, Color right) {
+    public AmmoCard(@NotNull Type type, @NotNull Color left, @NotNull Color right) {
         this.type = type;
         this.left = left;
         this.right = right;
     }
 
     @Contract(pure = true)
-    public Type getType() {
+    public @NotNull Type getType() {
         return type;
     }
 
     @Contract(pure = true)
-    public Color getLeft() {
+    public @NotNull Color getLeft() {
         return left;
     }
 
     @Contract(pure = true)
-    public Color getRight() {
+    public @NotNull Color getRight() {
         return right;
     }
 

@@ -46,14 +46,10 @@ public class GameViewController extends BaseViewController implements SpriteBoar
             sprite.moveTo(new LinearInterpolator(sprite.getPosition(), System.currentTimeMillis(), new Point(300, 300), 2000) {
                 @Override
                 public void onInterpolationCompleted() {
-                    //sprite.remove();
+                    sprite.remove();
                 }
             });
             sprite2.moveTo(new ExponentialInterpolator(sprite.getPosition(), System.currentTimeMillis(), new Point(500, 300), 2000) {
-                @Override
-                public void onInterpolationCompleted() {
-
-                }
             });
         } catch (IOException e) {
             e.printStackTrace();

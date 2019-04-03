@@ -2,7 +2,7 @@ package it.polimi.ingsw;
 
 import it.polimi.ingsw.models.common.Room;
 import it.polimi.ingsw.models.common.User;
-import it.polimi.ingsw.models.server.Game;
+import it.polimi.ingsw.models.server.GameImpl;
 import it.polimi.ingsw.models.server.HandyManny;
 import it.polimi.ingsw.socket.*;
 import org.jetbrains.annotations.Contract;
@@ -19,7 +19,7 @@ public class Server implements AdrenalineServerSocketListener {
     private static Registry registry;
     private static HandyManny handyManny;
     private static ArrayList<Room> rooms = new ArrayList<>();
-    private static ArrayList<Game> games = new ArrayList<>();
+    private static ArrayList<GameImpl> games = new ArrayList<>();
 
     static {
         try {
@@ -32,7 +32,7 @@ public class Server implements AdrenalineServerSocketListener {
                 }
 
                 @Override
-                public boolean joinRoom(User user, @NotNull Room room) {
+                public boolean joinRoom(@NotNull User user, @NotNull Room room) {
                     return Server.joinRoom(user, room);
                 }
 
@@ -49,8 +49,8 @@ public class Server implements AdrenalineServerSocketListener {
     }
 
     public static void main(String[] args) throws RemoteException {
-        //registry.rebind(HandyManny.RMI_NAME, handyManny);
-        registry.rebind("games/uuid", Game.Creator.newGame());
+        registry.rebind(HandyManny.RMI_NAME, handyManny);
+        registry.rebind("games/uuid", GameImpl.Creator.newGame());
         try (var server = new AdrenalineServerSocket(new Server())) {
 
         } catch (IOException e) {
@@ -68,14 +68,14 @@ public class Server implements AdrenalineServerSocketListener {
         System.out.println("open: " + adrenalineSocket.getInetAddress());
         adrenalineSocket.setAdrenalineSocketListener(new AdrenalineSocketListener() {
             @Override
-            public void onNewObject(@NotNull AdrenalinePacket object) {
-                switch (object.getType()) {
+            public void onNewPacket(@NotNull AdrenalinePacket packet) {
+                switch (packet.getType()) {
                     case ROOM_LIST:
                         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_LIST, rooms));
                         break;
                     case JOIN_ROOM:
                         try {
-                            var associatedObject = object.getAssociatedObject(ArrayList.class);
+                            var associatedObject = packet.getAssociatedObject(ArrayList.class);
                             //noinspection ConstantConditions
                             var user = (User) associatedObject.get(0);
                             var room = (Room) associatedObject.get(1);
@@ -85,7 +85,7 @@ public class Server implements AdrenalineServerSocketListener {
                         }
                         break;
                     case CREATE_ROOM:
-                        var room = new Room(object.getAssociatedObject(String.class));
+                        var room = new Room(packet.getAssociatedObject(String.class));
                         rooms.add(room);
                         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_ROOM, room));
                         break;

@@ -27,47 +27,45 @@ public class HandyMannySocketImpl implements IHandyManny, AdrenalineSocketListen
     //TODO: impl
     @Override
     public @NotNull List<Room> getRooms() {
+        rooms = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_LIST, null));
         while (rooms == null) wait1ms();
-        var rooms1 = rooms;
-        rooms = null;
-        return rooms1;
+        return rooms;
     }
 
     //TODO: impl
     @Override
-    public boolean joinRoom(User user, @NotNull Room room) {
+    public boolean joinRoom(@NotNull User user, @NotNull Room room) {
+        joined = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.JOIN_ROOM, Arrays.asList(user, room.getUuid())));
         while (joined == null) wait1ms();
-        var joined1 = joined;
-        joined = null;
         //noinspection ConstantConditions
-        return joined1;
+        return joined;
     }
 
     //TODO: impl
     @Override
     public @NotNull Room createRoom(@NotNull String name) {
+        room = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_ROOM, name));
         while (room == null) wait1ms();
-        var room1 = room;
-        room = null;
-        return room1;
+        //noinspection ConstantConditions
+        return room;
     }
 
     //TODO: impl
     @Override
-    public void onNewObject(@NotNull AdrenalinePacket object) {
-        switch (object.getType()) {
+    public void onNewPacket(@NotNull AdrenalinePacket packet) {
+        switch (packet.getType()) {
             case ROOM_LIST:
                 //noinspection unchecked
-                rooms = (ArrayList<Room>) object.getAssociatedObject(ArrayList.class);
+                rooms = (ArrayList<Room>) packet.getAssociatedObject(ArrayList.class);
                 break;
             case JOIN_ROOM:
-                joined = object.getAssociatedObject(boolean.class);
+                joined = packet.getAssociatedObject(boolean.class);
                 break;
             case CREATE_ROOM:
-                room = object.getAssociatedObject(Room.class);
+                room = packet.getAssociatedObject(Room.class);
                 break;
         }
     }

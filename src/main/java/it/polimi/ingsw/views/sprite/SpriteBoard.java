@@ -13,32 +13,31 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable {
     private static final int FRAMERATE = 60;
-    private @NotNull
-    final ArrayList<Sprite> sprites = new ArrayList<>();
+    private final @NotNull ArrayList<Sprite> sprites = new ArrayList<>();
     private @Nullable SpriteBoardListener boardListener;
     private @NotNull AtomicBoolean needRepaint = new AtomicBoolean(true);
-    private @NotNull Thread thread = new Thread(() -> {
-        try {
-            while (true) {
-                //noinspection ForLoopReplaceableByForEach
-                for (int i = 0; i < sprites.size(); i++) sprites.get(i).interpolate();
-                if (needRepaint.get()) {
-                    super.repaint();
-                    needRepaint.set(false);
-                }
-                Thread.sleep(1000 / FRAMERATE);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            Thread.currentThread().interrupt();
-        }
-    });
+    private boolean closed = false;
 
     public SpriteBoard() {
         var mouseListener = new SpriteMouseAdapter();
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
-        thread.start();
+        new Thread(() -> {
+            try {
+                while (!closed) {
+                    //noinspection ForLoopReplaceableByForEach
+                    for (int i = 0; i < sprites.size(); i++) sprites.get(i).interpolate();
+                    if (needRepaint.get()) {
+                        super.repaint();
+                        needRepaint.set(false);
+                    }
+                    Thread.sleep(1000 / FRAMERATE);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Thread.currentThread().interrupt();
+            }
+        }).start();
     }
 
     private static boolean isRetina() {
@@ -104,10 +103,9 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
         if (needRepaint != null) needRepaint.set(true);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void close() {
-        thread.stop();
+        closed = true;
     }
 
     private class SpriteMouseAdapter extends MouseInputAdapter {

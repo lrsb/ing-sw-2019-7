@@ -4,20 +4,20 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public class Bounds {
-    private Type n;
-    private Type s;
-    private Type w;
-    private Type e;
+    private @NotNull Type n;
+    private @NotNull Type s;
+    private @NotNull Type w;
+    private @NotNull Type e;
 
     @Contract(pure = true)
-    private Bounds(Type n, Type s, Type w, Type e) {
+    private Bounds(@NotNull Type n, @NotNull Type s, @NotNull Type w, @NotNull Type e) {
         this.n = n;
         this.s = s;
         this.w = w;
         this.e = e;
     }
 
-    public Type getType(@NotNull Direction direction) {
+    public @NotNull Type getType(@NotNull Direction direction) {
         switch (direction) {
             case N:
                 return n;
@@ -31,7 +31,7 @@ public class Bounds {
         return null;
     }
 
-    public Bounds setType(@NotNull Direction direction, Type type) {
+    public @NotNull Bounds setType(@NotNull Direction direction, @NotNull Type type) {
         switch (direction) {
             case N:
                 n = type;
@@ -61,9 +61,8 @@ public class Bounds {
         private Creator() {
         }
 
-        @NotNull
         @Contract("_ -> new")
-        public static Bounds withType(Type type) {
+        public static @NotNull Bounds withType(@NotNull Type type) {
             return new Bounds(type, type, type, type);
         }
     }

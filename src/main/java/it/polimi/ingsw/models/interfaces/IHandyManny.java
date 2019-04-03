@@ -9,7 +9,7 @@ import java.util.List;
 public interface IHandyManny {
     @NotNull List<Room> getRooms();
 
-    boolean joinRoom(User user, @NotNull Room room);
+    boolean joinRoom(@NotNull User user, @NotNull Room room);
 
     @NotNull Room createRoom(@NotNull String name);
 }

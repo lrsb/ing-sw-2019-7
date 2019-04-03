@@ -34,7 +34,8 @@ public abstract class Interpolator {
 
     public abstract @NotNull Point interpolateImpl(float normalizedCompletion);
 
-    public abstract void onInterpolationCompleted();
+    public void onInterpolationCompleted() {
+    }
 
     private void checkTimestamp(long timestamp) throws TimestampOutOfRange {
         if (timestamp < startMillis || endMillis < timestamp)

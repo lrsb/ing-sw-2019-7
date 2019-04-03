@@ -39,7 +39,7 @@ public class AdrenalineSocket extends Socket {
                 e.printStackTrace();
             }
             else Optional.ofNullable(listener)
-                        .ifPresent(e -> e.onNewObject(new Gson().fromJson(scanner.nextLine(), AdrenalinePacket.class)));
+                        .ifPresent(e -> e.onNewPacket(new Gson().fromJson(scanner.nextLine(), AdrenalinePacket.class)));
         });
         thread.start();
     }
@@ -55,11 +55,9 @@ public class AdrenalineSocket extends Socket {
         this.listener = listener;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public synchronized void close() throws IOException {
         Optional.ofNullable(listener).ifPresent(e -> e.onClose(AdrenalineSocket.this));
-        Optional.ofNullable(thread).ifPresent(Thread::stop);
         super.close();
     }
 }

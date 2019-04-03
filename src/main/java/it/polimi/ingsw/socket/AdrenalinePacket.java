@@ -10,9 +10,9 @@ public class AdrenalinePacket {
     private @Nullable String jsonObject;
 
     @Contract(pure = true)
-    public AdrenalinePacket(@NotNull Type type, @Nullable Object jsonObject) {
+    public AdrenalinePacket(@NotNull Type type, @Nullable Object object) {
         this.type = type;
-        this.jsonObject = new Gson().toJson(jsonObject);
+        this.jsonObject = new Gson().toJson(object);
     }
 
     public @NotNull Type getType() {

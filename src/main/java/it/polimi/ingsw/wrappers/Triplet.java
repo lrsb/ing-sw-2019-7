@@ -9,19 +9,19 @@ import java.util.List;
 /**
  * Wrapper class, a triplet!
  *
- * @param <E> The type of the triplet.
+ * @param <T> The type of the triplet.
  */
-public class Triplet<E> {
-    private @Nullable E first;
-    private @Nullable E second;
-    private @Nullable E third;
+public class Triplet<T> {
+    private @Nullable T first;
+    private @Nullable T second;
+    private @Nullable T third;
 
     /**
      * Create a triplet from a list, the list must have at least three elements.
      *
      * @param list The list
      */
-    public Triplet(@NotNull List<E> list) {
+    public Triplet(@NotNull List<T> list) {
         this.first = list.get(0);
         this.second = list.get(1);
         this.third = list.get(2);
@@ -35,7 +35,7 @@ public class Triplet<E> {
      * @param third  The third element.
      */
     @Contract(pure = true)
-    public Triplet(@Nullable E first, @Nullable E second, @Nullable E third) {
+    public Triplet(@Nullable T first, @Nullable T second, @Nullable T third) {
         this.first = first;
         this.second = second;
         this.third = third;
@@ -46,7 +46,7 @@ public class Triplet<E> {
      *
      * @return The first element.
      */
-    public @Nullable E getFirst() {
+    public @Nullable T getFirst() {
         return first;
     }
 
@@ -55,7 +55,7 @@ public class Triplet<E> {
      *
      * @return The second element.
      */
-    public @Nullable E getSecond() {
+    public @Nullable T getSecond() {
         return second;
     }
 
@@ -64,7 +64,7 @@ public class Triplet<E> {
      *
      * @return The third element.
      */
-    public @Nullable E getThird() {
+    public @Nullable T getThird() {
         return third;
     }
 
@@ -74,7 +74,7 @@ public class Triplet<E> {
      * @param i The index, will be evaluated in modulo 3.
      * @return The i element.
      */
-    public @Nullable E get(int i) {
+    public @Nullable T get(int i) {
         switch (i % 3) {
             case 0:
                 return first;

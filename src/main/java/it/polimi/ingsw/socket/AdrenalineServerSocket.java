@@ -5,14 +5,16 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AdrenalineServerSocket extends ServerSocket {
     public static final int PORT = 0xCAFE;
-    private @NotNull Thread thread;
+    private static final ExecutorService executorService = Executors.newCachedThreadPool();
 
     public AdrenalineServerSocket(@NotNull AdrenalineServerSocketListener listener) throws IOException {
         super(PORT);
-        thread = new Thread(() -> {
+        executorService.submit(() -> {
             while (!isClosed()) try {
                 var socket = accept();
                 socket.bindStreams();
@@ -21,7 +23,6 @@ public class AdrenalineServerSocket extends ServerSocket {
                 e.printStackTrace();
             }
         });
-        thread.start();
     }
 
     @Override
@@ -31,12 +32,5 @@ public class AdrenalineServerSocket extends ServerSocket {
         var s = new AdrenalineSocket(null);
         implAccept(s);
         return s;
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void close() throws IOException {
-        thread.stop();
-        super.close();
     }
 }

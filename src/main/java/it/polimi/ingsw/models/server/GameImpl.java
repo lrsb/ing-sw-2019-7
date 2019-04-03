@@ -1,7 +1,7 @@
 package it.polimi.ingsw.models.server;
 
 import it.polimi.ingsw.models.common.*;
-import it.polimi.ingsw.models.interfaces.RmiGame;
+import it.polimi.ingsw.models.interfaces.IRmiGame;
 import it.polimi.ingsw.wrappers.Triplet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
-public class Game extends UnicastRemoteObject implements RmiGame {
+public class GameImpl extends UnicastRemoteObject implements IRmiGame {
     private static final int MAX_PLAYERS = 5;
 
     private Cell[][] cells;//x,y
@@ -19,21 +19,21 @@ public class Game extends UnicastRemoteObject implements RmiGame {
 
     private int skulls = 5;//da 5 a 8
 
-    private Deck<AmmoCard> ammoDeck = Deck.Creator.ammoDeck();
-    private Deck<PowerUp> powerUpsDeck = Deck.Creator.powerUpsDeck();
-    private Deck<Weapon> weaponsDeck = Deck.Creator.weaponsDeck();
+    private Deck<AmmoCard> ammoDeck = Deck.Creator.newAmmoDeck();
+    private Deck<PowerUp> powerUpsDeck = Deck.Creator.newPowerUpsDeck();
+    private Deck<Weapon> weaponsDeck = Deck.Creator.newWeaponsDeck();
 
     private Triplet<Weapon> redWeapons;
     private Triplet<Weapon> blueWeapons;
     private Triplet<Weapon> yellowWeapons;
 
-    private Game(@NotNull Cell[][] cells) throws RemoteException {
+    private GameImpl(@NotNull Cell[][] cells) throws RemoteException {
         super();
         this.cells = cells;
-        //redWeapons = new Triplet<>(weaponsDeck.exitCards(3));
-        //blueWeapons = new Triplet<>(weaponsDeck.exitCards(3));
-        //yellowWeapons = new Triplet<>(weaponsDeck.exitCards(3));
-        //Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(ammoDeck.exitCard())));
+        //redWeapons = new Triplet<>(newWeaponsDeck.exitCards(3));
+        //blueWeapons = new Triplet<>(newWeaponsDeck.exitCards(3));
+        //yellowWeapons = new Triplet<>(newWeaponsDeck.exitCards(3));
+        //Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(newAmmoDeck.exitCard())));
     }
 
     public Player getActualPlayer() {
@@ -67,13 +67,13 @@ public class Game extends UnicastRemoteObject implements RmiGame {
 
         @NotNull
         @Contract(" -> new")
-        public static Game newGame() throws RemoteException {
+        public static GameImpl newGame() throws RemoteException {
             var cells = new Cell[4][3];
             for (var i = 0; i < cells.length; i++)
                 for (var j = 0; j < cells[i].length; j++) {
                     cells[i][j] = Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
                 }
-            return new Game(cells);
+            return new GameImpl(cells);
         }
     }
 }

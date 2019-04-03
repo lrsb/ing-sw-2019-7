@@ -7,32 +7,34 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Deck<E> {
-    private ArrayList<E> playableCards = new ArrayList<>();
-    private ArrayList<E> exitedCards = new ArrayList<>();
-    private ArrayList<E> discardedCards = new ArrayList<>();
+public class Deck<T> {
+    private @NotNull ArrayList<T> playableCards = new ArrayList<>();
+    private @NotNull ArrayList<T> exitedCards = new ArrayList<>();
+    private @NotNull ArrayList<T> discardedCards = new ArrayList<>();
+    private boolean shufflable;
 
-    private Deck(ArrayList<E> cards) {
+    private Deck(@NotNull ArrayList<T> cards, boolean shufflable) {
         playableCards.addAll(cards);
+        this.shufflable = shufflable;
     }
 
-    public E discardCard() {
+    public @NotNull T discardCard() throws EmptyDeckException {
         if (playableCards.isEmpty()) shuffleDeck();
         var discardedCard = playableCards.remove(0);
         discardedCards.add(discardedCard);
         return discardedCard;
     }
 
-    public E exitCard() {
+    public @NotNull T exitCard() throws EmptyDeckException {
         if (playableCards.isEmpty()) shuffleDeck();
         var exitedCard = playableCards.remove(0);
         exitedCards.add(exitedCard);
         return exitedCard;
     }
 
-    public List<E> exitCards(int n) {
+    public @NotNull List<T> exitCards(int n) throws EmptyDeckException {
         if (playableCards.isEmpty()) shuffleDeck();
-        var list = new ArrayList<E>();
+        var list = new ArrayList<T>();
         for (int i = 0; i < n; i++) {
             var exitedCard = playableCards.remove(0);
             list.add(exitedCard);
@@ -41,12 +43,13 @@ public class Deck<E> {
         return list;
     }
 
-    public void discardCard(@NotNull E exitedCard) {
+    public void discardCard(@NotNull T exitedCard) {
         if (exitedCards.indexOf(exitedCard) >= 0) exitedCards.remove(exitedCard);
         discardedCards.add(exitedCard);
     }
 
-    private void shuffleDeck() {
+    private void shuffleDeck() throws EmptyDeckException {
+        if (!shufflable) throw new EmptyDeckException();
         playableCards.addAll(discardedCards);
         discardedCards.clear();
         Collections.shuffle(playableCards);
@@ -58,22 +61,19 @@ public class Deck<E> {
         }
 
         //TODO: implementare tutto quanto
-        @NotNull
         @Contract(" -> new")
-        public static Deck<AmmoCard> ammoDeck() {
-            return new Deck<>(new ArrayList<>());
+        public static @NotNull Deck<AmmoCard> newAmmoDeck() {
+            return new Deck<>(new ArrayList<>(), true);
         }
 
-        @NotNull
         @Contract(" -> new")
-        public static Deck<PowerUp> powerUpsDeck() {
-            return new Deck<>(new ArrayList<>());
+        public static @NotNull Deck<PowerUp> newPowerUpsDeck() {
+            return new Deck<>(new ArrayList<>(), true);
         }
 
-        @NotNull
         @Contract(" -> new")
-        public static Deck<Weapon> weaponsDeck() {
-            return new Deck<>(new ArrayList<>());
+        public static @NotNull Deck<Weapon> newWeaponsDeck() {
+            return new Deck<>(new ArrayList<>(), true);
         }
     }
 }

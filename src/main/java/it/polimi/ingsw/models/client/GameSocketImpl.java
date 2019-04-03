@@ -35,7 +35,7 @@ public class GameSocketImpl implements IGame, AdrenalineSocketListener {
 
     //TODO: impl
     @Override
-    public void onNewObject(@NotNull AdrenalinePacket object) {
+    public void onNewPacket(@NotNull AdrenalinePacket packet) {
         Optional.ofNullable(gameListener).ifPresent(e -> e.onGameUpdated("socket"));
     }
 
