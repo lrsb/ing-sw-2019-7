@@ -3,6 +3,7 @@ package it.polimi.ingsw.models.common;
 import it.polimi.ingsw.views.Displayable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -12,6 +13,7 @@ public class AmmoCard implements Displayable {
     private @NotNull Type type;
     private @NotNull Color left;
     private @NotNull Color right;
+    private @Nullable BufferedImage bufferedImage;
 
     @Contract(pure = true)
     public AmmoCard(@NotNull Type type, @NotNull Color left, @NotNull Color right) {
@@ -37,7 +39,8 @@ public class AmmoCard implements Displayable {
 
     @Override
     public @NotNull BufferedImage getImage() throws IOException {
-        return ImageIO.read(AmmoCard.class.getResourceAsStream("card.png"));
+        if (bufferedImage == null) bufferedImage = ImageIO.read(AmmoCard.class.getResourceAsStream("card.png"));
+        return bufferedImage;
     }
 
     enum Type {

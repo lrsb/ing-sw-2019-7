@@ -25,10 +25,7 @@ public class GameViewController extends BaseViewController implements SpriteBoar
         setContentPane(panel);
         spriteBoard.setBoardListener(this);
         try {
-            var sprite = new Sprite(0, 0, new Dimension(100, 100), () -> {
-                InputStream inputStream = Client.class.getResourceAsStream("am.png");
-                return ImageIO.read(inputStream);
-            });
+            var sprite = new Sprite(0, 0, new Dimension(100, 100), () -> ImageIO.read(Client.class.getResourceAsStream("am.png")));
             var sprite2 = new Sprite(0, 0, new Dimension(100, 150), () -> {
                 InputStream inputStream = Client.class.getResourceAsStream("vv.png");
                 return ImageIO.read(inputStream);
