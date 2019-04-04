@@ -7,11 +7,11 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class MainViewController extends BaseViewController {
-    public JPanel panel;
-    public JButton elencoPartiteButton;
-    public JButton nuovaPartitaButton;
-    public JButton opzioniButton;
-    public JButton CLIButton;
+    private JPanel panel;
+    private JButton elencoPartiteButton;
+    private JButton nuovaPartitaButton;
+    private JButton opzioniButton;
+    private JButton CLIButton;
 
     public MainViewController(@NotNull NavigationController navigationController) {
         super(400, 300, navigationController);

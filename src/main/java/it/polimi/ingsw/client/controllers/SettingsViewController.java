@@ -7,13 +7,13 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class SettingsViewController extends BaseViewController {
-    public JPanel panel;
-    public JButton button1;
-    public JButton muteButton;
-    public JButton button3;
-    public JButton button4;
-    public JTextField ServerIP;
-    public JButton backButton;
+    private JPanel panel;
+    private JButton button1;
+    private JButton muteButton;
+    private JButton button3;
+    private JButton button4;
+    private JTextField ServerIP;
+    private JButton backButton;
 
     public SettingsViewController(@NotNull NavigationController navigationController) {
         super(400, 300, navigationController);
