@@ -1,0 +1,23 @@
+package it.polimi.ingsw.client.controllers;
+
+import it.polimi.ingsw.client.controllers.base.BaseViewController;
+import it.polimi.ingsw.client.controllers.base.NavigationController;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+
+public class SettingsViewController extends BaseViewController {
+    public JPanel panel;
+    public JButton button1;
+    public JButton muteButton;
+    public JButton button3;
+    public JButton button4;
+    public JTextField ServerIP;
+    public JButton backButton;
+
+    public SettingsViewController(@NotNull NavigationController navigationController) {
+        super(400, 300, navigationController);
+        setContentPane(panel);
+        backButton.addActionListener(e -> getNavigationController().popViewController());
+    }
+}

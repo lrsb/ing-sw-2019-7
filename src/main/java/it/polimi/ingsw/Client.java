@@ -1,39 +1,25 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.controllers.MainViewController;
-import it.polimi.ingsw.controllers.base.NavigationController;
-import it.polimi.ingsw.models.client.GameRmiImpl;
-import it.polimi.ingsw.models.interfaces.IGame;
+import it.polimi.ingsw.client.controllers.MainViewController;
+import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.network.rmi.APIRmiClientImpl;
+import it.polimi.ingsw.client.network.socket.APISocketClientImpl;
 
-import java.rmi.RemoteException;
+import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+import java.security.SecureRandom;
+
+import static it.polimi.ingsw.Server.RMI_NAME;
+import static it.polimi.ingsw.Server.RMI_PORT;
 
 public class Client {
-    public static Registry RMI_REGISTRY;
-
-    static {
-        try {
-            RMI_REGISTRY = LocateRegistry.getRegistry("localhost", 10000);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, NotBoundException {
         new NavigationController(MainViewController.class);
-        //rmi();
-    }
-
-    public static void rmi() {
-        try {
-            var registry = LocateRegistry.getRegistry("localhost", 10000);
-            IGame obj = new GameRmiImpl(registry.lookup("games/uuid"));
-            obj.addGameListener(System.out::println);
-            System.out.println(obj.makeMove());
-        } catch (Exception e) {
-            System.out.println("HelloClient exception: " + e.getMessage());
-            e.printStackTrace();
-        }
+        var hostname = "localhost";
+        var socket = new SecureRandom().nextBoolean();
+        var comm = socket ? new APISocketClientImpl(hostname) : new APIRmiClientImpl(LocateRegistry.getRegistry(hostname, RMI_PORT).lookup(RMI_NAME));
+        var rooms = comm.getRooms("token");
+        rooms.size();
     }
 }
