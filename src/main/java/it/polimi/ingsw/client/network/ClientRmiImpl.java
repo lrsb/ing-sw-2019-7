@@ -1,10 +1,10 @@
-package it.polimi.ingsw.client.network.rmi;
+package it.polimi.ingsw.client.network;
 
-import it.polimi.ingsw.client.network.API;
-import it.polimi.ingsw.client.network.GameListener;
-import it.polimi.ingsw.client.network.RoomListener;
 import it.polimi.ingsw.common.models.Room;
-import it.polimi.ingsw.common.network.rmi.IRmiAPI;
+import it.polimi.ingsw.common.network.API;
+import it.polimi.ingsw.common.network.GameListener;
+import it.polimi.ingsw.common.network.RoomListener;
+import it.polimi.ingsw.common.network.rmi.RmiAPI;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,15 +17,25 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class APIRmiClientImpl implements API {
+public class ClientRmiImpl implements API {
     private static final ExecutorService executorService = Executors.newCachedThreadPool();
-    private @NotNull IRmiAPI rmiAPI;
+    private @NotNull RmiAPI rmiAPI;
     private volatile @Nullable GameListener gameListener;
     private volatile @Nullable RoomListener roomListener;
 
     @Contract(pure = true)
-    public APIRmiClientImpl(Remote netComm) {
-        this.rmiAPI = (IRmiAPI) netComm;
+    public ClientRmiImpl(Remote netComm) {
+        this.rmiAPI = (RmiAPI) netComm;
+    }
+
+    @Override
+    public @Nullable String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+        return rmiAPI.authUser(nickname, password);
+    }
+
+    @Override
+    public @Nullable String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+        return rmiAPI.createUser(nickname, password);
     }
 
     @Override
@@ -80,12 +90,12 @@ public class APIRmiClientImpl implements API {
     }
 
     @Override
-    public void removeGameListener() {
-        gameListener = null;
+    public void removeGameListener(@NotNull String token, @NotNull UUID gameUuid) {
+        this.gameListener = null;
     }
 
     @Override
-    public void removeRoomListener() {
-        roomListener = null;
+    public void removeRoomListener(@NotNull String token, @NotNull UUID roomUuid) {
+        this.roomListener = null;
     }
 }

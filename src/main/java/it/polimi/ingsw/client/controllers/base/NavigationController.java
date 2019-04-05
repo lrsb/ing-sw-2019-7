@@ -15,6 +15,7 @@ public class NavigationController {
      * Crate new NavigationController with as root specified.
      *
      * @param controllerClass The root view controller, a BaseViewController can't be reused.
+     * @param <T> View controller type.
      */
     public <T extends BaseViewController> NavigationController(@NotNull Class<T> controllerClass) {
         try {
@@ -32,6 +33,7 @@ public class NavigationController {
      * After the new viewController is presented, the previous is hided.
      *
      * @param controllerClass The BaseViewController to present.
+     * @param <T> View controller type.
      */
     public <T extends BaseViewController> void presentViewController(@NotNull Class<T> controllerClass) {
         try {

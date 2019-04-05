@@ -4,7 +4,7 @@
     <module name="Swing project" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="it.polimi.ingsw.*" />
+        <option name="PATTERN" value="it.polimi.ingsw.common.network.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

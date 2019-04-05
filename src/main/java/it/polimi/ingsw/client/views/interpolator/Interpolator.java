@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.views.interpolator;
 
+import it.polimi.ingsw.client.views.interpolator.exceptions.TimestampOutOfRangeException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +20,7 @@ public abstract class Interpolator {
         this.endMillis = endMillis;
     }
 
-    public @NotNull Point interpolate(long timestamp) throws TimestampOutOfRange {
+    public @NotNull Point interpolate(long timestamp) throws TimestampOutOfRangeException {
         checkTimestamp(timestamp);
         return interpolateImpl((float) (timestamp - startMillis) / (endMillis - startMillis));
     }
@@ -37,8 +38,8 @@ public abstract class Interpolator {
     public void onInterpolationCompleted() {
     }
 
-    private void checkTimestamp(long timestamp) throws TimestampOutOfRange {
+    private void checkTimestamp(long timestamp) throws TimestampOutOfRangeException {
         if (timestamp < startMillis || endMillis < timestamp)
-            throw new TimestampOutOfRange("Not valid: " + startMillis + " < " + timestamp + " < " + endMillis);
+            throw new TimestampOutOfRangeException("Not valid: " + startMillis + " < " + timestamp + " < " + endMillis);
     }
 }

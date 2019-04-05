@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.network.socket;
+package it.polimi.ingsw.server.network;
 
 import it.polimi.ingsw.common.network.socket.AdrenalineSocket;
 import org.jetbrains.annotations.NotNull;

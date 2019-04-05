@@ -15,7 +15,7 @@ public class AdrenalinePacket {
     @Contract(pure = true)
     public AdrenalinePacket(@NotNull Type type, @Nullable String token, @Nullable Object object) {
         this.type = type;
-        this.jsonObject = new Gson().toJson(Arrays.asList(token, object));
+        this.jsonObject = new Gson().toJson(Arrays.asList(token, new Gson().toJson(object)));
     }
 
     public @NotNull Type getType() {
@@ -26,10 +26,10 @@ public class AdrenalinePacket {
         return (String) new Gson().fromJson(jsonObject, ArrayList.class).get(0);
     }
 
-    public @Nullable <T> T getAssociatedObject() {
+    public @Nullable <T> T getAssociatedObject(Class<T> type) {
         try {
             //noinspection unchecked
-            return (T) new Gson().fromJson(jsonObject, ArrayList.class).get(1);
+            return new Gson().fromJson((String) new Gson().fromJson(jsonObject, ArrayList.class).get(1), type);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -37,6 +37,6 @@ public class AdrenalinePacket {
     }
 
     public enum Type {
-        ROOM_LIST, JOIN_ROOM, CREATE_ROOM, JOIN_GAME, START_GAME
+        AUTH_USER, CREATE_USER, GET_ROOMS, JOIN_ROOM, CREATE_ROOM, START_GAME, DO_MOVE, GAME_UPDATE, ROOM_UPDATE
     }
 }

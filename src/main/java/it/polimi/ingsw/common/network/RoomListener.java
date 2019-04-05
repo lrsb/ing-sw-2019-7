@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.network;
+package it.polimi.ingsw.common.network;
 
 import it.polimi.ingsw.common.models.Room;
 import org.jetbrains.annotations.NotNull;

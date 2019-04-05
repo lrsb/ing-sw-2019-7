@@ -2,7 +2,7 @@ package it.polimi.ingsw.client.views.sprite;
 
 import it.polimi.ingsw.client.views.Displayable;
 import it.polimi.ingsw.client.views.interpolator.Interpolator;
-import it.polimi.ingsw.client.views.interpolator.TimestampOutOfRange;
+import it.polimi.ingsw.client.views.interpolator.exceptions.TimestampOutOfRangeException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -129,8 +129,8 @@ public class Sprite implements Displayable {
                 var point = interpolator.interpolate(System.currentTimeMillis());
                 x = point.x;
                 y = point.y;
-            } catch (TimestampOutOfRange timestampOutOfRange) {
-                timestampOutOfRange.printStackTrace();
+            } catch (TimestampOutOfRangeException timestampOutOfRangeException) {
+                timestampOutOfRangeException.printStackTrace();
                 interpolator.onInterpolationCompleted();
                 interpolator = null;
             }
