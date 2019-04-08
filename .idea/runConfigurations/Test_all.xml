@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Test all" type="CompoundRunConfigurationType">
+    <toRun name="InterpolatorTest" type="JUnit" />
+    <toRun name="TripletTest" type="JUnit" />
+    <method v="2" />
+  </configuration>
+</component>
