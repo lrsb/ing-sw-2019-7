@@ -5,8 +5,6 @@ import it.polimi.ingsw.client.controllers.base.NavigationController;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 
 public class GamesListViewController extends BaseViewController {
     private JPanel panel;
@@ -14,7 +12,7 @@ public class GamesListViewController extends BaseViewController {
     private JButton helpButton;
     private JTable table1;
 
-    public GamesListViewController(@NotNull NavigationController navigationController) throws RemoteException, NotBoundException {
+    public GamesListViewController(@NotNull NavigationController navigationController) {
         super(800, 600, navigationController);
         setContentPane(panel);
     }

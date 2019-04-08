@@ -7,10 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 
 public abstract class Interpolator {
-    protected @NotNull Point start;
-    protected long startMillis;
-    protected @NotNull Point end;
-    protected long endMillis;
+    protected final @NotNull Point start;
+    protected final long startMillis;
+    protected final @NotNull Point end;
+    protected final long endMillis;
 
     @Contract(pure = true)
     public Interpolator(@NotNull Point start, long startMillis, @NotNull Point end, long endMillis) {

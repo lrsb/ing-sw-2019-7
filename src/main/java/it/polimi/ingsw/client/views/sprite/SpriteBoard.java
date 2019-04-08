@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable {
     private static final int FRAMERATE = 60;
     private final @NotNull ArrayList<Sprite> sprites = new ArrayList<>();
+    private final @NotNull AtomicBoolean needRepaint = new AtomicBoolean(true);
     private @Nullable SpriteBoardListener boardListener;
-    private @NotNull AtomicBoolean needRepaint = new AtomicBoolean(true);
     private boolean closed = false;
 
     public SpriteBoard() {
@@ -40,22 +40,6 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
         }).start();
     }
 
-    private static boolean isRetina() {
-        var isRetina = false;
-        GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        try {
-            var field = graphicsDevice.getClass().getDeclaredField("scale");
-            if (field != null) {
-                field.setAccessible(true);
-                Object scale = field.get(graphicsDevice);
-                if (scale instanceof Integer && (Integer) scale == 2) isRetina = true;
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return isRetina;
-    }
-
     public void addSprite(@NotNull Sprite sprite) {
         sprites.add(sprite);
         sprite.setSpriteListener(this);
@@ -75,7 +59,6 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         var graphics = (Graphics2D) g;
-        //TODO: Illegal reflective access
         if (isRetina()) graphics.scale(0.5, 0.5);
         sprites.forEach(e -> graphics.drawImage(e.getImage(), isRetina() ? e.getX() * 2 : e.getX(), isRetina() ? e.getY() * 2 : e.getY(), isRetina() ? e.getDimension().width * 2 : e.getDimension().width, isRetina() ? e.getDimension().height * 2 : e.getDimension().height, this));
         Toolkit.getDefaultToolkit().sync();
@@ -106,6 +89,23 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
     @Override
     public void close() {
         closed = true;
+    }
+
+    private static boolean isRetina() {
+        var isRetina = false;
+        GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        try {
+            //TODO: Illegal reflective access
+            var field = graphicsDevice.getClass().getDeclaredField("scale");
+            if (field != null) {
+                field.setAccessible(true);
+                Object scale = field.get(graphicsDevice);
+                if (scale instanceof Integer && (Integer) scale == 2) isRetina = true;
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return isRetina;
     }
 
     private class SpriteMouseAdapter extends MouseInputAdapter {

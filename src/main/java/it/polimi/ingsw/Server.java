@@ -13,6 +13,7 @@ import java.rmi.registry.LocateRegistry;
 public class Server {
     public static final int SOCKET_PORT = 0xCAFE;
     public static final int RMI_PORT = 0xBABE;
+
     public static final @NotNull String RMI_NAME = "adrenaline";
     public static final @NotNull ServerController controller = new ServerController();
 

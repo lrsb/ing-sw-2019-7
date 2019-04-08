@@ -14,7 +14,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class GameViewController extends BaseViewController implements SpriteBoardListener {
     private JPanel panel;
@@ -26,14 +25,8 @@ public class GameViewController extends BaseViewController implements SpriteBoar
         spriteBoard.setBoardListener(this);
         try {
             var sprite = new Sprite(0, 0, new Dimension(100, 100), () -> ImageIO.read(Client.class.getResourceAsStream("am.png")));
-            var sprite2 = new Sprite(0, 0, new Dimension(100, 150), () -> {
-                InputStream inputStream = Client.class.getResourceAsStream("vv.png");
-                return ImageIO.read(inputStream);
-            });
-            var sprite3 = new Sprite(400, 400, new Dimension(100, 150), () -> {
-                InputStream inputStream = Client.class.getResourceAsStream("vv.png");
-                return ImageIO.read(inputStream);
-            });
+            var sprite2 = new Sprite(0, 0, new Dimension(100, 150), () -> ImageIO.read(Client.class.getResourceAsStream("vv.png")));
+            var sprite3 = new Sprite(400, 400, new Dimension(100, 150), () -> ImageIO.read(Client.class.getResourceAsStream("vv.png")));
             sprite.setDraggable(true);
             sprite2.setDraggable(true);
             sprite3.setDraggable(true);

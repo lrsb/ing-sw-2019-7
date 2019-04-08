@@ -49,6 +49,9 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     break;
                 case ROOM_UPDATE:
                     executorService.submit(() -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, null, Server.controller.waitRoomUpdate(packet.getToken(), packet.getAssociatedObject(UUID.class)))));
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + packet.getType());
             }
         } catch (Exception e) {
             e.printStackTrace();

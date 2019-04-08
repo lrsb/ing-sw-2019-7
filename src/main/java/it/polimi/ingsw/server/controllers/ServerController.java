@@ -12,8 +12,8 @@ import java.util.UUID;
 
 //TODO: impl
 public class ServerController implements RmiAPI {
-    private static final @NotNull List<Room> rooms = new ArrayList<>();
-    private static final @NotNull List<Game> games = new ArrayList<>();
+    private final @NotNull List<Room> rooms = new ArrayList<>();
+    private final @NotNull List<Game> games = new ArrayList<>();
 
     @Override
     public @Nullable String authUser(@Nullable String nickname, @Nullable String password) {

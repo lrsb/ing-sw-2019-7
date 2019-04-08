@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * You can use NavigationController to create a root-child navigation behaviour between BaseViewController(s), with a LIFO logic.
  */
 public class NavigationController {
-    private @NotNull ArrayList<BaseViewController> viewControllers = new ArrayList<>();
+    private final @NotNull ArrayList<BaseViewController> viewControllers = new ArrayList<>();
 
     /**
      * Crate new NavigationController with as root specified.

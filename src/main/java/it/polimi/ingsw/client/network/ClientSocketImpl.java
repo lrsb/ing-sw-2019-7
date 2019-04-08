@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class ClientSocketImpl implements API, AdrenalineSocketListener {
-    private @NotNull AdrenalineSocket adrenalineSocket;
+    private final @NotNull AdrenalineSocket adrenalineSocket;
 
     private volatile @Nullable String authUser;
     private volatile @Nullable String createUser;

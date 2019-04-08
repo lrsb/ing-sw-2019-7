@@ -18,8 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ClientRmiImpl implements API {
-    private static final ExecutorService executorService = Executors.newCachedThreadPool();
-    private @NotNull RmiAPI rmiAPI;
+    private static final @NotNull ExecutorService executorService = Executors.newCachedThreadPool();
+    private final @NotNull RmiAPI rmiAPI;
     private volatile @Nullable GameListener gameListener;
     private volatile @Nullable RoomListener roomListener;
 
