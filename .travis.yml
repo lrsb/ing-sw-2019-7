@@ -1,8 +1,6 @@
 language: java
 jdk: openjdk11
 sudo: false
-env:
-  - LC_CTYPE=en_US.UTF-8 LANG=en_US.UTF-8
 before_install:
   - brew install sonarqube
   - sonar start
