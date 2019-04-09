@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="ing-sw-2019-7" />
+        <module name="swingproject" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ing-sw-2019-7" target="11" />
+      <module name="swingproject" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
