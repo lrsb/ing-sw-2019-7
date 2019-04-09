@@ -92,10 +92,10 @@ public class Game implements Serializable {
 
     @Contract(pure = true)
     private boolean canMove(@NotNull Point from, @NotNull Point to, int step, int maxStep) {
-        if (from.x < 0 || from.x >= cells.length || from.y < 0 || from.y >= cells[from.x].length) return false;
-        if (to.x < 0 || to.x >= cells.length || to.y < 0 || to.y >= cells[to.x].length) return false;
+        if (from.x < 0 || from.x >= cells.length || from.y < 0 || from.y >= cells[from.x].length ||
+                to.x < 0 || to.x >= cells.length || to.y < 0 || to.y >= cells[to.x].length || step >= maxStep)
+            return false;
         if (from.equals(to)) return true;
-        if (step >= maxStep) return false;
         var north = cells[from.x][from.y].getBounds().getType(Bounds.Direction.N) != Bounds.Type.WALL && canMove(new Point(from.x, to.y + 1), to, step + 1, maxStep);
         var south = cells[from.x][from.y].getBounds().getType(Bounds.Direction.N) != Bounds.Type.WALL && canMove(new Point(from.x, to.y - 1), to, step + 1, maxStep);
         var east = cells[from.x][from.y].getBounds().getType(Bounds.Direction.N) != Bounds.Type.WALL && canMove(new Point(from.x + 1, to.y), to, step + 1, maxStep);
