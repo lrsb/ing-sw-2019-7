@@ -55,9 +55,11 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="e4003" class="javax.swing.JTable" binding="table1" default-binding="true">
+          <component id="e4003" class="javax.swing.JTable" binding="table">
             <constraints/>
-            <properties/>
+            <properties>
+              <autoResizeMode value="4"/>
+            </properties>
           </component>
         </children>
       </scrollpane>

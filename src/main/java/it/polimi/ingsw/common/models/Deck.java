@@ -12,6 +12,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * This class is composed of three deck that contains the playable, exited ( on the game board or in players' hand)
+ * and discarded (already used and need to be reshuffled) cards.
+ * @param <T> Indicate the type of cards in the deck.
+ */
 public class Deck<T> implements Serializable {
     private final @NotNull ArrayList<T> playableCards = new ArrayList<>();
     private final @NotNull ArrayList<T> exitedCards = new ArrayList<>();
@@ -23,6 +28,11 @@ public class Deck<T> implements Serializable {
         this.shuffleable = shuffleable;
     }
 
+    /**
+     * This method move a card from the playable deck to the discarded one.
+     * @return The discarded card.
+     * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shufflable.
+     */
     public @NotNull T discardCard() throws EmptyDeckException {
         if (playableCards.isEmpty()) shuffleDeck();
         var discardedCard = playableCards.remove(0);
@@ -30,6 +40,12 @@ public class Deck<T> implements Serializable {
         return discardedCard;
     }
 
+    /**
+     * This method is used to remove a card from playable deck and
+     * (ex: replacement of card that are on the ground)
+     * @return Name of exited card
+     * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shufflable.
+     */
     public @NotNull T exitCard() throws EmptyDeckException {
         if (playableCards.isEmpty()) shuffleDeck();
         var exitedCard = playableCards.remove(0);
@@ -37,6 +53,12 @@ public class Deck<T> implements Serializable {
         return exitedCard;
     }
 
+    /**
+     * This method is used when more cards are removed from playable card deck adding them to the exited one
+     * @param n Number of card that you have to remove from the deck.
+     * @return List of card removed from the deck.
+     * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shufflable.
+     */
     public @NotNull List<T> exitCards(int n) throws EmptyDeckException {
         if (playableCards.isEmpty()) shuffleDeck();
         var list = new ArrayList<T>();
@@ -48,6 +70,10 @@ public class Deck<T> implements Serializable {
         return list;
     }
 
+    /**
+     * This method is used when an exited card is used, it will be added to discarded card deck.
+     * @param exitedCard Name of the card that has been used.
+     */
     public void discardCard(@NotNull T exitedCard) {
         if (exitedCards.indexOf(exitedCard) >= 0) exitedCards.remove(exitedCard);
         discardedCards.add(exitedCard);
