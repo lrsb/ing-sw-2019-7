@@ -5,18 +5,21 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Deck<T> {
-    private @NotNull ArrayList<T> playableCards = new ArrayList<>();
-    private @NotNull ArrayList<T> exitedCards = new ArrayList<>();
-    private @NotNull ArrayList<T> discardedCards = new ArrayList<>();
-    private boolean shufflable;
+    private final @NotNull ArrayList<T> playableCards = new ArrayList<>();
+    private final @NotNull ArrayList<T> exitedCards = new ArrayList<>();
+    private final @NotNull ArrayList<T> discardedCards = new ArrayList<>();
+    private final boolean shuffleable;
 
-    private Deck(@NotNull ArrayList<T> cards, boolean shufflable) {
+    private Deck(@NotNull ArrayList<T> cards, boolean shuffleable) {
         playableCards.addAll(cards);
-        this.shufflable = shufflable;
+        this.shuffleable = shuffleable;
     }
 
     public @NotNull T discardCard() throws EmptyDeckException {
@@ -50,7 +53,7 @@ public class Deck<T> {
     }
 
     private void shuffleDeck() throws EmptyDeckException {
-        if (!shufflable) throw new EmptyDeckException();
+        if (!shuffleable) throw new EmptyDeckException();
         playableCards.addAll(discardedCards);
         discardedCards.clear();
         Collections.shuffle(playableCards);
@@ -64,7 +67,37 @@ public class Deck<T> {
         //TODO: implementare tutto quanto
         @Contract(" -> new")
         public static @NotNull Deck<AmmoCard> newAmmoDeck() {
-            return new Deck<>(new ArrayList<>(), true);
+            return new Deck<>(new ArrayList<>(Arrays.asList(
+                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
+                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.RED, AmmoCard.Color.RED),
+                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
+                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
+                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
+                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.RED, AmmoCard.Color.RED),
+                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
+                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.RED, AmmoCard.Color.RED),
+                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
+                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
+                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
+                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.RED, AmmoCard.Color.RED),
+                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
+                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.RED, AmmoCard.Color.RED),
+                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
+                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
+                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
+                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.RED, AmmoCard.Color.RED),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.RED),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.RED),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.BLUE),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.RED),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.RED),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE),
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.BLUE))), true);
         }
 
         @Contract(" -> new")
@@ -74,7 +107,9 @@ public class Deck<T> {
 
         @Contract(" -> new")
         public static @NotNull Deck<Weapon> newWeaponsDeck() {
-            return new Deck<>(new ArrayList<>(), true);
+            return new Deck<>(new ArrayList<>(Stream.of(Weapon.Name.values())
+                    .map(e -> new Weapon(e, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()))
+                    .collect(Collectors.toList())), false);
         }
     }
 }

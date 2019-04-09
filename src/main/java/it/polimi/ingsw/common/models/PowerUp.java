@@ -1,25 +1,41 @@
 package it.polimi.ingsw.common.models;
 
+import it.polimi.ingsw.client.views.Displayable;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class PowerUp {
-    private AmmoCard.Color ammoColor;
-    private Type type;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+public class PowerUp implements Displayable {
+    private @NotNull AmmoCard.Color ammoColor;
+    private @NotNull Type type;
+    private @Nullable BufferedImage bufferedImage;
 
     @Contract(pure = true)
-    public PowerUp(AmmoCard.Color ammoColor, Type type) {
+    public PowerUp(@NotNull AmmoCard.Color ammoColor, @NotNull Type type) {
         this.ammoColor = ammoColor;
         this.type = type;
     }
 
     @Contract(pure = true)
-    public AmmoCard.Color getAmmoColor() {
+    public @NotNull AmmoCard.Color getAmmoColor() {
         return ammoColor;
     }
 
     @Contract(pure = true)
-    public Type getType() {
+    public @NotNull Type getType() {
         return type;
+    }
+
+    @Override
+    public @NotNull BufferedImage getImage() throws IOException {
+        if (bufferedImage == null)
+            bufferedImage = ImageIO.read(AmmoCard.class.getResourceAsStream("PowerUp/" + type.name().substring(0, 3) +
+                    ammoColor.name().substring(0, 1) + ".png"));
+        return bufferedImage;
     }
 
     enum Type {

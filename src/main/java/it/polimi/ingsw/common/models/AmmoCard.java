@@ -39,7 +39,9 @@ public class AmmoCard implements Displayable {
 
     @Override
     public @NotNull BufferedImage getImage() throws IOException {
-        if (bufferedImage == null) bufferedImage = ImageIO.read(AmmoCard.class.getResourceAsStream("card.png"));
+        if (bufferedImage == null)
+            bufferedImage = ImageIO.read(AmmoCard.class.getResourceAsStream("AmmoCard/" + type.name().substring(0, 1) +
+                    left.name().substring(0, 1) + right.name().substring(0, 1) + ".png"));
         return bufferedImage;
     }
 
