@@ -69,8 +69,8 @@ public class Deck<T> {
         return list;
     }
 
-    /**This method is used when an exited card is used, it will be added to discarded card deck
-     *
+    /**
+     *This method is used when an exited card is used, it will be added to discarded card deck.
      * @param exitedCard Name of the card that has been used.
      */
     public void discardCard(@NotNull T exitedCard) {
