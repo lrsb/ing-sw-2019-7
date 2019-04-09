@@ -20,6 +20,14 @@ public class Cell {
         this.ammoCard = ammoCard;
     }
 
+    public Color getColor() {
+        return color;
+    }
+
+    public Bounds getBounds() {
+        return bounds;
+    }
+
     public enum Color {
         WHITE, BLUE, RED, PURPLE, YELLOW, GREEN
     }

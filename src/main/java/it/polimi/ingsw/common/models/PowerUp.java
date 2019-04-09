@@ -38,6 +38,13 @@ public class PowerUp implements Displayable {
         return bufferedImage;
     }
 
+    @Contract(value = "null -> false", pure = true)
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PowerUp) return ammoColor == ((PowerUp) obj).ammoColor && type == ((PowerUp) obj).type;
+        else return false;
+    }
+
     enum Type {
         TARGETING_SCOPE, NEWTON, TAGBACK_GRANADE, TELEPORTER
     }

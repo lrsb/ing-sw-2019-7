@@ -45,7 +45,7 @@ public class AmmoCard implements Displayable {
         return bufferedImage;
     }
 
-    enum Type {
+    public enum Type {
         RED, YELLOW, BLUE, POWER_UP
     }
 

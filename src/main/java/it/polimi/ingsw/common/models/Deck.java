@@ -4,6 +4,7 @@ import it.polimi.ingsw.common.models.exceptions.EmptyDeckException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Deck<T> {
+public class Deck<T> implements Serializable {
     private final @NotNull ArrayList<T> playableCards = new ArrayList<>();
     private final @NotNull ArrayList<T> exitedCards = new ArrayList<>();
     private final @NotNull ArrayList<T> discardedCards = new ArrayList<>();
@@ -64,7 +65,6 @@ public class Deck<T> {
         private Creator() {
         }
 
-        //TODO: implementare tutto quanto
         @Contract(" -> new")
         public static @NotNull Deck<AmmoCard> newAmmoDeck() {
             return new Deck<>(new ArrayList<>(Arrays.asList(
