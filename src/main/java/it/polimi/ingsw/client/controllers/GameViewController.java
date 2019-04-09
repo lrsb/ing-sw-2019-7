@@ -1,16 +1,14 @@
 package it.polimi.ingsw.client.controllers;
 
-import it.polimi.ingsw.Client;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
-import it.polimi.ingsw.client.views.interpolator.ExponentialInterpolator;
-import it.polimi.ingsw.client.views.interpolator.LinearInterpolator;
 import it.polimi.ingsw.client.views.sprite.Sprite;
 import it.polimi.ingsw.client.views.sprite.SpriteBoard;
 import it.polimi.ingsw.client.views.sprite.SpriteBoardListener;
+import it.polimi.ingsw.common.models.Deck;
+import it.polimi.ingsw.common.models.exceptions.EmptyDeckException;
 import org.jetbrains.annotations.NotNull;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -24,23 +22,17 @@ public class GameViewController extends BaseViewController implements SpriteBoar
         setContentPane(panel);
         spriteBoard.setBoardListener(this);
         try {
-            var sprite = new Sprite(0, 0, new Dimension(100, 100), () -> ImageIO.read(Client.class.getResourceAsStream("am.png")));
-            var sprite2 = new Sprite(0, 0, new Dimension(100, 150), () -> ImageIO.read(Client.class.getResourceAsStream("vv.png")));
-            var sprite3 = new Sprite(400, 400, new Dimension(100, 150), () -> ImageIO.read(Client.class.getResourceAsStream("vv.png")));
-            sprite.setDraggable(true);
-            sprite2.setDraggable(true);
-            sprite3.setDraggable(true);
-            spriteBoard.addSprite(sprite);
-            spriteBoard.addSprite(sprite2);
-            spriteBoard.addSprite(sprite3);
-            sprite.moveTo(new LinearInterpolator(sprite.getPosition(), System.currentTimeMillis(), new Point(300, 300), 2000) {
-                @Override
-                public void onInterpolationCompleted() {
-                    sprite.remove();
+            var deck = Deck.Creator.newAmmoDeck();
+            for (int i = 0; i < 10; i++) {
+                try {
+                    var card = deck.discardCard();
+                    var sprite = new Sprite(0, 0, new Dimension(100, 100), card);
+                    sprite.setDraggable(true);
+                    spriteBoard.addSprite(sprite);
+                } catch (EmptyDeckException e) {
+                    e.printStackTrace();
                 }
-            });
-            sprite2.moveTo(new ExponentialInterpolator(sprite.getPosition(), System.currentTimeMillis(), new Point(500, 300), 2000) {
-            });
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
