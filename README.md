@@ -1,5 +1,6 @@
 # Ingegneria del Software project
 [![Build Status](https://travis-ci.com/lrsb/ing-sw-2019-7.svg?token=yNsiH96VqTJK1Jj3JizM&branch=master)](https://travis-ci.com/lrsb/ing-sw-2019-7)
+[![codecov](https://codecov.io/gh/lrsb/ing-sw-2019-7/branch/master/graph/badge.svg?token=6YTvlx9C3r)](https://codecov.io/gh/lrsb/ing-sw-2019-7)
 [![Known Vulnerabilities](https://snyk.io/test/github/lrsb/ing-sw-2019-7/badge.svg)](https://snyk.io/test/github/lrsb/ing-sw-2019-7)
 
 A Java implementation of Adrenaline board game, for [085923 - PROVA FINALE (PROGETTO DI INGEGNERIA DEL SOFTWARE)][1].
