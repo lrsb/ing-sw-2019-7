@@ -16,6 +16,7 @@ public class Server {
 
     public static final @NotNull String RMI_NAME = "adrenaline";
     public static final @NotNull ServerController controller = new ServerController();
+    //public static final @NotNull MongoDatabase mongoDatabase = new MongoClient(new MongoClientURI(System.getenv().get("MONGODB_URI"))).getDatabase(RMI_NAME);
 
     public static void main(String[] args) throws IOException {
         if (args != null) for (var arg : args) {

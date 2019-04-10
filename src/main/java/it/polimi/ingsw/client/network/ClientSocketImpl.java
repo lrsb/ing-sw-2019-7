@@ -24,6 +24,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     private volatile @Nullable Room joinRoom;
     private volatile @Nullable Room createRoom;
     private volatile @Nullable UUID startGame;
+    private volatile @Nullable Boolean doMove;
     private volatile @Nullable String gameToken;
     private volatile @Nullable String roomToken;
     private volatile @Nullable GameListener gameListener;
@@ -83,8 +84,11 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     }
 
     @Override
-    public void doMove(@NotNull String token, @NotNull Object move) {
+    public boolean doMove(@NotNull String token, @NotNull Object move) {
+        doMove = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.DO_MOVE, token, move));
+        while (doMove == null) wait1ms();
+        return Optional.ofNullable(doMove).orElse(false);
     }
 
     @Override
@@ -134,6 +138,9 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                     break;
                 case START_GAME:
                     startGame = packet.getAssociatedObject(UUID.class);
+                    break;
+                case DO_MOVE:
+                    doMove = packet.getAssociatedObject(boolean.class);
                     break;
                 case GAME_UPDATE:
                     Game game = packet.getAssociatedObject(Game.class);

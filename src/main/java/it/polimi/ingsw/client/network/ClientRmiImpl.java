@@ -59,8 +59,8 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
-    public void doMove(@NotNull String token, @NotNull Object move) throws RemoteException {
-        rmiAPI.doMove(token, move);
+    public boolean doMove(@NotNull String token, @NotNull Object move) throws RemoteException {
+        return rmiAPI.doMove(token, move);
     }
 
     @Override

@@ -48,8 +48,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements RmiAPI {
     }
 
     @Override
-    public void doMove(@NotNull String token, @NotNull Object move) {
-        Server.controller.doMove(token, move);
+    public boolean doMove(@NotNull String token, @NotNull Object move) {
+        return Server.controller.doMove(token, move);
     }
 
     @Override

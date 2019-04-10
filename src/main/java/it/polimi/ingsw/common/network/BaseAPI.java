@@ -22,5 +22,5 @@ public interface BaseAPI extends Remote {
 
     @Nullable UUID startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
 
-    void doMove(@NotNull String token, @NotNull Object move) throws RemoteException;
+    boolean doMove(@NotNull String token, @NotNull Object move) throws RemoteException;
 }

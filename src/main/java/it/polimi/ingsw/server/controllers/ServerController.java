@@ -60,9 +60,9 @@ public class ServerController implements RmiAPI {
     }
 
     @Override
-    public void doMove(@Nullable String token, @Nullable Object move) {
+    public boolean doMove(@Nullable String token, @Nullable Object move) {
         var user = SecureUserController.getUser(token);
-        if (user == null) return;
+        return user == null;
     }
 
     @Override
