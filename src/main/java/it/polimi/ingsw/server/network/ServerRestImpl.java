@@ -15,19 +15,6 @@ public class ServerRestImpl extends NanoHTTPD {
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
     }
 
-    private static final @NotNull String DEF_RESPONSE = "<!doctype html>\n" +
-            "<head>\n" +
-            "  <meta charset=\"utf-8\">\n" +
-            "  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\">\n" +
-            "  <title></title>\n" +
-            "  <meta name=\"description\" content=\"\">\n" +
-            "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" +
-            "</head>\n" +
-            "<body>\n" +
-            "  <p>Hello world!</p>\n" +
-            "</body>\n" +
-            "</html>";
-
     private static @NotNull Response newJsonResponse(@Nullable Object object) {
         return object != null ? NanoHTTPD.newFixedLengthResponse(new Gson().toJson(object)) : newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, null);
     }
@@ -40,8 +27,7 @@ public class ServerRestImpl extends NanoHTTPD {
             switch (session.getUri()) {
                 case "":
                 case "/":
-                    newFixedLengthResponse(DEF_RESPONSE);
-                    break;
+                    return newFixedLengthResponse("Running!");
                 case "/authUser":
                     if (method == Method.POST)
                         return newJsonResponse(Server.controller.authUser(session.getParameters().get("nickname").get(0), session.getParameters().get("password").get(0)));
@@ -76,13 +62,10 @@ public class ServerRestImpl extends NanoHTTPD {
                 case "/roomUpdate":
                     if (method == Method.GET)
                         return newJsonResponse(Server.controller.waitRoomUpdate(token, UUID.fromString(session.getParameters().get("uuid").get(0))));
-                    break;
-                default:
-                    newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, null);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, null);
+        return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
     }
 }
