@@ -1,1 +1,1 @@
-web: java -cp -Dserver.port=$PORT target/classes/:target/dependency/* it.polimi.ingsw.Server -h
+web: java -cp target/classes/:target/dependency/* -Dserver.port=$PORT it.polimi.ingsw.Server -h
