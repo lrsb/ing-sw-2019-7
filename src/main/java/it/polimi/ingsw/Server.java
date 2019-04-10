@@ -18,7 +18,7 @@ public class Server {
     public static final @NotNull ServerController controller = new ServerController();
 
     public static void main(String[] args) throws IOException {
-        if (args != null) for (var arg : args)
+        if (args != null) for (var arg : args) {
             switch (arg) {
                 case "-h":
                     new ServerRestImpl();
@@ -31,6 +31,7 @@ public class Server {
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + arg);
+            }
         }
     }
 }
