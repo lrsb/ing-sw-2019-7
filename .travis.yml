@@ -7,8 +7,3 @@ script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash) -t 67b28199-7915-444e-899c-2f8114b9c309
-
-deploy:
-  provider: heroku
-  api_key:
-    secure: tw/13YFZx/BtNqZ3jc5RyNlWZaTW9TMgVdf7jBsrEXHtQFHAzQGnLUQe413loCN8oCOnGlfmV5JvZ73hVvm0YcKD3jB5DKzk28L/wXdnj73OGjmfPFDcEmreuMU55Tg5NGXys3z6VX4pvQD3ZNWPajo7Hfemy7RdghPwbscYiSHoS6uojeqRHg0aLb7GdaSXtca8rSpVdZv/opUePGXBiFWE9UCCPzF6itTHvCGHpsZYAyD9INEFHw6IWYEUsCfFtKoxzSX8YbFx2nW1ReV0UzjU84fn9aym8ji+bJJg/XC0hg33UggYnxGNesX0NJ0QzzjVtKi+8+yRfa2K0e1YvZuG88CDaHpkmiIKWWhbdajEYOcHeD1KgVNQammZFRooamdzg/6Y5L3mUq2CJngsEvEwLJ+6DGY4JfKiKTZe/hel8lk0AWTD3TUyvKexe4jE4YARc1wRILI4dlUu3T2znHky2yUbiTIAfeoUe1CKmyU/9+joaLXJM+JUriR2QzekJeQv49j18VC7/UXyef7BssPDFjk/n+OZ9pqD+Y09uqCKL7d6DPqHSqEu404g0bKAMi1k5vzWBQeyWQUbxnaH54Nu+lRvxIcqYhocDydjakeXHoRryHj4Qo2nlJWs1qkPXLuhtkdJ51DvLLat4J8/i8ZBB1PQVkLMfeicbuovppg=
