@@ -28,8 +28,8 @@ public class ClientRestImpl implements API {
     private volatile @Nullable RoomListener roomListener;
 
     @Contract(pure = true)
-    public ClientRestImpl(@NotNull String ip) {
-        this.host = new HttpHost(ip);
+    public ClientRestImpl(@NotNull String hostname) {
+        this.host = new HttpHost(hostname, 443, "https");
     }
 
     @Override

@@ -1,8 +1,9 @@
 package it.polimi.ingsw.common.models;
 
-import it.polimi.ingsw.common.models.wrappers.Triplet;
+import it.polimi.ingsw.common.models.exceptions.EmptyDeckException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -11,13 +12,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Game implements Serializable {
-    private static final int MAX_PLAYERS = 5;
+    public static final int MAX_PLAYERS = 5;
+    public static final int MIN_PLAYERS = 3;
 
-    private @NotNull UUID uuid = UUID.randomUUID();
-    private Cell[][] cells;//x,y
+    private static final int MAX_X = 4;
+    private static final int MAX_Y = 3;
+
+    private @NotNull UUID uuid;
+    private Cell[][] cells;
     private ArrayList<Player> players = new ArrayList<>();
     private int seqPlay = 0;
 
@@ -25,19 +29,20 @@ public class Game implements Serializable {
 
     private transient Deck<AmmoCard> ammoDeck = Deck.Creator.newAmmoDeck();
     private transient Deck<PowerUp> powerUpsDeck = Deck.Creator.newPowerUpsDeck();
-    private transient Deck<Weapon> weaponsDeck = Deck.Creator.newWeaponsDeck();
+    private transient Deck<Weapon.Name> weaponsDeck = Deck.Creator.newWeaponsDeck();
 
-    private Triplet<Weapon> redWeapons;
-    private Triplet<Weapon> blueWeapons;
-    private Triplet<Weapon> yellowWeapons;
+    private ArrayList<Weapon.Name> redWeapons;
+    private ArrayList<Weapon.Name> blueWeapons;
+    private ArrayList<Weapon.Name> yellowWeapons;
     private transient List<PowerUp> exitedPowerUps;
 
-    private Game(@NotNull Cell[][] cells, @NotNull List<Player> players) {
+    private Game(@NotNull UUID uuid, @NotNull Cell[][] cells, @NotNull List<Player> players) {
+        this.uuid = uuid;
         this.cells = cells;
         this.players.addAll(players);
-        redWeapons = new Triplet<>(weaponsDeck.exitCards(3));
-        blueWeapons = new Triplet<>(weaponsDeck.exitCards(3));
-        yellowWeapons = new Triplet<>(weaponsDeck.exitCards(3));
+        redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(ammoDeck.exitCard())));
 
     }
@@ -73,7 +78,7 @@ public class Game implements Serializable {
             for (int j = 0; j < cells[i].length; j++) {
                 if (cells[i][j].isSpawnPoint() && cells[i][j].getColor().name().equals(cardToKeep.getAmmoColor().name())) {
                     getActualPlayer().setPosition(new Point(i, j));
-                    seqPlay++;
+                    nextTurn();
                     return;
                 }
             }
@@ -106,8 +111,43 @@ public class Game implements Serializable {
     //RUN AROUND - End
     //GRAB STUFF - Start
 
+    public boolean grabIn(@NotNull Point point, @Nullable Weapon weapon) {
+        assert point.x >= 0 && point.x < MAX_X && point.y >= 0 && point.y < MAX_Y;
+        if (!canMove(getActualPlayer().getPosition(), point, 0, 1)) return false;
+        getActualPlayer().setPosition(point);
+        //TODO: pay cost
+        if (cells[point.x][point.y].isSpawnPoint()) switch (cells[point.x][point.y].getColor()) {
+            case BLUE:
+                if (blueWeapons.remove(weapon)) getActualPlayer().addWeapon(weapon);
+                return true;
+            case RED:
+                if (redWeapons.remove(weapon)) getActualPlayer().addWeapon(weapon);
+                return true;
+            case YELLOW:
+                if (yellowWeapons.remove(weapon)) getActualPlayer().addWeapon(weapon);
+                return true;
+            default:
+                return false;
+        }
+        else getActualPlayer().addAmmoCard(cells[point.x][point.y].getAmmoCard());
+        return true;
+    }
 
     //GRAB STUFF - End
+
+    private void nextTurn() {
+        for (var cells : cells)
+            for (var cell : cells)
+                if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
+        try {
+            while (redWeapons.size() < 3) redWeapons.add(weaponsDeck.exitCard());
+            while (blueWeapons.size() < 3) blueWeapons.add(weaponsDeck.exitCard());
+            while (yellowWeapons.size() < 3) yellowWeapons.add(weaponsDeck.exitCard());
+        } catch (EmptyDeckException e) {
+            e.printStackTrace();
+        }
+        seqPlay++;
+    }
 
     public static class Creator {
         @Contract(pure = true)
@@ -115,15 +155,15 @@ public class Game implements Serializable {
         }
 
         @Contract("_ -> new")
-        public static @NotNull Game newGame(@NotNull User... users) {
-            assert users.length < MAX_PLAYERS;
-            var cells = new Cell[4][3];
+        public static @NotNull Game newGame(@NotNull UUID roomUuid, @NotNull List<User> users) {
+            assert users.size() >= MIN_PLAYERS && users.size() < MAX_PLAYERS;
+            var cells = new Cell[MAX_X][MAX_Y];
             for (var i = 0; i < cells.length; i++) {
                 for (var j = 0; j < cells[i].length; j++) {
                     cells[i][j] = Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
                 }
             }
-            return new Game(cells, Stream.of(users).map(e -> new Player(e.getNickname())).collect(Collectors.toList()));
+            return new Game(roomUuid, cells, users.stream().map(e -> new Player(e.getNickname())).collect(Collectors.toList()));
         }
     }
 }

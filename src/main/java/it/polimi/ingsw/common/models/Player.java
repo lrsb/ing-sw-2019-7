@@ -13,6 +13,7 @@ public class Player {
     private int[] cubes = {3, 3, 3}; //r, y, b
     private ArrayList<PowerUp> powerUps = new ArrayList<>();//3 al massimo e consumabili
     private ArrayList<Weapon> weapons = new ArrayList<>();//3 al massimo e scambiabili
+    private ArrayList<AmmoCard> ammoCards = new ArrayList<>();
     private boolean isFirstMove = true;
 
     public Player(String name){
@@ -30,6 +31,16 @@ public class Player {
     public void addPowerUp(PowerUp powerUp) {
         assert powerUps.size() < 3;
         powerUps.add(powerUp);
+    }
+
+    public void addWeapon(Weapon weapon) {
+        assert weapons.size() < 3;
+        weapons.add(weapon);
+    }
+
+    public void addAmmoCard(AmmoCard ammoCard) {
+        assert ammoCards.size() < 3;
+        ammoCards.add(ammoCard);
     }
 
     public List<PowerUp> getPowerUps() {

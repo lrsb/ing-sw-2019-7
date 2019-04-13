@@ -11,12 +11,15 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerSocketImpl implements AdrenalineServerSocketListener, AdrenalineSocketListener {
     private static final @NotNull ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Override
     public void onNewPacket(@NotNull AdrenalineSocket socket, @NotNull AdrenalinePacket packet) {
+        Logger.getLogger("socket").log(Level.INFO, "received: {0}", packet.getType());
         try {
             var token = packet.getToken();
             ArrayList<String> userInfo;
@@ -60,12 +63,12 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
 
     @Override
     public void onClose(@NotNull AdrenalineSocket socket) {
-        System.out.println("close: " + socket.getInetAddress().toString());
+        Logger.getLogger("socket").log(Level.INFO, "s_close: {0}", socket.getInetAddress());
     }
 
     @Override
     public void onNewSocket(@NotNull AdrenalineSocket socket) {
-        System.out.println("open: " + socket.getInetAddress().toString());
+        Logger.getLogger("socket").log(Level.INFO, "s_open: {0}", socket.getInetAddress());
         socket.setAdrenalineSocketListener(this);
     }
 }

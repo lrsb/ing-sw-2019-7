@@ -11,18 +11,14 @@ import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.security.SecureRandom;
 
-import static it.polimi.ingsw.Server.RMI_NAME;
-import static it.polimi.ingsw.Server.RMI_PORT;
-
 public class Client {
     public static void main(String[] args) throws IOException, NotBoundException {
         new NavigationController(MainViewController.class);
-        var hostname = "localhost";
-        var socket = new SecureRandom().nextBoolean();
-        var comm = socket ? new ClientSocketImpl(hostname) : new ClientRmiImpl(LocateRegistry.getRegistry(hostname, RMI_PORT).lookup(RMI_NAME));
-        var comm1 = new ClientRestImpl(hostname);
-        var token = comm1.createUser("ciao", "password");
-        var room = comm1.createRoom(token, "room");
+        var local = "localhost";
+        var comm = new SecureRandom().nextBoolean() ? new ClientSocketImpl(local) : new ClientRmiImpl(LocateRegistry.getRegistry(local, Server.RMI_PORT).lookup(Server.RMI_NAME));
+        var comm1 = new ClientRestImpl("ing-sw-2019-7.herokuapp.com");
+        var token = comm.authUser("lorenzo", "lorenzo");
+        var room = comm.createRoom(token, "room");
         System.out.println(room);
     }
 }

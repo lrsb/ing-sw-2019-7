@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerRestImpl extends NanoHTTPD {
     public ServerRestImpl() throws IOException {
@@ -21,6 +23,7 @@ public class ServerRestImpl extends NanoHTTPD {
 
     @Override
     public Response serve(@NotNull IHTTPSession session) {
+        Logger.getLogger("rest").log(Level.INFO, "request: {0}", session.getUri());
         try {
             var token = session.getHeaders().get("auth-token");
             var method = session.getMethod();
@@ -62,6 +65,9 @@ public class ServerRestImpl extends NanoHTTPD {
                 case "/roomUpdate":
                     if (method == Method.GET)
                         return newJsonResponse(Server.controller.waitRoomUpdate(token, UUID.fromString(session.getParameters().get("uuid").get(0))));
+                    break;
+                default:
+                    return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
             }
         } catch (Exception e) {
             e.printStackTrace();

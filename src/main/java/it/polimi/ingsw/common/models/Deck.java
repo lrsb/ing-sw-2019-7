@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This class is composed of three deck that contains the playable, exited ( on the game board or in players' hand)
@@ -132,10 +130,8 @@ public class Deck<T> implements Serializable {
         }
 
         @Contract(" -> new")
-        public static @NotNull Deck<Weapon> newWeaponsDeck() {
-            return new Deck<>(new ArrayList<>(Stream.of(Weapon.Name.values())
-                    .map(e -> new Weapon(e, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()))
-                    .collect(Collectors.toList())), false);
+        public static @NotNull Deck<Weapon.Name> newWeaponsDeck() {
+            return new Deck<>(new ArrayList<>(List.of(Weapon.Name.values())), false);
         }
     }
 }
