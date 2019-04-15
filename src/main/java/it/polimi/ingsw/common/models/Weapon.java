@@ -8,11 +8,16 @@ import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import static it.polimi.ingsw.common.models.AmmoCard.Color.*;
+
 public abstract class Weapon {
     private @NotNull Cell[][] cells;
     private @NotNull ArrayList<Player> players;
     private @NotNull Player shooter;
     private boolean alternativeFire;
+    //siccome si possono usare anche le powerups come ammo, se le metti, queste hanno la precedenza sul pagamento
+    private @NotNull ArrayList<PowerUp> alternativePayment;
+    private @NotNull ArrayList<AmmoCard.Color> basicPayment;
 
     private ArrayList<Player> basicTarget = new ArrayList<>();
     private ArrayList<Point> basicTargetPoint = new ArrayList<>();
@@ -22,11 +27,79 @@ public abstract class Weapon {
     private ArrayList<Point> secondAdditionalTargetPoint = new ArrayList<>();
 
     @Contract(pure = true)
-    public Weapon(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire) {
+    public Weapon(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
+                  boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
         this.cells = cells;
         this.players = players;
         this.shooter = shooter;
         this.alternativeFire = alternativeFire;
+        this.alternativePayment = alternativePayment;
+    }
+
+    public boolean charging(){
+        //red, blue e yellow avranno il valore del costo totale
+        //altNomeColore hanno il valore dei cubi che vengono invece pagati tramite PowerUp
+        int red = 0, yellow = 0, blue = 0, altRed = 0, altYellow = 0, altBlue = 0;
+        for (AmmoCard.Color c : basicPayment) {
+            switch (c){
+                case RED:
+                    red++;
+                    break;
+                case YELLOW:
+                    yellow++;
+                    break;
+                case BLUE:
+                    blue++;
+                    break;
+            }
+        }
+        for (PowerUp p : alternativePayment) {
+            switch (p.getAmmoColor()){
+                case RED:
+                    if(red > altRed) altRed++;
+                    break;
+                case YELLOW:
+                    if(yellow > altYellow) altYellow++;
+                    break;
+                case BLUE:
+                    if(blue > altBlue) altBlue++;
+                    break;
+            }
+        }
+        if(shooter.getColoredCubes(RED) >= red - altRed
+                && shooter.getColoredCubes(YELLOW) >= yellow - altYellow
+                && shooter.getColoredCubes(BLUE) >= blue - altBlue) {
+            for (PowerUp p : alternativePayment) {
+                switch (p.getAmmoColor()){
+                    case RED:
+                        if(altRed > 0){
+                            shooter.removePowerUp(p);
+                            altRed--;
+                            red--;
+                        }
+                        break;
+                    case YELLOW:
+                        if(altYellow > 0){
+                            shooter.removePowerUp(p);
+                            altYellow--;
+                            yellow--;
+                        }
+                        break;
+                    case BLUE:
+                        if(altBlue > 0){
+                            shooter.removePowerUp(p);
+                            altBlue--;
+                            blue--;
+                        }
+                        break;
+                }
+            }
+            shooter.removeColoredCubes(RED, red);
+            shooter.removeColoredCubes(YELLOW, yellow);
+            shooter.removeColoredCubes(BLUE, blue);
+            return true;
+        }
+        return false;
     }
 
     public void addBasicTarget(@Nullable Player target, @Nullable Point point) {
@@ -80,20 +153,40 @@ public abstract class Weapon {
     }
 
     public class LockRifle extends Weapon {
-        public LockRifle(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire) {
-            super(cells, players, shooter, alternativeFire);
+        public LockRifle(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
+                         boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
+            super(cells, players, shooter, alternativeFire, alternativePayment);
+            basicPayment.add(BLUE);
+            basicPayment.add(BLUE);
         }
 
         @Override
         public boolean basicFire() {
-            return shooter.canSee(players.get(0), cells);
+            if(shooter.canSee(players.get(0), cells)){
+                players.get(0).addShooterHits(shooter, 2);
+                players.get(0).convertShooterMarks(shooter);
+                players.get(0).addShooterMarks(shooter, 1);
+                return true;
+            }
+            return false;
         }
 
         @Override
         public boolean firstAdditionalFire() {
-            return (basicFire() &&
-                    shooter.canSee(players.get(1), cells) &&
-                    shooter.getColoredCubes(0)>=1);
+            int toPay = 1;
+            if(alternativePayment.get(0).getAmmoColor() == RED){
+                toPay = 0;
+            }
+            if (basicFire() && shooter.canSee(players.get(1), cells) && shooter.getColoredCubes(RED) >= toPay){
+                if(toPay == 0){
+                    shooter.removePowerUp(alternativePayment.get(0));
+                } else {
+                    shooter.removeColoredCubes(RED, toPay);
+                }
+                players.get(1).addShooterMarks(shooter, 1);
+                return true;
+            }
+            return false;
         }
 
         @Override
@@ -103,8 +196,11 @@ public abstract class Weapon {
     }
 
     public class MachineGun extends Weapon {
-        public MachineGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire) {
-            super(cells, players, shooter, alternativeFire);
+        public MachineGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
+                          boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
+            super(cells, players, shooter, alternativeFire, alternativePayment);
+            basicPayment.add(BLUE);
+            basicPayment.add(RED);
         }
 
         //per vedere se funziona basta che un giocatore sia visibile, ma potrebbe anche colpirne un secondo che vede
@@ -115,7 +211,7 @@ public abstract class Weapon {
 
         @Override
         public boolean firstAdditionalFire() {
-            return (basicFire() && shooter.getColoredCubes(1)>=1);
+            return (basicFire() && shooter.getColoredCubes(YELLOW)>=1);
         }
 
         //qui controllo che sia colpibile anche un secondo bersaglio
@@ -124,13 +220,16 @@ public abstract class Weapon {
             return firstAdditionalFire() &&
                     shooter.canSee(players.get(1), cells) &&
                     shooter.canSee(players.get(2), cells) &&
-                    shooter.getColoredCubes(2)>=1;
+                    shooter.getColoredCubes(BLUE)>=1;
         }
     }
 
     public class THOR extends Weapon {
-        public THOR(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire){
-            super(cells, players, shooter, alternativeFire);
+        public THOR(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
+                    boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment){
+            super(cells, players, shooter, alternativeFire, alternativePayment);
+            basicPayment.add(BLUE);
+            basicPayment.add(RED);
         }
 
         @Override
@@ -146,8 +245,9 @@ public abstract class Weapon {
     }
 
     public class PlasmaGun extends Weapon {
-        public PlasmaGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire){
-            super(cells, players, shooter, alternativeFire);
+        public PlasmaGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
+                         boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment){
+            super(cells, players, shooter, alternativeFire, alternativePayment);
         }
 
         @Override

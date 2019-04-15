@@ -75,6 +75,18 @@ public class AmmoCard implements Displayable {
     }
 
     public enum Color {
-        RED, YELLOW, BLUE
+        RED(0), YELLOW(1), BLUE(2);
+
+        private int colorNumber;
+
+        @Contract(pure = true)
+        Color(int colorNumber){
+            this.colorNumber = colorNumber;
+        }
+
+        @Contract(pure = true)
+        int getColorNumber(){
+            return colorNumber;
+        }
     }
 }

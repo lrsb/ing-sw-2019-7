@@ -10,17 +10,69 @@ import java.util.List;
 public class Player {
     private String name;
     private Point position;
-    private ArrayList<Player> hitsTaken = new ArrayList<>();
+    private ArrayList<String> hitsTaken = new ArrayList<>();
+    private ArrayList<String> marksTaken = new ArrayList<>();
     private int deaths = 0;
     private int points = 0;
     private int[] cubes = {3, 3, 3}; //r, y, b
     private ArrayList<PowerUp> powerUps = new ArrayList<>();//3 al massimo e consumabili
     private ArrayList<Weapon> weapons = new ArrayList<>();//3 al massimo e scambiabili
+    private boolean[] isReloaded = {true, true, true};
     private ArrayList<AmmoCard> ammoCards = new ArrayList<>();
     private boolean isFirstMove = true;
 
     public Player(String name){
         this.name = name;
+    }
+
+    public void addShooterHits(@NotNull Player shooter, int hits){
+        for(int c=0; c<hits; c++){
+            if(hitsTaken.size()<12) this.hitsTaken.add(shooter.name);
+        }
+    }
+
+    //use this at each other's player end turn
+    public boolean amIDead() {
+        return hitsTaken.size()>=11;
+    }
+
+    //controllo se l'arma che vuole caricare sia in suo possesso e che non sia già carica
+    public boolean reload(Weapon.Name weapon){
+        for (Weapon w : weapons) {
+            if(w.getClass().equals(weapon.getWeaponClass()) && !(isReloaded[weapons.indexOf(w)])){
+                if(w.charging()){
+                    isReloaded[weapons.indexOf(w)] = true;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //distributes points to other players
+    public void death(){
+        if(amIDead()){
+            //TODO redistributing points to players
+            hitsTaken.clear();
+            marksTaken.clear();
+            deaths++;
+        }
+    }
+
+    public void addShooterMarks(@NotNull Player shooter, int marks) {
+        for(int c=0; c<marks; c++) {
+            this.marksTaken.add(shooter.name);
+        }
+    }
+
+    //when a hit is taken from another player converts all shooter's marks in hits
+    public void convertShooterMarks(@NotNull Player shooter) {
+        for (String s : this.marksTaken) {
+            if(s.equals(shooter.name)){
+                this.marksTaken.remove(s);
+                addShooterHits(shooter, 1);
+            }
+        }
     }
 
     public void setPlayed() {
@@ -31,8 +83,19 @@ public class Player {
         return isFirstMove;
     }
 
-    public int getColoredCubes(int index){
-        return cubes[index];
+    public int getColoredCubes(@NotNull AmmoCard.Color color){
+        return cubes[color.getColorNumber()];
+    }
+
+    //removes ammos when player has to pay a cost
+    //!!!A PLAYER CAN PAY EVEN WITH POWERUPS!!!
+    public void removeColoredCubes(@NotNull AmmoCard.Color color, int number){
+        cubes[color.getColorNumber()] -= number;
+    }
+
+    public void removePowerUp(@NotNull PowerUp powerUp){
+        powerUps.remove(powerUp);
+        //TODO spostare powerUps nelle carte scartate
     }
 
     public void addPowerUp(PowerUp powerUp) {
