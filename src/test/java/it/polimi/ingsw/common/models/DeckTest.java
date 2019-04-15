@@ -4,10 +4,6 @@ import org.junit.jupiter.api.Test;
 
 class DeckTest {
     @Test
-    void testWeapons() {
-    }
-
-    @Test
     void discardCard() {
     }
 
@@ -17,9 +13,5 @@ class DeckTest {
 
     @Test
     void exitCards() {
-    }
-
-    @Test
-    void discardCard1() {
     }
 }
