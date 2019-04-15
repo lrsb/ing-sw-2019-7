@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 class DeckTest {
     @Test
     void testWeapons() {
-
     }
 
     @Test

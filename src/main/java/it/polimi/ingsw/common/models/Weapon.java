@@ -62,19 +62,19 @@ public abstract class Weapon {
 
     @SuppressWarnings("SpellCheckingInspection")
     public enum Name {
-        LOCK_RIFLE(LockRifle.class), MACHINE_GUN(MachineGun.class)/*, THOR, PLASMA_GUN, WHISPER, ELECTROSCYTHE, TRACTOR_BEAM,
+        LOCK_RIFLE(LockRifle.class), MACHINE_GUN(MachineGun.class), THOR(THOR.class), PLASMA_GUN(PlasmaGun.class)/*, WHISPER, ELECTROSCYTHE, TRACTOR_BEAM,
         VORTEX_CANNON, FURNACE, HEATSEEKER, HELLION, FLAMETHROWER, GRENADE_LAUNCHER, ROCKET_LAUNCHER,
         RAILGUN, CYBERBLADE, ZX2, SHOTGUN, POWER_GLOVE, SHOCKWAVE, SLEDGEHAMMER*/;
 
-        private final Class weaponClass;
+        private final Class<? extends Weapon> weaponClass;
 
         @Contract(pure = true)
-        Name(Class weaponClass) {
+        Name(Class<? extends Weapon> weaponClass) {
             this.weaponClass = weaponClass;
         }
 
         @Contract(pure = true)
-        public Class getWeaponClass() {
+        public Class<? extends Weapon> getWeaponClass() {
             return weaponClass;
         }
     }
@@ -86,12 +86,14 @@ public abstract class Weapon {
 
         @Override
         public boolean basicFire() {
-            return false;
+            return shooter.canSee(players.get(0), cells);
         }
 
         @Override
         public boolean firstAdditionalFire() {
-            return false;
+            return (basicFire() &&
+                    shooter.canSee(players.get(1), cells) &&
+                    shooter.getColoredCubes(0)>=1);
         }
 
         @Override
@@ -102,6 +104,49 @@ public abstract class Weapon {
 
     public class MachineGun extends Weapon {
         public MachineGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire) {
+            super(cells, players, shooter, alternativeFire);
+        }
+
+        //per vedere se funziona basta che un giocatore sia visibile, ma potrebbe anche colpirne un secondo che vede
+        @Override
+        public boolean basicFire() {
+            return (shooter.canSee(players.get(0), cells));
+        }
+
+        @Override
+        public boolean firstAdditionalFire() {
+            return (basicFire() && shooter.getColoredCubes(1)>=1);
+        }
+
+        //qui controllo che sia colpibile anche un secondo bersaglio
+        @Override
+        public boolean secondAdditionalFire() {
+            return firstAdditionalFire() &&
+                    shooter.canSee(players.get(1), cells) &&
+                    shooter.canSee(players.get(2), cells) &&
+                    shooter.getColoredCubes(2)>=1;
+        }
+    }
+
+    public class THOR extends Weapon {
+        public THOR(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire){
+            super(cells, players, shooter, alternativeFire);
+        }
+
+        @Override
+        public boolean basicFire() {
+            return shooter.canSee(players.get(0), cells);
+        }
+
+        @Override
+        public boolean firstAdditionalFire() { return players.get(0).canSee(players.get(1), cells); }
+
+        @Override
+        public boolean secondAdditionalFire() { return players.get(1).canSee(players.get(2), cells); }
+    }
+
+    public class PlasmaGun extends Weapon {
+        public PlasmaGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire){
             super(cells, players, shooter, alternativeFire);
         }
 

@@ -53,7 +53,26 @@ public class Bounds {
     }
 
     enum Direction {
-        N, S, W, E
+        N(0, 1), S(0, -1), W(-1, 0), E(1, 0);
+
+        private int x;
+        private int y;
+
+        @Contract(pure = true)
+        Direction(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Contract(pure = true)
+        int getX() {
+            return x;
+        }
+
+        @Contract(pure = true)
+        int getY() {
+            return y;
+        }
     }
 
     public static class Creator {

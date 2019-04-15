@@ -16,10 +16,11 @@ import java.util.List;
  * @param <T> Indicate the type of cards in the deck.
  */
 public class Deck<T> implements Serializable {
+
     private final @NotNull ArrayList<T> playableCards = new ArrayList<>();
     private final @NotNull ArrayList<T> exitedCards = new ArrayList<>();
     private final @NotNull ArrayList<T> discardedCards = new ArrayList<>();
-    private final boolean shuffleable;
+    private final boolean shuffleable;  //indicates if playableCards ArrayList can be "reinitialized"
 
     private Deck(@NotNull ArrayList<T> cards, boolean shuffleable) {
         playableCards.addAll(cards);
@@ -27,9 +28,9 @@ public class Deck<T> implements Serializable {
     }
 
     /**
-     * This method move a card from the playable deck to the discarded one.
+     * This method moves a card from the playable deck to the discarded one.
      * @return The discarded card.
-     * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shufflable.
+     * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
      */
     public @NotNull T discardCard() throws EmptyDeckException {
         if (playableCards.isEmpty()) shuffleDeck();
@@ -41,7 +42,7 @@ public class Deck<T> implements Serializable {
     /**
      * This method is used to remove a card from playable deck and
      * (ex: replacement of card that are on the ground)
-     * @return Name of exited card
+     * @return The exited card
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shufflable.
      */
     public @NotNull T exitCard() throws EmptyDeckException {
@@ -53,9 +54,9 @@ public class Deck<T> implements Serializable {
 
     /**
      * This method is used when more cards are removed from playable card deck adding them to the exited one
-     * @param n Number of card that you have to remove from the deck.
+     * @param n Number of cards that you have to remove from the deck.
      * @return List of card removed from the deck.
-     * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shufflable.
+     * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
      */
     public @NotNull List<T> exitCards(int n) throws EmptyDeckException {
         if (playableCards.isEmpty()) shuffleDeck();
