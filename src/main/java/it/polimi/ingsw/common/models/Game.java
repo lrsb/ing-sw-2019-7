@@ -149,6 +149,14 @@ public class Game implements Serializable {
         seqPlay++;
     }
 
+    ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    Cell[][] getCells() {
+        return cells;
+    }
+
     public static class Creator {
         @Contract(pure = true)
         private Creator() {
