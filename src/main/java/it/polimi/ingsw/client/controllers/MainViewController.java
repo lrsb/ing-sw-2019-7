@@ -16,7 +16,7 @@ public class MainViewController extends BaseViewController {
     public MainViewController(@NotNull NavigationController navigationController) {
         super(400, 300, navigationController);
         setContentPane(panel);
-        nuovaPartitaButton.addActionListener(e -> getNavigationController().presentViewController(GameViewController.class));
+        nuovaPartitaButton.addActionListener(e -> getNavigationController().presentViewControllers(GameViewController.class, PlayerBoardViewController.class));
         elencoPartiteButton.addActionListener(e -> getNavigationController().presentViewController(GamesListViewController.class));
         opzioniButton.addActionListener(e -> getNavigationController().presentViewController(SettingsViewController.class));
     }

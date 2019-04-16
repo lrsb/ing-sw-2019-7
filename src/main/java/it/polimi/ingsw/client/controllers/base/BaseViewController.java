@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 
 public abstract class BaseViewController extends JFrame {
     private @NotNull NavigationController navigationController;
@@ -60,6 +61,9 @@ public abstract class BaseViewController extends JFrame {
         return navigationController;
     }
 
-    public void nextViewControllerInstantiated(BaseViewController viewController) {
+    public <T extends BaseViewController> void nextViewControllersInstantiated(ArrayList<T> viewControllers) {
+    }
+
+    public void controllerPopped() {
     }
 }

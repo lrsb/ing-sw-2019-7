@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -20,9 +19,10 @@ public class Game implements Serializable {
     private static final int MAX_X = 4;
     private static final int MAX_Y = 3;
 
-    private @NotNull UUID uuid;
-    private Cell[][] cells;
-    private ArrayList<Player> players = new ArrayList<>();
+    private final @NotNull UUID uuid;
+    private final @NotNull Cell[][] cells;
+    private final @NotNull Type type;
+    private final @NotNull ArrayList<Player> players = new ArrayList<>();
     private int seqPlay = 0;
 
     private int skulls = 5;//da 5 a 8
@@ -36,15 +36,15 @@ public class Game implements Serializable {
     private ArrayList<Weapon.Name> yellowWeapons;
     private transient List<PowerUp> exitedPowerUps;
 
-    private Game(@NotNull UUID uuid, @NotNull Cell[][] cells, @NotNull List<Player> players) {
+    private Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players) {
         this.uuid = uuid;
+        this.type = type;
         this.cells = cells;
         this.players.addAll(players);
-        redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
-        blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
-        yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
-        Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(ammoDeck.exitCard())));
-
+        //redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        //blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        //yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        //Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(ammoDeck.exitCard())));
     }
 
     public Player getActualPlayer() {
@@ -157,21 +157,49 @@ public class Game implements Serializable {
         return cells;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public enum Type {
+        FIVE_FIVE("L5", "R5"), FIVE_SIX("L5", "R6"), SIX_FIVE("L6", "R5"), SIX_SIX("L6", "R6");
+
+        private @NotNull String left;
+        private @NotNull String right;
+
+        @Contract(pure = true)
+        Type(@NotNull String left, @NotNull String right) {
+            this.left = left;
+            this.right = right;
+        }
+
+        @Contract(pure = true)
+        public @NotNull String getLeft() {
+            return left;
+        }
+
+        @Contract(pure = true)
+        public @NotNull String getRight() {
+            return right;
+        }
+    }
+
     public static class Creator {
         @Contract(pure = true)
         private Creator() {
         }
 
+        //TODO: impl
         @Contract("_ -> new")
         public static @NotNull Game newGame(@NotNull UUID roomUuid, @NotNull List<User> users) {
-            assert users.size() >= MIN_PLAYERS && users.size() < MAX_PLAYERS;
+            //assert users.size() >= MIN_PLAYERS && users.size() < MAX_PLAYERS;
             var cells = new Cell[MAX_X][MAX_Y];
             for (var i = 0; i < cells.length; i++) {
                 for (var j = 0; j < cells[i].length; j++) {
                     cells[i][j] = Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
                 }
             }
-            return new Game(roomUuid, cells, users.stream().map(e -> new Player(e.getNickname())).collect(Collectors.toList()));
+            return new Game(roomUuid, Type.FIVE_SIX, cells, users.stream().map(e -> new Player(e.getNickname())).collect(Collectors.toList()));
         }
     }
 }

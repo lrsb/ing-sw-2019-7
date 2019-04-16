@@ -12,6 +12,7 @@ import java.rmi.registry.LocateRegistry;
 import java.security.SecureRandom;
 
 public class Client {
+    //WARN: per provare il server fare commit e usare ClientRestImpl
     public static void main(String[] args) throws IOException, NotBoundException {
         new NavigationController(MainViewController.class);
         var local = "localhost";

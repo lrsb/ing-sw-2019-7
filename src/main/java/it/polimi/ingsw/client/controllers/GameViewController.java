@@ -2,40 +2,34 @@ package it.polimi.ingsw.client.controllers;
 
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.views.boards.GameBoard;
 import it.polimi.ingsw.client.views.sprite.Sprite;
-import it.polimi.ingsw.client.views.sprite.SpriteBoard;
 import it.polimi.ingsw.client.views.sprite.SpriteBoardListener;
-import it.polimi.ingsw.common.models.Deck;
-import it.polimi.ingsw.common.models.exceptions.EmptyDeckException;
+import it.polimi.ingsw.common.models.Game;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class GameViewController extends BaseViewController implements SpriteBoardListener {
+    public static final int HEIGHT = 800;
+    public static final int WIDTH = (int) (HEIGHT * 1.375);
+
     private JPanel panel;
-    private SpriteBoard spriteBoard;
+    private GameBoard gameBoard;
+    private NavigationController playerBoardNavigationController = new NavigationController(PlayerBoardViewController.class);
 
     public GameViewController(@NotNull NavigationController navigationController) {
-        super(1300, 800, navigationController);
+        super(WIDTH, HEIGHT, navigationController);
         setContentPane(panel);
-        spriteBoard.setBoardListener(this);
-        try {
-            var deck = Deck.Creator.newAmmoDeck();
-            for (int i = 0; i < 10; i++) {
-                try {
-                    var card = deck.discardCard();
-                    var sprite = new Sprite(0, 0, new Dimension(100, 100), card);
-                    sprite.setDraggable(true);
-                    spriteBoard.addSprite(sprite);
-                } catch (EmptyDeckException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    }
+
+    @Override
+    public void controllerPopped() {
+        playerBoardNavigationController.close();
     }
 
     @Override
@@ -48,7 +42,8 @@ public class GameViewController extends BaseViewController implements SpriteBoar
 
     }
 
-    private void createUIComponents() {
-        spriteBoard = new SpriteBoard();
+    private void createUIComponents() throws IOException {
+        gameBoard = new GameBoard(new Dimension(WIDTH, (int) (HEIGHT * 0.98)), Game.Creator.newGame(UUID.randomUUID(), new ArrayList<>()));
+        gameBoard.setBoardListener(this);
     }
 }
