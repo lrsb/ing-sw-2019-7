@@ -1,6 +1,8 @@
 package it.polimi.ingsw.client.views.boards;
 
+import it.polimi.ingsw.client.views.interpolator.LinearInterpolator;
 import it.polimi.ingsw.client.views.sprite.Sprite;
+import it.polimi.ingsw.common.models.AmmoCard;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.PowerUp;
 import it.polimi.ingsw.common.models.Weapon;
@@ -13,11 +15,16 @@ import java.io.IOException;
 public class GameBoard extends AbstractBoard {
     private @NotNull Dimension WEAPON_DIMEMSION = transformDim(0.091, 0.214);
     private @NotNull Dimension POWERUP_DIMEMSION = transformDim(0.068, 0.136);
+    private final @NotNull Sprite weapon;
 
     private @NotNull Point WEAPON_POSITION = transformPoint(0.877, 0.269);
     private @NotNull Point POWERUP_POSITION = transformPoint(0.902, 0.055);
+    private final @NotNull Sprite powerup;
 
     private final @NotNull Game game;
+    private final @NotNull Sprite ammoCard;
+    private @NotNull Dimension AMMOCARD_DIMEMSION = transformDim(0.07, 0.1);
+    private @NotNull Point AMMOCARD_POSITION = transformPoint(0.015, 0.88);
 
     public GameBoard(@NotNull Dimension dimension, @NotNull Game game) throws IOException {
         super(dimension);
@@ -26,29 +33,45 @@ public class GameBoard extends AbstractBoard {
         addSprite(new Sprite(0, 0, new Dimension(width / 2, height), () -> ImageIO.read(Game.class.getResourceAsStream("Game/" + game.getType().getLeft() + ".png"))));
         addSprite(new Sprite(dimension.width / 2, 0, new Dimension(width / 2, height), () -> ImageIO.read(Game.class.getResourceAsStream("Game/" + game.getType().getRight() + ".png"))));
 
-        var weapon = new Sprite(WEAPON_POSITION.x, WEAPON_POSITION.y, WEAPON_DIMEMSION, () -> ImageIO.read(Weapon.class.getResourceAsStream("Weapon/" + "back" + ".png")));
+        weapon = new Sprite(WEAPON_POSITION.x, WEAPON_POSITION.y, WEAPON_DIMEMSION, () -> ImageIO.read(Weapon.class.getResourceAsStream("Weapon/" + "back" + ".png")));
         weapon.setDraggable(true);
         weapon.setTag("weapon");
         addSprite(weapon);
 
-        var powerup = new Sprite(POWERUP_POSITION.x, POWERUP_POSITION.y, POWERUP_DIMEMSION, () -> ImageIO.read(PowerUp.class.getResourceAsStream("PowerUp/" + "back" + ".png")));
+        powerup = new Sprite(POWERUP_POSITION.x, POWERUP_POSITION.y, POWERUP_DIMEMSION, () -> ImageIO.read(PowerUp.class.getResourceAsStream("PowerUp/" + "back" + ".png")));
         powerup.setDraggable(true);
         powerup.setTag("powerup");
         addSprite(powerup);
+
+        ammoCard = new Sprite(AMMOCARD_POSITION.x, AMMOCARD_POSITION.y, AMMOCARD_DIMEMSION, () -> ImageIO.read(AmmoCard.class.getResourceAsStream("AmmoCard/" + "back" + ".png")));
+        ammoCard.setDraggable(true);
+        ammoCard.setTag("ammocard");
+        addSprite(ammoCard);
+    }
+
+    @Override
+    public void onSpriteClicked(@NotNull Sprite sprite) {
+
     }
 
     @Override
     public void onSpriteDragged(@NotNull Sprite sprite) {
-        if (sprite.getTag() == null) super.onSpriteDragged(sprite);
+        if (sprite.getTag() == null) ;//super.onSpriteDragged(sprite);
         else switch (sprite.getTag()) {
             case "weapon":
-                sprite.moveTo(WEAPON_POSITION);
+                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), System.currentTimeMillis(), WEAPON_POSITION, 250) {
+                });
                 return;
             case "powerup":
-                sprite.moveTo(POWERUP_POSITION);
+                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), System.currentTimeMillis(), POWERUP_POSITION, 250) {
+                });
+                return;
+            case "ammocard":
+                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), System.currentTimeMillis(), AMMOCARD_POSITION, 250) {
+                });
                 return;
             default:
-                super.onSpriteDragged(sprite);
+                //super.onSpriteDragged(sprite);
         }
     }
 }

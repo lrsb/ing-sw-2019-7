@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.views.sprite;
 
-import it.polimi.ingsw.client.views.Displayable;
 import it.polimi.ingsw.client.views.interpolator.Interpolator;
 import it.polimi.ingsw.client.views.interpolator.exceptions.TimestampOutOfRangeException;
 import org.jetbrains.annotations.NotNull;

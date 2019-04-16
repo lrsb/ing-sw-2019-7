@@ -3,8 +3,7 @@ package it.polimi.ingsw.client.controllers;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.views.boards.GameBoard;
-import it.polimi.ingsw.client.views.sprite.Sprite;
-import it.polimi.ingsw.client.views.sprite.SpriteBoardListener;
+import it.polimi.ingsw.client.views.boards.GameBoardListener;
 import it.polimi.ingsw.common.models.Game;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,31 +14,30 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
-public class GameViewController extends BaseViewController implements SpriteBoardListener {
+public class GameViewController extends BaseViewController implements GameBoardListener {
     public static final int HEIGHT = 800;
     public static final int WIDTH = (int) (HEIGHT * 1.375);
 
     private JPanel panel;
     private GameBoard gameBoard;
     private NavigationController playerNavigationController;
-    private PlayerBoardViewController playerBoardViewController;
 
     public GameViewController(@NotNull NavigationController navigationController) {
-        super(WIDTH, HEIGHT, navigationController);
+        super("Gioca", WIDTH, HEIGHT, navigationController);
         setContentPane(panel);
     }
 
     @Override
     protected void onShow() {
         playerNavigationController = new NavigationController(PlayerBoardViewController.class);
-        playerBoardViewController = (PlayerBoardViewController) playerNavigationController.getViewController(0);
-        playerBoardViewController.setGameViewController(this);
+        getPlayerBoardViewController().ifPresent(e -> e.setGameViewController(this));
     }
 
     @Override
     public void controllerPopped() {
-        playerBoardViewController.setGameViewController(null);
+        getPlayerBoardViewController().ifPresent(e -> e.setGameViewController(null));
         Optional.ofNullable(playerNavigationController).ifPresent(NavigationController::close);
+        playerNavigationController = null;
     }
 
     public void playerBoardViewControllerPopped() {
@@ -47,14 +45,12 @@ public class GameViewController extends BaseViewController implements SpriteBoar
         getNavigationController().popViewController();
     }
 
-    @Override
-    public void onSpriteClicked(@NotNull Sprite sprite) {
-
-    }
-
-    @Override
-    public void onSpriteDragged(@NotNull Sprite sprite) {
-
+    private @NotNull Optional<PlayerBoardViewController> getPlayerBoardViewController() {
+        try {
+            return Optional.of((PlayerBoardViewController) playerNavigationController.getViewController(0));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     private void createUIComponents() throws IOException {

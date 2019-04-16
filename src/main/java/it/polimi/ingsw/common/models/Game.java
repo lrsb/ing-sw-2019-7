@@ -199,7 +199,7 @@ public class Game implements Serializable {
                     cells[i][j] = Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
                 }
             }
-            return new Game(roomUuid, Type.FIVE_SIX, cells, users.stream().map(e -> new Player(e.getNickname())).collect(Collectors.toList()));
+            return new Game(roomUuid, Type.SIX_SIX, cells, users.stream().map(e -> new Player(e.getNickname())).collect(Collectors.toList()));
         }
     }
 }

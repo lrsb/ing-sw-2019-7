@@ -14,7 +14,7 @@ public class MainViewController extends BaseViewController {
     private JButton CLIButton;
 
     public MainViewController(@NotNull NavigationController navigationController) {
-        super(400, 300, navigationController);
+        super("Benvenuto", 400, 300, navigationController);
         setContentPane(panel);
         nuovaPartitaButton.addActionListener(e -> getNavigationController().presentViewController(GameViewController.class));
         elencoPartiteButton.addActionListener(e -> getNavigationController().presentViewController(GamesListViewController.class));

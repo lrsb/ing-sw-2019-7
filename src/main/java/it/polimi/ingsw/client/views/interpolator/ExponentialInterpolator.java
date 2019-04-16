@@ -12,6 +12,6 @@ public abstract class ExponentialInterpolator extends Interpolator {
     @Override
     public @NotNull Point interpolateImpl(float normalizedCompletion) {
         var completion = Math.exp(normalizedCompletion * 5 - 4) / Math.E;
-        return new Point((int) ((end.x - start.x) * completion), (int) ((end.y - start.y) * completion));
+        return new Point(start.x + (int) ((end.x - start.x) * completion), start.y + (int) ((end.y - start.y) * completion));
     }
 }

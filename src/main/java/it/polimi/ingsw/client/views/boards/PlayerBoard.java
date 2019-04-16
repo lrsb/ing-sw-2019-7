@@ -16,4 +16,14 @@ public class PlayerBoard extends AbstractBoard {
         this.player = player;
         addSprite(new Sprite(0, 0, new Dimension(width, height), () -> ImageIO.read(Player.class.getResourceAsStream("Player/" + "D-Struct-OrFrontBoard" + ".png"))));
     }
+
+    @Override
+    public void onSpriteClicked(@NotNull Sprite sprite) {
+
+    }
+
+    @Override
+    public void onSpriteDragged(@NotNull Sprite sprite) {
+
+    }
 }

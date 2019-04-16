@@ -55,7 +55,7 @@ public class NavigationController implements Closeable {
     public void popViewController() {
         if (viewControllers.size() < 2) close();
         else {
-            viewControllers.remove(viewControllers.size() - 1).setVisible(false);
+            disposeViewController(viewControllers.remove(viewControllers.size() - 1));
             viewControllers.get(viewControllers.size() - 1).setVisible(true);
         }
     }
@@ -66,14 +66,13 @@ public class NavigationController implements Closeable {
     public void popToRootViewController() {
         if (viewControllers.size() < 2) return;
         var rootViewController = viewControllers.remove(0);
-        rootViewController.setVisible(true);
         close();
         viewControllers.add(rootViewController);
+        rootViewController.setVisible(true);
     }
 
     /**
      * Get the view controller at index.
-     *
      * @param index Index of view controller.
      * @return The view controller.
      * @throws IndexOutOfBoundsException Thrown when index is wrong.
@@ -87,7 +86,13 @@ public class NavigationController implements Closeable {
      */
     @Override
     public void close() {
-        viewControllers.forEach(e -> viewControllers.get(0).setVisible(false));
+        viewControllers.forEach(this::disposeViewController);
         viewControllers.clear();
+    }
+
+    private void disposeViewController(@NotNull BaseViewController viewController) {
+        viewController.controllerPopped();
+        viewController.setVisible(false);
+        viewController.dispose();
     }
 }

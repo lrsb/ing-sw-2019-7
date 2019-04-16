@@ -13,7 +13,7 @@ public class GamesListViewController extends BaseViewController {
     private JTable table;
 
     public GamesListViewController(@NotNull NavigationController navigationController) {
-        super(800, 600, navigationController);
+        super("Elenco partite", 800, 600, navigationController);
         setContentPane(panel);
     }
 }

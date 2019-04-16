@@ -10,11 +10,12 @@ import java.awt.event.WindowListener;
 public abstract class BaseViewController extends JFrame {
     private @NotNull NavigationController navigationController;
 
-    public BaseViewController(int width, int height, @NotNull NavigationController navigationController) {
+    public BaseViewController(@NotNull String title, int width, int height, @NotNull NavigationController navigationController) {
         this.navigationController = navigationController;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setBounds(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - width / 2, Toolkit.getDefaultToolkit().getScreenSize().height / 2 - height / 2, width, height);
         setResizable(false);
+        setTitle(title);
         addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {
@@ -51,10 +52,6 @@ public abstract class BaseViewController extends JFrame {
     public void setVisible(boolean b) {
         super.setVisible(b);
         if (b) onShow();
-        else {
-            controllerPopped();
-            dispose();
-        }
     }
 
     protected void onShow() {

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.common.models;
 
-import it.polimi.ingsw.client.views.Displayable;
+import it.polimi.ingsw.client.views.sprite.Displayable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

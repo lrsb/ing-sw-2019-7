@@ -11,6 +11,6 @@ public abstract class LinearInterpolator extends Interpolator {
 
     @Override
     public @NotNull Point interpolateImpl(float normalizedCompletion) {
-        return new Point((int) ((end.x - start.x) * normalizedCompletion), (int) ((end.y - start.y) * normalizedCompletion));
+        return new Point(start.x + (int) ((end.x - start.x) * normalizedCompletion), start.y + (int) ((end.y - start.y) * normalizedCompletion));
     }
 }

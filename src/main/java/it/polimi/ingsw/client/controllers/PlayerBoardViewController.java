@@ -20,7 +20,7 @@ public class PlayerBoardViewController extends BaseViewController {
     private GameViewController gameViewController;
 
     public PlayerBoardViewController(@NotNull NavigationController navigationController) {
-        super(WIDTH, HEIGHT, navigationController);
+        super("La tua plancia", WIDTH, HEIGHT, navigationController);
         setContentPane(panel);
     }
 

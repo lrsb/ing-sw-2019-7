@@ -16,7 +16,7 @@ public class SettingsViewController extends BaseViewController {
     private JButton backButton;
 
     public SettingsViewController(@NotNull NavigationController navigationController) {
-        super(400, 300, navigationController);
+        super("Impostazioni", 400, 300, navigationController);
         setContentPane(panel);
         backButton.addActionListener(e -> getNavigationController().popViewController());
     }
