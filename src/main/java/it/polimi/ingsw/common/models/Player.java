@@ -25,6 +25,8 @@ public class Player {
         this.name = name;
     }
 
+    public String getName(){ return name; }
+
     public void addShooterHits(@NotNull Player shooter, int hits){
         for(int c=0; c<hits; c++){
             if(hitsTaken.size()<12) this.hitsTaken.add(shooter.name);
@@ -127,11 +129,22 @@ public class Player {
 
     @Contract(pure = true)
     public boolean canSee(@NotNull Player player, @NotNull Cell[][] cells) {
+        if(this.name.equals(player.name)) return false;
         if (cells[position.x][position.y].getColor() == cells[player.position.x][player.position.y].getColor())
             return true;
         for (var direction : Bounds.Direction.values())
             if (cells[position.x][position.y].getBounds().getType(direction) == Bounds.Type.DOOR &&
-                    cells[position.x + direction.getX()][position.y + direction.getY()].getColor() == cells[player.position.x][player.position.y].getColor()) return true;
+                    cells[position.x + direction.getX()][position.y + direction.getY()].getColor()
+                            == cells[player.position.x][player.position.y].getColor()) return true;
+        return false;
+    }
+
+    public boolean canSeeCell(@NotNull Point point, @NotNull Cell[][] cells) {
+        if (cells[position.x][position.y].getColor() == cells[point.x][point.y].getColor()) return true;
+        for (var direction : Bounds.Direction.values())
+            if (cells[position.x][position.y].getBounds().getType(direction) == Bounds.Type.DOOR &&
+                    cells[position.x + direction.getX()][position.y + direction.getY()].getColor()
+                            == cells[point.x][point.y].getColor()) return true;
         return false;
     }
 }
