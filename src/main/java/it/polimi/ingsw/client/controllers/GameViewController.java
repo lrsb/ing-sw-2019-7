@@ -12,6 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 public class GameViewController extends BaseViewController implements SpriteBoardListener {
@@ -20,7 +21,8 @@ public class GameViewController extends BaseViewController implements SpriteBoar
 
     private JPanel panel;
     private GameBoard gameBoard;
-    private NavigationController playerBoardNavigationController = new NavigationController(PlayerBoardViewController.class);
+    private NavigationController playerNavigationController;
+    private PlayerBoardViewController playerBoardViewController;
 
     public GameViewController(@NotNull NavigationController navigationController) {
         super(WIDTH, HEIGHT, navigationController);
@@ -28,8 +30,21 @@ public class GameViewController extends BaseViewController implements SpriteBoar
     }
 
     @Override
+    protected void onShow() {
+        playerNavigationController = new NavigationController(PlayerBoardViewController.class);
+        playerBoardViewController = (PlayerBoardViewController) playerNavigationController.getViewController(0);
+        playerBoardViewController.setGameViewController(this);
+    }
+
+    @Override
     public void controllerPopped() {
-        playerBoardNavigationController.close();
+        playerBoardViewController.setGameViewController(null);
+        Optional.ofNullable(playerNavigationController).ifPresent(NavigationController::close);
+    }
+
+    public void playerBoardViewControllerPopped() {
+        playerNavigationController = null;
+        getNavigationController().popViewController();
     }
 
     @Override

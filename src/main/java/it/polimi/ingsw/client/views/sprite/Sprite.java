@@ -14,11 +14,15 @@ import java.util.Optional;
 public class Sprite implements Displayable {
     private int x;
     private int y;
+
     private @NotNull Dimension dimension;
     private @NotNull BufferedImage image;
+    private @Nullable String tag;
+
     private boolean hidden = false;
     private boolean draggable = false;
     private boolean clickable = true;
+
     private @Nullable SpriteListener spriteListener;
     private @Nullable Interpolator interpolator;
 
@@ -61,6 +65,12 @@ public class Sprite implements Displayable {
     public void moveTo(int x, int y) {
         this.x = x;
         this.y = y;
+        updated();
+    }
+
+    public void moveTo(@NotNull Point point) {
+        this.x = point.x;
+        this.y = point.y;
         updated();
     }
 
@@ -116,6 +126,14 @@ public class Sprite implements Displayable {
 
     public void remove() {
         Optional.ofNullable(spriteListener).ifPresent(e -> e.autoRemove(this));
+    }
+
+    public @Nullable String getTag() {
+        return tag;
+    }
+
+    public void setTag(@Nullable String tag) {
+        this.tag = tag;
     }
 
     void interpolate() {

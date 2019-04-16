@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ArrayList;
 
 public abstract class BaseViewController extends JFrame {
     private @NotNull NavigationController navigationController;
@@ -52,6 +51,10 @@ public abstract class BaseViewController extends JFrame {
     public void setVisible(boolean b) {
         super.setVisible(b);
         if (b) onShow();
+        else {
+            controllerPopped();
+            dispose();
+        }
     }
 
     protected void onShow() {
@@ -61,7 +64,7 @@ public abstract class BaseViewController extends JFrame {
         return navigationController;
     }
 
-    public <T extends BaseViewController> void nextViewControllersInstantiated(ArrayList<T> viewControllers) {
+    public <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
     }
 
     public void controllerPopped() {

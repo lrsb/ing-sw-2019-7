@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.Optional;
 
 public class PlayerBoardViewController extends BaseViewController {
     public static final int HEIGHT = 200;
@@ -16,6 +17,7 @@ public class PlayerBoardViewController extends BaseViewController {
 
     private JPanel panel;
     private PlayerBoard playerBoard;
+    private GameViewController gameViewController;
 
     public PlayerBoardViewController(@NotNull NavigationController navigationController) {
         super(WIDTH, HEIGHT, navigationController);
@@ -24,7 +26,11 @@ public class PlayerBoardViewController extends BaseViewController {
 
     @Override
     public void controllerPopped() {
+        Optional.ofNullable(gameViewController).ifPresent(GameViewController::playerBoardViewControllerPopped);
+    }
 
+    public void setGameViewController(GameViewController gameViewController) {
+        this.gameViewController = gameViewController;
     }
 
     private void createUIComponents() throws IOException {
