@@ -16,8 +16,11 @@ public abstract class Weapon {
     private @NotNull Player shooter;
     private boolean alternativeFire;
     //siccome si possono usare anche le powerups come ammo, se le metti, queste hanno la precedenza sul pagamento
-    private @NotNull ArrayList<PowerUp> alternativePayment;
+    private @NotNull ArrayList<PowerUp> powerUpsPay;
     private @NotNull ArrayList<AmmoCard.Color> basicPayment;
+    private @NotNull ArrayList<AmmoCard.Color> firstAdditionalPayment;
+    private @NotNull ArrayList<AmmoCard.Color> secondAdditionalPayment;
+    private @NotNull ArrayList<AmmoCard.Color> alternativePayment;
 
 
     private ArrayList<Player> possibleTarget = new ArrayList<>();
@@ -31,19 +34,24 @@ public abstract class Weapon {
 
     @Contract(pure = true)
     public Weapon(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                  boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
+                  boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
         this.cells = cells;
         this.players = players;
         this.shooter = shooter;
         this.alternativeFire = alternativeFire;
-        this.alternativePayment = alternativePayment;
+        this.powerUpsPay = powerUpsPay;
     }
 
-    public boolean charging() {
+    public boolean charging(){
+        return payCost(basicPayment);
+    }
+
+    //used to reload and to pay additional cost
+    public boolean payCost(@NotNull ArrayList<AmmoCard.Color> cost) {
         //red, blue e yellow avranno il valore del costo totale
         //altNomeColore hanno il valore dei cubi che vengono invece pagati tramite PowerUp
         int red = 0, yellow = 0, blue = 0, altRed = 0, altYellow = 0, altBlue = 0;
-        for (AmmoCard.Color c : basicPayment) {
+        for (AmmoCard.Color c : cost) {
             switch (c) {
                 case RED:
                     red++;
@@ -56,7 +64,7 @@ public abstract class Weapon {
                     break;
             }
         }
-        for (PowerUp p : alternativePayment) {
+        for (PowerUp p : powerUpsPay) {
             switch (p.getAmmoColor()) {
                 case RED:
                     if (red > altRed) altRed++;
@@ -72,7 +80,7 @@ public abstract class Weapon {
         if (shooter.getColoredCubes(RED) >= red - altRed
                 && shooter.getColoredCubes(YELLOW) >= yellow - altYellow
                 && shooter.getColoredCubes(BLUE) >= blue - altBlue) {
-            for (PowerUp p : alternativePayment) {
+            for (PowerUp p : powerUpsPay) {
                 switch (p.getAmmoColor()) {
                     case RED:
                         if (altRed > 0) {
@@ -119,6 +127,18 @@ public abstract class Weapon {
         }
     }
 
+    public void addVisibleSquare(){
+        int x, y;
+        Point point;
+        possibleTargetPoint.clear();
+        for (x = 0; x < 4; x++) {
+            for (y = 0; y < 3; y++) {
+                point = new Point(x, y);
+                if (shooter.canSeeCell(point, cells)) possibleTargetPoint.add(point);
+            }
+        }
+    }
+
     public void addBasicTarget(@Nullable Player target, @Nullable Point point) {
         basicTarget.add(target);
         basicTargetPoint.add(point);
@@ -152,13 +172,14 @@ public abstract class Weapon {
 
     @SuppressWarnings("SpellCheckingInspection")
     public enum Name {
-        LOCK_RIFLE(Weapons.LockRifle.class), MACHINE_GUN(Weapons.MachineGun.class), THOR(Weapons.Thor.class), PLASMA_GUN(Weapons.PlasmaGun.class),
-        WHISPER(Weapons.Whisper.class), ELECTROSCYTHE(Weapons.Electroscythe.class), TRACTOR_BEAM(Weapons.TractorBeam.class),
-        VORTEX_CANNON(Weapons.VortexCannon.class)/*, FURNACE(Furnace.class), HEATSEEKER(Heatseeker.class),
-        HELLION(Hellion.class), FLAMETHROWER(Flamethrower.class), GRENADE_LAUNCHER(GrenadeLauncher.class),
-        ROCKET_LAUNCHER(RocketLauncher.class), RAILGUN(Railgun.class), CYBERBLADE(Cyberblade.class), ZX2(ZX2.class),
-        SHOTGUN(Shotgun.class), POWER_GLOVE(PowerGlove.class), SHOCKWAVE(Shockwave.class),
-        SLEDGEHAMMER(Sledgehammer.class)*/;
+        LOCK_RIFLE(Weapons.LockRifle.class), MACHINE_GUN(Weapons.MachineGun.class), THOR(Weapons.Thor.class),
+        PLASMA_GUN(Weapons.PlasmaGun.class), WHISPER(Weapons.Whisper.class), ELECTROSCYTHE(Weapons.Electroscythe.class),
+        TRACTOR_BEAM(Weapons.TractorBeam.class), VORTEX_CANNON(Weapons.VortexCannon.class),
+        FURNACE(Weapons.Furnace.class)/*, HEATSEEKER(Weapons.Heatseeker.class), HELLION(Weapons.Hellion.class),
+        FLAMETHROWER(Weapons.Flamethrower.class), GRENADE_LAUNCHER(Weapons.GrenadeLauncher.class),
+        ROCKET_LAUNCHER(Weapons.RocketLauncher.class), RAILGUN(Weapons.Railgun.class),
+        CYBERBLADE(Weapons.Cyberblade.class), ZX2(Weapons.ZX2.class), SHOTGUN(Weapons.Shotgun.class),
+        POWER_GLOVE(Weapons.PowerGlove.class), SHOCKWAVE(Weapons.Shockwave.class), SLEDGEHAMMER(Weapons.Sledgehammer.class)*/;
 
         private final Class<? extends Weapon> weaponClass;
 
@@ -186,10 +207,11 @@ public abstract class Weapon {
 
     private class Weapons {
         private class LockRifle extends Weapon {
-            private LockRifle(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
-                super(cells, players, shooter, alternativeFire, alternativePayment);
+            private LockRifle(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 basicPayment.add(BLUE);
+                firstAdditionalPayment.add(RED);
             }
 
             @Override
@@ -210,21 +232,14 @@ public abstract class Weapon {
 
             @Override
             public boolean firstAdditionalFire() {
-                int red = 1;
                 for (Player p : possibleTarget) {
                     if (p.getName().equals(basicTarget.get(0).getName())) possibleTarget.remove(p);
                 }
                 if (possibleTarget.size() > 0) {
-                    if (alternativePayment.get(0).getAmmoColor() == RED) red = 0;
-                    if (shooter.getColoredCubes(RED) >= red) {
-                        firstAdditionalTarget.clear();
-                        //TODO: insert ONLY 1 Target from possibleTarget to firstAdditionalTarget
-                        if (firstAdditionalTarget.size() != 1) return false;
-                        if (red == 0) {
-                            shooter.removePowerUp(alternativePayment.get(0));
-                        } else {
-                            shooter.removeColoredCubes(RED, red);
-                        }
+                    firstAdditionalTarget.clear();
+                    //TODO: insert ONLY 1 Target from possibleTarget to firstAdditionalTarget
+                    if (firstAdditionalTarget.size() != 1) return false;
+                    if(payCost(firstAdditionalPayment)) {
                         firstAdditionalTarget.get(0).addShooterMarks(shooter, 1);
                         return true;
                     }
@@ -239,10 +254,12 @@ public abstract class Weapon {
         }
 
         private class MachineGun extends Weapon {
-            private MachineGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
-                super(cells, players, shooter, alternativeFire, alternativePayment);
+            private MachineGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 basicPayment.add(RED);
+                firstAdditionalPayment.add(YELLOW);
+                secondAdditionalPayment.add(RED);
             }
 
             @Override
@@ -264,16 +281,10 @@ public abstract class Weapon {
 
             @Override
             public boolean firstAdditionalFire() {
-                int yellow = 1;
-                if (alternativePayment.get(0).getAmmoColor() == YELLOW) {
-                    yellow = 0;
-                }
-                if (shooter.getColoredCubes(YELLOW) >= yellow) {
-                    firstAdditionalTarget.clear();
-                    //TODO: choose 1 target from basicTarget to firstAdditionalTarget
-                    if (firstAdditionalTarget.size() != 1) return false;
-                    if (yellow == 0) shooter.removePowerUp(alternativePayment.get(0));
-                    shooter.removeColoredCubes(YELLOW, yellow);
+                firstAdditionalTarget.clear();
+                //TODO: choose 1 target from basicTarget to firstAdditionalTarget
+                if (firstAdditionalTarget.size() != 1) return false;
+                if (payCost(firstAdditionalPayment)) {
                     firstAdditionalTarget.get(0).addShooterHits(shooter, 1);
                     return true;
                 }
@@ -283,22 +294,10 @@ public abstract class Weapon {
             //qui controllo che sia colpibile anche un secondo bersaglio
             @Override
             public boolean secondAdditionalFire() {
-                int blue = 1;
-                if (alternativePayment.get(0).getAmmoColor() == BLUE || alternativePayment.get(1).getAmmoColor() == BLUE) {
-                    blue = 0;
-                }
-                if (shooter.getColoredCubes(BLUE) >= blue) {
-                    secondAdditionalTarget.clear();
-                    //TODO choose 1 or 2 targets adding to secondAdditionalTarget
-                    if (secondAdditionalTarget.size() < 1 || secondAdditionalTarget.size() > 2) return false;
-                    if (blue == 0) {
-                        if (alternativePayment.get(0).getAmmoColor() == BLUE) {
-                            shooter.removePowerUp(alternativePayment.get(0));
-                        } else {
-                            shooter.removePowerUp(alternativePayment.get(1));
-                        }
-                    }
-                    shooter.removeColoredCubes(BLUE, blue);
+                secondAdditionalTarget.clear();
+                //TODO choose 1 or 2 targets adding to secondAdditionalTarget
+                if (secondAdditionalTarget.size() < 1 || secondAdditionalTarget.size() > 2) return false;
+                if (payCost(secondAdditionalPayment)){
                     for (Player p : secondAdditionalTarget) {
                         if (basicTarget.contains(p)) {
                             p.addShooterHits(shooter, 1);
@@ -314,10 +313,12 @@ public abstract class Weapon {
         }
 
         private class Thor extends Weapon {
-            private Thor(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
-                super(cells, players, shooter, alternativeFire, alternativePayment);
+            private Thor(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 basicPayment.add(RED);
+                firstAdditionalPayment.add(BLUE);
+                secondAdditionalPayment.add(BLUE);
             }
 
             public void addVisibleTarget(Player player) {
@@ -343,52 +344,49 @@ public abstract class Weapon {
 
             @Override
             public boolean firstAdditionalFire() {
-                int blue = 1;
                 possibleTarget.clear();
                 addVisibleTarget(basicTarget.get(0));
-                if (alternativePayment.get(0).getAmmoColor() == BLUE) blue = 0;
-                if (possibleTarget.size() > 0 && shooter.getColoredCubes(BLUE) >= blue) {
+                if (possibleTarget.size() > 0) {
                     firstAdditionalTarget.clear();
                     //TODO: choose ONLY 1 target from possibleTarget to firstAdditionalTarget
                     if (firstAdditionalTarget.size() != 1) return false;
-                    if (blue == 0) shooter.removePowerUp(alternativePayment.get(0));
-                    shooter.removeColoredCubes(BLUE, blue);
-                    firstAdditionalTarget.get(0).addShooterHits(shooter, 1);
-                    firstAdditionalTarget.get(0).convertShooterMarks(shooter);
-                    return true;
+                    if (payCost(firstAdditionalPayment)) {
+                        firstAdditionalTarget.get(0).addShooterHits(shooter, 1);
+                        firstAdditionalTarget.get(0).convertShooterMarks(shooter);
+                        return true;
+                    }
                 }
                 return false;
             }
 
             @Override
             public boolean secondAdditionalFire() {
-                int blue = 1;
                 possibleTarget.clear();
                 addVisibleTarget(firstAdditionalTarget.get(0));
                 for (Player p : possibleTarget) {
                     if (p.getName().equals(shooter.getName())
                             || p.getName().equals(firstAdditionalTarget.get(0).getName())) possibleTarget.remove(p);
                 }
-                if (alternativePayment.get(1).getAmmoColor() == BLUE) blue = 0;
-                if (possibleTarget.size() > 0 && shooter.getColoredCubes(BLUE) >= blue) {
+                if (possibleTarget.size() > 0) {
                     secondAdditionalTarget.clear();
                     //TODO: choose ONLY 1 target from possibleTarget to secondAdditionalTarget
                     if (secondAdditionalTarget.size() != 1) return false;
-                    if (blue == 0) shooter.removePowerUp(alternativePayment.get(1));
-                    shooter.removeColoredCubes(BLUE, blue);
-                    secondAdditionalTarget.get(0).addShooterHits(shooter, 2);
-                    secondAdditionalTarget.get(0).convertShooterMarks(shooter);
-                    return true;
+                    if(payCost(secondAdditionalPayment)) {
+                        secondAdditionalTarget.get(0).addShooterHits(shooter, 2);
+                        secondAdditionalTarget.get(0).convertShooterMarks(shooter);
+                        return true;
+                    }
                 }
                 return false;
             }
         }
 
         private class PlasmaGun extends Weapon {
-            private PlasmaGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
-                super(cells, players, shooter, alternativeFire, alternativePayment);
+            private PlasmaGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 basicPayment.add(YELLOW);
+                secondAdditionalPayment.add(BLUE);
             }
 
             private boolean justMoved = false;
@@ -420,11 +418,7 @@ public abstract class Weapon {
 
             @Override
             public boolean secondAdditionalFire() {
-                int blue = 1;
-                if (alternativePayment.get(0).getAmmoColor() == BLUE) blue = 0;
-                if (shooter.getColoredCubes(BLUE) >= blue) {
-                    if (blue == 0) shooter.removePowerUp(alternativePayment.get(0));
-                    shooter.removeColoredCubes(BLUE, blue);
+                if (payCost(secondAdditionalPayment)) {
                     basicTarget.get(0).addShooterHits(shooter, 1);
                     return true;
                 }
@@ -434,8 +428,8 @@ public abstract class Weapon {
 
         public class Whisper extends Weapon {
             public Whisper(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                           boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
-                super(cells, players, shooter, alternativeFire, alternativePayment);
+                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 basicPayment.add(BLUE);
                 basicPayment.add(YELLOW);
@@ -476,9 +470,11 @@ public abstract class Weapon {
 
         public class Electroscythe extends Weapon {
             public Electroscythe(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                 boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
-                super(cells, players, shooter, alternativeFire, alternativePayment);
+                                 boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
+                alternativePayment.add(BLUE);
+                alternativePayment.add(RED);
             }
 
             @Override
@@ -491,28 +487,7 @@ public abstract class Weapon {
                 }
                 if (basicTarget.size() > 0) {
                     if (alternativeFire) {
-                        int blue = 1, red = 1;
-                        if (alternativePayment.get(0).getAmmoColor() == BLUE
-                                || alternativePayment.get(1).getAmmoColor() == BLUE) blue = 0;
-                        if (alternativePayment.get(0).getAmmoColor() == RED
-                                || alternativePayment.get(1).getAmmoColor() == RED) red = 0;
-                        if (shooter.getColoredCubes(BLUE) >= blue && shooter.getColoredCubes(RED) >= red) {
-                            if (blue == 0) {
-                                if (alternativePayment.get(0).getAmmoColor() == BLUE) {
-                                    shooter.removePowerUp(alternativePayment.get(0));
-                                } else {
-                                    shooter.removePowerUp(alternativePayment.get(1));
-                                }
-                            }
-                            if (red == 0) {
-                                if (alternativePayment.get(0).getAmmoColor() == RED) {
-                                    shooter.removePowerUp(alternativePayment.get(0));
-                                } else {
-                                    shooter.removePowerUp(alternativePayment.get(1));
-                                }
-                            }
-                            shooter.removeColoredCubes(BLUE, blue);
-                            shooter.removeColoredCubes(RED, red);
+                        if (payCost(alternativePayment)) {
                             for (Player p : basicTarget) {
                                 p.addShooterHits(shooter, 2);
                                 p.convertShooterMarks(shooter);
@@ -543,23 +518,31 @@ public abstract class Weapon {
 
         public class TractorBeam extends Weapon {
             public TractorBeam(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                               boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
-                super(cells, players, shooter, alternativeFire, alternativePayment);
-                basicPayment.add(RED);
+                               boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
+                alternativePayment.add(RED);
+                alternativePayment.add(YELLOW);
             }
 
             @Override
             public boolean basicFire() {
-                int x, y;
-                Point point;
-                possibleTargetPoint.clear();
-                for (x = 0; x < 4; x++) {
-                    for (y = 0; y < 3; y++) {
-                        point = new Point(x, y);
-                        if (shooter.canSeeCell(point, cells)
-                                && !(shooter.getPosition().equals(point))) possibleTargetPoint.add(point);
+                if(alternativeFire){
+                    //TODO add target
+                    //TODO verify if target can be moved to shooter's square
+                    if(payCost(alternativePayment)){
+                        //TODO effectively move target in shooter's square
+                        basicTarget.get(0).addShooterHits(shooter, 3);
+                        basicTarget.get(0).convertShooterMarks(shooter);
+                        return true;
                     }
+                } else {
+                    addVisibleSquare();
+                    //TODO add point where to move target from possibleTargetPoint to basicTargetPoint
+                    //TODO verify if target can be moved
+                    basicTarget.get(0).addShooterHits(shooter, 3);
+                    basicTarget.get(0).convertShooterMarks(shooter);
+                    return true;
                 }
                 return false;
             }
@@ -577,8 +560,44 @@ public abstract class Weapon {
 
         public class VortexCannon extends Weapon {
             public VortexCannon(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                boolean alternativeFire, @NotNull ArrayList<PowerUp> alternativePayment) {
-                super(cells, players, shooter, alternativeFire, alternativePayment);
+                                boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
+                basicPayment.add(RED);
+                basicPayment.add(BLUE);
+                firstAdditionalPayment.add(RED);
+            }
+
+            public void addNearTargets(ArrayList<Player> targetsGroup){
+
+            }
+
+            @Override
+            public boolean basicFire() {
+                possibleTargetPoint.clear();
+                addVisibleSquare();
+                for (Point p : possibleTargetPoint) {
+                    if(p.equals(shooter.getPosition())) possibleTargetPoint.remove(p);
+                }
+                //TODO: choose a square from possibleTargetPoint to basicTargetPoint
+
+                return false;
+            }
+
+            @Override
+            public boolean firstAdditionalFire() {
+                return false;
+            }
+
+            @Override
+            public boolean secondAdditionalFire() {
+                return false;
+            }
+        }
+
+        public class Furnace extends Weapon {
+            public Furnace(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
+                                boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
             }
 
             @Override
