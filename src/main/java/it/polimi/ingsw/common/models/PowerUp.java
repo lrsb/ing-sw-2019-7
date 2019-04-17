@@ -9,14 +9,17 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+/**
+ *Each powerup card is composed in 2 parts: it has a specific type and a color.
+ *For each type you have 3 card available, one for each color.
+ */
 public class PowerUp implements Displayable {
     private @NotNull AmmoCard.Color ammoColor;
     private @NotNull Type type;
     private @Nullable BufferedImage bufferedImage;
 
     /**
-     * PowerUp constructor, each powerup card is composed in 2 parts: it has a specific type and a color.
-     * For each type you have 3 card available, one for each color.
+     * PowerUp constructor.
      * @param ammoColor Indicate the color of the card.
      * @param type Indicate the the type of the powerUp card ( ex: Teleporter).
      */
