@@ -2,28 +2,52 @@ package it.polimi.ingsw.common.models;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Cell class, each cell is the atom of the board, some cells are spawnpoint, the otherone are just normal cells which
+ * have an ammo card on it, more cells compose a room and more rooms compose the game board.
+ */
 public class Cell {
     private Color color;
     private boolean spawnPoint;
     private Bounds bounds;
     private AmmoCard ammoCard;
 
+    /**
+     * Indicate if a certain cell is a spawnpoint.
+     * @return True if the cell is a spawnpoint.
+     */
     public boolean isSpawnPoint() {
         return spawnPoint;
     }
 
+    /**
+     * Indicate if a certain cell has an ammo card on it.
+     * @return True if there is an ammo card.
+     */
     public AmmoCard getAmmoCard() {
         return ammoCard;
     }
 
+    /**
+     * Set a new ammo card on a cell.
+     * @param ammoCard The new ammo card that you want to assign to the cell.
+     */
     public void setAmmoCard(AmmoCard ammoCard) {
         this.ammoCard = ammoCard;
     }
 
+    /**
+     * Get the color of the cell.
+     * @return The cell's color.
+     */
     public Color getColor() {
         return color;
     }
 
+    /**
+     * Get the bounds of the cell.
+     * @return the cell's bounds.
+     */
     public Bounds getBounds() {
         return bounds;
     }
