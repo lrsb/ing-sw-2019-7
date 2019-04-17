@@ -42,7 +42,7 @@ public class Bounds {
 
     /**
      * Set the bound type.
-     * @param direction The direction of the bound that you want to set the type to. (?)
+     * @param direction The direction of the bound that you want to set up.
      * @param type The type of the bound.
      * @return The modified object.
      */
