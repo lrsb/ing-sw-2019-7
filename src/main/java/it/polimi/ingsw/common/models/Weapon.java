@@ -175,11 +175,11 @@ public abstract class Weapon {
         LOCK_RIFLE(Weapons.LockRifle.class), MACHINE_GUN(Weapons.MachineGun.class), THOR(Weapons.Thor.class),
         PLASMA_GUN(Weapons.PlasmaGun.class), WHISPER(Weapons.Whisper.class), ELECTROSCYTHE(Weapons.Electroscythe.class),
         TRACTOR_BEAM(Weapons.TractorBeam.class), VORTEX_CANNON(Weapons.VortexCannon.class),
-        FURNACE(Weapons.Furnace.class)/*, HEATSEEKER(Weapons.Heatseeker.class), HELLION(Weapons.Hellion.class),
-        FLAMETHROWER(Weapons.Flamethrower.class), GRENADE_LAUNCHER(Weapons.GrenadeLauncher.class),
-        ROCKET_LAUNCHER(Weapons.RocketLauncher.class), RAILGUN(Weapons.Railgun.class),
-        CYBERBLADE(Weapons.Cyberblade.class), ZX2(Weapons.ZX2.class), SHOTGUN(Weapons.Shotgun.class),
-        POWER_GLOVE(Weapons.PowerGlove.class), SHOCKWAVE(Weapons.Shockwave.class), SLEDGEHAMMER(Weapons.Sledgehammer.class)*/;
+        FURNACE(Weapons.Furnace.class), HEATSEEKER(Weapons.Heatseeker.class), HELLION(Weapons.Hellion.class),
+        FLAMETHROWER(Weapons.Flamethrower.class), GRENADE_LAUNCHER(Weapons.GrenadeLauncher.class)/*,
+        ROCKET_LAUNCHER(Weapons.RocketLauncher.class)/*, RAILGUN(Weapons.Railgun.class)/*,
+        CYBERBLADE(Weapons.Cyberblade.class)/*, ZX2(Weapons.ZX2.class)/*, SHOTGUN(Weapons.Shotgun.class)/*,
+        POWER_GLOVE(Weapons.PowerGlove.class)/*, SHOCKWAVE(Weapons.Shockwave.class)/*, SLEDGEHAMMER(Weapons.Sledgehammer.class)*/;
 
         private final Class<? extends Weapon> weaponClass;
 
@@ -439,13 +439,8 @@ public abstract class Weapon {
             public boolean basicFire() {
                 possibleTarget.clear();
                 addVisibleTarget();
-                for (Player p : possibleTarget) {
-                    if ((shooter.getPosition().x == p.getPosition().x
-                            && shooter.getPosition().y - p.getPosition().y < 2
-                            && shooter.getPosition().y - p.getPosition().y > -2)
-                            || (shooter.getPosition().y == p.getPosition().y
-                            && shooter.getPosition().x - p.getPosition().x < 2
-                            && shooter.getPosition().x - p.getPosition().x > -2)) possibleTarget.remove(p);
+                for (var player : possibleTarget) {
+                    if (shooter.isNear(player)) possibleTarget.remove(player);
                 }
                 if (possibleTarget.size() > 0) {
                     //TODO: choose 1 target from possibleTarget to BasicTarget
@@ -567,8 +562,21 @@ public abstract class Weapon {
                 firstAdditionalPayment.add(RED);
             }
 
-            public void addNearTargets(ArrayList<Player> targetsGroup){
-
+            //fit in possibleTarget players (except shooter) that are near the Vortex
+            private void addNearTargets(){
+                for (Player p : players) {
+                    if(!(shooter.equals((p)))) {
+                        if (p.getPosition().equals(basicTargetPoint.get(0))) possibleTarget.add(p);
+                        else {
+                            for (Bounds.Direction d : Bounds.Direction.values()) {
+                                if(cells[basicTargetPoint.get(0).x][basicTargetPoint.get(0).y].getBounds()
+                                        .getType(d) != Bounds.Type.WALL
+                                        && basicTargetPoint.get(0).x + d.getX() == p.getPosition().x
+                                        && basicTargetPoint.get(0).y + d.getY() == p.getPosition().y) possibleTarget.add(p);
+                            }
+                        }
+                    }
+                }
             }
 
             @Override
@@ -579,7 +587,106 @@ public abstract class Weapon {
                     if(p.equals(shooter.getPosition())) possibleTargetPoint.remove(p);
                 }
                 //TODO: choose a square from possibleTargetPoint to basicTargetPoint
+                possibleTarget.clear();
+                addNearTargets();
+                if(possibleTarget.size() > 0){
+                    basicTarget.clear();
+                    //TODO: choose ONLY 1 target from possibleTarget to basicTarget
+                    //TODO: move basicTarget.get(0) in basicTargetPoint.get(0)
+                    basicTarget.get(0).addShooterHits(shooter, 2);
+                    basicTarget.get(0).convertShooterMarks(shooter);
+                    return true;
+                }
+                return false;
+            }
 
+            @Override
+            public boolean firstAdditionalFire() {
+                possibleTarget.remove(basicTarget.get(0));
+                //TODO: choose 1 or 2 target from possibleTarget to firstAdditionalTarget
+                if(payCost(firstAdditionalPayment)){
+                    for (Player p : firstAdditionalTarget) {
+                        //TODO: move into Vortex
+                        p.addShooterHits(shooter, 1);
+                        p.convertShooterMarks(shooter);
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean secondAdditionalFire() {
+                return false;
+            }
+        }
+
+        public class Furnace extends Weapon {
+            public Furnace(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
+                                boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
+                basicPayment.add(RED);
+                basicPayment.add(BLUE);
+            }
+
+            //so need to be selected the square near the shooter, not one square in the room...
+            private void addPossibleRooms(){
+                possibleTargetPoint.clear();
+                for (var d : Bounds.Direction.values()) {
+                    if (cells[shooter.getPosition().x][shooter.getPosition().y].getBounds().getType(d)
+                            == Bounds.Type.DOOR) possibleTargetPoint.add(new Point(shooter.getPosition().x + d.getX(),
+                            shooter.getPosition().y + d.getY()));
+                }
+            }
+
+            @Override
+            public boolean basicFire() {
+                if(alternativeFire) {
+                    addPossibleRooms();
+                    if (possibleTargetPoint.size() > 0) {
+                        basicTargetPoint.clear();
+                        basicTarget.clear();
+                        //TODO: choose one square from possibleTargetPoint to basicTargetPoint
+                        for (Player p : players) {
+                            if (cells[p.getPosition().x][p.getPosition().y].getColor()
+                                    == cells[basicTargetPoint.get(0).x][basicTargetPoint.get(0).y].getColor()) {
+                                basicTarget.add(p);
+                            }
+                        }
+                        if (basicTarget.size() > 0) {
+                            for (Player p : basicTarget) {
+                                p.addShooterHits(shooter, 1);
+                                p.convertShooterMarks(shooter);
+                            }
+                            return true;
+                        }
+                    }
+                } else {
+                    firstAdditionalTargetPoint.clear();
+                    for (var d : Bounds.Direction.values()) {
+                        if(cells[shooter.getPosition().x][shooter.getPosition().y].getBounds().getType(d)
+                                != Bounds.Type.WALL) firstAdditionalTargetPoint.add(new Point
+                                (shooter.getPosition().x + d.getX(), shooter.getPosition().y + d.getY()));
+                    }
+                    possibleTargetPoint.clear();
+                    for (Point point : firstAdditionalTargetPoint) {
+                        for (Player player : players) {
+                            if (player.getPosition().equals(point) && !possibleTargetPoint.contains(point))
+                                possibleTargetPoint.add(point);
+                        }
+                    }
+                    if(possibleTargetPoint.size() > 0){
+                        //TODO: choose 1 Point from possibleTargetPoint to basicTargetPoint
+                        for (var player : players) {
+                            if (player.getPosition().equals(basicTargetPoint.get(0))){
+                                player.addShooterHits(shooter, 1);
+                                player.convertShooterMarks(shooter);
+                                player.addShooterMarks(shooter, 1);
+                            }
+                        }
+                        return true;
+                    }
+                }
                 return false;
             }
 
@@ -594,8 +701,118 @@ public abstract class Weapon {
             }
         }
 
-        public class Furnace extends Weapon {
-            public Furnace(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
+        public class Heatseeker extends Weapon {
+            public Heatseeker(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
+                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
+                basicPayment.add(RED);
+                basicPayment.add(RED);
+                basicPayment.add(YELLOW);
+            }
+
+            @Override
+            public boolean basicFire() {
+                possibleTarget.clear();
+                for (var player : players) {
+                    if (!player.equals(shooter) && !shooter.canSee(player, cells)) possibleTarget.add(player);
+                }
+                if (possibleTarget.size() > 0) {
+                    //TODO: choose 1 target from possibleTarget to basicTarget
+                    basicTarget.get(0).addShooterHits(shooter, 3);
+                    basicTarget.get(0).convertShooterMarks(shooter);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean firstAdditionalFire() {
+                return false;
+            }
+
+            @Override
+            public boolean secondAdditionalFire() {
+                return false;
+            }
+        }
+
+        public class Hellion extends Weapon {
+            public Hellion(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
+                              boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
+                basicPayment.add(RED);
+                basicPayment.add(YELLOW);
+                alternativePayment.add(RED);
+            }
+
+            @Override
+            public boolean basicFire() {
+                possibleTarget.clear();
+                addVisibleTarget();
+                for (var player : possibleTarget) {
+                    if (shooter.isNear(player)) possibleTarget.remove(player);
+                }
+                if (possibleTarget.size() > 0) {
+                    //TODO: choose 1 target from possibleTarget to basicTarget
+                    basicTarget.get(0).addShooterHits(shooter, 1);
+                    basicTarget.get(0).convertShooterMarks(shooter);
+                    if (alternativeFire) {
+                        if(payCost(alternativePayment)) {
+                            for (var player : possibleTarget) {
+                                if (player.getPosition().equals(basicTarget.get(0).getPosition()))
+                                    player.addShooterMarks(shooter, 2);
+                            }
+                            return true;
+                        }
+                    } else {
+                        for (var player : possibleTarget) {
+                            if (player.getPosition().equals(basicTarget.get(0).getPosition()))
+                                player.addShooterMarks(shooter, 1);
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public boolean firstAdditionalFire() {
+                return false;
+            }
+
+            @Override
+            public boolean secondAdditionalFire() {
+                return false;
+            }
+        }
+
+        public class Flamethrower extends Weapon {
+            public Flamethrower(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
+                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(cells, players, shooter, alternativeFire, powerUpsPay);
+                basicPayment.add(RED);
+                alternativePayment.add(YELLOW);
+                alternativePayment.add(YELLOW);
+            }
+
+            @Override
+            public boolean basicFire() {
+                return false;
+            }
+
+            @Override
+            public boolean firstAdditionalFire() {
+                return false;
+            }
+
+            @Override
+            public boolean secondAdditionalFire() {
+                return false;
+            }
+        }
+
+        public class GrenadeLauncher extends Weapon {
+            public GrenadeLauncher(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
                                 boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
             }

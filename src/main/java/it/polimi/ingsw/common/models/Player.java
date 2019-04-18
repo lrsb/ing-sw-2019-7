@@ -139,6 +139,16 @@ public class Player {
         return false;
     }
 
+    public boolean isNear(@NotNull Player player){
+        if ((this.position.x == player.getPosition().x
+                && this.position.y - player.position.y < 2
+                && this.position.y - player.position.y > -2)
+                || (this.position.y == player.position.y
+                && this.position.x - player.position.x < 2
+                && this.position.x - player.position.x > -2)) return true;
+        return false;
+    }
+
     public boolean canSeeCell(@NotNull Point point, @NotNull Cell[][] cells) {
         if (cells[position.x][position.y].getColor() == cells[point.x][point.y].getColor()) return true;
         for (var direction : Bounds.Direction.values())
@@ -146,5 +156,11 @@ public class Player {
                     cells[position.x + direction.getX()][position.y + direction.getY()].getColor()
                             == cells[point.x][point.y].getColor()) return true;
         return false;
+    }
+
+    @Contract(value = "null -> false", pure = true)
+    @Override
+    public boolean equals(Object obj){
+        return obj != null && this.name.equals(obj.getClass().getName());
     }
 }
