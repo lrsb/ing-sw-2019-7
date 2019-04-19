@@ -1,5 +1,6 @@
 package it.polimi.ingsw.common.models;
 
+import it.polimi.ingsw.common.models.exceptions.CardNotFoundException;
 import it.polimi.ingsw.common.models.exceptions.EmptyDeckException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -15,15 +16,16 @@ import java.util.List;
  * and discarded (already used and need to be reshuffled) cards.
  * @param <T> Indicate the type of cards in the deck.
  */
-public class Deck<T> implements Serializable {
-
+@SuppressWarnings({"WeakerAccess", "SpellCheckingInspection", "unused"})
+public class Deck<T extends Serializable> implements Serializable {
     private final @NotNull ArrayList<T> playableCards = new ArrayList<>();
     private final @NotNull ArrayList<T> exitedCards = new ArrayList<>();
     private final @NotNull ArrayList<T> discardedCards = new ArrayList<>();
-    private final boolean shuffleable;  //indicates if playableCards ArrayList can be "reinitialized"
+    private final boolean shuffleable;
 
-    private Deck(@NotNull ArrayList<T> cards, boolean shuffleable) {
-        playableCards.addAll(cards);
+    private Deck(@NotNull ArrayList<T> cards, boolean shuffleable) throws EmptyDeckException {
+        if (cards.isEmpty()) throw new EmptyDeckException();
+        this.playableCards.addAll(cards);
         this.shuffleable = shuffleable;
     }
 
@@ -59,23 +61,24 @@ public class Deck<T> implements Serializable {
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
      */
     public @NotNull List<T> exitCards(int n) throws EmptyDeckException {
-        if (playableCards.isEmpty()) shuffleDeck();
+        if (playableCards.size() < n) if (shuffleable) shuffleDeck();
+        else throw new EmptyDeckException();
         var list = new ArrayList<T>();
-        for (int i = 0; i < n; i++) {
-            var exitedCard = playableCards.remove(0);
-            list.add(exitedCard);
-        }
+        for (int i = 0; i < n; i++) list.add(playableCards.remove(0));
         exitedCards.addAll(list);
         return list;
     }
 
     /**
      * This method is used when an exited card is used, it will be added to discarded card deck.
-     * @param exitedCard Name of the card that has been used.
+     * @param exitedCard The card that has been used.
+     * @throws CardNotFoundException Thrown when specified card isn't in the group of the exited.
      */
-    public void discardCard(@NotNull T exitedCard) {
-        if (exitedCards.indexOf(exitedCard) >= 0) exitedCards.remove(exitedCard);
-        discardedCards.add(exitedCard);
+    public void discardCard(@NotNull T exitedCard) throws CardNotFoundException {
+        if (exitedCards.indexOf(exitedCard) > -1) {
+            exitedCards.remove(exitedCard);
+            discardedCards.add(exitedCard);
+        } else throw new CardNotFoundException();
     }
 
     private void shuffleDeck() throws EmptyDeckException {
@@ -125,6 +128,7 @@ public class Deck<T> implements Serializable {
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.BLUE))), true);
         }
 
+        //TODO: impl
         @Contract(" -> new")
         public static @NotNull Deck<PowerUp> newPowerUpsDeck() {
             return new Deck<>(new ArrayList<>(), true);

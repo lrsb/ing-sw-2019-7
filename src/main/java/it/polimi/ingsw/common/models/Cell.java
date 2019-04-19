@@ -1,16 +1,33 @@
 package it.polimi.ingsw.common.models;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.Serializable;
 
 /**
  * Cell class, each cell is the atom of the board, some cells are spawnpoint, the otherone are just normal cells which
  * have an ammo card on it, more cells compose a room and more rooms compose the game board.
  */
-public class Cell {
+@SuppressWarnings({"unused", "WeakerAccess"})
+public class Cell implements Serializable {
     private Color color;
     private boolean spawnPoint;
     private Bounds bounds;
     private AmmoCard ammoCard;
+
+    @Contract(pure = true)
+    private Cell(@NotNull Bounds bounds) {
+        this.bounds = bounds;
+    }
+
+    @Contract(pure = true)
+    private Cell(Color color, boolean spawnPoint, Bounds bounds, AmmoCard ammoCard) {
+        this.color = color;
+        this.spawnPoint = spawnPoint;
+        this.bounds = bounds;
+        this.ammoCard = ammoCard;
+    }
 
     /**
      * Indicate if a certain cell is a spawnpoint.
@@ -62,7 +79,6 @@ public class Cell {
         //"nesw" in senso orario, _ : chiuso, | : porta,   : stessa stanza
         public static Creator withBounds(@NotNull String boundsString) {
             var creator = new Creator();
-            creator.cell = new Cell();
             var bounds = Bounds.Creator.withType(Bounds.Type.SAME_ROOM);
             for (var direction : Bounds.Direction.values()) {
                 char index;
@@ -90,7 +106,7 @@ public class Cell {
                         bounds.setType(direction, Bounds.Type.SAME_ROOM);
                 }
             }
-            creator.cell.bounds = bounds;
+            creator.cell = new Cell(bounds);
             return creator;
         }
 

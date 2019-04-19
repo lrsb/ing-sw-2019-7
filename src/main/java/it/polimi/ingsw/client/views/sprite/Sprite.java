@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.views.sprite;
 
 import it.polimi.ingsw.client.views.interpolator.Interpolator;
 import it.polimi.ingsw.client.views.interpolator.exceptions.TimestampOutOfRangeException;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,12 +11,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Optional;
 
-public class Sprite implements Displayable {
+public class Sprite {
     private int x;
     private int y;
 
     private @NotNull Dimension dimension;
-    private @NotNull BufferedImage image;
+    private @Nullable BufferedImage bufferedImage;
     private @Nullable String tag;
 
     private boolean hidden = false;
@@ -25,16 +26,16 @@ public class Sprite implements Displayable {
     private @Nullable SpriteListener spriteListener;
     private @Nullable Interpolator interpolator;
 
+    @Contract(pure = true)
     public Sprite(int x, int y, @NotNull Dimension dimension, @NotNull Displayable displayable) throws IOException {
         this.x = x;
         this.y = y;
         this.dimension = dimension;
-        this.image = displayable.getImage();
+        this.bufferedImage = displayable.getImage();
     }
 
-    @Override
-    public @NotNull BufferedImage getImage() {
-        return image;
+    public @Nullable BufferedImage getBufferedImage() {
+        return bufferedImage;
     }
 
     public int getX() {
@@ -55,7 +56,7 @@ public class Sprite implements Displayable {
         updated();
     }
 
-    public void move(int dx, int dy) {
+    public void translate(int dx, int dy) {
         x += dx;
         y += dy;
         updated();
@@ -64,12 +65,6 @@ public class Sprite implements Displayable {
     public void moveTo(int x, int y) {
         this.x = x;
         this.y = y;
-        updated();
-    }
-
-    public void moveTo(@NotNull Point point) {
-        this.x = point.x;
-        this.y = point.y;
         updated();
     }
 

@@ -163,14 +163,13 @@ public abstract class Weapon {
     @Contract(value = "null -> false", pure = true)
     @Override
     public boolean equals(Object obj) {
-        return obj != null && getClass().equals(obj.getClass());
+        return obj instanceof Weapon && ((Weapon) obj).getClass().equals(getClass());
     }
 
     protected boolean canFire() {
         return false;
     }
 
-    @SuppressWarnings("SpellCheckingInspection")
     public enum Name {
         LOCK_RIFLE(Weapons.LockRifle.class), MACHINE_GUN(Weapons.MachineGun.class), THOR(Weapons.Thor.class),
         PLASMA_GUN(Weapons.PlasmaGun.class), WHISPER(Weapons.Whisper.class), ELECTROSCYTHE(Weapons.Electroscythe.class),
@@ -571,8 +570,9 @@ public abstract class Weapon {
                             for (Bounds.Direction d : Bounds.Direction.values()) {
                                 if(cells[basicTargetPoint.get(0).x][basicTargetPoint.get(0).y].getBounds()
                                         .getType(d) != Bounds.Type.WALL
-                                        && basicTargetPoint.get(0).x + d.getX() == p.getPosition().x
-                                        && basicTargetPoint.get(0).y + d.getY() == p.getPosition().y) possibleTarget.add(p);
+                                        && basicTargetPoint.get(0).x + d.getdX() == p.getPosition().x
+                                        && basicTargetPoint.get(0).y + d.getdY() == p.getPosition().y)
+                                    possibleTarget.add(p);
                             }
                         }
                     }
@@ -634,8 +634,8 @@ public abstract class Weapon {
                 possibleTargetPoint.clear();
                 for (var d : Bounds.Direction.values()) {
                     if (cells[shooter.getPosition().x][shooter.getPosition().y].getBounds().getType(d)
-                            == Bounds.Type.DOOR) possibleTargetPoint.add(new Point(shooter.getPosition().x + d.getX(),
-                            shooter.getPosition().y + d.getY()));
+                            == Bounds.Type.DOOR) possibleTargetPoint.add(new Point(shooter.getPosition().x + d.getdX(),
+                            shooter.getPosition().y + d.getdY()));
                 }
             }
 
@@ -666,7 +666,7 @@ public abstract class Weapon {
                     for (var d : Bounds.Direction.values()) {
                         if(cells[shooter.getPosition().x][shooter.getPosition().y].getBounds().getType(d)
                                 != Bounds.Type.WALL) firstAdditionalTargetPoint.add(new Point
-                                (shooter.getPosition().x + d.getX(), shooter.getPosition().y + d.getY()));
+                                (shooter.getPosition().x + d.getdX(), shooter.getPosition().y + d.getdY()));
                     }
                     possibleTargetPoint.clear();
                     for (Point point : firstAdditionalTargetPoint) {

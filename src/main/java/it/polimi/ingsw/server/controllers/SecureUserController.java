@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 
 import static com.mongodb.client.model.Filters.eq;
 
+@SuppressWarnings("ConstantConditions")
 class SecureUserController {
     private static final @NotNull SecureRandom random = new SecureRandom();
     private static final @NotNull char[] symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();

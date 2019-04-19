@@ -5,12 +5,13 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class AdrenalinePacket {
-    private @NotNull Type type;
-    private @Nullable String jsonObject;
+public class AdrenalinePacket implements Serializable {
+    private final @NotNull Type type;
+    private final @Nullable String jsonObject;
 
     @Contract(pure = true)
     public AdrenalinePacket(@NotNull Type type, @Nullable String token, @Nullable Object object) {

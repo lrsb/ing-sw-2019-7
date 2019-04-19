@@ -28,8 +28,8 @@ public class Game implements Serializable {
     private int skulls = 5;//da 5 a 8
 
     private transient Deck<AmmoCard> ammoDeck = Deck.Creator.newAmmoDeck();
-    private transient Deck<PowerUp> powerUpsDeck = Deck.Creator.newPowerUpsDeck();
-    private transient Deck<Weapon.Name> weaponsDeck = Deck.Creator.newWeaponsDeck();
+    private transient Deck<PowerUp> powerUpsDeck; //= Deck.Creator.newPowerUpsDeck();
+    private transient Deck<Weapon.Name> weaponsDeck; //= Deck.Creator.newWeaponsDeck();
 
     private ArrayList<Weapon.Name> redWeapons;
     private ArrayList<Weapon.Name> blueWeapons;
@@ -199,7 +199,7 @@ public class Game implements Serializable {
                     cells[i][j] = Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
                 }
             }
-            return new Game(roomUuid, Type.SIX_SIX, cells, users.stream().map(e -> new Player(e.getNickname())).collect(Collectors.toList()));
+            return new Game(roomUuid, Type.SIX_SIX, cells, users.stream().map(Player::new).collect(Collectors.toList()));
         }
     }
 }

@@ -60,7 +60,23 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
         super.paintComponent(g);
         var graphics = (Graphics2D) g;
         if (isRetina()) graphics.scale(0.5, 0.5);
-        sprites.forEach(e -> graphics.drawImage(e.getImage(), isRetina() ? e.getX() * 2 : e.getX(), isRetina() ? e.getY() * 2 : e.getY(), isRetina() ? e.getDimension().width * 2 : e.getDimension().width, isRetina() ? e.getDimension().height * 2 : e.getDimension().height, this));
+        sprites.forEach(e -> {
+            var image = e.getBufferedImage();
+            /*if (e.getRotation() != 0) {
+                var at = new AffineTransform();
+                var dst = new BufferedImage(image.getHeight(), image.getWidth(), BufferedImage.TYPE_INT_ARGB);
+                at.translate(image.getWidth() / 2, image.getHeight() / 2);
+                at.rotate(e.getRotation());
+                at.translate(- image.getHeight() / 2, - image.getWidth() * 2);
+                at.scale((double) image.getWidth() / image.getHeight(), (double) image.getHeight() / image.getWidth());
+                var op = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+                op.filter(image, dst);
+                image = dst;
+            }*/
+            graphics.drawImage(image, isRetina() ? e.getX() * 2 : e.getX(), isRetina() ? e.getY() * 2 : e.getY(),
+                    isRetina() ? e.getDimension().width * 2 : e.getDimension().width,
+                    isRetina() ? e.getDimension().height * 2 : e.getDimension().height, this);
+        });
         Toolkit.getDefaultToolkit().sync();
     }
 

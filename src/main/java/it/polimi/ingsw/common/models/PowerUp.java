@@ -8,15 +8,17 @@ import org.jetbrains.annotations.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
- *Each powerup card is composed in 2 parts: it has a specific type and a color.
- *For each type you have 3 card available, one for each color.
+ * Each powerup card is composed in 2 parts: it has a specific type and a color.
+ * For each type you have 3 card available, one for each color.
  */
-public class PowerUp implements Displayable {
-    private @NotNull AmmoCard.Color ammoColor;
-    private @NotNull Type type;
-    private @Nullable BufferedImage bufferedImage;
+@SuppressWarnings("WeakerAccess")
+public class PowerUp implements Displayable, Serializable {
+    private final @NotNull AmmoCard.Color ammoColor;
+    private final @NotNull Type type;
+    private transient @Nullable BufferedImage bufferedImage;
 
     /**
      * PowerUp constructor.
@@ -53,7 +55,7 @@ public class PowerUp implements Displayable {
      * @throws IOException If can't find the indicated file.
      */
     @Override
-    public @NotNull BufferedImage getImage() throws IOException {
+    public @Nullable BufferedImage getImage() throws IOException {
         if (bufferedImage == null)
             bufferedImage = ImageIO.read(AmmoCard.class.getResourceAsStream("PowerUp/" + type.name().substring(0, 3) +
                     ammoColor.name().substring(0, 1) + ".png"));
@@ -68,8 +70,7 @@ public class PowerUp implements Displayable {
     @Contract(value = "null -> false", pure = true)
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof PowerUp) return ammoColor == ((PowerUp) obj).ammoColor && type == ((PowerUp) obj).type;
-        else return false;
+        return obj instanceof PowerUp && ammoColor == ((PowerUp) obj).ammoColor && type == ((PowerUp) obj).type;
     }
 
     enum Type {
