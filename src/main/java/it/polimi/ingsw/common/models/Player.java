@@ -139,8 +139,8 @@ public class Player {
         return false;
     }
 
-    public boolean isNear(@NotNull Player player){
-        if ((this.position.x == player.getPosition().x
+    public boolean isPlayerNear(@NotNull Player player, @NotNull Cell[][] cells){
+        if (this.canSee(player, cells) && (this.position.x == player.getPosition().x
                 && this.position.y - player.position.y < 2
                 && this.position.y - player.position.y > -2)
                 || (this.position.y == player.position.y
@@ -155,6 +155,16 @@ public class Player {
             if (cells[position.x][position.y].getBounds().getType(direction) == Bounds.Type.DOOR &&
                     cells[position.x + direction.getX()][position.y + direction.getY()].getColor()
                             == cells[point.x][point.y].getColor()) return true;
+        return false;
+    }
+
+    public boolean isCellNear(@NotNull Point point, @NotNull Cell[][] cells){
+        if (this.canSeeCell(point, cells) && (this.position.x == point.x
+                && this.position.y - point.y < 2
+                && this.position.y - point.y > -2)
+                || (this.position.y == point.y
+                && this.position.x - point.x < 2
+                && this.position.x - point.x > -2)) return true;
         return false;
     }
 
