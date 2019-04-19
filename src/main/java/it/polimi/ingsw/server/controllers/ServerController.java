@@ -105,7 +105,7 @@ public class ServerController implements RmiAPI {
         return null;
     }
 
-    private <T> List<T> convertCollection(@NotNull MongoCollection<Document> collection, @NotNull Class<T> type) {
+    private @NotNull <T> List<T> convertCollection(@NotNull MongoCollection<Document> collection, @NotNull Class<T> type) {
         var gson = new Gson();
         return StreamSupport.stream(collection.find().spliterator(), false).map(e -> gson.fromJson(e.toJson(), type)).collect(Collectors.toList());
     }

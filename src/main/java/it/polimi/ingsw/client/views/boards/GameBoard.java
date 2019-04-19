@@ -13,18 +13,19 @@ import java.awt.*;
 import java.io.IOException;
 
 public class GameBoard extends AbstractBoard {
-    private @NotNull Dimension WEAPON_DIMEMSION = transformDim(0.091, 0.214);
-    private @NotNull Dimension POWERUP_DIMEMSION = transformDim(0.068, 0.136);
+    private final @NotNull Dimension WEAPON_DIMEMSION = transformDim(0.091, 0.214);
+    private final @NotNull Dimension POWERUP_DIMEMSION = transformDim(0.068, 0.136);
     private final @NotNull Sprite weapon;
 
-    private @NotNull Point WEAPON_POSITION = transformPoint(0.877, 0.269);
-    private @NotNull Point POWERUP_POSITION = transformPoint(0.902, 0.055);
+    private final @NotNull Point WEAPON_POSITION = transformPoint(0.877, 0.269);
+    private final @NotNull Point POWERUP_POSITION = transformPoint(0.902, 0.055);
     private final @NotNull Sprite powerup;
 
-    private final @NotNull Game game;
+    private final @NotNull Dimension AMMOCARD_DIMEMSION = transformDim(0.07, 0.1);
+    private final @NotNull Point AMMOCARD_POSITION = transformPoint(0.015, 0.88);
     private final @NotNull Sprite ammoCard;
-    private @NotNull Dimension AMMOCARD_DIMEMSION = transformDim(0.07, 0.1);
-    private @NotNull Point AMMOCARD_POSITION = transformPoint(0.015, 0.88);
+
+    private final @NotNull Game game;
 
     public GameBoard(@NotNull Dimension dimension, @NotNull Game game) throws IOException {
         super(dimension);

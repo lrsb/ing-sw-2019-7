@@ -8,18 +8,19 @@ import org.jetbrains.annotations.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
- * This class contains all the informations about the ammo card.
+ * This class contains all the informations about an ammo card.
  * Each card is composed of three elements, one on top, and two on bottom, one left and one right.
  * The top element can be an ammo ( with color ) or a power up.
  * The two bottom elements are ammo, they can be of the same or different ( just in case of power up on top ) color.
  */
-public class AmmoCard implements Displayable {
-    private @NotNull Type type;
-    private @NotNull Color left;
-    private @NotNull Color right;
-    private @Nullable BufferedImage bufferedImage;
+public class AmmoCard implements Displayable, Serializable {
+    private final @NotNull Type type;
+    private final @NotNull Color left;
+    private final @NotNull Color right;
+    private transient @Nullable BufferedImage bufferedImage;
 
     /**
      * AmmoCard constructor.
@@ -61,13 +62,19 @@ public class AmmoCard implements Displayable {
         return right;
     }
 
-
     @Override
-    public @NotNull BufferedImage getImage() throws IOException {
+    public @Nullable BufferedImage getImage() throws IOException {
         if (bufferedImage == null)
             bufferedImage = ImageIO.read(AmmoCard.class.getResourceAsStream("AmmoCard/" + type.name().substring(0, 1) +
                     left.name().substring(0, 1) + right.name().substring(0, 1) + ".png"));
         return bufferedImage;
+    }
+
+    @Contract(value = "null -> false", pure = true)
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof AmmoCard &&
+                ((AmmoCard) obj).type == type && ((AmmoCard) obj).left == left && ((AmmoCard) obj).right == right;
     }
 
     public enum Type {

@@ -4,6 +4,7 @@ import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.views.boards.PlayerBoard;
 import it.polimi.ingsw.common.models.Player;
+import it.polimi.ingsw.common.models.User;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -34,6 +35,6 @@ public class PlayerBoardViewController extends BaseViewController {
     }
 
     private void createUIComponents() throws IOException {
-        playerBoard = new PlayerBoard(new Dimension(WIDTH, (int) (HEIGHT * 0.89)), new Player("ciao"));
+        playerBoard = new PlayerBoard(new Dimension(WIDTH, (int) (HEIGHT * 0.89)), new Player(new User("ciao")));
     }
 }
