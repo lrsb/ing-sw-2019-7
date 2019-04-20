@@ -1,7 +1,10 @@
-package it.polimi.ingsw.common.models;
+package it.polimi.ingsw.server.models;
 
-import it.polimi.ingsw.common.models.exceptions.CardNotFoundException;
-import it.polimi.ingsw.common.models.exceptions.EmptyDeckException;
+import it.polimi.ingsw.common.models.AmmoCard;
+import it.polimi.ingsw.common.models.PowerUp;
+import it.polimi.ingsw.common.models.Weapon;
+import it.polimi.ingsw.server.models.exceptions.CardNotFoundException;
+import it.polimi.ingsw.server.models.exceptions.EmptyDeckException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

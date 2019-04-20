@@ -16,15 +16,15 @@ public abstract class Weapon {
     private @NotNull Player shooter;
     private boolean alternativeFire;
     //siccome si possono usare anche le powerups come ammo, se le metti, queste hanno la precedenza sul pagamento
-    private @NotNull ArrayList<PowerUp> powerUpsPay;
-    private @NotNull ArrayList<AmmoCard.Color> basicPayment;
-    private @NotNull ArrayList<AmmoCard.Color> firstAdditionalPayment;
-    private @NotNull ArrayList<AmmoCard.Color> secondAdditionalPayment;
-    private @NotNull ArrayList<AmmoCard.Color> alternativePayment;
+    private ArrayList<PowerUp> powerUpsPay;
+    private ArrayList<AmmoCard.Color> basicPayment;
+    private ArrayList<AmmoCard.Color> firstAdditionalPayment;
+    private ArrayList<AmmoCard.Color> secondAdditionalPayment;
+    private ArrayList<AmmoCard.Color> alternativePayment;
 
 
-    private ArrayList<Player> possibleTarget = new ArrayList<>();
-    private ArrayList<Point> possibleTargetPoint = new ArrayList<>();
+    private @NotNull ArrayList<Player> possibleTarget = new ArrayList<>();
+    private @NotNull ArrayList<Point> possibleTargetPoint = new ArrayList<>();
     private @NotNull ArrayList<Player> basicTarget = new ArrayList<>();
     private @NotNull ArrayList<Point> basicTargetPoint = new ArrayList<>();
     private @NotNull ArrayList<Player> firstAdditionalTarget = new ArrayList<>();
@@ -123,7 +123,7 @@ public abstract class Weapon {
     public void addNonVisibleTarget() {
         possibleTarget.clear();
         for (Player p : players) {
-            if (!(shooter.canSee(p, cells)) && !(shooter.getName().equals(p.getName()))) possibleTarget.add(p);
+            if (!(shooter.canSee(p, cells)) && !(shooter.getNickname().equals(p.getNickname()))) possibleTarget.add(p);
         }
     }
 
@@ -170,6 +170,7 @@ public abstract class Weapon {
         return false;
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     public enum Name {
         LOCK_RIFLE(Weapons.LockRifle.class), MACHINE_GUN(Weapons.MachineGun.class), THOR(Weapons.Thor.class),
         PLASMA_GUN(Weapons.PlasmaGun.class), WHISPER(Weapons.Whisper.class), ELECTROSCYTHE(Weapons.Electroscythe.class),
@@ -232,7 +233,7 @@ public abstract class Weapon {
             @Override
             public boolean firstAdditionalFire() {
                 for (Player p : possibleTarget) {
-                    if (p.getName().equals(basicTarget.get(0).getName())) possibleTarget.remove(p);
+                    if (p.getNickname().equals(basicTarget.get(0).getNickname())) possibleTarget.remove(p);
                 }
                 if (possibleTarget.size() > 0) {
                     firstAdditionalTarget.clear();
@@ -322,7 +323,8 @@ public abstract class Weapon {
 
             public void addVisibleTarget(Player player) {
                 for (Player p : players) {
-                    if (player.canSee(p, cells) && !(p.getName().equals(shooter.getName()))) possibleTarget.add(p);
+                    if (player.canSee(p, cells) && !(p.getNickname().equals(shooter.getNickname())))
+                        possibleTarget.add(p);
                 }
             }
 
@@ -363,8 +365,9 @@ public abstract class Weapon {
                 possibleTarget.clear();
                 addVisibleTarget(firstAdditionalTarget.get(0));
                 for (Player p : possibleTarget) {
-                    if (p.getName().equals(shooter.getName())
-                            || p.getName().equals(firstAdditionalTarget.get(0).getName())) possibleTarget.remove(p);
+                    if (p.getNickname().equals(shooter.getNickname())
+                            || p.getNickname().equals(firstAdditionalTarget.get(0).getNickname()))
+                        possibleTarget.remove(p);
                 }
                 if (possibleTarget.size() > 0) {
                     secondAdditionalTarget.clear();
@@ -475,7 +478,7 @@ public abstract class Weapon {
             public boolean basicFire() {
                 basicTarget.clear();
                 for (Player p : players) {
-                    if (shooter.getPosition().equals(p.getPosition()) && !(shooter.getName().equals(p.getName()))) {
+                    if (shooter.getPosition().equals(p.getPosition()) && !(shooter.getNickname().equals(p.getNickname()))) {
                         basicTarget.add(p);
                     }
                 }

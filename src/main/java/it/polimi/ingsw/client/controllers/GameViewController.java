@@ -4,7 +4,7 @@ import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.views.boards.GameBoard;
 import it.polimi.ingsw.client.views.boards.GameBoardListener;
-import it.polimi.ingsw.common.models.Game;
+import it.polimi.ingsw.server.models.GameImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -54,7 +54,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
     }
 
     private void createUIComponents() throws IOException {
-        gameBoard = new GameBoard(new Dimension(WIDTH, (int) (HEIGHT * 0.98)), Game.Creator.newGame(UUID.randomUUID(), new ArrayList<>()));
+        gameBoard = new GameBoard(new Dimension(WIDTH, (int) (HEIGHT * 0.98)), GameImpl.Creator.newGame(UUID.randomUUID(), new ArrayList<>()));
         gameBoard.setBoardListener(this);
     }
 }

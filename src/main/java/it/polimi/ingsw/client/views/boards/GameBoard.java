@@ -25,14 +25,14 @@ public class GameBoard extends AbstractBoard {
     private final @NotNull Point AMMOCARD_POSITION = transformPoint(0.015, 0.88);
     private final @NotNull Sprite ammoCard;
 
-    private final @NotNull Game game;
+    private @NotNull Game game;
 
     public GameBoard(@NotNull Dimension dimension, @NotNull Game game) throws IOException {
         super(dimension);
         this.game = game;
 
         addSprite(new Sprite(0, 0, new Dimension(width / 2, height), () -> ImageIO.read(Game.class.getResourceAsStream("Game/" + game.getType().getLeft() + ".png"))));
-        addSprite(new Sprite(dimension.width / 2, 0, new Dimension(width / 2, height), () -> ImageIO.read(Game.class.getResourceAsStream("Game/" + game.getType().getRight() + ".png"))));
+        addSprite(new Sprite(width / 2, 0, new Dimension(width / 2, height), () -> ImageIO.read(Game.class.getResourceAsStream("Game/" + game.getType().getRight() + ".png"))));
 
         weapon = new Sprite(WEAPON_POSITION.x, WEAPON_POSITION.y, WEAPON_DIMEMSION, () -> ImageIO.read(Weapon.class.getResourceAsStream("Weapon/" + "back" + ".png")));
         weapon.setDraggable(true);
@@ -48,6 +48,11 @@ public class GameBoard extends AbstractBoard {
         ammoCard.setDraggable(true);
         ammoCard.setTag("ammocard");
         addSprite(ammoCard);
+    }
+
+    public void updateGame(@NotNull Game game) {
+        this.game = game;
+        //TODO: update board
     }
 
     @Override

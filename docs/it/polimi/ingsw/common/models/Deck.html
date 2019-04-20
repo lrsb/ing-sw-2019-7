@@ -256,13 +256,16 @@ implements java.io.Serializable</pre>
 <h4>discardCard</h4>
 <pre class="methodSignature">@NotNull
 public&nbsp;<a href="Deck.html" title="type parameter in Deck">T</a>&nbsp;discardCard()
-              throws <a href="exceptions/EmptyDeckException.html" title="class in it.polimi.ingsw.common.models.exceptions">EmptyDeckException</a></pre>
+              throws <a href="exceptions/EmptyDeckException.html"
+                        title="class in it.polimi.ingsw.server.models.exceptions">EmptyDeckException</a></pre>
 <div class="block">This method move a card from the playable deck to the discarded one.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The discarded card.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="exceptions/EmptyDeckException.html" title="class in it.polimi.ingsw.common.models.exceptions">EmptyDeckException</a></code> - Thrown when there are no more available cards, and the deck is not shufflable.</dd>
+    <dd><code><a href="exceptions/EmptyDeckException.html" title="class in it.polimi.ingsw.server.models.exceptions">EmptyDeckException</a></code>
+        - Thrown when there are no more available cards, and the deck is not shufflable.
+    </dd>
 </dl>
 </li>
 </ul>
@@ -274,14 +277,17 @@ public&nbsp;<a href="Deck.html" title="type parameter in Deck">T</a>&nbsp;discar
 <h4>exitCard</h4>
 <pre class="methodSignature">@NotNull
 public&nbsp;<a href="Deck.html" title="type parameter in Deck">T</a>&nbsp;exitCard()
-           throws <a href="exceptions/EmptyDeckException.html" title="class in it.polimi.ingsw.common.models.exceptions">EmptyDeckException</a></pre>
+           throws <a href="exceptions/EmptyDeckException.html"
+                     title="class in it.polimi.ingsw.server.models.exceptions">EmptyDeckException</a></pre>
 <div class="block">This method is used to remove a card from playable deck and
  (ex: replacement of card that are on the ground)</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Name of exited card</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="exceptions/EmptyDeckException.html" title="class in it.polimi.ingsw.common.models.exceptions">EmptyDeckException</a></code> - Thrown when there are no more available cards, and the deck is not shufflable.</dd>
+    <dd><code><a href="exceptions/EmptyDeckException.html" title="class in it.polimi.ingsw.server.models.exceptions">EmptyDeckException</a></code>
+        - Thrown when there are no more available cards, and the deck is not shufflable.
+    </dd>
 </dl>
 </li>
 </ul>
@@ -293,7 +299,8 @@ public&nbsp;<a href="Deck.html" title="type parameter in Deck">T</a>&nbsp;exitCa
 <h4>exitCards</h4>
 <pre class="methodSignature">@NotNull
 public&nbsp;@NotNull java.util.List&lt;<a href="Deck.html" title="type parameter in Deck">T</a>&gt;&nbsp;exitCards&#8203;(int&nbsp;n)
-                                     throws <a href="exceptions/EmptyDeckException.html" title="class in it.polimi.ingsw.common.models.exceptions">EmptyDeckException</a></pre>
+                                     throws <a href="exceptions/EmptyDeckException.html"
+                                               title="class in it.polimi.ingsw.server.models.exceptions">EmptyDeckException</a></pre>
 <div class="block">This method is used when more cards are removed from playable card deck adding them to the exited one</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -301,7 +308,9 @@ public&nbsp;@NotNull java.util.List&lt;<a href="Deck.html" title="type parameter
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>List of card removed from the deck.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="exceptions/EmptyDeckException.html" title="class in it.polimi.ingsw.common.models.exceptions">EmptyDeckException</a></code> - Thrown when there are no more available cards, and the deck is not shufflable.</dd>
+    <dd><code><a href="exceptions/EmptyDeckException.html" title="class in it.polimi.ingsw.server.models.exceptions">EmptyDeckException</a></code>
+        - Thrown when there are no more available cards, and the deck is not shufflable.
+    </dd>
 </dl>
 </li>
 </ul>

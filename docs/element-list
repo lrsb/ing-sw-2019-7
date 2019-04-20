@@ -4,7 +4,7 @@ it.polimi.ingsw.client.views.interpolator
 it.polimi.ingsw.client.views.interpolator.exceptions
 it.polimi.ingsw.client.views.sprite
 it.polimi.ingsw.common.models
-it.polimi.ingsw.common.models.exceptions
+it.polimi.ingsw.server.models.exceptions
 it.polimi.ingsw.common.models.wrappers
 it.polimi.ingsw.common.network
 it.polimi.ingsw.common.network.rmi

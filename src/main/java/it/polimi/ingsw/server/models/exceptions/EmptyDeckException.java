@@ -1,4 +1,4 @@
-package it.polimi.ingsw.common.models.exceptions;
+package it.polimi.ingsw.server.models.exceptions;
 
 public class EmptyDeckException extends RuntimeException {
 }

@@ -16,7 +16,7 @@ public class Sprite {
     private int y;
 
     private @NotNull Dimension dimension;
-    private @Nullable BufferedImage bufferedImage;
+    private @NotNull BufferedImage bufferedImage;
     private @Nullable String tag;
 
     private boolean hidden = false;
@@ -34,7 +34,7 @@ public class Sprite {
         this.bufferedImage = displayable.getImage();
     }
 
-    public @Nullable BufferedImage getBufferedImage() {
+    public @NotNull BufferedImage getBufferedImage() {
         return bufferedImage;
     }
 

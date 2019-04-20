@@ -62,11 +62,11 @@ public class Bounds implements Serializable {
         }
     }
 
-    enum Type {
+    public enum Type {
         DOOR, SAME_ROOM, WALL
     }
 
-    enum Direction {
+    public enum Direction {
         N(0, 1), S(0, -1), W(-1, 0), E(1, 0);
 
         private int dx;

@@ -6,6 +6,7 @@ import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.rmi.RmiAPI;
+import it.polimi.ingsw.server.models.GameImpl;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,7 +77,7 @@ public class ServerController implements RmiAPI {
             if (user == null) return null;
             var room = new Gson().fromJson(rooms.find(eq("uuid", roomUuid)).first().toJson(), Room.class);
             if (room.getUsers().size() < Game.MIN_PLAYERS || room.getUsers().size() > Game.MAX_PLAYERS) return null;
-            var game = Game.Creator.newGame(room.getUuid(), room.getUsers());
+            var game = GameImpl.Creator.newGame(room.getUuid(), room.getUsers());
             games.insertOne(Document.parse(new Gson().toJson(game)));
             return game.getUuid();
         } catch (Exception e) {

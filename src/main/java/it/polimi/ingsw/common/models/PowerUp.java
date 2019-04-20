@@ -3,7 +3,6 @@ package it.polimi.ingsw.common.models;
 import it.polimi.ingsw.client.views.sprite.Displayable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -18,7 +17,6 @@ import java.io.Serializable;
 public class PowerUp implements Displayable, Serializable {
     private final @NotNull AmmoCard.Color ammoColor;
     private final @NotNull Type type;
-    private transient @Nullable BufferedImage bufferedImage;
 
     /**
      * PowerUp constructor.
@@ -49,17 +47,10 @@ public class PowerUp implements Displayable, Serializable {
         return type;
     }
 
-    /**
-     * Load the image file as an attribute.
-     * @return Images saved as attribute.
-     * @throws IOException If can't find the indicated file.
-     */
     @Override
-    public @Nullable BufferedImage getImage() throws IOException {
-        if (bufferedImage == null)
-            bufferedImage = ImageIO.read(AmmoCard.class.getResourceAsStream("PowerUp/" + type.name().substring(0, 3) +
+    public @NotNull BufferedImage getImage() throws IOException {
+        return ImageIO.read(AmmoCard.class.getResourceAsStream("PowerUp/" + type.name().substring(0, 3) +
                     ammoColor.name().substring(0, 1) + ".png"));
-        return bufferedImage;
     }
 
     /**

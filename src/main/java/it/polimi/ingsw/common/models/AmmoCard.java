@@ -3,7 +3,6 @@ package it.polimi.ingsw.common.models;
 import it.polimi.ingsw.client.views.sprite.Displayable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -20,7 +19,6 @@ public class AmmoCard implements Displayable, Serializable {
     private final @NotNull Type type;
     private final @NotNull Color left;
     private final @NotNull Color right;
-    private transient @Nullable BufferedImage bufferedImage;
 
     /**
      * AmmoCard constructor.
@@ -36,7 +34,7 @@ public class AmmoCard implements Displayable, Serializable {
     }
 
     /**
-     *Get the type of the top element.
+     * Get the type of the top element.
      * @return Type of top element.
      */
     @Contract(pure = true)
@@ -45,7 +43,7 @@ public class AmmoCard implements Displayable, Serializable {
     }
 
     /**
-     *Get the color of the bottom-left element.
+     * Get the color of the bottom-left element.
      * @return Color of bottom-left element.
      */
     @Contract(pure = true)
@@ -63,11 +61,9 @@ public class AmmoCard implements Displayable, Serializable {
     }
 
     @Override
-    public @Nullable BufferedImage getImage() throws IOException {
-        if (bufferedImage == null)
-            bufferedImage = ImageIO.read(AmmoCard.class.getResourceAsStream("AmmoCard/" + type.name().substring(0, 1) +
+    public @NotNull BufferedImage getImage() throws IOException {
+        return ImageIO.read(AmmoCard.class.getResourceAsStream("AmmoCard/" + type.name().substring(0, 1) +
                     left.name().substring(0, 1) + right.name().substring(0, 1) + ".png"));
-        return bufferedImage;
     }
 
     @Contract(value = "null -> false", pure = true)
@@ -84,16 +80,16 @@ public class AmmoCard implements Displayable, Serializable {
     public enum Color {
         RED(0), YELLOW(1), BLUE(2);
 
-        private int colorNumber;
+        private int index;
 
         @Contract(pure = true)
-        Color(int colorNumber){
-            this.colorNumber = colorNumber;
+        Color(int index) {
+            this.index = index;
         }
 
         @Contract(pure = true)
-        int getColorNumber(){
-            return colorNumber;
+        public int getIndex() {
+            return index;
         }
     }
 }

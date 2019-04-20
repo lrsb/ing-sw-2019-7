@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class Player implements Serializable {
     private UUID uuid;
-    private String name;
+    private String nickname;
     private Point position;
     private ArrayList<String> hitsTaken = new ArrayList<>();
     private ArrayList<String> marksTaken = new ArrayList<>();
@@ -26,16 +26,16 @@ public class Player implements Serializable {
 
     public Player(@NotNull User user) {
         this.uuid = user.getUuid();
-        this.name = user.getNickname();
+        this.nickname = user.getNickname();
     }
 
-    public String getName() {
-        return name;
+    public String getNickname() {
+        return nickname;
     }
 
     public void addShooterHits(@NotNull Player shooter, int hits) {
         for (int c = 0; c < hits; c++) {
-            if (hitsTaken.size() < 12) hitsTaken.add(shooter.name);
+            if (hitsTaken.size() < 12) hitsTaken.add(shooter.nickname);
         }
     }
 
@@ -70,14 +70,14 @@ public class Player implements Serializable {
 
     public void addShooterMarks(@NotNull Player shooter, int marks) {
         for (int c = 0; c < marks; c++) {
-            marksTaken.add(shooter.name);
+            marksTaken.add(shooter.nickname);
         }
     }
 
     //when a hit is taken from another player converts all shooter's marks in hits
     public void convertShooterMarks(@NotNull Player shooter) {
         for (String s : marksTaken) {
-            if (s.equals(shooter.name)) {
+            if (s.equals(shooter.nickname)) {
                 marksTaken.remove(s);
                 addShooterHits(shooter, 1);
             }
@@ -93,13 +93,13 @@ public class Player implements Serializable {
     }
 
     public int getColoredCubes(@NotNull AmmoCard.Color color) {
-        return cubes[color.getColorNumber()];
+        return cubes[color.getIndex()];
     }
 
     //removes ammos when player has to pay a cost
     //!!!A PLAYER CAN PAY EVEN WITH POWERUPS!!!
     public void removeColoredCubes(@NotNull AmmoCard.Color color, int number) {
-        cubes[color.getColorNumber()] -= number;
+        cubes[color.getIndex()] -= number;
     }
 
     public void removePowerUp(@NotNull PowerUp powerUp) {
@@ -136,7 +136,7 @@ public class Player implements Serializable {
 
     @Contract(pure = true)
     public boolean canSee(@NotNull Player player, @NotNull Cell[][] cells) {
-        if (name.equals(player.name)) return false;
+        if (nickname.equals(player.nickname)) return false;
         if (cells[position.x][position.y].getColor() == cells[player.position.x][player.position.y].getColor())
             return true;
         for (var direction : Bounds.Direction.values())
@@ -176,6 +176,6 @@ public class Player implements Serializable {
     @Contract(value = "null -> false", pure = true)
     @Override
     public boolean equals(Object obj) {
-        return obj != null && name.equals(obj.getClass().getName());
+        return obj instanceof Player && ((Player) obj).nickname.equals(nickname);
     }
 }

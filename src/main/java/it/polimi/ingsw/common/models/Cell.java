@@ -11,10 +11,10 @@ import java.io.Serializable;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Cell implements Serializable {
-    private Color color;
+    private @NotNull Color color;
     private boolean spawnPoint;
-    private Bounds bounds;
-    private AmmoCard ammoCard;
+    private @NotNull Bounds bounds;
+    private @NotNull AmmoCard ammoCard;
 
     @Contract(pure = true)
     private Cell(@NotNull Bounds bounds) {
@@ -22,7 +22,7 @@ public class Cell implements Serializable {
     }
 
     @Contract(pure = true)
-    private Cell(Color color, boolean spawnPoint, Bounds bounds, AmmoCard ammoCard) {
+    private Cell(@NotNull Color color, boolean spawnPoint, @NotNull Bounds bounds, @NotNull AmmoCard ammoCard) {
         this.color = color;
         this.spawnPoint = spawnPoint;
         this.bounds = bounds;
@@ -41,7 +41,7 @@ public class Cell implements Serializable {
      * Indicate if a certain cell has an ammo card on it.
      * @return True if there is an ammo card.
      */
-    public AmmoCard getAmmoCard() {
+    public @NotNull AmmoCard getAmmoCard() {
         return ammoCard;
     }
 
@@ -57,7 +57,7 @@ public class Cell implements Serializable {
      * Get the color of the cell.
      * @return The cell's color.
      */
-    public Color getColor() {
+    public @NotNull Color getColor() {
         return color;
     }
 
@@ -65,7 +65,7 @@ public class Cell implements Serializable {
      * Get the bounds of the cell.
      * @return the cell's bounds.
      */
-    public Bounds getBounds() {
+    public @NotNull Bounds getBounds() {
         return bounds;
     }
 

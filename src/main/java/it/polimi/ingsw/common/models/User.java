@@ -1,21 +1,25 @@
 package it.polimi.ingsw.common.models;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.util.UUID;
 
 public class User implements Serializable {
-    private UUID uuid = UUID.randomUUID();
-    private String nickname;
+    private static final long serialVersionUID = 1;
 
-    public User(String nickname) {
+    private @NotNull UUID uuid = UUID.randomUUID();
+    private @NotNull String nickname;
+
+    public User(@NotNull String nickname) {
         this.nickname = nickname;
     }
 
-    public UUID getUuid() {
+    public @NotNull UUID getUuid() {
         return uuid;
     }
 
-    public String getNickname() {
+    public @NotNull String getNickname() {
         return nickname;
     }
 }

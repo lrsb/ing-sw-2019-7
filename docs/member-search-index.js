@@ -182,7 +182,7 @@ memberSearchIndex = [{
     "c": "Weapon.Name",
     "l": "ELECTROSCYTHE"
 }, {
-    "p": "it.polimi.ingsw.common.models.exceptions",
+    "p": "it.polimi.ingsw.server.models.exceptions",
     "c": "EmptyDeckException",
     "l": "EmptyDeckException()",
     "url": "%3Cinit%3E()"

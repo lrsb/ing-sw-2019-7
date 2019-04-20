@@ -4,7 +4,7 @@ sudo: false
 
 script:
   - mvn clean verify
-  - bash <(curl -s https://codecov.io/bash) -t 67b28199-7915-444e-899c-2f8114b9c309
+  - bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
 
 deploy:
   provider: heroku

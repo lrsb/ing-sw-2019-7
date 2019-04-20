@@ -11,10 +11,11 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable {
     private static final int FRAMERATE = 60;
     private final @NotNull ArrayList<Sprite> sprites = new ArrayList<>();
-    private final @NotNull AtomicBoolean needRepaint = new AtomicBoolean(true);
+    private final @Nullable AtomicBoolean needRepaint = new AtomicBoolean(true);
     private @Nullable SpriteBoardListener boardListener;
     private boolean closed = false;
 
@@ -27,7 +28,7 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
                 while (!closed) {
                     //noinspection ForLoopReplaceableByForEach
                     for (int i = 0; i < sprites.size(); i++) sprites.get(i).interpolate();
-                    if (needRepaint.get()) {
+                    if (needRepaint != null && needRepaint.get()) {
                         super.repaint();
                         needRepaint.set(false);
                     }
@@ -97,8 +98,6 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
 
     @Override
     public void repaint() {
-        //mah
-        //noinspection ConstantConditions
         if (needRepaint != null) needRepaint.set(true);
     }
 
@@ -126,7 +125,7 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
 
     private class SpriteMouseAdapter extends MouseInputAdapter {
         private @Nullable Sprite draggingSprite;
-        private Point relativePoint;
+        private @Nullable Point relativePoint;
         private boolean dragged;
 
         @Override
@@ -154,7 +153,7 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
         public void mouseDragged(MouseEvent event) {
             Optional.ofNullable(draggingSprite).ifPresent(e -> {
                 dragged = true;
-                e.moveTo(event.getX() - relativePoint.x, event.getY() - relativePoint.y);
+                if (relativePoint != null) e.moveTo(event.getX() - relativePoint.x, event.getY() - relativePoint.y);
             });
         }
 
