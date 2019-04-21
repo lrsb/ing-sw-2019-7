@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class ServerRestImpl extends NanoWSD {
     public ServerRestImpl() throws IOException {
         super(Integer.parseInt(System.getProperty("server.port")));
-        start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+        start(Integer.MAX_VALUE, false);
     }
 
     private static @NotNull Response newJsonResponse(@Nullable Object object) {
