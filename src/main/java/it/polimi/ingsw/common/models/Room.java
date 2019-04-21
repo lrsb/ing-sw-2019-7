@@ -13,6 +13,7 @@ public class Room implements Serializable {
     private @NotNull UUID uuid = UUID.randomUUID();
     private @NotNull String name;
     private @NotNull ArrayList<User> users = new ArrayList<>();
+    private boolean gameCreated = false;
 
     public Room(@NotNull String name) {
         this.name = name;
@@ -34,5 +35,13 @@ public class Room implements Serializable {
         if (users.size() > 4) return false;
         users.add(user);
         return true;
+    }
+
+    public boolean isGameCreated() {
+        return gameCreated;
+    }
+
+    public void setGameCreated() {
+        gameCreated = true;
     }
 }

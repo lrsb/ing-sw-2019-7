@@ -29,6 +29,10 @@ public class Player implements Serializable {
         this.nickname = user.getNickname();
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
+
     public String getNickname() {
         return nickname;
     }

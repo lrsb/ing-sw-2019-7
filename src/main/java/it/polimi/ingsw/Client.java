@@ -18,7 +18,7 @@ public class Client {
         //new NavigationController(MainViewController.class);
         var local = "localhost";
         var comm = new SecureRandom().nextBoolean() ? new ClientSocketImpl(local) : new ClientRmiImpl(LocateRegistry.getRegistry(local, Server.RMI_PORT).lookup(Server.RMI_NAME));
-        var comm1 = new ClientRestImpl("localhost");
+        var comm1 = new ClientRestImpl("ing-sw-2019-7.herokuapp.com");
         var token = comm1.authUser("lorenzo", "lorenzo");
         comm1.addRoomListener(token, new RoomListener() {
             @Override

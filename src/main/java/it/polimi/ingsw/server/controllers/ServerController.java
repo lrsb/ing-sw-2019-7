@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
+import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -54,6 +56,13 @@ public class ServerController implements API {
             var room = new Gson().fromJson(rooms.find(eq("uuid", roomUuid)).first().toJson(), Room.class);
             room.addUser(user);
             rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
+            room.getUsers().parallelStream().map(User::getUuid).map(roomListeners::get).filter(Objects::nonNull).forEach(e -> {
+                try {
+                    e.onRoomUpdate(room);
+                } catch (RemoteException ex) {
+                    ex.printStackTrace();
+                }
+            });
             return room;
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,6 +94,15 @@ public class ServerController implements API {
             if (room.getUsers().size() < Game.MIN_PLAYERS || room.getUsers().size() > Game.MAX_PLAYERS) return null;
             var game = GameImpl.Creator.newGame(room.getUuid(), room.getUsers());
             games.insertOne(Document.parse(new Gson().toJson(game)));
+            room.setGameCreated();
+            room.getUsers().parallelStream().map(User::getUuid).map(roomListeners::get).filter(Objects::nonNull).forEach(e -> {
+                try {
+                    e.onRoomUpdate(room);
+                } catch (RemoteException ex) {
+                    ex.printStackTrace();
+                }
+            });
+            rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
             return game.getUuid();
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,31 +114,41 @@ public class ServerController implements API {
     public boolean doMove(@Nullable String token, @Nullable Object move) {
         var user = SecureUserController.getUser(token);
         return user == null;
+        /*if (move.isLegal()) {
+            Game game;
+            game.getPlayers().parallelStream().map(Player::getUuid).map(gameListeners::get).filter(Objects::nonNull).forEach(e -> {
+                try {
+                    e.onGameUpdate(game);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
+        }*/
     }
 
     @Override
-    public void addGameListener(@Nullable String token, @Nullable GameListener listener) throws RemoteException {
+    public void addGameListener(@Nullable String token, @Nullable GameListener listener) {
         var user = SecureUserController.getUser(token);
         if (user == null) return;
         gameListeners.put(user.getUuid(), listener);
     }
 
     @Override
-    public void removeGameListener(@Nullable String token) throws RemoteException {
+    public void removeGameListener(@Nullable String token) {
         var user = SecureUserController.getUser(token);
         if (user == null) return;
         gameListeners.remove(user.getUuid());
     }
 
     @Override
-    public void addRoomListener(@Nullable String token, @Nullable RoomListener listener) throws RemoteException {
+    public void addRoomListener(@Nullable String token, @Nullable RoomListener listener) {
         var user = SecureUserController.getUser(token);
         if (user == null) return;
         roomListeners.put(user.getUuid(), listener);
     }
 
     @Override
-    public void removeRoomListener(@Nullable String token) throws RemoteException {
+    public void removeRoomListener(@Nullable String token) {
         var user = SecureUserController.getUser(token);
         if (user == null) return;
         roomListeners.remove(user.getUuid());

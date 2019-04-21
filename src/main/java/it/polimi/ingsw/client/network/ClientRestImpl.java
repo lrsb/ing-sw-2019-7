@@ -117,6 +117,7 @@ public class ClientRestImpl implements API {
         return false;
     }
 
+    //TODO: auth-token is cleartext
     @Override
     public void addGameListener(@NotNull String token, @NotNull GameListener gameListener) {
         try {
