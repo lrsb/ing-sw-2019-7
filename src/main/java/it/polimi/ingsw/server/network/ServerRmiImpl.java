@@ -1,9 +1,10 @@
 package it.polimi.ingsw.server.network;
 
 import it.polimi.ingsw.Server;
-import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
-import it.polimi.ingsw.common.network.rmi.RmiAPI;
+import it.polimi.ingsw.common.network.API;
+import it.polimi.ingsw.common.network.GameListener;
+import it.polimi.ingsw.common.network.RoomListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +13,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.UUID;
 
-public class ServerRmiImpl extends UnicastRemoteObject implements RmiAPI {
+public class ServerRmiImpl extends UnicastRemoteObject implements API {
     public ServerRmiImpl() throws RemoteException {
         super();
     }
@@ -53,12 +54,22 @@ public class ServerRmiImpl extends UnicastRemoteObject implements RmiAPI {
     }
 
     @Override
-    public @Nullable Game waitGameUpdate(@NotNull String token, @NotNull UUID gameUuid) {
-        return Server.controller.waitGameUpdate(token, gameUuid);
+    public void addGameListener(@NotNull String token, @NotNull GameListener listener) throws RemoteException {
+        Server.controller.addGameListener(token, listener);
     }
 
     @Override
-    public @Nullable Room waitRoomUpdate(@NotNull String token, @NotNull UUID roomUuid) {
-        return Server.controller.waitRoomUpdate(token, roomUuid);
+    public void removeGameListener(@NotNull String token) throws RemoteException {
+        Server.controller.removeGameListener(token);
+    }
+
+    @Override
+    public void addRoomListener(@NotNull String token, @NotNull RoomListener listener) throws RemoteException {
+        Server.controller.addRoomListener(token, listener);
+    }
+
+    @Override
+    public void removeRoomListener(@NotNull String token) throws RemoteException {
+        Server.controller.removeRoomListener(token);
     }
 }

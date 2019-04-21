@@ -5,12 +5,16 @@ import com.mongodb.client.MongoCollection;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
-import it.polimi.ingsw.common.network.rmi.RmiAPI;
+import it.polimi.ingsw.common.network.API;
+import it.polimi.ingsw.common.network.GameListener;
+import it.polimi.ingsw.common.network.RoomListener;
 import it.polimi.ingsw.server.models.GameImpl;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -19,9 +23,11 @@ import java.util.stream.StreamSupport;
 import static com.mongodb.client.model.Filters.eq;
 
 //TODO: impl
-public class ServerController implements RmiAPI {
+public class ServerController implements API {
     private static final @NotNull MongoCollection<Document> rooms = Server.mongoDatabase.getCollection("rooms");
     private static final @NotNull MongoCollection<Document> games = Server.mongoDatabase.getCollection("games");
+    private final @NotNull HashMap<UUID, GameListener> gameListeners = new HashMap<>();
+    private final @NotNull HashMap<UUID, RoomListener> roomListeners = new HashMap<>();
 
     @Override
     public @Nullable String authUser(@Nullable String nickname, @Nullable String password) {
@@ -93,17 +99,31 @@ public class ServerController implements RmiAPI {
     }
 
     @Override
-    public @Nullable Game waitGameUpdate(@Nullable String token, @Nullable UUID gameUuid) {
+    public void addGameListener(@Nullable String token, @Nullable GameListener listener) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (user == null) return null;
-        return null;
+        if (user == null) return;
+        gameListeners.put(user.getUuid(), listener);
     }
 
     @Override
-    public @Nullable Room waitRoomUpdate(@Nullable String token, @Nullable UUID roomUuid) {
+    public void removeGameListener(@Nullable String token) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (user == null) return null;
-        return null;
+        if (user == null) return;
+        gameListeners.remove(user.getUuid());
+    }
+
+    @Override
+    public void addRoomListener(@Nullable String token, @Nullable RoomListener listener) throws RemoteException {
+        var user = SecureUserController.getUser(token);
+        if (user == null) return;
+        roomListeners.put(user.getUuid(), listener);
+    }
+
+    @Override
+    public void removeRoomListener(@Nullable String token) throws RemoteException {
+        var user = SecureUserController.getUser(token);
+        if (user == null) return;
+        roomListeners.remove(user.getUuid());
     }
 
     private @NotNull <T> List<T> convertCollection(@NotNull MongoCollection<Document> collection, @NotNull Class<T> type) {
