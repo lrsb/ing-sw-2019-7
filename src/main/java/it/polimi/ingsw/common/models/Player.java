@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class Player implements Serializable {
+    private static final long serialVersionUID = 1;
+
     private UUID uuid;
     private String nickname;
     private Point position;

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.client.views.boards;
 
-import it.polimi.ingsw.client.views.interpolator.LinearInterpolator;
+import it.polimi.ingsw.client.views.interpolators.LinearInterpolator;
 import it.polimi.ingsw.client.views.sprite.Sprite;
 import it.polimi.ingsw.common.models.AmmoCard;
 import it.polimi.ingsw.common.models.Game;
@@ -65,15 +65,15 @@ public class GameBoard extends AbstractBoard {
         if (sprite.getTag() == null) ;//super.onSpriteDragged(sprite);
         else switch (sprite.getTag()) {
             case "weapon":
-                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), System.currentTimeMillis(), WEAPON_POSITION, 250) {
+                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), WEAPON_POSITION, 250) {
                 });
                 return;
             case "powerup":
-                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), System.currentTimeMillis(), POWERUP_POSITION, 250) {
+                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), POWERUP_POSITION, 250) {
                 });
                 return;
             case "ammocard":
-                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), System.currentTimeMillis(), AMMOCARD_POSITION, 250) {
+                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), AMMOCARD_POSITION, 250) {
                 });
                 return;
             default:

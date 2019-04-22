@@ -7,6 +7,4 @@ import java.rmi.RemoteException;
 
 public interface GameListener extends Remote {
     void onGameUpdate(Game game) throws RemoteException;
-
-    void disconnected();
 }

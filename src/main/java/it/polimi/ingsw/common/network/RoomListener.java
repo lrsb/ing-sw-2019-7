@@ -8,6 +8,4 @@ import java.rmi.RemoteException;
 
 public interface RoomListener extends Remote {
     void onRoomUpdate(@NotNull Room room) throws RemoteException;
-
-    void disconnected();
 }

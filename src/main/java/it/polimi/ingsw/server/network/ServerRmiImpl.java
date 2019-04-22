@@ -29,6 +29,11 @@ public class ServerRmiImpl extends UnicastRemoteObject implements API {
     }
 
     @Override
+    public @Nullable UUID getActiveGame(@NotNull String token) {
+        return Server.controller.getActiveGame(token);
+    }
+
+    @Override
     public @Nullable List<Room> getRooms(@NotNull String token) {
         return Server.controller.getRooms(token);
     }
@@ -54,22 +59,22 @@ public class ServerRmiImpl extends UnicastRemoteObject implements API {
     }
 
     @Override
-    public void addGameListener(@NotNull String token, @NotNull GameListener listener) throws RemoteException {
+    public void addGameListener(@NotNull String token, @NotNull GameListener listener) {
         Server.controller.addGameListener(token, listener);
     }
 
     @Override
-    public void removeGameListener(@NotNull String token) throws RemoteException {
+    public void removeGameListener(@NotNull String token) {
         Server.controller.removeGameListener(token);
     }
 
     @Override
-    public void addRoomListener(@NotNull String token, @NotNull RoomListener listener) throws RemoteException {
+    public void addRoomListener(@NotNull String token, @NotNull RoomListener listener) {
         Server.controller.addRoomListener(token, listener);
     }
 
     @Override
-    public void removeRoomListener(@NotNull String token) throws RemoteException {
+    public void removeRoomListener(@NotNull String token) {
         Server.controller.removeRoomListener(token);
     }
 }

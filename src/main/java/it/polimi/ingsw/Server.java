@@ -16,8 +16,8 @@ import java.rmi.registry.LocateRegistry;
 public class Server {
     public static final int SOCKET_PORT = 0xCAFE;
     public static final int RMI_PORT = 0xBABE;
-
     public static final @NotNull String RMI_NAME = "adrenaline";
+
     public static final @NotNull MongoDatabase mongoDatabase = new MongoClient(new MongoClientURI(System.getenv().get("MONGODB_URI"))).getDatabase("heroku_wb845rtj");
     public static final @NotNull ServerController controller = new ServerController();
 

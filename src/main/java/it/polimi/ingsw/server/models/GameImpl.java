@@ -13,6 +13,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class GameImpl extends Game implements Serializable {
+    private static final long serialVersionUID = 1;
+
     private Deck<AmmoCard> ammoDeck = Deck.Creator.newAmmoDeck();
     private Deck<PowerUp> powerUpsDeck; //= Deck.Creator.newPowerUpsDeck();
     private Deck<Weapon.Name> weaponsDeck; //= Deck.Creator.newWeaponsDeck();

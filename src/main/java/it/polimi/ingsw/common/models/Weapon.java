@@ -45,7 +45,6 @@ public abstract class Weapon {
     public boolean charging(){
         return payCost(basicPayment);
     }
-
     //used to reload and to pay additional cost
     public boolean payCost(@NotNull ArrayList<AmmoCard.Color> cost) {
         //red, blue e yellow avranno il valore del costo totale
@@ -139,26 +138,30 @@ public abstract class Weapon {
         }
     }
 
-    public void addBasicTarget(@Nullable Player target, @Nullable Point point) {
+    public final void addBasicTarget(@Nullable Player target, @Nullable Point point) {
         basicTarget.add(target);
         basicTargetPoint.add(point);
     }
 
     public abstract boolean basicFire();
 
-    public void addFirstAdditionalTarget(@Nullable Player target, @Nullable Point point) {
+    public final void addFirstAdditionalTarget(@Nullable Player target, @Nullable Point point) {
         firstAdditionalTarget.add(target);
         firstAdditionalTargetPoint.add(point);
     }
 
-    public abstract boolean firstAdditionalFire();
+    public boolean firstAdditionalFire() {
+        return false;
+    }
 
-    public void addSecondAdditionalTarget(@Nullable Player target, @Nullable Point point) {
+    public final void addSecondAdditionalTarget(@Nullable Player target, @Nullable Point point) {
         secondAdditionalTarget.add(target);
         secondAdditionalTargetPoint.add(point);
     }
 
-    public abstract boolean secondAdditionalFire();
+    public boolean secondAdditionalFire() {
+        return false;
+    }
 
     @Contract(value = "null -> false", pure = true)
     @Override
@@ -171,6 +174,9 @@ public abstract class Weapon {
     }
 
     @SuppressWarnings("SpellCheckingInspection")
+
+    //TODO: se riutilizzi del codice mettilo in un metodo privato in weapon, poi mi spiegherai i metodi che hai aggiunto
+
     public enum Name {
         LOCK_RIFLE(Weapons.LockRifle.class), MACHINE_GUN(Weapons.MachineGun.class), THOR(Weapons.Thor.class),
         PLASMA_GUN(Weapons.PlasmaGun.class), WHISPER(Weapons.Whisper.class), ELECTROSCYTHE(Weapons.Electroscythe.class),
@@ -205,6 +211,7 @@ public abstract class Weapon {
         }
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     private class Weapons {
         private class LockRifle extends Weapon {
             private LockRifle(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
@@ -244,11 +251,6 @@ public abstract class Weapon {
                         return true;
                     }
                 }
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
                 return false;
             }
         }
@@ -453,16 +455,6 @@ public abstract class Weapon {
                 }
                 return false;
             }
-
-            @Override
-            public boolean firstAdditionalFire() {
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class Electroscythe extends Weapon {
@@ -501,16 +493,6 @@ public abstract class Weapon {
                 }
                 return false;
             }
-
-            @Override
-            public boolean firstAdditionalFire() {
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class TractorBeam extends Weapon {
@@ -541,16 +523,6 @@ public abstract class Weapon {
                     basicTarget.get(0).convertShooterMarks(shooter);
                     return true;
                 }
-                return false;
-            }
-
-            @Override
-            public boolean firstAdditionalFire() {
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
                 return false;
             }
         }
@@ -617,16 +589,11 @@ public abstract class Weapon {
                 }
                 return false;
             }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class Furnace extends Weapon {
             public Furnace(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 basicPayment.add(BLUE);
@@ -692,21 +659,11 @@ public abstract class Weapon {
                 }
                 return false;
             }
-
-            @Override
-            public boolean firstAdditionalFire() {
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class Heatseeker extends Weapon {
             public Heatseeker(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                              boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 basicPayment.add(RED);
@@ -727,21 +684,11 @@ public abstract class Weapon {
                 }
                 return false;
             }
-
-            @Override
-            public boolean firstAdditionalFire() {
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class Hellion extends Weapon {
             public Hellion(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                              boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 basicPayment.add(YELLOW);
@@ -777,21 +724,11 @@ public abstract class Weapon {
                 }
                 return false;
             }
-
-            @Override
-            public boolean firstAdditionalFire() {
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class Flamethrower extends Weapon {
             public Flamethrower(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                                boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 alternativePayment.add(YELLOW);
@@ -866,21 +803,11 @@ public abstract class Weapon {
                 }
                 return false;
             }
-
-            @Override
-            public boolean firstAdditionalFire() {
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class GrenadeLauncher extends Weapon {
             public GrenadeLauncher(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                                   boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 firstAdditionalPayment.add(RED);
@@ -934,16 +861,11 @@ public abstract class Weapon {
                 }
                 return false;
             }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class RocketLauncher extends Weapon {
             public RocketLauncher(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                   boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                                  boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 basicPayment.add(RED);
@@ -998,7 +920,7 @@ public abstract class Weapon {
                             player.convertShooterMarks(shooter);
                         }
                     }
-                        return true;
+                    return true;
                 }
                 return false;
             }
@@ -1006,7 +928,7 @@ public abstract class Weapon {
 
         public class Railgun extends Weapon {
             public Railgun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                  boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 basicPayment.add(YELLOW);
@@ -1049,21 +971,11 @@ public abstract class Weapon {
                 }
                 return false;
             }
-
-            @Override
-            public boolean firstAdditionalFire() {
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class Cyberblade extends Weapon {
             public Cyberblade(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                              boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 basicPayment.add(RED);
@@ -1122,7 +1034,7 @@ public abstract class Weapon {
 
         public class ZX2 extends Weapon {
             public ZX2(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                              boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                       boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 basicPayment.add(RED);
@@ -1149,21 +1061,11 @@ public abstract class Weapon {
                 }
                 return false;
             }
-
-            @Override
-            public boolean firstAdditionalFire() {
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class Shotgun extends Weapon {
             public Shotgun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                       boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 basicPayment.add(YELLOW);
@@ -1208,16 +1110,11 @@ public abstract class Weapon {
                 //TODO: move basicTarget.get(0) of 1 square
                 return false;
             }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class PowerGlove extends Weapon {
             public PowerGlove(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                              boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 basicPayment.add(BLUE);
@@ -1242,36 +1139,16 @@ public abstract class Weapon {
                 }
                 return false;
             }
-
-            @Override
-            public boolean firstAdditionalFire() {
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
-                return false;
-            }
         }
 
         public class Shockwave extends Weapon {
             public Shockwave(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                              boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                             boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(cells, players, shooter, alternativeFire, powerUpsPay);
             }
 
             @Override
             public boolean basicFire() {
-                return false;
-            }
-
-            @Override
-            public boolean firstAdditionalFire() {
-                return false;
-            }
-
-            @Override
-            public boolean secondAdditionalFire() {
                 return false;
             }
         }

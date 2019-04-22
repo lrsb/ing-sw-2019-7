@@ -58,6 +58,18 @@ public class ClientRestImpl implements API {
     }
 
     @Override
+    public @Nullable UUID getActiveGame(@NotNull String token) {
+        try {
+            var request = new HttpGet("/getActiveGame");
+            request.addHeader("auth-token", token);
+            return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), UUID.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public @Nullable List<Room> getRooms(@NotNull String token) {
         try {
             var request = new HttpGet("/getRooms");
@@ -123,7 +135,7 @@ public class ClientRestImpl implements API {
         try {
             var headers = new HashMap<String, String>();
             headers.put("auth-token", token);
-            gameWebSocket = new WebSocketClient(new URI(host.getHostName() + "/gameUpdate"), headers) {
+            gameWebSocket = new WebSocketClient(new URI("ws://" + host.getHostName() + "/gameUpdate"), headers) {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
                 }
@@ -140,13 +152,11 @@ public class ClientRestImpl implements API {
                 @Override
                 public void onClose(int i, String s, boolean b) {
                     gameWebSocket = null;
-                    gameListener.disconnected();
                 }
 
                 @Override
                 public void onError(Exception e) {
                     gameWebSocket = null;
-                    gameListener.disconnected();
                 }
             };
             gameWebSocket.connect();
@@ -177,13 +187,11 @@ public class ClientRestImpl implements API {
                 @Override
                 public void onClose(int i, String s, boolean b) {
                     roomWebSocket = null;
-                    roomListener.disconnected();
                 }
 
                 @Override
                 public void onError(Exception e) {
                     roomWebSocket = null;
-                    roomListener.disconnected();
                 }
             };
             roomWebSocket.connect();

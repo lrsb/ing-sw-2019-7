@@ -2,7 +2,11 @@ package it.polimi.ingsw.common.models;
 
 import org.jetbrains.annotations.Contract;
 
-public class AmmoConsumption {
+import java.io.Serializable;
+
+public class AmmoConsumption implements Serializable {
+    private static final long serialVersionUID = 1;
+
     private int redAmmos;
     private int yellowAmmos;
     private int blueAmmos;

@@ -21,6 +21,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
 
     private volatile @Nullable String authUser;
     private volatile @Nullable String createUser;
+    private volatile @Nullable UUID activeGame;
     private volatile @Nullable List<Room> getRooms;
     private volatile @Nullable Room joinRoom;
     private volatile @Nullable Room createRoom;
@@ -48,6 +49,14 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_USER, null, Arrays.asList(nickname, password)));
         while (createUser == null) wait1ms();
         return createUser;
+    }
+
+    @Override
+    public @Nullable UUID getActiveGame(@NotNull String token) {
+        activeGame = null;
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.GET_ACTIVE_GAME, null, null));
+        while (activeGame == null) wait1ms();
+        return activeGame;
     }
 
     @Override
@@ -124,6 +133,9 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                 case CREATE_USER:
                     createUser = packet.getAssociatedObject(String.class);
                     break;
+                case GET_ACTIVE_GAME:
+                    activeGame = packet.getAssociatedObject(UUID.class);
+                    break;
                 case GET_ROOMS:
                     getRooms = packet.getAssociatedObject(ArrayList.class);
                     break;
@@ -166,8 +178,6 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
 
     @Override
     public void onClose(@NotNull AdrenalineSocket socket) {
-        Optional.ofNullable(gameListener).ifPresent(GameListener::disconnected);
-        Optional.ofNullable(roomListener).ifPresent(RoomListener::disconnected);
     }
 
     private void wait1ms() {
@@ -176,7 +186,6 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
             Thread.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
-            Thread.currentThread().interrupt();
         }
     }
 }

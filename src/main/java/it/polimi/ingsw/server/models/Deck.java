@@ -21,6 +21,8 @@ import java.util.List;
  */
 @SuppressWarnings({"WeakerAccess", "SpellCheckingInspection", "unused"})
 public class Deck<T extends Serializable> implements Serializable {
+    private static final long serialVersionUID = 1;
+
     private final @NotNull ArrayList<T> playableCards = new ArrayList<>();
     private final @NotNull ArrayList<T> exitedCards = new ArrayList<>();
     private final @NotNull ArrayList<T> discardedCards = new ArrayList<>();

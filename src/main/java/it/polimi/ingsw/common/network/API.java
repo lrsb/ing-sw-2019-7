@@ -14,6 +14,8 @@ public interface API extends Remote {
 
     @Nullable String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException;
 
+    @Nullable UUID getActiveGame(@NotNull String token) throws RemoteException;
+
     @Nullable List<Room> getRooms(@NotNull String token) throws RemoteException;
 
     @Nullable Room joinRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;

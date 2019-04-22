@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client.views.sprite;
 
-import it.polimi.ingsw.client.views.interpolator.Interpolator;
-import it.polimi.ingsw.client.views.interpolator.exceptions.TimestampOutOfRangeException;
+import it.polimi.ingsw.client.views.interpolators.Interpolator;
+import it.polimi.ingsw.client.views.interpolators.exceptions.TimestampOutOfRangeException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

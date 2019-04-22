@@ -2,9 +2,6 @@ package it.polimi.ingsw.server.network;
 
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Game;
-import it.polimi.ingsw.common.models.Room;
-import it.polimi.ingsw.common.network.GameListener;
-import it.polimi.ingsw.common.network.RoomListener;
 import it.polimi.ingsw.common.network.socket.AdrenalinePacket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocketListener;
@@ -32,6 +29,9 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     userInfo = packet.getAssociatedObject(ArrayList.class);
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_USER, null, Server.controller.createUser(userInfo.get(0), userInfo.get(1))));
                     break;
+                case GET_ACTIVE_GAME:
+                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GET_ACTIVE_GAME, null, Server.controller.getActiveGame(token)));
+                    break;
                 case GET_ROOMS:
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GET_ROOMS, null, Server.controller.getRooms(token)));
                     break;
@@ -48,28 +48,10 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     Server.controller.doMove(token, packet.getAssociatedObject(Game.class));
                     break;
                 case GAME_UPDATE:
-                    Server.controller.addGameListener(token, new GameListener() {
-                        @Override
-                        public void onGameUpdate(Game game) {
-                            socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, game));
-                        }
-
-                        @Override
-                        public void disconnected() {
-                        }
-                    });
+                    Server.controller.addGameListener(token, game -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, game)));
                     break;
                 case ROOM_UPDATE:
-                    Server.controller.addRoomListener(token, new RoomListener() {
-                        @Override
-                        public void onRoomUpdate(@NotNull Room room) {
-                            socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, null, room));
-                        }
-
-                        @Override
-                        public void disconnected() {
-                        }
-                    });
+                    Server.controller.addRoomListener(token, room -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, null, room)));
                     break;
                 case REMOVE_GAME_UPDATES:
                     Server.controller.removeGameListener(token);

@@ -11,6 +11,8 @@ import java.io.Serializable;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Cell implements Serializable {
+    private static final long serialVersionUID = 1;
+
     private @NotNull Color color;
     private boolean spawnPoint;
     private @NotNull Bounds bounds;
