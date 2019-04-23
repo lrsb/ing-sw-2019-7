@@ -13,7 +13,7 @@ public class Player implements Serializable {
     private UUID uuid;
     private String nickname;
     private Point position;
-    private ArrayList<String> hitsTaken = new ArrayList<>();
+    private ArrayList<String> damagesTaken = new ArrayList<>();
     private ArrayList<String> marksTaken = new ArrayList<>();
     private int deaths = 0;
     private int points = 0;
@@ -33,15 +33,31 @@ public class Player implements Serializable {
         return nickname;
     }
 
-    public void addShooterHits(@NotNull Player shooter, int hits) {
-        for (int c = 0; c < hits; c++) {
-            if (hitsTaken.size() < 12) hitsTaken.add(shooter.nickname);
+    //gives damages, convert marks to damages and finally gives marks
+    public void takeHits(@NotNull Player shooter, int damages, int marks) {
+        for (int i = 0; i < damages; i++) {
+            if (damagesTaken.size() < 12) damagesTaken.add(shooter.nickname);
+        }
+        if (damages > 0) {
+            for (String name : marksTaken) {
+                if (shooter.nickname.equals(name)) {
+                    marksTaken.remove(name);
+                    if (damagesTaken.size() < 12) damagesTaken.add(shooter.nickname);
+                }
+            }
+        }
+        int oldMarks = 0;
+        for (String name : marksTaken) {
+            if (shooter.nickname.equals(name)) oldMarks++;
+        }
+        for (int i = 0; i < marks && oldMarks + i < 3; i++) {
+            marksTaken.add(shooter.nickname);
         }
     }
 
     //use this at each other's player end turn
     public boolean amIDead() {
-        return hitsTaken.size() >= 11;
+        return damagesTaken.size() >= 11;
     }
 
     //controllo se l'arma che vuole caricare sia in suo possesso e che non sia già carica
@@ -62,25 +78,9 @@ public class Player implements Serializable {
         if (amIDead()) {
             //è game che si preoccupa di distribuire i punti
             //TODO redistributing points to players
-            hitsTaken.clear();
+            damagesTaken.clear();
             marksTaken.clear();
             deaths++;
-        }
-    }
-
-    public void addShooterMarks(@NotNull Player shooter, int marks) {
-        for (int c = 0; c < marks; c++) {
-            marksTaken.add(shooter.nickname);
-        }
-    }
-
-    //when a hit is taken from another player converts all shooter's marks in hits
-    public void convertShooterMarks(@NotNull Player shooter) {
-        for (String s : marksTaken) {
-            if (s.equals(shooter.nickname)) {
-                marksTaken.remove(s);
-                addShooterHits(shooter, 1);
-            }
         }
     }
 
@@ -147,12 +147,23 @@ public class Player implements Serializable {
     }
 
     public boolean isPlayerNear(@NotNull Player player, @NotNull Cell[][] cells) {
-        return canSee(player, cells) && (position.x == player.getPosition().x
-                && position.y - player.position.y < 2
-                && position.y - player.position.y > -2)
-                || (position.y == player.position.y
-                && position.x - player.position.x < 2
-                && position.x - player.position.x > -2);
+        for (Bounds.Direction d : Bounds.Direction.values()) {
+            if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL &&
+                    player.getPosition().x == position.x + d.getdX() && player.getPosition().y == position.y + d.getdY())
+                return true;
+        }
+        return false;
+    }
+
+    public boolean isPlayerNear2(@NotNull Player player, @NotNull Cell[][] cells) {
+        for (Bounds.Direction d : Bounds.Direction.values()) {
+            if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL) {
+                if (cells[position.x + d.getdX()][position.y + d.getdY()].getBounds().getType(d) != Bounds.Type.WALL &&
+                        player.getPosition().x == position.x + 2*d.getdX() &&
+                        player.getPosition().y == position.y + 2*d.getdY()) return true;
+            }
+        }
+        return false;
     }
 
     public boolean canSeeCell(@NotNull Point point, @NotNull Cell[][] cells) {
@@ -165,12 +176,23 @@ public class Player implements Serializable {
     }
 
     public boolean isCellNear(@NotNull Point point, @NotNull Cell[][] cells) {
-        return canSeeCell(point, cells) && (position.x == point.x
-                && position.y - point.y < 2
-                && position.y - point.y > -2)
-                || (position.y == point.y
-                && position.x - point.x < 2
-                && position.x - point.x > -2);
+        for (Bounds.Direction d : Bounds.Direction.values()) {
+            if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL &&
+                    point.x == position.x + d.getdX() && point.y == position.y + d.getdY())
+                return true;
+        }
+        return false;
+    }
+
+    public boolean isCellNear2Straight(@NotNull Point point, @NotNull Cell[][] cells) {
+        for (Bounds.Direction d : Bounds.Direction.values()) {
+            if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL) {
+                if (cells[position.x + d.getdX()][position.y + d.getdY()].getBounds().getType(d) != Bounds.Type.WALL &&
+                        point.x == position.x + 2*d.getdX() &&
+                        point.y == position.y + 2*d.getdY()) return true;
+            }
+        }
+        return false;
     }
 
     @Contract(value = "null -> false", pure = true)

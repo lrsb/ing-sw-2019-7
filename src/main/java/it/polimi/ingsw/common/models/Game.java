@@ -23,6 +23,9 @@ public abstract class Game implements Serializable {
 
     protected int skulls = 5;
 
+    //the game has to remember who gave killshots
+    protected ArrayList<String> killshots;
+
     protected ArrayList<Weapon.Name> redWeapons;
     protected ArrayList<Weapon.Name> blueWeapons;
     protected ArrayList<Weapon.Name> yellowWeapons;
