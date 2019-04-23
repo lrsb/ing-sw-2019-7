@@ -33,6 +33,7 @@ public abstract class Weapon {
     private @NotNull ArrayList<Point> secondAdditionalTargetPoint = new ArrayList<>();
     private @NotNull ArrayList<Integer> fireSort = new ArrayList<>();
 
+    //bisogna passare anche tutti gli Array sopra, alcuni come null a seconda dell'arma
     @Contract(pure = true)
     public Weapon(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
                   boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
@@ -43,15 +44,18 @@ public abstract class Weapon {
         this.powerUpsPay = powerUpsPay;
     }
 
+    //ritorna il numero di occorrenze di "color" in "payment"
+    //es: ricaricare un'arma costa 2 blu e 1 rosso: getColoredPayment(basicPayment, BLUE) -> 2
     @Contract(pure = true)
-    private int getColoredPayment (ArrayList<AmmoCard.Color> Payment, AmmoCard.Color color) {
+    private int getColoredPayment (ArrayList<AmmoCard.Color> payment, @NotNull AmmoCard.Color color) {
         int result = 0;
-        for (AmmoCard.Color cube : Payment) {
-            if (cube == color) result ++;
+        for (AmmoCard.Color cube : payment) {
+            if (cube == color) result++;
         }
         return result;
     }
 
+    //ritorna il numero di carte di quel "color" presenti in powerUpsPay
     @Contract(pure = true)
     private int getPowerUpsColoredPayment (AmmoCard.Color color) {
         int result = 0;
@@ -62,16 +66,15 @@ public abstract class Weapon {
     }
 
     //return true if shooter can pay and remove cost from shooter (work for fireCost and for reloading)
-    //TODO: changes for pickUp weapon
     protected boolean payCost(){
         //red, blue e yellow avranno il valore del costo totale
         //altNomeColore hanno il valore dei cubi che vengono invece pagati tramite PowerUp
         int red = 0, yellow = 0, blue = 0, altRed, altYellow, altBlue;
-        if (!fireSort.isEmpty()) {
+        if (!fireSort.isEmpty()) { //se c'è fireSort sta facendo fuoco "else" vuole ricaricare prendere l'arma
             for (Integer i : fireSort) {
                 switch (i) {
                     case 1:
-                        if (!alternativeFire) {
+                        if (alternativeFire) {
                             red += getColoredPayment(alternativePayment, RED);
                             yellow += getColoredPayment(alternativePayment, YELLOW);
                             blue += getColoredPayment(alternativePayment, BLUE);
@@ -95,6 +98,19 @@ public abstract class Weapon {
             red = getColoredPayment(basicPayment, RED);
             yellow = getColoredPayment(basicPayment, YELLOW);
             blue = getColoredPayment(basicPayment, BLUE);
+            if (!shooter.hasWeapon(this)) {
+                switch (basicPayment.get(0)) {
+                    case RED:
+                        red--;
+                        break;
+                    case YELLOW:
+                        yellow--;
+                        break;
+                    case BLUE:
+                        blue--;
+                        break;
+                }
+            }
         }
         altRed = getPowerUpsColoredPayment(RED);
         altYellow = getPowerUpsColoredPayment(YELLOW);
@@ -153,8 +169,8 @@ public abstract class Weapon {
 
     public void addNonVisibleTarget() {
         possibleTarget.clear();
-        for (Player p : players) {
-            if (!(shooter.canSee(p, cells)) && !(shooter.getNickname().equals(p.getNickname()))) possibleTarget.add(p);
+        for (Player player : players) {
+            if (!(shooter.canSee(player, cells)) && !(shooter.equals(player))) possibleTarget.add(player);
         }
     }
 
@@ -193,29 +209,30 @@ public abstract class Weapon {
 
     @Contract(value = "null -> false", pure = true)
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Weapon && ((Weapon) obj).getClass().equals(getClass());
-    }
+    public boolean equals(Object obj) { return obj instanceof Weapon && ((Weapon) obj).getClass().equals(getClass()); }
 
     protected abstract boolean canFire();
 
+    //shoot è di Weapon astratta, ma tutti i metodi chiamati all'interno devono essere specifici dell'arma usata
     public boolean shoot() {
-        if (canFire() && validateFireSort() && validateTargets()) {
-            if (payCost()) {
-                for (int mode = 0; mode < fireSort.size(); mode++) {
-                    switch (fireSort.get(mode)) {
-                        case 1:
-                            basicFire();
-                            break;
-                        case 2:
-                            firstAdditionalFire();
-                            break;
-                        case 3:
-                            secondAdditionalFire();
-                            break;
+        if (canFire() && validateFireSort()) {
+            if (validateTargets()) {
+                if (payCost()) {
+                    for (Integer fireNumber : fireSort) {
+                        switch (fireNumber) {
+                            case 1:
+                                basicFire();
+                                break;
+                            case 2:
+                                firstAdditionalFire();
+                                break;
+                            case 3:
+                                secondAdditionalFire();
+                                break;
+                        }
                     }
+                    return true;
                 }
-                return true;
             }
         }
         return false;
@@ -235,14 +252,10 @@ public abstract class Weapon {
         private final Class<? extends Weapon> weaponClass;
 
         @Contract(pure = true)
-        Name(Class<? extends Weapon> weaponClass) {
-            this.weaponClass = weaponClass;
-        }
+        Name(Class<? extends Weapon> weaponClass) { this.weaponClass = weaponClass; }
 
         @Contract(pure = true)
-        public Class<? extends Weapon> getWeaponClass() {
-            return weaponClass;
-        }
+        public Class<? extends Weapon> getWeaponClass() { return weaponClass; }
 
         //FIXME: aggiornare firma
         public @Nullable <T extends Weapon> T build(@NotNull Game game, boolean alternativeFire) {

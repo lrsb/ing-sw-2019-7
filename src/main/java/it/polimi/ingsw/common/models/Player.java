@@ -39,6 +39,8 @@ public class Player implements Serializable {
         return nickname;
     }
 
+    public boolean hasWeapon(@NotNull Weapon weapon) { return weapons.contains(weapon); }
+
     //gives damages, convert marks to damages and finally gives marks
     public void takeHits(@NotNull Player shooter, int damages, int marks) {
         for (int i = 0; i < damages; i++) {
