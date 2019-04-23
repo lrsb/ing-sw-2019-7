@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.*;
 
 public class ClientSocketImpl implements API, AdrenalineSocketListener {
@@ -20,15 +21,14 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
 
     private volatile @Nullable String authUser;
     private volatile @Nullable String createUser;
+    private volatile @Nullable UUID activeGame;
     private volatile @Nullable List<Room> getRooms;
     private volatile @Nullable Room joinRoom;
     private volatile @Nullable Room createRoom;
     private volatile @Nullable UUID startGame;
     private volatile @Nullable Boolean doMove;
-    private volatile @Nullable String gameToken;
-    private volatile @Nullable String roomToken;
-    private volatile @Nullable GameListener gameListener;
-    private volatile @Nullable RoomListener roomListener;
+    private @Nullable GameListener gameListener;
+    private @Nullable RoomListener roomListener;
 
     @Contract(pure = true)
     public ClientSocketImpl(@NotNull String ip) throws IOException {
@@ -49,6 +49,14 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_USER, null, Arrays.asList(nickname, password)));
         while (createUser == null) wait1ms();
         return createUser;
+    }
+
+    @Override
+    public @Nullable UUID getActiveGame(@NotNull String token) {
+        activeGame = null;
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.GET_ACTIVE_GAME, null, null));
+        while (activeGame == null) wait1ms();
+        return activeGame;
     }
 
     @Override
@@ -92,28 +100,26 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     }
 
     @Override
-    public void addGameListener(@NotNull String token, @NotNull UUID gameUuid, @NotNull GameListener gameListener) {
-        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, token, gameUuid));
-        this.gameToken = token;
+    public void addGameListener(@NotNull String token, @NotNull GameListener gameListener) {
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, token, null));
         this.gameListener = gameListener;
     }
 
     @Override
-    public void addRoomListener(@NotNull String token, @NotNull UUID roomUuid, @NotNull RoomListener roomListener) {
-        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, token, roomUuid));
-        this.roomToken = token;
+    public void addRoomListener(@NotNull String token, @NotNull RoomListener roomListener) {
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, token, null));
         this.roomListener = roomListener;
     }
 
     @Override
-    public void removeGameListener(@NotNull String token, @NotNull UUID gameUuid) {
-        gameToken = null;
+    public void removeGameListener(@NotNull String token) {
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.REMOVE_GAME_UPDATES, token, null));
         gameListener = null;
     }
 
     @Override
-    public void removeRoomListener(@NotNull String token, @NotNull UUID roomUuid) {
-        roomToken = null;
+    public void removeRoomListener(@NotNull String token) {
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.REMOVE_ROOM_UPDATES, token, null));
         roomListener = null;
     }
 
@@ -126,6 +132,9 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                     break;
                 case CREATE_USER:
                     createUser = packet.getAssociatedObject(String.class);
+                    break;
+                case GET_ACTIVE_GAME:
+                    activeGame = packet.getAssociatedObject(UUID.class);
                     break;
                 case GET_ROOMS:
                     getRooms = packet.getAssociatedObject(ArrayList.class);
@@ -143,17 +152,23 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                     doMove = packet.getAssociatedObject(boolean.class);
                     break;
                 case GAME_UPDATE:
-                    Game game = packet.getAssociatedObject(Game.class);
+                    var game = packet.getAssociatedObject(Game.class);
                     if (game != null) Optional.ofNullable(gameListener).ifPresent(f -> {
-                        f.onGameUpdated(game);
-                        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, gameToken, game.getUuid()));
+                        try {
+                            f.onGameUpdate(game);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                     });
                     break;
                 case ROOM_UPDATE:
-                    Room room = packet.getAssociatedObject(Room.class);
+                    var room = packet.getAssociatedObject(Room.class);
                     if (room != null) Optional.ofNullable(roomListener).ifPresent(f -> {
-                        f.onRoomUpdated(room);
-                        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, roomToken, room.getUuid()));
+                        try {
+                            f.onRoomUpdate(room);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                     });
             }
         } catch (Exception e) {
@@ -163,7 +178,6 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
 
     @Override
     public void onClose(@NotNull AdrenalineSocket socket) {
-
     }
 
     private void wait1ms() {
@@ -172,7 +186,6 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
             Thread.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
-            Thread.currentThread().interrupt();
         }
     }
 }

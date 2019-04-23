@@ -29,7 +29,6 @@ public class AdrenalinePacket implements Serializable {
 
     public @Nullable <T> T getAssociatedObject(Class<T> type) {
         try {
-            //noinspection unchecked
             return new Gson().fromJson((String) new Gson().fromJson(jsonObject, ArrayList.class).get(1), type);
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,6 +37,6 @@ public class AdrenalinePacket implements Serializable {
     }
 
     public enum Type {
-        AUTH_USER, CREATE_USER, GET_ROOMS, JOIN_ROOM, CREATE_ROOM, START_GAME, DO_MOVE, GAME_UPDATE, ROOM_UPDATE
+        AUTH_USER, CREATE_USER, GET_ACTIVE_GAME, GET_ROOMS, JOIN_ROOM, CREATE_ROOM, START_GAME, DO_MOVE, GAME_UPDATE, ROOM_UPDATE, REMOVE_GAME_UPDATES, REMOVE_ROOM_UPDATES
     }
 }

@@ -10,6 +10,8 @@ import java.io.Serializable;
  */
 @SuppressWarnings({"WeakerAccess", "SpellCheckingInspection"})
 public class Bounds implements Serializable {
+    private static final long serialVersionUID = 1;
+
     private @NotNull Type n;
     private @NotNull Type s;
     private @NotNull Type w;

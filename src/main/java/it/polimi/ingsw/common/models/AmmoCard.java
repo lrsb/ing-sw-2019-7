@@ -16,6 +16,8 @@ import java.io.Serializable;
  * The two bottom elements are ammo, they can be of the same or different ( just in case of power up on top ) color.
  */
 public class AmmoCard implements Displayable, Serializable {
+    private static final long serialVersionUID = 1;
+
     private final @NotNull Type type;
     private final @NotNull Color left;
     private final @NotNull Color right;

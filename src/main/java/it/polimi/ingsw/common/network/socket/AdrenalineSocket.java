@@ -17,6 +17,7 @@ import static it.polimi.ingsw.Server.SOCKET_PORT;
 
 public class AdrenalineSocket extends Socket {
     private static final @NotNull ExecutorService executorService = Executors.newCachedThreadPool();
+
     private @Nullable AdrenalineSocketListener listener;
     private @Nullable Scanner scanner;
     private @Nullable PrintWriter writer;

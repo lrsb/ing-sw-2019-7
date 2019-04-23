@@ -9,13 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ServerSocketImpl implements AdrenalineServerSocketListener, AdrenalineSocketListener {
-    private static final @NotNull ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Override
     public void onNewPacket(@NotNull AdrenalineSocket socket, @NotNull AdrenalinePacket packet) {
@@ -31,6 +28,9 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                 case CREATE_USER:
                     userInfo = packet.getAssociatedObject(ArrayList.class);
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_USER, null, Server.controller.createUser(userInfo.get(0), userInfo.get(1))));
+                    break;
+                case GET_ACTIVE_GAME:
+                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GET_ACTIVE_GAME, null, Server.controller.getActiveGame(token)));
                     break;
                 case GET_ROOMS:
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GET_ROOMS, null, Server.controller.getRooms(token)));
@@ -48,10 +48,16 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     Server.controller.doMove(token, packet.getAssociatedObject(Game.class));
                     break;
                 case GAME_UPDATE:
-                    executorService.submit(() -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, Server.controller.waitGameUpdate(packet.getToken(), packet.getAssociatedObject(UUID.class)))));
+                    Server.controller.addGameListener(token, game -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, game)));
                     break;
                 case ROOM_UPDATE:
-                    executorService.submit(() -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, null, Server.controller.waitRoomUpdate(packet.getToken(), packet.getAssociatedObject(UUID.class)))));
+                    Server.controller.addRoomListener(token, room -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, null, room)));
+                    break;
+                case REMOVE_GAME_UPDATES:
+                    Server.controller.removeGameListener(token);
+                    break;
+                case REMOVE_ROOM_UPDATES:
+                    Server.controller.removeRoomListener(token);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + packet.getType());

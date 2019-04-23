@@ -15,6 +15,8 @@ import java.io.Serializable;
  */
 @SuppressWarnings("WeakerAccess")
 public class PowerUp implements Displayable, Serializable {
+    private static final long serialVersionUID = 1;
+
     private final @NotNull AmmoCard.Color ammoColor;
     private final @NotNull Type type;
 

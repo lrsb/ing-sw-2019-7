@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -11,7 +12,9 @@ import java.util.List;
  *
  * @param <T> The type of the triplet.
  */
-public class Triplet<T> {
+public class Triplet<T> implements Serializable {
+    private static final long serialVersionUID = 1;
+
     private @Nullable T first;
     private @Nullable T second;
     private @Nullable T third;
