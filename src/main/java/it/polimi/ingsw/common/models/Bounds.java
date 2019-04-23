@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Each cell have 4 bounds, they can be a door, a wall or nothing, that means that the two cells are in the same room.
  */
-@SuppressWarnings({"WeakerAccess", "SpellCheckingInspection"})
+@SuppressWarnings({"SpellCheckingInspection"})
 public class Bounds implements Serializable {
     private static final long serialVersionUID = 1;
 
@@ -17,8 +17,16 @@ public class Bounds implements Serializable {
     private @NotNull Type w;
     private @NotNull Type e;
 
+    /**
+     * Create new bounds for a cell.
+     *
+     * @param n Bound type in north direction.
+     * @param s Bound type in south direction.
+     * @param w Bound type in west direction.
+     * @param e Bound type in east direction.
+     */
     @Contract(pure = true)
-    private Bounds(@NotNull Type n, @NotNull Type s, @NotNull Type w, @NotNull Type e) {
+    public Bounds(@NotNull Type n, @NotNull Type s, @NotNull Type w, @NotNull Type e) {
         this.n = n;
         this.s = s;
         this.w = w;
@@ -26,8 +34,8 @@ public class Bounds implements Serializable {
     }
 
     /**
-     * Get the bound's type.
-     * @param direction The bound's direction.
+     * Get the bounds type.
+     * @param direction The bounds direction.
      * @return Type of indicated bound.
      */
     public @NotNull Type getType(@NotNull Direction direction) {
@@ -64,10 +72,16 @@ public class Bounds implements Serializable {
         }
     }
 
+    /**
+     * Type of the bound.
+     */
     public enum Type {
         DOOR, SAME_ROOM, WALL
     }
 
+    /**
+     * Direction enum.
+     */
     public enum Direction {
         N(0, 1), S(0, -1), W(-1, 0), E(1, 0);
 
@@ -80,25 +94,22 @@ public class Bounds implements Serializable {
             this.dy = dy;
         }
 
+        /**
+         * Get the movement on X axis.
+         * @return The movement on X axis.
+         */
         @Contract(pure = true)
         int getdX() {
             return dx;
         }
 
+        /**
+         * Get the movement on Y axis.
+         * @return The movement on Y axis.
+         */
         @Contract(pure = true)
         int getdY() {
             return dy;
-        }
-    }
-
-    public static class Creator {
-        @Contract(pure = true)
-        private Creator() {
-        }
-
-        @Contract("_ -> new")
-        public static @NotNull Bounds withType(@NotNull Type type) {
-            return new Bounds(type, type, type, type);
         }
     }
 }

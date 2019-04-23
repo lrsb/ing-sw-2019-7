@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.network;
 
 import com.google.gson.Gson;
 import it.polimi.ingsw.common.models.Game;
+import it.polimi.ingsw.common.models.Move;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
@@ -10,6 +11,8 @@ import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -74,6 +77,7 @@ public class ClientRestImpl implements API {
         try {
             var request = new HttpGet("/getRooms");
             request.addHeader("auth-token", token);
+            //noinspection unchecked
             return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), ArrayList.class);
         } catch (IOException e) {
             e.printStackTrace();
@@ -84,7 +88,7 @@ public class ClientRestImpl implements API {
     @Override
     public @Nullable Room joinRoom(@NotNull String token, @NotNull UUID roomUuid) {
         try {
-            var request = new HttpPost("/joinRoom?uuid" + roomUuid);
+            var request = new HttpPost("/joinRoom?uuid=" + roomUuid);
             request.addHeader("auth-token", token);
             return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), Room.class);
         } catch (IOException e) {
@@ -118,10 +122,11 @@ public class ClientRestImpl implements API {
     }
 
     @Override
-    public boolean doMove(@NotNull String token, @NotNull Object move) {
+    public boolean doMove(@NotNull String token, @NotNull Move move) {
         try {
-            var request = new HttpPost("/doMove?move=" + move);
+            var request = new HttpPost("/doMove");
             request.addHeader("auth-token", token);
+            request.setEntity(new StringEntity(new Gson().toJson(move), ContentType.APPLICATION_JSON));
             return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), boolean.class);
         } catch (IOException e) {
             e.printStackTrace();

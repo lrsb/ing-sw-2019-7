@@ -13,7 +13,6 @@ import java.io.Serializable;
  * Each powerup card is composed in 2 parts: it has a specific type and a color.
  * For each type you have 3 card available, one for each color.
  */
-@SuppressWarnings("WeakerAccess")
 public class PowerUp implements Displayable, Serializable {
     private static final long serialVersionUID = 1;
 
@@ -66,6 +65,9 @@ public class PowerUp implements Displayable, Serializable {
         return obj instanceof PowerUp && ammoColor == ((PowerUp) obj).ammoColor && type == ((PowerUp) obj).type;
     }
 
+    /**
+     * {@link PowerUp} Type enum
+     */
     enum Type {
         TARGETING_SCOPE, NEWTON, TAGBACK_GRANADE, TELEPORTER
     }

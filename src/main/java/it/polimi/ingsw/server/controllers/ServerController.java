@@ -3,10 +3,7 @@ package it.polimi.ingsw.server.controllers;
 import com.google.gson.Gson;
 import com.mongodb.client.MongoCollection;
 import it.polimi.ingsw.Server;
-import it.polimi.ingsw.common.models.Game;
-import it.polimi.ingsw.common.models.Player;
-import it.polimi.ingsw.common.models.Room;
-import it.polimi.ingsw.common.models.User;
+import it.polimi.ingsw.common.models.*;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
@@ -77,8 +74,7 @@ public class ServerController implements API {
         try {
             var user = SecureUserController.getUser(token);
             if (user == null) return null;
-            var room = new Room(name);
-            room.addUser(user);
+            var room = new Room(name, user);
             rooms.insertOne(Document.parse(new Gson().toJson(room)));
             return room;
         } catch (Exception e) {
@@ -107,19 +103,10 @@ public class ServerController implements API {
     }
 
     @Override
-    public boolean doMove(@Nullable String token, @Nullable Object move) {
+    public boolean doMove(@Nullable String token, @Nullable Move move) {
         var user = SecureUserController.getUser(token);
         return user == null;
-        /*if (move.isLegal()) {
-            Game game;
-            game.getPlayers().parallelStream().map(Player::getUuid).map(gameListeners::get).filter(Objects::nonNull).forEach(e -> {
-                try {
-                    e.onGameUpdate(game);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            });
-        }*/
+
     }
 
     @Override

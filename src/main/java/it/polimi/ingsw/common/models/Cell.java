@@ -2,6 +2,7 @@ package it.polimi.ingsw.common.models;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 
@@ -9,25 +10,27 @@ import java.io.Serializable;
  * Cell class, each cell is the atom of the board, some cells are spawnpoint, the otherone are just normal cells which
  * have an ammo card on it, more cells compose a room and more rooms compose the game board.
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class Cell implements Serializable {
     private static final long serialVersionUID = 1;
 
     private @NotNull Color color;
-    private boolean spawnPoint;
     private @NotNull Bounds bounds;
-    private @NotNull AmmoCard ammoCard;
+    private boolean spawnPoint;
+    private @Nullable AmmoCard ammoCard;
 
+    /**
+     * Create new cell.
+     *
+     * @param color      The color of the cell.
+     * @param bounds     Related bounds of the cell.
+     * @param spawnPoint True if this cell is a spawnpoint.
+     * @param ammoCard   If this cell isn't a spawnpoint, the associated {@link AmmoCard}.
+     */
     @Contract(pure = true)
-    private Cell(@NotNull Bounds bounds) {
-        this.bounds = bounds;
-    }
-
-    @Contract(pure = true)
-    private Cell(@NotNull Color color, boolean spawnPoint, @NotNull Bounds bounds, @NotNull AmmoCard ammoCard) {
+    public Cell(@NotNull Color color, @NotNull Bounds bounds, boolean spawnPoint, @Nullable AmmoCard ammoCard) {
         this.color = color;
-        this.spawnPoint = spawnPoint;
         this.bounds = bounds;
+        this.spawnPoint = spawnPoint;
         this.ammoCard = ammoCard;
     }
 
@@ -43,7 +46,7 @@ public class Cell implements Serializable {
      * Indicate if a certain cell has an ammo card on it.
      * @return True if there is an ammo card.
      */
-    public @NotNull AmmoCard getAmmoCard() {
+    public @Nullable AmmoCard getAmmoCard() {
         return ammoCard;
     }
 
@@ -51,7 +54,7 @@ public class Cell implements Serializable {
      * Set a new ammo card on a cell.
      * @param ammoCard The new ammo card that you want to assign to the cell.
      */
-    public void setAmmoCard(AmmoCard ammoCard) {
+    public void setAmmoCard(@Nullable AmmoCard ammoCard) {
         this.ammoCard = ammoCard;
     }
 
@@ -71,64 +74,10 @@ public class Cell implements Serializable {
         return bounds;
     }
 
+    /**
+     * Color enum.
+     */
     public enum Color {
         WHITE, BLUE, RED, PURPLE, YELLOW, GREEN
-    }
-
-    public static class Creator {
-        private Cell cell;
-
-        //"nesw" in senso orario, _ : chiuso, | : porta,   : stessa stanza
-        public static Creator withBounds(@NotNull String boundsString) {
-            var creator = new Creator();
-            var bounds = Bounds.Creator.withType(Bounds.Type.SAME_ROOM);
-            for (var direction : Bounds.Direction.values()) {
-                char index;
-                switch (direction) {
-                    case N:
-                        index = 0;
-                        break;
-                    case E:
-                        index = 1;
-                        break;
-                    case S:
-                        index = 2;
-                        break;
-                    default:
-                        index = 3;
-                }
-                switch (boundsString.charAt(index)) {
-                    case '_':
-                        bounds.setType(direction, Bounds.Type.WALL);
-                        break;
-                    case '|':
-                        bounds.setType(direction, Bounds.Type.DOOR);
-                        break;
-                    case ' ':
-                        bounds.setType(direction, Bounds.Type.SAME_ROOM);
-                }
-            }
-            creator.cell = new Cell(bounds);
-            return creator;
-        }
-
-        public Creator color(Color color) {
-            cell.color = color;
-            return this;
-        }
-
-        public Creator spawnPoint(boolean isSpawnPoint) {
-            cell.spawnPoint = isSpawnPoint;
-            return this;
-        }
-
-        public Creator ammoCard(AmmoCard ammoCard) {
-            cell.ammoCard = ammoCard;
-            return this;
-        }
-
-        public Cell create() {
-            return cell;
-        }
     }
 }

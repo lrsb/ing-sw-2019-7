@@ -4,10 +4,12 @@ import com.google.gson.Gson;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoWSD;
 import it.polimi.ingsw.Server;
+import it.polimi.ingsw.common.models.Move;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -70,7 +72,7 @@ public class ServerRestImpl extends NanoWSD {
                     break;
                 case "/doMove":
                     if (method == Method.POST)
-                        return newJsonResponse(Server.controller.doMove(token, session.getParameters().get("move").get(0)));
+                        return newJsonResponse(Server.controller.doMove(token, new Gson().fromJson(new InputStreamReader(session.getInputStream()), Move.class)));
                     break;
                 default:
                     return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");

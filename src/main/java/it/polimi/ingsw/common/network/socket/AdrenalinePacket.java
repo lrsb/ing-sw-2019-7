@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class AdrenalinePacket implements Serializable {
+    private static final long serialVersionUID = 1;
+
     private final @NotNull Type type;
     private final @Nullable String jsonObject;
 
@@ -27,7 +29,7 @@ public class AdrenalinePacket implements Serializable {
         return (String) new Gson().fromJson(jsonObject, ArrayList.class).get(0);
     }
 
-    public @Nullable <T> T getAssociatedObject(Class<T> type) {
+    public @Nullable <T> T getAssociatedObject(@NotNull Class<T> type) {
         try {
             return new Gson().fromJson((String) new Gson().fromJson(jsonObject, ArrayList.class).get(1), type);
         } catch (Exception e) {

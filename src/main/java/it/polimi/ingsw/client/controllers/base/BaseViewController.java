@@ -61,7 +61,7 @@ public abstract class BaseViewController extends JFrame {
         return navigationController;
     }
 
-    public <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
+    <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
     }
 
     public void controllerPopped() {

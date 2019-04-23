@@ -474,7 +474,7 @@ public abstract class Weapon {
                 //TODO: control if shooter can move to firstAdditionalTargetPoint.get(0)
                 if (fireSort.get(0) == 1 && !shooter.canSee(basicTarget.get(0), cells)) return false;
                 //TODO: control if shooter can see basicTarget after movement
-                return !(fireSort.get(0) == 2 && );
+                return !(fireSort.get(0) == 2);
             }
 
             @Override
@@ -598,9 +598,8 @@ public abstract class Weapon {
                     basicTargetPoint.clear();
                     basicTargetPoint.add(shooter.getPosition());
                 }
-                if (basicTarget.size() != 1 || basicTargetPoint.size() != 1) return false;
+                return basicTarget.size() == 1 && basicTargetPoint.size() == 1;
                 //TODO: verify if basicTarget.get(0) can move to basicTargetPoint.get(0)
-                return true;
             }
 
             @Override

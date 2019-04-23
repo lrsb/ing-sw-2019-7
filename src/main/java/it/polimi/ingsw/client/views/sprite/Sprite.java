@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Optional;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class Sprite {
     private int x;
     private int y;

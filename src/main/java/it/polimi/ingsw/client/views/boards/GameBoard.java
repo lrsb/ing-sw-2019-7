@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class GameBoard extends AbstractBoard {
     private final @NotNull Dimension WEAPON_DIMEMSION = transformDim(0.091, 0.214);
     private final @NotNull Dimension POWERUP_DIMEMSION = transformDim(0.068, 0.136);
@@ -62,8 +63,7 @@ public class GameBoard extends AbstractBoard {
 
     @Override
     public void onSpriteDragged(@NotNull Sprite sprite) {
-        if (sprite.getTag() == null) ;//super.onSpriteDragged(sprite);
-        else switch (sprite.getTag()) {
+        if (sprite.getTag() != null) switch (sprite.getTag()) {
             case "weapon":
                 sprite.moveTo(new LinearInterpolator(sprite.getPosition(), WEAPON_POSITION, 250) {
                 });

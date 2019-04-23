@@ -91,7 +91,7 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
     }
 
     @Override
-    public void autoRemove(Sprite sprite) {
+    public void autoRemove(@NotNull Sprite sprite) {
         sprites.remove(sprite);
         repaint();
     }

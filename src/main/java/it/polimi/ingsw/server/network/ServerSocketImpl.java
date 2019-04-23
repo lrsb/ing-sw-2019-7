@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server.network;
 
 import it.polimi.ingsw.Server;
-import it.polimi.ingsw.common.models.Game;
+import it.polimi.ingsw.common.models.Move;
 import it.polimi.ingsw.common.network.socket.AdrenalinePacket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocketListener;
@@ -13,20 +13,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ServerSocketImpl implements AdrenalineServerSocketListener, AdrenalineSocketListener {
+    private static final @NotNull Logger logger = Logger.getLogger("ServerSocketImpl");
 
     @Override
     public void onNewPacket(@NotNull AdrenalineSocket socket, @NotNull AdrenalinePacket packet) {
-        Logger.getLogger("socket").log(Level.INFO, "received: {0}", packet.getType());
         try {
             var token = packet.getToken();
             ArrayList<String> userInfo;
             switch (packet.getType()) {
                 case AUTH_USER:
+                    //noinspection unchecked
                     userInfo = packet.getAssociatedObject(ArrayList.class);
+                    //noinspection ConstantConditions
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.AUTH_USER, null, Server.controller.authUser(userInfo.get(0), userInfo.get(1))));
                     break;
                 case CREATE_USER:
+                    //noinspection unchecked
                     userInfo = packet.getAssociatedObject(ArrayList.class);
+                    //noinspection ConstantConditions
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_USER, null, Server.controller.createUser(userInfo.get(0), userInfo.get(1))));
                     break;
                 case GET_ACTIVE_GAME:
@@ -45,7 +49,7 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.START_GAME, null, Server.controller.startGame(token, packet.getAssociatedObject(UUID.class))));
                     break;
                 case DO_MOVE:
-                    Server.controller.doMove(token, packet.getAssociatedObject(Game.class));
+                    Server.controller.doMove(token, packet.getAssociatedObject(Move.class));
                     break;
                 case GAME_UPDATE:
                     Server.controller.addGameListener(token, game -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, game)));
@@ -69,12 +73,12 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
 
     @Override
     public void onClose(@NotNull AdrenalineSocket socket) {
-        Logger.getLogger("socket").log(Level.INFO, "s_close: {0}", socket.getInetAddress());
+        logger.log(Level.INFO, "s_close: {0}", socket.getInetAddress());
     }
 
     @Override
     public void onNewSocket(@NotNull AdrenalineSocket socket) {
-        Logger.getLogger("socket").log(Level.INFO, "s_open: {0}", socket.getInetAddress());
+        logger.log(Level.INFO, "s_open: {0}", socket.getInetAddress());
         socket.setAdrenalineSocketListener(this);
     }
 }

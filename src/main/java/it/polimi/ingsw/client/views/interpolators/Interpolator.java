@@ -20,7 +20,7 @@ public abstract class Interpolator {
         this.endMillis = endMillis;
     }
 
-    public @NotNull Point interpolate(long timestamp) throws TimestampOutOfRangeException {
+    public final @NotNull Point interpolate(long timestamp) throws TimestampOutOfRangeException {
         checkTimestamp(timestamp);
         return interpolateImpl((float) (timestamp - startMillis) / (endMillis - startMillis));
     }

@@ -16,7 +16,7 @@ import static com.mongodb.client.model.Filters.eq;
 @SuppressWarnings("ConstantConditions")
 class SecureUserController {
     private static final @NotNull SecureRandom random = new SecureRandom();
-    private static final @NotNull char[] symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
+    private static final @NotNull char[] symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:".toCharArray();
     private static final @NotNull char[] buf = new char[256];
 
     private static final @NotNull MongoCollection<Document> users = Server.mongoDatabase.getCollection("users");

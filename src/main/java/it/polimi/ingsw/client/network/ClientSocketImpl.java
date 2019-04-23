@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.network;
 
 import it.polimi.ingsw.common.models.Game;
+import it.polimi.ingsw.common.models.Move;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
@@ -92,7 +93,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     }
 
     @Override
-    public boolean doMove(@NotNull String token, @NotNull Object move) {
+    public boolean doMove(@NotNull String token, @NotNull Move move) {
         doMove = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.DO_MOVE, token, move));
         while (doMove == null) wait1ms();
@@ -137,6 +138,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                     activeGame = packet.getAssociatedObject(UUID.class);
                     break;
                 case GET_ROOMS:
+                    //noinspection unchecked
                     getRooms = packet.getAssociatedObject(ArrayList.class);
                     break;
                 case JOIN_ROOM:

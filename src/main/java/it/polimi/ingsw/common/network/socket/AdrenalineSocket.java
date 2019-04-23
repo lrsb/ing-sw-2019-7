@@ -12,11 +12,14 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static it.polimi.ingsw.Server.SOCKET_PORT;
 
 public class AdrenalineSocket extends Socket {
     private static final @NotNull ExecutorService executorService = Executors.newCachedThreadPool();
+    private static final @NotNull Logger logger = Logger.getLogger("AdrenalineSocket");
 
     private @Nullable AdrenalineSocketListener listener;
     private @Nullable Scanner scanner;
@@ -47,7 +50,8 @@ public class AdrenalineSocket extends Socket {
         });
     }
 
-    public void send(AdrenalinePacket object) {
+    public void send(@NotNull AdrenalinePacket object) {
+        logger.log(Level.INFO, "send: {0}", object);
         Optional.ofNullable(writer).ifPresent(e -> {
             e.println(new Gson().toJson(object));
             e.flush();

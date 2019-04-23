@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.network;
 
+import it.polimi.ingsw.common.models.Move;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
@@ -58,7 +59,7 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
-    public boolean doMove(@NotNull String token, @NotNull Object move) throws RemoteException {
+    public boolean doMove(@NotNull String token, @NotNull Move move) throws RemoteException {
         return remote.doMove(token, move);
     }
 
