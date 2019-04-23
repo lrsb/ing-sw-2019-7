@@ -129,7 +129,7 @@ public class GameImpl extends Game implements Serializable {
             var cells = new Cell[MAX_X][MAX_Y];
             for (var i = 0; i < cells.length; i++) {
                 for (var j = 0; j < cells[i].length; j++) {
-                    cells[i][j] = Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
+                    //cells[i][j] = Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
                 }
             }
             return new GameImpl(roomUuid, Type.SIX_SIX, cells, users.stream().map(Player::new).collect(Collectors.toList()));
