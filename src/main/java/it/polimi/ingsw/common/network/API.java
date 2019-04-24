@@ -1,6 +1,6 @@
 package it.polimi.ingsw.common.network;
 
-import it.polimi.ingsw.common.models.Move;
+import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Room;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ public interface API extends Remote {
 
     @Nullable UUID startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
 
-    boolean doMove(@NotNull String token, @NotNull Move move) throws RemoteException;
+    boolean doAction(@NotNull String token, @NotNull Action action) throws RemoteException;
 
     void addGameListener(@NotNull String token, @NotNull GameListener gameListener) throws RemoteException;
 
