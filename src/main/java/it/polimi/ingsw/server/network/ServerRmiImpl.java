@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server.network;
 
 import it.polimi.ingsw.Server;
-import it.polimi.ingsw.common.models.Move;
+import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
@@ -55,8 +55,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements API {
     }
 
     @Override
-    public boolean doMove(@NotNull String token, @NotNull Move move) {
-        return Server.controller.doMove(token, move);
+    public boolean doAction(@NotNull String token, @NotNull Action action) {
+        return Server.controller.doAction(token, action);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.views.interpolators;
+package it.polimi.ingsw.client.views.sprite.interpolators;
 
 import org.jetbrains.annotations.NotNull;
 

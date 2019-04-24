@@ -70,25 +70,25 @@ class SecureUserController {
     }
 
     private static class SecureUser extends User {
-        private String token;
-        private String password;
+        private @Nullable String token;
+        private @NotNull String password;
 
-        private SecureUser(String nickname, String password) {
+        private SecureUser(@NotNull String nickname, @NotNull String password) {
             super(nickname);
             this.password = password;
         }
 
         @Contract(pure = true)
-        private String getToken() {
+        private @Nullable String getToken() {
             return token;
         }
 
-        private void setToken(String token) {
+        private void setToken(@NotNull String token) {
             this.token = token;
         }
 
         @Contract(pure = true)
-        private String getPassword() {
+        private @NotNull String getPassword() {
             return password;
         }
     }

@@ -103,7 +103,7 @@ public class ServerController implements API {
     }
 
     @Override
-    public boolean doMove(@Nullable String token, @Nullable Move move) {
+    public boolean doAction(@Nullable String token, @Nullable Action action) {
         var user = SecureUserController.getUser(token);
         return user == null;
 

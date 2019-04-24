@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client.views.boards;
 
-import it.polimi.ingsw.client.views.interpolators.LinearInterpolator;
 import it.polimi.ingsw.client.views.sprite.Sprite;
+import it.polimi.ingsw.client.views.sprite.interpolators.LinearInterpolator;
 import it.polimi.ingsw.common.models.AmmoCard;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.PowerUp;

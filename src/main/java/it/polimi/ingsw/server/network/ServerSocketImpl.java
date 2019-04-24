@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server.network;
 
 import it.polimi.ingsw.Server;
-import it.polimi.ingsw.common.models.Move;
+import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.network.socket.AdrenalinePacket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocketListener;
@@ -48,8 +48,8 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                 case START_GAME:
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.START_GAME, null, Server.controller.startGame(token, packet.getAssociatedObject(UUID.class))));
                     break;
-                case DO_MOVE:
-                    Server.controller.doMove(token, packet.getAssociatedObject(Move.class));
+                case DO_ACTION:
+                    Server.controller.doAction(token, packet.getAssociatedObject(Action.class));
                     break;
                 case GAME_UPDATE:
                     Server.controller.addGameListener(token, game -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, game)));

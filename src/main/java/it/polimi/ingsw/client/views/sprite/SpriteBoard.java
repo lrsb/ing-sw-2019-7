@@ -36,7 +36,6 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                Thread.currentThread().interrupt();
             }
         }).start();
     }
@@ -103,6 +102,8 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
 
     @Override
     public void close() {
+        sprites.parallelStream().forEach(e -> e.setSpriteListener(null));
+        sprites.clear();
         closed = true;
     }
 

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoWSD;
 import it.polimi.ingsw.Server;
-import it.polimi.ingsw.common.models.Move;
+import it.polimi.ingsw.common.models.Action;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,9 +70,9 @@ public class ServerRestImpl extends NanoWSD {
                     if (method == Method.POST)
                         return newJsonResponse(Server.controller.startGame(token, UUID.fromString(session.getParameters().get("uuid").get(0))));
                     break;
-                case "/doMove":
+                case "/doAction":
                     if (method == Method.POST)
-                        return newJsonResponse(Server.controller.doMove(token, new Gson().fromJson(new InputStreamReader(session.getInputStream()), Move.class)));
+                        return newJsonResponse(Server.controller.doAction(token, new Gson().fromJson(new InputStreamReader(session.getInputStream()), Action.class)));
                     break;
                 default:
                     return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");

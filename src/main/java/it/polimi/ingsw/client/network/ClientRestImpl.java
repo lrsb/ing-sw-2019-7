@@ -1,8 +1,8 @@
 package it.polimi.ingsw.client.network;
 
 import com.google.gson.Gson;
+import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
-import it.polimi.ingsw.common.models.Move;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
@@ -122,11 +122,11 @@ public class ClientRestImpl implements API {
     }
 
     @Override
-    public boolean doMove(@NotNull String token, @NotNull Move move) {
+    public boolean doAction(@NotNull String token, @NotNull Action action) {
         try {
-            var request = new HttpPost("/doMove");
+            var request = new HttpPost("/doAction");
             request.addHeader("auth-token", token);
-            request.setEntity(new StringEntity(new Gson().toJson(move), ContentType.APPLICATION_JSON));
+            request.setEntity(new StringEntity(new Gson().toJson(action), ContentType.APPLICATION_JSON));
             return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), boolean.class);
         } catch (IOException e) {
             e.printStackTrace();
