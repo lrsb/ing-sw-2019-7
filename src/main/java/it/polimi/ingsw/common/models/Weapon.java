@@ -471,9 +471,13 @@ public abstract class Weapon {
             protected boolean validateTargets() {
                 if (basicTarget.size() != 1 ||
                         (fireSort.contains(2) && firstAdditionalTargetPoint.size() != 1)) return false;
-                //TODO: control if shooter can move to firstAdditionalTargetPoint.get(0)
+                if (!firstAdditionalTargetPoint.isEmpty()) {
+                    //TODO: control if shooter can move to firstAdditionalTargetPoint.get(0)
+                }
                 if (fireSort.get(0) == 1 && !shooter.canSee(basicTarget.get(0), cells)) return false;
-                //TODO: control if shooter can see basicTarget after movement
+                if (fireSort.contains(2) && fireSort.indexOf(2) < fireSort.indexOf(1)) {
+                    if (!basicTarget.get(0).canBeSeenFrom(firstAdditionalTargetPoint.get(0), cells)) return false;
+                }
                 return !(fireSort.get(0) == 2);
             }
 
@@ -481,9 +485,7 @@ public abstract class Weapon {
             public void basicFire() { basicTarget.get(0).takeHits(shooter, 2, 0); }
 
             @Override
-            public void firstAdditionalFire() {
-                //TODO: move shooter to firstAdditionalTargetPoint.get(0)
-            }
+            public void firstAdditionalFire() { shooter.setPosition(firstAdditionalTargetPoint.get(0)); }
 
             @Override
             public void secondAdditionalFire() { basicTarget.get(0).takeHits(shooter, 1, 0); }
@@ -598,13 +600,15 @@ public abstract class Weapon {
                     basicTargetPoint.clear();
                     basicTargetPoint.add(shooter.getPosition());
                 }
-                return basicTarget.size() == 1 && basicTargetPoint.size() == 1;
-                //TODO: verify if basicTarget.get(0) can move to basicTargetPoint.get(0)
+                if (basicTarget.size() != 1) return false;
+                if (basicTarget.get(0).equals(shooter)) return false;
+                //TODO: control if basicTarget.get(0) can move to basicTargetPoint.get(0)
+                return basicTargetPoint.size() == 1;
             }
 
             @Override
             public void basicFire() {
-                //TODO: move basicTarget.get(0) to basicTargetPoint.get(0)
+                basicTarget.get(0).setPosition(basicTargetPoint.get(0));
                 if(!alternativeFire){
                     basicTarget.get(0).takeHits(shooter, 1, 0);
                 } else {
@@ -679,14 +683,14 @@ public abstract class Weapon {
 
             @Override
             public void basicFire() {
-                //TODO: move basicTarget.get(0) to basicTargetPoint.get(0)
+                basicTarget.get(0).setPosition(basicTargetPoint.get(0));
                 basicTarget.get(0).takeHits(shooter, 2, 0);
             }
 
             @Override
             public void firstAdditionalFire() {
                 for (Player player : firstAdditionalTarget) {
-                    //TODO: move player to basicTargetPoint.get(0)
+                    player.setPosition(basicTargetPoint.get(0));
                     player.takeHits(shooter, 1, 0);
                 }
             }
@@ -985,7 +989,7 @@ public abstract class Weapon {
             @Override
             public void basicFire() {
                 basicTarget.get(0).takeHits(shooter, 1, 0);
-                if (!basicTargetPoint.isEmpty()) ;//TODO: move basicTarget.get(0) to basicTargetPoint.get(0)
+                if (!basicTargetPoint.isEmpty()) basicTarget.get(0).setPosition(basicTargetPoint.get(0));
             }
 
             @Override
@@ -1030,7 +1034,7 @@ public abstract class Weapon {
                     if (firstAdditionalTargetPoint.size() != 1) return false;
                     //TODO: control if shooter can move to firstAdditionalTargetPoint.get(0)
                     if (fireSort.indexOf(2) < fireSort.indexOf(1)) {
-                        //TODO: control if shooter can see basicTarget.get(0) from firstAdditionalTargetPoint.get(0)
+                        if (!(basicTarget.get(0).canBeSeenFrom(firstAdditionalTargetPoint.get(0), cells))) return false;
                     } else {
                         if (!shooter.canSee(basicTarget.get(0), cells)) return false;
                     }
@@ -1051,13 +1055,11 @@ public abstract class Weapon {
             @Override
             public void basicFire() {
                 basicTarget.get(0).takeHits(shooter, 2, 0);
-                if (!basicTargetPoint.isEmpty()) ; //TODO: move basicTarget.get(0) to basicTargetPoint.get(0)
+                if (!basicTargetPoint.isEmpty()) basicTarget.get(0).setPosition(basicTargetPoint.get(0));
             }
 
             @Override
-            public void firstAdditionalFire() {
-                //TODO: move shooter to firstAdditionalTargetPoint.get(0)
-            }
+            public void firstAdditionalFire() { shooter.setPosition(firstAdditionalTargetPoint.get(0)); }
 
             @Override
             public void secondAdditionalFire() {
@@ -1191,9 +1193,7 @@ public abstract class Weapon {
             public void basicFire() { basicTarget.get(0).takeHits(shooter, 2, 0); }
 
             @Override
-            public void firstAdditionalFire() {
-                //TODO: move shooter to firstAdditionalTargetPoint.get(0)
-            }
+            public void firstAdditionalFire() { shooter.setPosition(firstAdditionalTargetPoint.get(0)); }
 
             @Override
             public void secondAdditionalFire() { secondAdditionalTarget.get(0).takeHits(shooter, 2, 0); }
@@ -1295,7 +1295,7 @@ public abstract class Weapon {
                 if (!alternativeFire) {
                     basicTarget.get(0).takeHits(shooter, 3, 0);
                     if (!basicTargetPoint.isEmpty()) {
-                        //TODO: move basicTarget.get(0) to basicTargetPoint.get(0)
+                        basicTarget.get(0).setPosition(basicTargetPoint.get(0));
                     }
                 } else {
                     basicTarget.get(0).takeHits(shooter, 2, 0);
@@ -1341,18 +1341,53 @@ public abstract class Weapon {
                 if (!alternativeFire) {
                     return (basicTarget.size() == 1 && shooter.isPlayerNear(basicTarget.get(0), cells));
                 } else {
-                    //TODO: validate alternative
+                    if (basicTargetPoint.isEmpty() || basicTargetPoint.size() > 2 ||
+                            basicTarget.size() > 2) return false;
+                    if (basicTargetPoint.size() == 1) {
+                        if (!(shooter.isCellNear(basicTargetPoint.get(0), cells) ||
+                                shooter.isCellNear2Straight(basicTargetPoint.get(0), cells))) return false;
+                        if (basicTarget.size() > 1) return false;
+                        if (!basicTarget.isEmpty()) {
+                            return basicTarget.get(0).getPosition().equals(basicTargetPoint.get(0));
+                        }
+                        return true;
+                    } else {
+                        if (basicTarget.size() == 1) {
+                            if (!(basicTarget.get(0).getPosition().equals(basicTargetPoint.get(0)) ||
+                                    basicTarget.get(0).getPosition().equals(basicTargetPoint.get(1)))) return false;
+                        }
+                        if (basicTarget.size() == 2) {
+                            if (!(basicTarget.get(0).getPosition().equals(basicTargetPoint.get(0)) &&
+                                    basicTarget.get(1).getPosition().equals(basicTargetPoint.get(1)))) return false;
+                        }
+                        for (Bounds.Direction d : Bounds.Direction.values()) {
+                            if (cells[shooter.getPosition().x][shooter.getPosition().y].getBounds().getType(d) !=
+                                    Bounds.Type.WALL &&
+                                    shooter.getPosition().x + d.getdX() == basicTargetPoint.get(0).x &&
+                                    shooter.getPosition().y + d.getdY() == basicTargetPoint.get(0).y) {
+                                if (cells[shooter.getPosition().x + d.getdX()][shooter.getPosition().y + d.getdY()]
+                                        .getBounds().getType(d) != Bounds.Type.WALL &&
+                                        shooter.getPosition().x + 2*d.getdX() == basicTargetPoint.get(1).x &&
+                                        shooter.getPosition().y + 2*d.getdY() == basicTargetPoint.get(1).y) return true;
+                            }
+                        }
+                        return false;
+                    }
                 }
-                return true;
             }
 
             @Override
             public void basicFire() {
                 if (!alternativeFire) {
-                    //TODO: move shooter to basicTarget.get(0).getPosition()
+                    shooter.setPosition(basicTarget.get(0).getPosition());
                     basicTarget.get(0).takeHits(shooter, 1, 2);
                 } else {
-                    //TODO: alternativeFire
+                    for (int i = 0; i < basicTargetPoint.size(); i++) {
+                        shooter.setPosition(basicTargetPoint.get(i));
+                        if (basicTarget.size() > i) {
+                            basicTarget.get(i).takeHits(shooter, 2, 0);
+                        }
+                    }
                 }
             }
 
@@ -1468,7 +1503,7 @@ public abstract class Weapon {
                 } else {
                     basicTarget.get(0).takeHits(shooter, 3, 0);
                     if (!basicTargetPoint.isEmpty()) {
-                        //TODO: move basicTarget.get(0) to basicTargetPoint.get(0)
+                        basicTarget.get(0).setPosition(basicTargetPoint.get(0));
                     }
                 }
             }

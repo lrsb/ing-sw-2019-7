@@ -154,6 +154,16 @@ public class Player implements Serializable {
         return false;
     }
 
+    public boolean canBeSeenFrom (@NotNull Point point, @NotNull Cell[][] cells) {
+        if (cells[point.x][point.y].getColor() == cells[position.x][position.y].getColor()) return true;
+        for (Bounds.Direction d : Bounds.Direction.values()) {
+            if (cells[point.x][point.y].getBounds().getType(d) != Bounds.Type.WALL &&
+                    cells[position.x][position.y].getColor() !=
+                            cells[point.x + d.getdX()][point.y + d.getdY()].getColor()) return true;
+        }
+        return false;
+    }
+
     public boolean isPlayerNear(@NotNull Player player, @NotNull Cell[][] cells) {
         for (Bounds.Direction d : Bounds.Direction.values()) {
             if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL &&
