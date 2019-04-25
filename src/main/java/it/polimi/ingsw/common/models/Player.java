@@ -39,8 +39,16 @@ public class Player implements Serializable {
         return nickname;
     }
 
+    public ArrayList<String> getDamagesTaken() {
+        return damagesTaken;
+    }
+
     public boolean hasWeapon(@NotNull Weapon weapon) {
         return weapons.contains(weapon);
+    }
+
+    public boolean isALoadedGun(@NotNull Weapon weapon) {
+        return isReloaded[weapons.indexOf(weapon)];
     }
 
     //gives damages, convert marks to damages and finally gives marks
@@ -81,17 +89,6 @@ public class Player implements Serializable {
             }
         }
         return false;
-    }
-
-    //distributes points to other players
-    public void death() {
-        if (amIDead()) {
-            //è game che si preoccupa di distribuire i punti
-            //TODO redistributing points to players
-            damagesTaken.clear();
-            marksTaken.clear();
-            deaths++;
-        }
     }
 
     public void setPlayed() {

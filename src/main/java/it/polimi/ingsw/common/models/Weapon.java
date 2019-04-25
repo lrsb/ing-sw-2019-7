@@ -214,23 +214,27 @@ public abstract class Weapon {
 
     //shoot è di Weapon astratta, ma tutti i metodi chiamati all'interno devono essere specifici dell'arma usata
     public boolean shoot() {
-        if (canFire() && validateFireSort()) {
-            if (validateTargets()) {
-                if (payCost()) {
-                    for (Integer fireNumber : fireSort) {
-                        switch (fireNumber) {
-                            case 1:
-                                basicFire();
-                                break;
-                            case 2:
-                                firstAdditionalFire();
-                                break;
-                            case 3:
-                                secondAdditionalFire();
-                                break;
+        if (shooter.hasWeapon(this)) {
+            if (shooter.isALoadedGun(this)) {
+                if (canFire() && validateFireSort()) {
+                    if (validateTargets()) {
+                        if (payCost()) {
+                            for (Integer fireNumber : fireSort) {
+                                switch (fireNumber) {
+                                    case 1:
+                                        basicFire();
+                                        break;
+                                    case 2:
+                                        firstAdditionalFire();
+                                        break;
+                                    case 3:
+                                        secondAdditionalFire();
+                                        break;
+                                }
+                            }
+                            return true;
                         }
                     }
-                    return true;
                 }
             }
         }
@@ -284,7 +288,6 @@ public abstract class Weapon {
             //per ora dice se può essere usata, al di fuori del "è carica?"
             @Override
             protected boolean canFire() {
-                possibleTarget.clear();
                 addVisibleTarget();
                 return !possibleTarget.isEmpty();
             }
@@ -303,8 +306,8 @@ public abstract class Weapon {
                             if (!shooter.canSee(basicTarget.get(0), cells)) return false;
                             break;
                         case (2):
-                            if (!shooter.canSee(firstAdditionalTarget.get(0), cells) || firstAdditionalTarget.get(0).equals(basicTarget.get(0)))
-                                return false;
+                            if (!shooter.canSee(firstAdditionalTarget.get(0), cells) ||
+                                    firstAdditionalTarget.get(0).equals(basicTarget.get(0))) return false;
                             break;
                         default:
                             return false;
@@ -340,7 +343,6 @@ public abstract class Weapon {
 
             @Override
             protected boolean canFire() {
-                possibleTarget.clear();
                 addVisibleTarget();
                 return !possibleTarget.isEmpty();
             }
@@ -399,7 +401,6 @@ public abstract class Weapon {
                 firstAdditionalTarget.get(0).takeHits(shooter, 1, 0);
             }
 
-            //qui controllo che sia colpibile anche un secondo bersaglio
             @Override
             public void secondAdditionalFire() {
                 for (Player player : secondAdditionalTarget) {

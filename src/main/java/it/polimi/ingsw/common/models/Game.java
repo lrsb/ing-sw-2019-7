@@ -74,6 +74,17 @@ public abstract class Game implements Serializable {
         return north || south || east || west;
     }
 
+    //da chiamare ogni volta che un giocatore finisce un turno
+    public void pointsRedistribution() {
+        for (Player player : players) {
+            if (player.amIDead()) {
+                for (String name : player.getDamagesTaken()) {
+
+                }
+            }
+        }
+    }
+
     public enum Type {
         FIVE_FIVE("L5", "R5"), FIVE_SIX("L5", "R6"), SIX_FIVE("L6", "R5"), SIX_SIX("L6", "R6");
 
