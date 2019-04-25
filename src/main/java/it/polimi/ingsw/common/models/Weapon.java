@@ -15,6 +15,7 @@ public abstract class Weapon {
     private @NotNull ArrayList<Player> players;
     private @NotNull Player shooter;
     private boolean alternativeFire;
+    private Game game;
     //siccome si possono usare anche le powerups come ammo, se le metti, queste hanno la precedenza sul pagamento
     private ArrayList<PowerUp> powerUpsPay;
     private ArrayList<AmmoCard.Color> basicPayment;
@@ -490,7 +491,8 @@ public abstract class Weapon {
                 if (basicTarget.size() != 1 ||
                         (fireSort.contains(2) && firstAdditionalTargetPoint.size() != 1)) return false;
                 if (!firstAdditionalTargetPoint.isEmpty()) {
-                    //TODO: control if shooter can move to firstAdditionalTargetPoint.get(0)
+                    if (!game.canMove(shooter.getPosition(), firstAdditionalTargetPoint.get(0), 0, 2))
+                        return false;
                 }
                 if (fireSort.get(0) == 1 && !shooter.canSee(basicTarget.get(0), cells)) return false;
                 if (fireSort.contains(2) && fireSort.indexOf(2) < fireSort.indexOf(1)) {
@@ -634,8 +636,8 @@ public abstract class Weapon {
                 }
                 if (basicTarget.size() != 1) return false;
                 if (basicTarget.get(0).equals(shooter)) return false;
-                //TODO: control if basicTarget.get(0) can move to basicTargetPoint.get(0)
-                return basicTargetPoint.size() == 1;
+                if (basicTargetPoint.size() !=1) return false;
+                return game.canMove(basicTarget.get(0).getPosition(), basicTargetPoint.get(0), 0, 3);
             }
 
             @Override
@@ -1072,7 +1074,7 @@ public abstract class Weapon {
                 secondAdditionalTarget.clear();
                 if (fireSort.contains(2)) {
                     if (firstAdditionalTargetPoint.size() != 1) return false;
-                    //TODO: control if shooter can move to firstAdditionalTargetPoint.get(0)
+                    if(!game.canMove(shooter.getPosition(), firstAdditionalTargetPoint.get(0), 0, 2))
                     if (fireSort.indexOf(2) < fireSort.indexOf(1)) {
                         if (!(basicTarget.get(0).canBeSeenFrom(firstAdditionalTargetPoint.get(0), cells))) return false;
                     } else {
