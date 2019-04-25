@@ -10,14 +10,11 @@ import java.util.List;
 import java.util.UUID;
 
 public abstract class Game implements Serializable {
-    private static final long serialVersionUID = 1;
-
     public static final int MAX_PLAYERS = 5;
     public static final int MIN_PLAYERS = 3;
-
     protected static final int MAX_X = 4;
     protected static final int MAX_Y = 3;
-
+    private static final long serialVersionUID = 1;
     protected final @NotNull UUID uuid;
     protected final @NotNull Cell[][] cells;
     protected final @NotNull Type type;

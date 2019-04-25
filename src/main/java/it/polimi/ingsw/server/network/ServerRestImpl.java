@@ -24,13 +24,13 @@ public class ServerRestImpl extends NanoWSD {
         start(Integer.MAX_VALUE, false);
     }
 
+    private static @NotNull Response newJsonResponse(@Nullable Object object) {
+        return object != null ? NanoHTTPD.newFixedLengthResponse(new Gson().toJson(object)) : newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, null);
+    }
+
     @Override
     protected WebSocket openWebSocket(IHTTPSession ihttpSession) {
         return new AdrenalineWebSocket(ihttpSession);
-    }
-
-    private static @NotNull Response newJsonResponse(@Nullable Object object) {
-        return object != null ? NanoHTTPD.newFixedLengthResponse(new Gson().toJson(object)) : newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, null);
     }
 
     @Override

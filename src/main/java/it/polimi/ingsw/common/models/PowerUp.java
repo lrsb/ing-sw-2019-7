@@ -21,8 +21,9 @@ public class PowerUp implements Displayable, Serializable {
 
     /**
      * PowerUp constructor.
+     *
      * @param ammoColor Indicate the color of the card.
-     * @param type Indicate the the type of the powerUp card ( ex: Teleporter).
+     * @param type      Indicate the the type of the powerUp card ( ex: Teleporter).
      */
     @Contract(pure = true)
     public PowerUp(@NotNull AmmoCard.Color ammoColor, @NotNull Type type) {
@@ -32,6 +33,7 @@ public class PowerUp implements Displayable, Serializable {
 
     /**
      * Return the color of the powerUp card.
+     *
      * @return Color of the card.
      */
     @Contract(pure = true)
@@ -41,6 +43,7 @@ public class PowerUp implements Displayable, Serializable {
 
     /**
      * Return the type of powerUp card
+     *
      * @return Type of the card.
      */
     @Contract(pure = true)
@@ -51,11 +54,12 @@ public class PowerUp implements Displayable, Serializable {
     @Override
     public @NotNull BufferedImage getImage() throws IOException {
         return ImageIO.read(AmmoCard.class.getResourceAsStream("PowerUp/" + type.name().substring(0, 3) +
-                    ammoColor.name().substring(0, 1) + ".png"));
+                ammoColor.name().substring(0, 1) + ".png"));
     }
 
     /**
      * Return true if two powerUp cards are equals.
+     *
      * @param obj The object that you want to compare.
      * @return True if the cards are equals, else otherwise.
      */

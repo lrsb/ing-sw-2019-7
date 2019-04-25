@@ -40,6 +40,7 @@ public class Room implements Serializable {
 
     /**
      * Return the name of the room.
+     *
      * @return The name of the room.
      */
     public @NotNull String getName() {
@@ -48,6 +49,7 @@ public class Room implements Serializable {
 
     /**
      * Get a {@link List} of the users in this room.
+     *
      * @return A {@link List} of the users in this room.
      */
     public @NotNull List<User> getUsers() {
@@ -56,6 +58,7 @@ public class Room implements Serializable {
 
     /**
      * Add a {@link User} to this room.
+     *
      * @param user The {@link User} to add.
      * @return true if there was enough space for the user, otherwise false.
      */
@@ -67,6 +70,7 @@ public class Room implements Serializable {
 
     /**
      * This room was converted into a {@link Game}?
+     *
      * @return true if this room was converted into a {@link Game}.
      */
     public boolean isGameCreated() {
