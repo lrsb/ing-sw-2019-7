@@ -15,14 +15,12 @@ public abstract class Weapon {
     private @NotNull ArrayList<Player> players;
     private @NotNull Player shooter;
     private boolean alternativeFire;
-    private Game game;
-    //siccome si possono usare anche le powerups come ammo, se le metti, queste hanno la precedenza sul pagamento
-    private ArrayList<PowerUp> powerUpsPay;
-    private ArrayList<AmmoCard.Color> basicPayment;
-    private ArrayList<AmmoCard.Color> firstAdditionalPayment;
-    private ArrayList<AmmoCard.Color> secondAdditionalPayment;
-    private ArrayList<AmmoCard.Color> alternativePayment;
-
+    private @NotNull Game game;
+    private @NotNull ArrayList<PowerUp> powerUpsPay;
+    private @NotNull ArrayList<AmmoCard.Color> basicPayment;
+    private @NotNull ArrayList<AmmoCard.Color> firstAdditionalPayment;
+    private @NotNull ArrayList<AmmoCard.Color> secondAdditionalPayment;
+    private @NotNull ArrayList<AmmoCard.Color> alternativePayment;
 
     private @NotNull ArrayList<Player> possibleTarget = new ArrayList<>();
     private @NotNull ArrayList<Point> possibleTargetPoint = new ArrayList<>();
@@ -31,10 +29,11 @@ public abstract class Weapon {
     private @NotNull ArrayList<Player> firstAdditionalTarget = new ArrayList<>();
     private @NotNull ArrayList<Point> firstAdditionalTargetPoint = new ArrayList<>();
     private @NotNull ArrayList<Player> secondAdditionalTarget = new ArrayList<>();
-    private @NotNull ArrayList<Point> secondAdditionalTargetPoint = new ArrayList<>();
+    private @NotNull ArrayList<Point> secondAdditionalTargetPoint = new ArrayList<>();  //forse non serve mai
     private @NotNull ArrayList<Integer> fireSort = new ArrayList<>();
 
-    //bisogna passare anche tutti gli Array sopra, alcuni come null a seconda dell'arma
+    //Come passare gli array di cui sopra?
+
     @Contract(pure = true)
     public Weapon(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
                   boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
@@ -45,10 +44,8 @@ public abstract class Weapon {
         this.powerUpsPay = powerUpsPay;
     }
 
-    //ritorna il numero di occorrenze di "color" in "payment"
-    //es: ricaricare un'arma costa 2 blu e 1 rosso: getColoredPayment(basicPayment, BLUE) -> 2
     @Contract(pure = true)
-    private int getColoredPayment(ArrayList<AmmoCard.Color> payment, @NotNull AmmoCard.Color color) {
+    private int getColoredPayment(@NotNull ArrayList<AmmoCard.Color> payment, @NotNull AmmoCard.Color color) {
         int result = 0;
         for (AmmoCard.Color cube : payment) {
             if (cube == color) result++;
@@ -56,9 +53,8 @@ public abstract class Weapon {
         return result;
     }
 
-    //ritorna il numero di carte di quel "color" presenti in powerUpsPay
     @Contract(pure = true)
-    private int getPowerUpsColoredPayment(AmmoCard.Color color) {
+    private int getPowerUpsColoredPayment(@NotNull AmmoCard.Color color) {
         int result = 0;
         for (PowerUp powerUp : powerUpsPay) {
             if (powerUp.getAmmoColor() == color) result++;
@@ -66,12 +62,12 @@ public abstract class Weapon {
         return result;
     }
 
-    //return true if shooter can pay and remove cost from shooter (work for fireCost and for reloading)
+    //return true if shooter can pay and remove cost from shooter (works for fireCost, reloading and grubbing)
     protected boolean payCost() {
         //red, blue e yellow avranno il valore del costo totale
         //altNomeColore hanno il valore dei cubi che vengono invece pagati tramite PowerUp
         int red = 0, yellow = 0, blue = 0, altRed, altYellow, altBlue;
-        if (!fireSort.isEmpty()) { //se c'è fireSort sta facendo fuoco "else" vuole ricaricare prendere l'arma
+        if (!fireSort.isEmpty()) { //se c'è fireSort sta facendo fuoco, "else" vuole ricaricare o prendere l'arma
             for (Integer i : fireSort) {
                 switch (i) {
                     case 1:
@@ -152,10 +148,12 @@ public abstract class Weapon {
         return false;
     }
 
-    public boolean charging() {
+    public boolean chargingOrGrabbing() {
         fireSort.clear();
         return payCost();
     }
+
+    protected abstract boolean canFire();
 
     protected abstract boolean validateTargets();
 
@@ -185,7 +183,7 @@ public abstract class Weapon {
                 if (shooter.canSeeCell(point, cells)) possibleTargetPoint.add(point);
             }
         }
-    }
+    } //forse mai usato
 
     public void addBasicTarget(@Nullable Player target, @Nullable Point point) {
         basicTarget.add(target);
@@ -213,8 +211,6 @@ public abstract class Weapon {
     public boolean equals(Object obj) {
         return obj instanceof Weapon && ((Weapon) obj).getClass().equals(getClass());
     }
-
-    protected abstract boolean canFire();
 
     //shoot è di Weapon astratta, ma tutti i metodi chiamati all'interno devono essere specifici dell'arma usata
     public boolean shoot() {

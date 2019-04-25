@@ -72,7 +72,7 @@ public class Player implements Serializable {
     public boolean reload(Weapon.Name weapon) {
         for (Weapon w : weapons) {
             if (w.getClass().equals(weapon.getWeaponClass()) && !(isReloaded[weapons.indexOf(w)])) {
-                if (w.charging()) {
+                if (w.chargingOrGrabbing()) {
                     isReloaded[weapons.indexOf(w)] = true;
                     return true;
                 }
