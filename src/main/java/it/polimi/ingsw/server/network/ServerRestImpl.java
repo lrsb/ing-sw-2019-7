@@ -100,14 +100,7 @@ public class ServerRestImpl extends NanoWSD {
                                 e.printStackTrace();
                             }
                         });
-                        executorService.submit(() -> {
-                            while (isOpen()) try {
-                                sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Ping, true, ""));
-                                Thread.sleep(50000);
-                            } catch (IOException | InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        });
+                        schedulePing();
                         break;
                     case "/roomUpdate":
                         Server.controller.addRoomListener(getHandshakeRequest().getHeaders().get("auth-token"), update -> {
@@ -117,14 +110,7 @@ public class ServerRestImpl extends NanoWSD {
                                 e.printStackTrace();
                             }
                         });
-                        executorService.submit(() -> {
-                            while (isOpen()) try {
-                                sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Ping, true, ""));
-                                Thread.sleep(50000);
-                            } catch (IOException | InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        });
+                        schedulePing();
                         break;
                     default:
                         close(WebSocketFrame.CloseCode.UnsupportedData, "Endpoint not valid!", true);
@@ -132,6 +118,18 @@ public class ServerRestImpl extends NanoWSD {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        private void schedulePing() {
+            executorService.submit(() -> {
+                while (isOpen()) try {
+                    sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Ping, true, ""));
+                    Thread.sleep(50000);
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
+                }
+            });
         }
 
         @Override
