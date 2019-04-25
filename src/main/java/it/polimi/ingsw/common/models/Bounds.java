@@ -35,6 +35,7 @@ public class Bounds implements Serializable {
 
     /**
      * Get the bounds type.
+     *
      * @param direction The bounds direction.
      * @return Type of indicated bound.
      */
@@ -54,8 +55,9 @@ public class Bounds implements Serializable {
 
     /**
      * Set the bound type.
+     *
      * @param direction The direction of the bound that you want to set up.
-     * @param type The type of the bound.
+     * @param type      The type of the bound.
      */
     public void setType(@NotNull Direction direction, @NotNull Type type) {
         switch (direction) {
@@ -96,6 +98,7 @@ public class Bounds implements Serializable {
 
         /**
          * Get the movement on X axis.
+         *
          * @return The movement on X axis.
          */
         @Contract(pure = true)
@@ -105,6 +108,7 @@ public class Bounds implements Serializable {
 
         /**
          * Get the movement on Y axis.
+         *
          * @return The movement on Y axis.
          */
         @Contract(pure = true)

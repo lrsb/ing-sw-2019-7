@@ -7,13 +7,6 @@ import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
-import org.apache.http.HttpHost;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.Contract;
@@ -23,27 +16,32 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.rmi.RemoteException;
 import java.util.*;
 
 public class ClientRestImpl implements API {
-    private final @NotNull HttpClient httpclient = HttpClientBuilder.create().build();
-    private final @NotNull HttpHost host;
+    private final @NotNull HttpClient client = HttpClient.newHttpClient();
+    private final @NotNull String hostname;
+    private final @NotNull String host;
 
     private @Nullable WebSocketClient gameWebSocket;
     private @Nullable WebSocketClient roomWebSocket;
 
     @Contract(pure = true)
     public ClientRestImpl(@NotNull String hostname) {
-        this.host = new HttpHost(hostname, hostname.equals("localhost") ? 80 : 443, hostname.equals("localhost") ? "http" : "https");
+        this.hostname = hostname;
+        this.host = (hostname.equals("localhost") ? "http" : "https") + "://" + hostname;
     }
 
     @Override
     public @Nullable String authUser(@NotNull String nickname, @NotNull String password) {
         try {
-            var request = new HttpPost("/authUser?nickname=" + nickname + "&password=" + password);
-            return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), String.class);
-        } catch (IOException e) {
+            var request = HttpRequest.newBuilder().uri(URI.create(host + "/authUser?nickname=" + nickname + "&password=" + password)).POST(HttpRequest.BodyPublishers.noBody()).build();
+            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), String.class);
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -52,9 +50,9 @@ public class ClientRestImpl implements API {
     @Override
     public @Nullable String createUser(@NotNull String nickname, @NotNull String password) {
         try {
-            var request = new HttpPost("/createUser?nickname=" + nickname + "&password=" + password);
-            return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), String.class);
-        } catch (IOException e) {
+            var request = HttpRequest.newBuilder().uri(URI.create(host + "/createUser?nickname=" + nickname + "&password=" + password)).POST(HttpRequest.BodyPublishers.noBody()).build();
+            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), String.class);
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -63,10 +61,9 @@ public class ClientRestImpl implements API {
     @Override
     public @Nullable UUID getActiveGame(@NotNull String token) {
         try {
-            var request = new HttpGet("/getActiveGame");
-            request.addHeader("auth-token", token);
-            return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), UUID.class);
-        } catch (IOException e) {
+            var request = HttpRequest.newBuilder().uri(URI.create(host + "/getActiveGame")).GET().header("auth-token", token).build();
+            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), UUID.class);
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -75,11 +72,10 @@ public class ClientRestImpl implements API {
     @Override
     public @Nullable List<Room> getRooms(@NotNull String token) {
         try {
-            var request = new HttpGet("/getRooms");
-            request.addHeader("auth-token", token);
+            var request = HttpRequest.newBuilder().uri(URI.create(host + "/getRooms")).GET().header("auth-token", token).build();
             //noinspection unchecked
-            return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), ArrayList.class);
-        } catch (IOException e) {
+            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), ArrayList.class);
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -88,10 +84,9 @@ public class ClientRestImpl implements API {
     @Override
     public @Nullable Room joinRoom(@NotNull String token, @NotNull UUID roomUuid) {
         try {
-            var request = new HttpPost("/joinRoom?uuid=" + roomUuid);
-            request.addHeader("auth-token", token);
-            return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), Room.class);
-        } catch (IOException e) {
+            var request = HttpRequest.newBuilder().uri(URI.create(host + "/joinRoom?uuid=" + roomUuid)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
+            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), Room.class);
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -100,10 +95,9 @@ public class ClientRestImpl implements API {
     @Override
     public @Nullable Room createRoom(@NotNull String token, @NotNull String name) {
         try {
-            var request = new HttpPost("/createRoom?name=" + name);
-            request.addHeader("auth-token", token);
-            return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), Room.class);
-        } catch (IOException e) {
+            var request = HttpRequest.newBuilder().uri(URI.create(host + "/createRoom?name=" + name)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
+            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), Room.class);
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -112,10 +106,9 @@ public class ClientRestImpl implements API {
     @Override
     public @Nullable UUID startGame(@NotNull String token, @NotNull UUID roomUuid) {
         try {
-            var request = new HttpPost("/startGame?uuid=" + roomUuid);
-            request.addHeader("auth-token", token);
-            return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), UUID.class);
-        } catch (IOException e) {
+            var request = HttpRequest.newBuilder().uri(URI.create(host + "/startGame?uuid=" + roomUuid)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
+            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), UUID.class);
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -124,11 +117,9 @@ public class ClientRestImpl implements API {
     @Override
     public boolean doAction(@NotNull String token, @NotNull Action action) {
         try {
-            var request = new HttpPost("/doAction");
-            request.addHeader("auth-token", token);
-            request.setEntity(new StringEntity(new Gson().toJson(action), ContentType.APPLICATION_JSON));
-            return new Gson().fromJson(new Scanner(httpclient.execute(host, request).getEntity().getContent()).nextLine(), boolean.class);
-        } catch (IOException e) {
+            var request = HttpRequest.newBuilder().uri(URI.create(host + "/doAction")).POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(action))).header("auth-token", token).build();
+            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), boolean.class);
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return false;
@@ -140,7 +131,7 @@ public class ClientRestImpl implements API {
         try {
             var headers = new HashMap<String, String>();
             headers.put("auth-token", token);
-            gameWebSocket = new WebSocketClient(new URI("ws://" + host.getHostName() + "/gameUpdate"), headers) {
+            gameWebSocket = new WebSocketClient(new URI("ws://" + hostname + "/gameUpdate"), headers) {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
                 }
@@ -175,7 +166,7 @@ public class ClientRestImpl implements API {
         try {
             var headers = new HashMap<String, String>();
             headers.put("auth-token", token);
-            roomWebSocket = new WebSocketClient(new URI("ws://" + host.getHostName() + "/roomUpdate"), headers) {
+            roomWebSocket = new WebSocketClient(new URI("ws://" + hostname + "/roomUpdate"), headers) {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
                 }

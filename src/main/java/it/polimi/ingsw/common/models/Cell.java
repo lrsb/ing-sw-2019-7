@@ -36,6 +36,7 @@ public class Cell implements Serializable {
 
     /**
      * Indicate if a certain cell is a spawnpoint.
+     *
      * @return True if the cell is a spawnpoint.
      */
     public boolean isSpawnPoint() {
@@ -44,6 +45,7 @@ public class Cell implements Serializable {
 
     /**
      * Indicate if a certain cell has an ammo card on it.
+     *
      * @return True if there is an ammo card.
      */
     public @Nullable AmmoCard getAmmoCard() {
@@ -52,6 +54,7 @@ public class Cell implements Serializable {
 
     /**
      * Set a new ammo card on a cell.
+     *
      * @param ammoCard The new ammo card that you want to assign to the cell.
      */
     public void setAmmoCard(@Nullable AmmoCard ammoCard) {
@@ -60,6 +63,7 @@ public class Cell implements Serializable {
 
     /**
      * Get the color of the cell.
+     *
      * @return The cell's color.
      */
     public @NotNull Color getColor() {
@@ -68,6 +72,7 @@ public class Cell implements Serializable {
 
     /**
      * Get the bounds of the cell.
+     *
      * @return the cell's bounds.
      */
     public @NotNull Bounds getBounds() {

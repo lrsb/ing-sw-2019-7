@@ -39,7 +39,9 @@ public class Player implements Serializable {
         return nickname;
     }
 
-    public boolean hasWeapon(@NotNull Weapon weapon) { return weapons.contains(weapon); }
+    public boolean hasWeapon(@NotNull Weapon weapon) {
+        return weapons.contains(weapon);
+    }
 
     //gives damages, convert marks to damages and finally gives marks
     public void takeHits(@NotNull Player shooter, int damages, int marks) {
@@ -154,7 +156,7 @@ public class Player implements Serializable {
         return false;
     }
 
-    public boolean canBeSeenFrom (@NotNull Point point, @NotNull Cell[][] cells) {
+    public boolean canBeSeenFrom(@NotNull Point point, @NotNull Cell[][] cells) {
         if (cells[point.x][point.y].getColor() == cells[position.x][position.y].getColor()) return true;
         for (Bounds.Direction d : Bounds.Direction.values()) {
             if (cells[point.x][point.y].getBounds().getType(d) != Bounds.Type.WALL &&
@@ -177,8 +179,8 @@ public class Player implements Serializable {
         for (Bounds.Direction d : Bounds.Direction.values()) {
             if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL) {
                 if (cells[position.x + d.getdX()][position.y + d.getdY()].getBounds().getType(d) != Bounds.Type.WALL &&
-                        player.getPosition().x == position.x + 2*d.getdX() &&
-                        player.getPosition().y == position.y + 2*d.getdY()) return true;
+                        player.getPosition().x == position.x + 2 * d.getdX() &&
+                        player.getPosition().y == position.y + 2 * d.getdY()) return true;
             }
         }
         return false;
@@ -206,8 +208,8 @@ public class Player implements Serializable {
         for (Bounds.Direction d : Bounds.Direction.values()) {
             if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL) {
                 if (cells[position.x + d.getdX()][position.y + d.getdY()].getBounds().getType(d) != Bounds.Type.WALL &&
-                        point.x == position.x + 2*d.getdX() &&
-                        point.y == position.y + 2*d.getdY()) return true;
+                        point.x == position.x + 2 * d.getdX() &&
+                        point.y == position.y + 2 * d.getdY()) return true;
             }
         }
         return false;

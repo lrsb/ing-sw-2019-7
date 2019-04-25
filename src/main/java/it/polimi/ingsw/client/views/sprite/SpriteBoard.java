@@ -36,8 +36,26 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }).start();
+    }
+
+    private static boolean isRetina() {
+        var isRetina = false;
+        GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        try {
+            //TODO: Illegal reflective access
+            var field = graphicsDevice.getClass().getDeclaredField("scale");
+            if (field != null) {
+                field.setAccessible(true);
+                Object scale = field.get(graphicsDevice);
+                if (scale instanceof Integer && (Integer) scale == 2) isRetina = true;
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return isRetina;
     }
 
     public void addSprite(@NotNull Sprite sprite) {
@@ -105,23 +123,6 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
         sprites.parallelStream().forEach(e -> e.setSpriteListener(null));
         sprites.clear();
         closed = true;
-    }
-
-    private static boolean isRetina() {
-        var isRetina = false;
-        GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        try {
-            //TODO: Illegal reflective access
-            var field = graphicsDevice.getClass().getDeclaredField("scale");
-            if (field != null) {
-                field.setAccessible(true);
-                Object scale = field.get(graphicsDevice);
-                if (scale instanceof Integer && (Integer) scale == 2) isRetina = true;
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return isRetina;
     }
 
     private class SpriteMouseAdapter extends MouseInputAdapter {

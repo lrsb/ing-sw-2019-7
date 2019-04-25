@@ -503,7 +503,9 @@ public abstract class Weapon {
             }
 
             @Override
-            public void firstAdditionalFire() { shooter.setPosition(firstAdditionalTargetPoint.get(0)); }
+            public void firstAdditionalFire() {
+                shooter.setPosition(firstAdditionalTargetPoint.get(0));
+            }
 
             @Override
             public void secondAdditionalFire() {
@@ -597,10 +599,12 @@ public abstract class Weapon {
             }
 
             @Override
-            public void firstAdditionalFire() { }
+            public void firstAdditionalFire() {
+            }
 
             @Override
-            public void secondAdditionalFire() { }
+            public void secondAdditionalFire() {
+            }
         }
 
         public class TractorBeam extends Weapon {
@@ -632,14 +636,14 @@ public abstract class Weapon {
                 }
                 if (basicTarget.size() != 1) return false;
                 if (basicTarget.get(0).equals(shooter)) return false;
-                if (basicTargetPoint.size() !=1) return false;
+                if (basicTargetPoint.size() != 1) return false;
                 return game.canMove(basicTarget.get(0).getPosition(), basicTargetPoint.get(0), 0, 3);
             }
 
             @Override
             public void basicFire() {
                 basicTarget.get(0).setPosition(basicTargetPoint.get(0));
-                if(!alternativeFire){
+                if (!alternativeFire) {
                     basicTarget.get(0).takeHits(shooter, 1, 0);
                 } else {
                     basicTarget.get(0).takeHits(shooter, 3, 0);
@@ -647,10 +651,12 @@ public abstract class Weapon {
             }
 
             @Override
-            public void firstAdditionalFire() { }
+            public void firstAdditionalFire() {
+            }
 
             @Override
-            public void secondAdditionalFire() { }
+            public void secondAdditionalFire() {
+            }
         }
 
         public class VortexCannon extends Weapon {
@@ -726,7 +732,8 @@ public abstract class Weapon {
             }
 
             @Override
-            public void secondAdditionalFire() { }
+            public void secondAdditionalFire() {
+            }
         }
 
         public class Furnace extends Weapon {
@@ -795,10 +802,12 @@ public abstract class Weapon {
             }
 
             @Override
-            public void firstAdditionalFire() { }
+            public void firstAdditionalFire() {
+            }
 
             @Override
-            public void secondAdditionalFire() { }
+            public void secondAdditionalFire() {
+            }
         }
 
         public class Heatseeker extends Weapon {
@@ -835,10 +844,12 @@ public abstract class Weapon {
             }
 
             @Override
-            public void firstAdditionalFire() { }
+            public void firstAdditionalFire() {
+            }
 
             @Override
-            public void secondAdditionalFire() { }
+            public void secondAdditionalFire() {
+            }
         }
 
         public class Hellion extends Weapon {
@@ -1070,12 +1081,13 @@ public abstract class Weapon {
                 secondAdditionalTarget.clear();
                 if (fireSort.contains(2)) {
                     if (firstAdditionalTargetPoint.size() != 1) return false;
-                    if(!game.canMove(shooter.getPosition(), firstAdditionalTargetPoint.get(0), 0, 2))
-                    if (fireSort.indexOf(2) < fireSort.indexOf(1)) {
-                        if (!(basicTarget.get(0).canBeSeenFrom(firstAdditionalTargetPoint.get(0), cells))) return false;
-                    } else {
-                        if (!shooter.canSee(basicTarget.get(0), cells)) return false;
-                    }
+                    if (!game.canMove(shooter.getPosition(), firstAdditionalTargetPoint.get(0), 0, 2))
+                        if (fireSort.indexOf(2) < fireSort.indexOf(1)) {
+                            if (!(basicTarget.get(0).canBeSeenFrom(firstAdditionalTargetPoint.get(0), cells)))
+                                return false;
+                        } else {
+                            if (!shooter.canSee(basicTarget.get(0), cells)) return false;
+                        }
                 } else {
                     if (!shooter.canSee(basicTarget.get(0), cells)) return false;
                 }
@@ -1097,7 +1109,9 @@ public abstract class Weapon {
             }
 
             @Override
-            public void firstAdditionalFire() { shooter.setPosition(firstAdditionalTargetPoint.get(0)); }
+            public void firstAdditionalFire() {
+                shooter.setPosition(firstAdditionalTargetPoint.get(0));
+            }
 
             @Override
             public void secondAdditionalFire() {
@@ -1235,7 +1249,9 @@ public abstract class Weapon {
             }
 
             @Override
-            public void firstAdditionalFire() { shooter.setPosition(firstAdditionalTargetPoint.get(0)); }
+            public void firstAdditionalFire() {
+                shooter.setPosition(firstAdditionalTargetPoint.get(0));
+            }
 
             @Override
             public void secondAdditionalFire() {
@@ -1415,8 +1431,9 @@ public abstract class Weapon {
                                     shooter.getPosition().y + d.getdY() == basicTargetPoint.get(0).y) {
                                 if (cells[shooter.getPosition().x + d.getdX()][shooter.getPosition().y + d.getdY()]
                                         .getBounds().getType(d) != Bounds.Type.WALL &&
-                                        shooter.getPosition().x + 2*d.getdX() == basicTargetPoint.get(1).x &&
-                                        shooter.getPosition().y + 2*d.getdY() == basicTargetPoint.get(1).y) return true;
+                                        shooter.getPosition().x + 2 * d.getdX() == basicTargetPoint.get(1).x &&
+                                        shooter.getPosition().y + 2 * d.getdY() == basicTargetPoint.get(1).y)
+                                    return true;
                             }
                         }
                         return false;

@@ -24,8 +24,9 @@ public class AmmoCard implements Displayable, Serializable {
 
     /**
      * AmmoCard constructor.
-     * @param type Indicate the type of top element, it can be a power up or a color.
-     * @param left Indicate the color of the bottom-left element.
+     *
+     * @param type  Indicate the type of top element, it can be a power up or a color.
+     * @param left  Indicate the color of the bottom-left element.
      * @param right Indicate the color of the bottom-right element.
      */
     @Contract(pure = true)
@@ -37,6 +38,7 @@ public class AmmoCard implements Displayable, Serializable {
 
     /**
      * Get the type of the top element.
+     *
      * @return Type of top element.
      */
     @Contract(pure = true)
@@ -46,6 +48,7 @@ public class AmmoCard implements Displayable, Serializable {
 
     /**
      * Get the color of the bottom-left element.
+     *
      * @return Color of bottom-left element.
      */
     @Contract(pure = true)
@@ -55,6 +58,7 @@ public class AmmoCard implements Displayable, Serializable {
 
     /**
      * Get the color of the bottom-right element.
+     *
      * @return Color of bottom-right element.
      */
     @Contract(pure = true)
@@ -65,7 +69,7 @@ public class AmmoCard implements Displayable, Serializable {
     @Override
     public @NotNull BufferedImage getImage() throws IOException {
         return ImageIO.read(AmmoCard.class.getResourceAsStream("AmmoCard/" + type.name().substring(0, 1) +
-                    left.name().substring(0, 1) + right.name().substring(0, 1) + ".png"));
+                left.name().substring(0, 1) + right.name().substring(0, 1) + ".png"));
     }
 
     @Contract(value = "null -> false", pure = true)

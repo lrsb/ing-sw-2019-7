@@ -25,18 +25,19 @@ class SecureUserController {
     private SecureUserController() {
     }
 
-    @Contract(pure = true)
+    @Contract(pure = true, value = "null -> null")
     static @Nullable User getUser(@Nullable String token) {
-        try {
+        if (token != null) try {
             return new Gson().fromJson(users.find(eq("token", token)).first().toJson(), User.class);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
+    @Contract("null, _ -> null; !null, null -> null")
     static @Nullable String createUser(@Nullable String nickname, @Nullable String password) {
-        synchronized (users) {
+        if (nickname != null && password != null) synchronized (users) {
             try {
                 if (users.find(eq("nickname", nickname)).iterator().hasNext()) return null;
                 var user = new SecureUser(nickname, password);
@@ -45,13 +46,14 @@ class SecureUserController {
                 return user.getToken();
             } catch (Exception e) {
                 e.printStackTrace();
-                return null;
             }
         }
+        return null;
     }
 
+    @Contract("null, _ -> null; !null, null -> null")
     static @Nullable String authUser(@Nullable String nickname, @Nullable String password) {
-        try {
+        if (nickname != null && password != null) try {
             var user = new Gson().fromJson(users.find(eq("nickname", nickname)).first().toJson(), SecureUser.class);
             if (!user.getPassword().equals(password)) return null;
             user.setToken(nextToken());
@@ -59,8 +61,8 @@ class SecureUserController {
             return user.getToken();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     @Contract(" -> new")

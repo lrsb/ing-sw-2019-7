@@ -17,6 +17,7 @@ import java.util.List;
 /**
  * This class is composed of three deck that contains the playable, exited ( on the game board or in players' hand)
  * and discarded (already used and need to be reshuffled) cards.
+ *
  * @param <T> Indicate the type of cards in the deck.
  */
 @SuppressWarnings({"WeakerAccess", "SpellCheckingInspection", "unused"})
@@ -36,6 +37,7 @@ public class Deck<T extends Serializable> implements Serializable {
 
     /**
      * This method moves a card from the playable deck to the discarded one.
+     *
      * @return The discarded card.
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
      */
@@ -49,6 +51,7 @@ public class Deck<T extends Serializable> implements Serializable {
     /**
      * This method is used to remove a card from playable deck and
      * (ex: replacement of card that are on the ground)
+     *
      * @return The exited card
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shufflable.
      */
@@ -61,6 +64,7 @@ public class Deck<T extends Serializable> implements Serializable {
 
     /**
      * This method is used when more cards are removed from playable card deck adding them to the exited one
+     *
      * @param n Number of cards that you have to remove from the deck.
      * @return List of card removed from the deck.
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
@@ -76,6 +80,7 @@ public class Deck<T extends Serializable> implements Serializable {
 
     /**
      * This method is used when an exited card is used, it will be added to discarded card deck.
+     *
      * @param exitedCard The card that has been used.
      * @throws CardNotFoundException Thrown when specified card isn't in the group of the exited.
      */
