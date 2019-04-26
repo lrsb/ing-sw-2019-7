@@ -10,15 +10,16 @@ import java.util.ArrayList;
 
 import static it.polimi.ingsw.common.models.AmmoCard.Color.*;
 
+@SuppressWarnings("SpellCheckingInspection")
 public abstract class Weapon {
     private @NotNull Game game;
     private boolean alternativeFire;
     private @NotNull ArrayList<PowerUp> powerUpsPay;
 
-    private @NotNull ArrayList<AmmoCard.Color> basicPayment;
-    private @NotNull ArrayList<AmmoCard.Color> firstAdditionalPayment;
-    private @NotNull ArrayList<AmmoCard.Color> secondAdditionalPayment;
-    private @NotNull ArrayList<AmmoCard.Color> alternativePayment;
+    private @NotNull ArrayList<AmmoCard.Color> basicPayment = new ArrayList<>();
+    private @NotNull ArrayList<AmmoCard.Color> firstAdditionalPayment = new ArrayList<>();
+    private @NotNull ArrayList<AmmoCard.Color> secondAdditionalPayment = new ArrayList<>();
+    private @NotNull ArrayList<AmmoCard.Color> alternativePayment = new ArrayList<>();
 
     private @NotNull ArrayList<Player> possibleTarget = new ArrayList<>();
     private @NotNull ArrayList<Point> possibleTargetPoint = new ArrayList<>();
@@ -144,7 +145,7 @@ public abstract class Weapon {
         return false;
     }
 
-    private boolean chargingOrGrabbing() {
+    boolean chargingOrGrabbing() {
         fireSort.clear();
         return payCost();
     }
