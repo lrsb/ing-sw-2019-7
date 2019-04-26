@@ -13,9 +13,7 @@ import java.util.Optional;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Sprite {
-    private int x;
-    private int y;
-
+    private @NotNull Point position;
     private @NotNull Dimension dimension;
     private @NotNull BufferedImage bufferedImage;
     private @Nullable String tag;
@@ -28,9 +26,15 @@ public class Sprite {
     private @Nullable Interpolator interpolator;
 
     @Contract(pure = true)
-    public Sprite(int x, int y, @NotNull Dimension dimension, @NotNull Displayable displayable) throws IOException {
-        this.x = x;
-        this.y = y;
+    public Sprite(int x, int y, int width, int height, @NotNull Displayable displayable) throws IOException {
+        this.position = new Point(x, y);
+        this.dimension = new Dimension(width, height);
+        this.bufferedImage = displayable.getImage();
+    }
+
+    @Contract(pure = true)
+    public Sprite(@NotNull Point position, @NotNull Dimension dimension, @NotNull Displayable displayable) throws IOException {
+        this.position = position;
         this.dimension = dimension;
         this.bufferedImage = displayable.getImage();
     }
@@ -40,32 +44,30 @@ public class Sprite {
     }
 
     public int getX() {
-        return x;
+        return position.x;
     }
 
     public void setX(int x) {
-        this.x = x;
+        position.x = x;
         updated();
     }
 
     public int getY() {
-        return y;
+        return position.y;
     }
 
     public void setY(int y) {
-        this.y = y;
+        position.y = y;
         updated();
     }
 
     public void translate(int dx, int dy) {
-        x += dx;
-        y += dy;
+        position.translate(dx, dy);
         updated();
     }
 
     public void moveTo(int x, int y) {
-        this.x = x;
-        this.y = y;
+        position.move(x, y);
         updated();
     }
 
@@ -116,7 +118,7 @@ public class Sprite {
     }
 
     public @NotNull Point getPosition() {
-        return new Point(x, y);
+        return new Point(position);
     }
 
     public void remove() {
@@ -134,14 +136,14 @@ public class Sprite {
     void interpolate() {
         if (interpolator != null) {
             if (interpolator.getEndMillis() < System.currentTimeMillis()) {
-                x = interpolator.getEndPoint().x;
-                y = interpolator.getEndPoint().y;
+                position.x = interpolator.getEndPoint().x;
+                position.y = interpolator.getEndPoint().y;
                 interpolator.onInterpolationCompleted();
                 interpolator = null;
             } else try {
                 var point = interpolator.interpolate(System.currentTimeMillis());
-                x = point.x;
-                y = point.y;
+                position.x = point.x;
+                position.y = point.y;
             } catch (TimestampOutOfRangeException timestampOutOfRangeException) {
                 timestampOutOfRangeException.printStackTrace();
                 interpolator.onInterpolationCompleted();

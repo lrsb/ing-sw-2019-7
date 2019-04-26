@@ -11,12 +11,10 @@ import java.util.ArrayList;
 import static it.polimi.ingsw.common.models.AmmoCard.Color.*;
 
 public abstract class Weapon {
-    private @NotNull Cell[][] cells;
-    private @NotNull ArrayList<Player> players;
-    private @NotNull Player shooter;
-    private boolean alternativeFire;
     private @NotNull Game game;
+    private boolean alternativeFire;
     private @NotNull ArrayList<PowerUp> powerUpsPay;
+
     private @NotNull ArrayList<AmmoCard.Color> basicPayment;
     private @NotNull ArrayList<AmmoCard.Color> firstAdditionalPayment;
     private @NotNull ArrayList<AmmoCard.Color> secondAdditionalPayment;
@@ -35,40 +33,38 @@ public abstract class Weapon {
     //Come passare gli array di cui sopra?
 
     @Contract(pure = true)
-    public Weapon(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                  boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-        this.cells = cells;
-        this.players = players;
-        this.shooter = shooter;
+    private Weapon(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+        this.game = game;
         this.alternativeFire = alternativeFire;
         this.powerUpsPay = powerUpsPay;
     }
 
     @Contract(pure = true)
     private int getColoredPayment(@NotNull ArrayList<AmmoCard.Color> payment, @NotNull AmmoCard.Color color) {
-        int result = 0;
-        for (AmmoCard.Color cube : payment) {
-            if (cube == color) result++;
-        }
+        var result = 0;
+        for (AmmoCard.Color cube : payment) if (cube == color) result++;
         return result;
     }
 
     @Contract(pure = true)
     private int getPowerUpsColoredPayment(@NotNull AmmoCard.Color color) {
-        int result = 0;
-        for (PowerUp powerUp : powerUpsPay) {
-            if (powerUp.getAmmoColor() == color) result++;
-        }
+        var result = 0;
+        for (PowerUp powerUp : powerUpsPay) if (powerUp.getAmmoColor() == color) result++;
         return result;
     }
 
-    //return true if shooter can pay and remove cost from shooter (works for fireCost, reloading and grubbing)
-    protected boolean payCost() {
+    //return true if game.getActualPlayer() can pay and remove cost from game.getActualPlayer() (works for fireCost, reloading and grubbing)
+    private boolean payCost() {
         //red, blue e yellow avranno il valore del costo totale
         //altNomeColore hanno il valore dei cubi che vengono invece pagati tramite PowerUp
-        int red = 0, yellow = 0, blue = 0, altRed, altYellow, altBlue;
+        var red = 0;
+        var yellow = 0;
+        var blue = 0;
+        var altRed = 0;
+        var altYellow = 0;
+        var altBlue = 0;
         if (!fireSort.isEmpty()) { //se c'è fireSort sta facendo fuoco, "else" vuole ricaricare o prendere l'arma
-            for (Integer i : fireSort) {
+            for (var i : fireSort) {
                 switch (i) {
                     case 1:
                         if (alternativeFire) {
@@ -95,7 +91,7 @@ public abstract class Weapon {
             red = getColoredPayment(basicPayment, RED);
             yellow = getColoredPayment(basicPayment, YELLOW);
             blue = getColoredPayment(basicPayment, BLUE);
-            if (!shooter.hasWeapon(this)) {
+            if (!game.getActualPlayer().hasWeapon(this)) {
                 switch (basicPayment.get(0)) {
                     case RED:
                         red--;
@@ -112,43 +108,43 @@ public abstract class Weapon {
         altRed = getPowerUpsColoredPayment(RED);
         altYellow = getPowerUpsColoredPayment(YELLOW);
         altBlue = getPowerUpsColoredPayment(BLUE);
-        if (shooter.getColoredCubes(RED) >= red - altRed && red - altRed >= 0
-                && shooter.getColoredCubes(YELLOW) >= yellow - altYellow && yellow - altYellow >= 0
-                && shooter.getColoredCubes(BLUE) >= blue - altBlue && blue - altBlue >= 0) {
+        if (game.getActualPlayer().getColoredCubes(RED) >= red - altRed && red - altRed >= 0
+                && game.getActualPlayer().getColoredCubes(YELLOW) >= yellow - altYellow && yellow - altYellow >= 0
+                && game.getActualPlayer().getColoredCubes(BLUE) >= blue - altBlue && blue - altBlue >= 0) {
             for (PowerUp p : powerUpsPay) {
                 switch (p.getAmmoColor()) {
                     case RED:
                         if (altRed > 0) {
-                            shooter.removePowerUp(p);
+                            game.getActualPlayer().removePowerUp(p);
                             altRed--;
                             red--;
                         }
                         break;
                     case YELLOW:
                         if (altYellow > 0) {
-                            shooter.removePowerUp(p);
+                            game.getActualPlayer().removePowerUp(p);
                             altYellow--;
                             yellow--;
                         }
                         break;
                     case BLUE:
                         if (altBlue > 0) {
-                            shooter.removePowerUp(p);
+                            game.getActualPlayer().removePowerUp(p);
                             altBlue--;
                             blue--;
                         }
                         break;
                 }
             }
-            shooter.removeColoredCubes(RED, red);
-            shooter.removeColoredCubes(YELLOW, yellow);
-            shooter.removeColoredCubes(BLUE, blue);
+            game.getActualPlayer().removeColoredCubes(RED, red);
+            game.getActualPlayer().removeColoredCubes(YELLOW, yellow);
+            game.getActualPlayer().removeColoredCubes(BLUE, blue);
             return true;
         }
         return false;
     }
 
-    public boolean chargingOrGrabbing() {
+    private boolean chargingOrGrabbing() {
         fireSort.clear();
         return payCost();
     }
@@ -159,52 +155,56 @@ public abstract class Weapon {
 
     protected abstract boolean validateFireSort();
 
-    protected void addVisibleTarget() {
+    private void addVisibleTarget() {
         possibleTarget.clear();
-        for (Player p : players) {
-            if (shooter.canSee(p, cells)) possibleTarget.add(p);
+        for (Player p : game.getPlayers()) {
+            if (game.getActualPlayer().canSee(p, game.getCells())) possibleTarget.add(p);
         }
     }
 
-    public void addNonVisibleTarget() {
+    private void addNonVisibleTarget() {
         possibleTarget.clear();
-        for (Player player : players) {
-            if (!(shooter.canSee(player, cells)) && !(shooter.equals(player))) possibleTarget.add(player);
+        for (Player player : game.getPlayers()) {
+            if (!(game.getActualPlayer().canSee(player, game.getCells())) && !(game.getActualPlayer().equals(player)))
+                possibleTarget.add(player);
         }
     }
 
-    protected void addVisibleSquare() {
+    private void addVisibleSquare() {
         int x, y;
         Point point;
         possibleTargetPoint.clear();
         for (x = 0; x < 4; x++) {
             for (y = 0; y < 3; y++) {
                 point = new Point(x, y);
-                if (shooter.canSeeCell(point, cells)) possibleTargetPoint.add(point);
+                if (game.getActualPlayer().canSeeCell(point, game.getCells())) possibleTargetPoint.add(point);
             }
         }
     } //forse mai usato
 
-    public void addBasicTarget(@Nullable Player target, @Nullable Point point) {
+    private void addBasicTarget(@Nullable Player target, @Nullable Point point) {
         basicTarget.add(target);
         basicTargetPoint.add(point);
     }
 
-    protected abstract void basicFire();
+    protected void basicFire() {
+    }
 
     public void addFirstAdditionalTarget(@Nullable Player target, @Nullable Point point) {
         firstAdditionalTarget.add(target);
         firstAdditionalTargetPoint.add(point);
     }
 
-    protected abstract void firstAdditionalFire();
+    protected void firstAdditionalFire() {
+    }
 
     public void addSecondAdditionalTarget(@Nullable Player target, @Nullable Point point) {
         secondAdditionalTarget.add(target);
         secondAdditionalTargetPoint.add(point);
     }
 
-    protected abstract void secondAdditionalFire();
+    protected void secondAdditionalFire() {
+    }
 
     @Contract(value = "null -> false", pure = true)
     @Override
@@ -214,29 +214,21 @@ public abstract class Weapon {
 
     //shoot è di Weapon astratta, ma tutti i metodi chiamati all'interno devono essere specifici dell'arma usata
     public boolean shoot() {
-        if (shooter.hasWeapon(this)) {
-            if (shooter.isALoadedGun(this)) {
-                if (canFire() && validateFireSort()) {
-                    if (validateTargets()) {
-                        if (payCost()) {
-                            for (Integer fireNumber : fireSort) {
-                                switch (fireNumber) {
-                                    case 1:
-                                        basicFire();
-                                        break;
-                                    case 2:
-                                        firstAdditionalFire();
-                                        break;
-                                    case 3:
-                                        secondAdditionalFire();
-                                        break;
-                                }
-                            }
-                            return true;
-                        }
-                    }
+        if (game.getActualPlayer().hasWeapon(this) && game.getActualPlayer().isALoadedGun(this) && canFire() && validateFireSort() && validateTargets() && payCost()) {
+            for (var fireNumber : fireSort) {
+                switch (fireNumber) {
+                    case 1:
+                        basicFire();
+                        break;
+                    case 2:
+                        firstAdditionalFire();
+                        break;
+                    case 3:
+                        secondAdditionalFire();
+                        break;
                 }
             }
+            return true;
         }
         return false;
     }
@@ -268,7 +260,7 @@ public abstract class Weapon {
         public @Nullable <T extends Weapon> T build(@NotNull Game game, boolean alternativeFire) {
             try {
                 //noinspection unchecked
-                return (T) getWeaponClass().getDeclaredConstructors()[0].newInstance(game.getCells(), game.getPlayers(), game.getActualPlayer(), alternativeFire);
+                return (T) getWeaponClass().getDeclaredConstructors()[0].newInstance(game.getCells(), alternativeFire);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
                 return null;
@@ -278,8 +270,8 @@ public abstract class Weapon {
 
     private class Weapons {
         private class LockRifle extends Weapon {
-            private LockRifle(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            private LockRifle(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 basicPayment.add(BLUE);
                 firstAdditionalPayment.add(RED);
@@ -294,8 +286,7 @@ public abstract class Weapon {
 
             @Override
             protected boolean validateFireSort() {
-                return (fireSort.get(0) == 1 && (fireSort.size() == 1
-                        || (fireSort.size() == 2 && fireSort.get(1) == 2)));
+                return fireSort.get(0) == 1 && (fireSort.size() == 1 || (fireSort.size() == 2 && fireSort.get(1) == 2));
             }
 
             @Override
@@ -303,10 +294,10 @@ public abstract class Weapon {
                 for (Integer mode : fireSort) {
                     switch (mode) {
                         case (1):
-                            if (!shooter.canSee(basicTarget.get(0), cells)) return false;
+                            if (!game.getActualPlayer().canSee(basicTarget.get(0), game.getCells())) return false;
                             break;
                         case (2):
-                            if (!shooter.canSee(firstAdditionalTarget.get(0), cells) ||
+                            if (!game.getActualPlayer().canSee(firstAdditionalTarget.get(0), game.getCells()) ||
                                     firstAdditionalTarget.get(0).equals(basicTarget.get(0))) return false;
                             break;
                         default:
@@ -318,22 +309,18 @@ public abstract class Weapon {
 
             @Override
             protected void basicFire() {
-                basicTarget.get(0).takeHits(shooter, 2, 1);
+                basicTarget.get(0).takeHits(game.getActualPlayer(), 2, 1);
             }
 
             @Override
             protected void firstAdditionalFire() {
-                firstAdditionalTarget.get(0).takeHits(shooter, 0, 1);
-            }
-
-            @Override
-            protected void secondAdditionalFire() {
+                firstAdditionalTarget.get(0).takeHits(game.getActualPlayer(), 0, 1);
             }
         }
 
         private class MachineGun extends Weapon {
-            private MachineGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            private MachineGun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 basicPayment.add(RED);
                 firstAdditionalPayment.add(YELLOW);
@@ -350,21 +337,20 @@ public abstract class Weapon {
             @Override
             protected boolean validateFireSort() {
                 if (fireSort.size() == 1 && fireSort.get(0) == 1) return true;
-                if (fireSort.size() == 2 && fireSort.get(0) == 1 &&
-                        (fireSort.get(1) == 2 || fireSort.get(1) == 3)) return true;
+                if (fireSort.size() == 2 && fireSort.get(0) == 1 && (fireSort.get(1) == 2 || fireSort.get(1) == 3))
+                    return true;
                 return (fireSort.size() == 3 && fireSort.get(0) == 1 && fireSort.get(1) == 2 && fireSort.get(2) == 3);
             }
 
             @Override
             protected boolean validateTargets() {
-                for (Integer mode : fireSort) {
+                for (var mode : fireSort) {
                     switch (mode) {
                         case 1:
                             if (basicTarget.size() > 2 || basicTarget.isEmpty()) return false;
                             if (basicTarget.size() == 2 && basicTarget.get(0).equals(basicTarget.get(1))) return false;
-                            for (Player player : basicTarget) {
-                                if (!shooter.canSee(player, cells)) return false;
-                            }
+                            for (var player : basicTarget)
+                                if (!game.getActualPlayer().canSee(player, game.getCells())) return false;
                             break;
                         case 2:
                             if (firstAdditionalTarget.size() != 1) return false;
@@ -372,14 +358,12 @@ public abstract class Weapon {
                             break;
                         case 3:
                             if (secondAdditionalTarget.size() > 2 || secondAdditionalTarget.isEmpty()) return false;
-                            for (Player player : secondAdditionalTarget) {
-                                if (!shooter.canSee(player, cells) ||
+                            for (var player : secondAdditionalTarget)
+                                if (!game.getActualPlayer().canSee(player, game.getCells()) ||
                                         firstAdditionalTarget.contains(player)) return false;
-                            }
                             if (secondAdditionalTarget.size() == 2) {
                                 if (secondAdditionalTarget.get(0).equals(secondAdditionalTarget.get(1))) return false;
-                                if ((basicTarget.contains(secondAdditionalTarget.get(0)) &&
-                                        basicTarget.contains(secondAdditionalTarget.get(1))) ||
+                                if ((basicTarget.contains(secondAdditionalTarget.get(0)) && basicTarget.contains(secondAdditionalTarget.get(1))) ||
                                         (!basicTarget.contains(secondAdditionalTarget.get(0)) &&
                                                 !basicTarget.contains(secondAdditionalTarget.get(1)))) return false;
                             }
@@ -391,27 +375,23 @@ public abstract class Weapon {
 
             @Override
             public void basicFire() {
-                for (Player player : basicTarget) {
-                    player.takeHits(shooter, 1, 0);
-                }
+                for (var player : basicTarget) player.takeHits(game.getActualPlayer(), 1, 0);
             }
 
             @Override
             public void firstAdditionalFire() {
-                firstAdditionalTarget.get(0).takeHits(shooter, 1, 0);
+                firstAdditionalTarget.get(0).takeHits(game.getActualPlayer(), 1, 0);
             }
 
             @Override
             public void secondAdditionalFire() {
-                for (Player player : secondAdditionalTarget) {
-                    player.takeHits(shooter, 1, 0);
-                }
+                for (var player : secondAdditionalTarget) player.takeHits(game.getActualPlayer(), 1, 0);
             }
         }
 
         private class Thor extends Weapon {
-            private Thor(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            private Thor(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 basicPayment.add(RED);
                 firstAdditionalPayment.add(BLUE);
@@ -429,8 +409,7 @@ public abstract class Weapon {
             protected boolean validateFireSort() {
                 if (fireSort.size() == 1 && fireSort.get(0) == 1) return true;
                 if (fireSort.size() == 2 && fireSort.get(0) == 1 && fireSort.get(1) == 2) return true;
-                return (fireSort.size() == 3 && fireSort.get(0) == 1 && fireSort.get(1) == 2 &&
-                        fireSort.get(2) == 3);
+                return (fireSort.size() == 3 && fireSort.get(0) == 1 && fireSort.get(1) == 2 && fireSort.get(2) == 3);
             }
 
             @Override
@@ -438,32 +417,32 @@ public abstract class Weapon {
                 if (basicTarget.size() != 1) return false;
                 if (fireSort.size() > 1 && (firstAdditionalTarget.size() != 1 ||
                         firstAdditionalTarget.get(0).equals(basicTarget.get(0)) ||
-                        !basicTarget.get(0).canSee(firstAdditionalTarget.get(0), cells))) return false;
+                        !basicTarget.get(0).canSee(firstAdditionalTarget.get(0), game.getCells()))) return false;
                 return !(fireSort.size() > 2 && (secondAdditionalTarget.size() != 1 ||
                         secondAdditionalTarget.get(0).equals(firstAdditionalTarget.get(0)) ||
                         secondAdditionalTarget.get(0).equals(basicTarget.get(0)) ||
-                        !firstAdditionalTarget.get(0).canSee(secondAdditionalTarget.get(0), cells)));
+                        !firstAdditionalTarget.get(0).canSee(secondAdditionalTarget.get(0), game.getCells())));
             }
 
             @Override
             public void basicFire() {
-                basicTarget.get(0).takeHits(shooter, 2, 0);
+                basicTarget.get(0).takeHits(game.getActualPlayer(), 2, 0);
             }
 
             @Override
             public void firstAdditionalFire() {
-                firstAdditionalTarget.get(0).takeHits(shooter, 1, 0);
+                firstAdditionalTarget.get(0).takeHits(game.getActualPlayer(), 1, 0);
             }
 
             @Override
             public void secondAdditionalFire() {
-                secondAdditionalTarget.get(0).takeHits(shooter, 2, 0);
+                secondAdditionalTarget.get(0).takeHits(game.getActualPlayer(), 2, 0);
             }
         }
 
         private class PlasmaGun extends Weapon {
-            private PlasmaGun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            private PlasmaGun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 basicPayment.add(YELLOW);
                 secondAdditionalPayment.add(BLUE);
@@ -488,36 +467,37 @@ public abstract class Weapon {
                 if (basicTarget.size() != 1 ||
                         (fireSort.contains(2) && firstAdditionalTargetPoint.size() != 1)) return false;
                 if (!firstAdditionalTargetPoint.isEmpty()) {
-                    if (!game.canMove(shooter.getPosition(), firstAdditionalTargetPoint.get(0), 0, 2))
+                    if (!game.canMove(game.getActualPlayer().getPosition(), firstAdditionalTargetPoint.get(0), 0, 2))
                         return false;
                 }
-                if (fireSort.get(0) == 1 && !shooter.canSee(basicTarget.get(0), cells)) return false;
+                if (fireSort.get(0) == 1 && !game.getActualPlayer().canSee(basicTarget.get(0), game.getCells()))
+                    return false;
                 if (fireSort.contains(2) && fireSort.indexOf(2) < fireSort.indexOf(1)) {
-                    if (!basicTarget.get(0).canBeSeenFrom(firstAdditionalTargetPoint.get(0), cells)) return false;
+                    if (!basicTarget.get(0).canBeSeenFrom(firstAdditionalTargetPoint.get(0), game.getCells()))
+                        return false;
                 }
                 return !(fireSort.get(0) == 2);
             }
 
             @Override
             public void basicFire() {
-                basicTarget.get(0).takeHits(shooter, 2, 0);
+                basicTarget.get(0).takeHits(game.getActualPlayer(), 2, 0);
             }
 
             @Override
             public void firstAdditionalFire() {
-                shooter.setPosition(firstAdditionalTargetPoint.get(0));
+                game.getActualPlayer().setPosition(firstAdditionalTargetPoint.get(0));
             }
 
             @Override
             public void secondAdditionalFire() {
-                basicTarget.get(0).takeHits(shooter, 1, 0);
+                basicTarget.get(0).takeHits(game.getActualPlayer(), 1, 0);
             }
         }
 
         public class Whisper extends Weapon {
-            public Whisper(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public Whisper(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 basicPayment.add(BLUE);
                 basicPayment.add(YELLOW);
@@ -538,27 +518,18 @@ public abstract class Weapon {
             @Override
             protected boolean validateTargets() {
                 if (basicTarget.size() != 1) return false;
-                return shooter.canSee(basicTarget.get(0), cells) && !shooter.isPlayerNear(basicTarget.get(0), cells);
+                return game.getActualPlayer().canSee(basicTarget.get(0), game.getCells()) && !game.getActualPlayer().isPlayerNear(basicTarget.get(0), game.getCells());
             }
 
             @Override
             public void basicFire() {
-                basicTarget.get(0).takeHits(shooter, 3, 1);
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
+                basicTarget.get(0).takeHits(game.getActualPlayer(), 3, 1);
             }
         }
 
         public class Electroscythe extends Weapon {
-            public Electroscythe(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                 boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public Electroscythe(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 alternativePayment.add(BLUE);
                 alternativePayment.add(RED);
@@ -579,9 +550,9 @@ public abstract class Weapon {
             @Override
             protected boolean validateTargets() {
                 basicTarget.clear();
-                for (Player player : players) {
-                    if (shooter.getPosition().equals(player.getPosition()) &&
-                            !shooter.equals(player)) basicTarget.add(player);
+                for (Player player : game.getPlayers()) {
+                    if (game.getActualPlayer().getPosition().equals(player.getPosition()) &&
+                            !game.getActualPlayer().equals(player)) basicTarget.add(player);
                 }
                 return !basicTarget.isEmpty();
             }
@@ -590,28 +561,19 @@ public abstract class Weapon {
             public void basicFire() {
                 if (!alternativeFire) {
                     for (Player player : basicTarget) {
-                        player.takeHits(shooter, 1, 0);
+                        player.takeHits(game.getActualPlayer(), 1, 0);
                     }
                 } else {
                     for (Player player : basicTarget) {
-                        player.takeHits(shooter, 2, 0);
+                        player.takeHits(game.getActualPlayer(), 2, 0);
                     }
                 }
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
 
         public class TractorBeam extends Weapon {
-            public TractorBeam(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                               boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public TractorBeam(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
                 alternativePayment.add(RED);
                 alternativePayment.add(YELLOW);
@@ -633,10 +595,10 @@ public abstract class Weapon {
             protected boolean validateTargets() {
                 if (alternativeFire) {
                     basicTargetPoint.clear();
-                    basicTargetPoint.add(shooter.getPosition());
+                    basicTargetPoint.add(game.getActualPlayer().getPosition());
                 }
                 if (basicTarget.size() != 1) return false;
-                if (basicTarget.get(0).equals(shooter)) return false;
+                if (basicTarget.get(0).equals(game.getActualPlayer())) return false;
                 if (basicTargetPoint.size() != 1) return false;
                 return game.canMove(basicTarget.get(0).getPosition(), basicTargetPoint.get(0), 0, 3);
             }
@@ -645,39 +607,30 @@ public abstract class Weapon {
             public void basicFire() {
                 basicTarget.get(0).setPosition(basicTargetPoint.get(0));
                 if (!alternativeFire) {
-                    basicTarget.get(0).takeHits(shooter, 1, 0);
+                    basicTarget.get(0).takeHits(game.getActualPlayer(), 1, 0);
                 } else {
-                    basicTarget.get(0).takeHits(shooter, 3, 0);
+                    basicTarget.get(0).takeHits(game.getActualPlayer(), 3, 0);
                 }
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
 
         public class VortexCannon extends Weapon {
-            public VortexCannon(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public VortexCannon(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 basicPayment.add(BLUE);
                 firstAdditionalPayment.add(RED);
             }
 
-            //fit in possibleTarget players (except shooter) that are near the Vortex
+            //fit in possibleTarget game.getPlayers() (except game.getActualPlayer()) that are near the Vortex
             private void addNearTargets() {
                 possibleTarget.clear();
-                for (Player p : players) {
-                    if (!(shooter.equals((p)))) {
+                for (Player p : game.getPlayers()) {
+                    if (!(game.getActualPlayer().equals((p)))) {
                         if (p.getPosition().equals(basicTargetPoint.get(0))) possibleTarget.add(p);
                         else {
                             for (Bounds.Direction d : Bounds.Direction.values()) {
-                                if (cells[basicTargetPoint.get(0).x][basicTargetPoint.get(0).y].getBounds()
+                                if (game.getCells()[basicTargetPoint.get(0).x][basicTargetPoint.get(0).y].getBounds()
                                         .getType(d) != Bounds.Type.WALL
                                         && basicTargetPoint.get(0).x + d.getdX() == p.getPosition().x
                                         && basicTargetPoint.get(0).y + d.getdY() == p.getPosition().y)
@@ -691,7 +644,7 @@ public abstract class Weapon {
             @Override
             protected boolean canFire() {
                 addNearTargets();
-                return shooter.canSeeCell(basicTargetPoint.get(0), cells) && !possibleTarget.isEmpty();
+                return game.getActualPlayer().canSeeCell(basicTargetPoint.get(0), game.getCells()) && !possibleTarget.isEmpty();
             }
 
             @Override
@@ -703,16 +656,16 @@ public abstract class Weapon {
 
             @Override
             protected boolean validateTargets() {
-                if (basicTargetPoint.size() != 1 || !shooter.canSeeCell(basicTargetPoint.get(0), cells) ||
+                if (basicTargetPoint.size() != 1 || !game.getActualPlayer().canSeeCell(basicTargetPoint.get(0), game.getCells()) ||
                         basicTarget.size() != 1 ||
-                        !basicTarget.get(0).isCellNear(basicTargetPoint.get(0), cells)) return false;
+                        !basicTarget.get(0).isCellNear(basicTargetPoint.get(0), game.getCells())) return false;
                 if (fireSort.size() == 2) {
                     if (firstAdditionalTarget.isEmpty() || firstAdditionalTarget.size() > 2) return false;
                     if (firstAdditionalTarget.size() == 2 &&
                             firstAdditionalTarget.get(0).equals(firstAdditionalTarget.get(1))) return false;
                     for (Player player : firstAdditionalTarget) {
                         if (player.equals(basicTarget.get(0)) ||
-                                !player.isCellNear(basicTargetPoint.get(0), cells)) return false;
+                                !player.isCellNear(basicTargetPoint.get(0), game.getCells())) return false;
                     }
                 }
                 return true;
@@ -721,37 +674,33 @@ public abstract class Weapon {
             @Override
             public void basicFire() {
                 basicTarget.get(0).setPosition(basicTargetPoint.get(0));
-                basicTarget.get(0).takeHits(shooter, 2, 0);
+                basicTarget.get(0).takeHits(game.getActualPlayer(), 2, 0);
             }
 
             @Override
             public void firstAdditionalFire() {
                 for (Player player : firstAdditionalTarget) {
                     player.setPosition(basicTargetPoint.get(0));
-                    player.takeHits(shooter, 1, 0);
+                    player.takeHits(game.getActualPlayer(), 1, 0);
                 }
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
 
         public class Furnace extends Weapon {
-            public Furnace(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public Furnace(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 basicPayment.add(BLUE);
             }
 
-            //so need to be selected the square near the shooter, not one square in the room...
+            //so need to be selected the square near the game.getActualPlayer(), not one square in the room...
             private void addPossibleRooms() {
                 possibleTargetPoint.clear();
                 for (var d : Bounds.Direction.values()) {
-                    if (cells[shooter.getPosition().x][shooter.getPosition().y].getBounds().getType(d)
-                            == Bounds.Type.DOOR) possibleTargetPoint.add(new Point(shooter.getPosition().x + d.getdX(),
-                            shooter.getPosition().y + d.getdY()));
+                    if (game.getCells()[game.getActualPlayer().getPosition().x][game.getActualPlayer().getPosition().y].getBounds().getType(d)
+                            == Bounds.Type.DOOR)
+                        possibleTargetPoint.add(new Point(game.getActualPlayer().getPosition().x + d.getdX(),
+                                game.getActualPlayer().getPosition().y + d.getdY()));
                 }
             }
 
@@ -769,20 +718,21 @@ public abstract class Weapon {
 
             @Override
             protected boolean validateTargets() {
-                if (basicTargetPoint.size() != 1 || basicTargetPoint.get(0).equals(shooter.getPosition())) return false;
+                if (basicTargetPoint.size() != 1 || basicTargetPoint.get(0).equals(game.getActualPlayer().getPosition()))
+                    return false;
                 if (!alternativeFire) {
                     addPossibleRooms();
                     if (!possibleTargetPoint.contains(basicTargetPoint.get(0))) return false;
                     basicTarget.clear();
-                    for (Player player : players) {
-                        if (cells[player.getPosition().x][player.getPosition().y].getColor() ==
-                                cells[basicTargetPoint.get(0).x][basicTargetPoint.get(0).y].getColor())
+                    for (Player player : game.getPlayers()) {
+                        if (game.getCells()[player.getPosition().x][player.getPosition().y].getColor() ==
+                                game.getCells()[basicTargetPoint.get(0).x][basicTargetPoint.get(0).y].getColor())
                             basicTarget.add(player);
                     }
                 } else {
-                    if (!shooter.isCellNear(basicTargetPoint.get(0), cells)) return false;
+                    if (!game.getActualPlayer().isCellNear(basicTargetPoint.get(0), game.getCells())) return false;
                     basicTarget.clear();
-                    for (Player player : players) {
+                    for (Player player : game.getPlayers()) {
                         if (player.getPosition().equals(basicTargetPoint.get(0))) basicTarget.add(player);
                     }
                 }
@@ -793,28 +743,19 @@ public abstract class Weapon {
             public void basicFire() {
                 if (!alternativeFire) {
                     for (Player player : basicTarget) {
-                        player.takeHits(shooter, 1, 0);
+                        player.takeHits(game.getActualPlayer(), 1, 0);
                     }
                 } else {
                     for (Player player : basicTarget) {
-                        player.takeHits(shooter, 1, 1);
+                        player.takeHits(game.getActualPlayer(), 1, 1);
                     }
                 }
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
 
         public class Heatseeker extends Weapon {
-            public Heatseeker(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                              boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public Heatseeker(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 basicPayment.add(RED);
                 basicPayment.add(YELLOW);
@@ -841,22 +782,13 @@ public abstract class Weapon {
 
             @Override
             public void basicFire() {
-                basicTarget.get(0).takeHits(shooter, 3, 0);
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
+                basicTarget.get(0).takeHits(game.getActualPlayer(), 3, 0);
             }
         }
 
         public class Hellion extends Weapon {
-            public Hellion(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public Hellion(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 basicPayment.add(YELLOW);
                 alternativePayment.add(RED);
@@ -865,8 +797,8 @@ public abstract class Weapon {
             @Override
             protected boolean canFire() {
                 possibleTarget.clear();
-                for (Player player : players) {
-                    if (shooter.canSee(player, cells) && !shooter.isPlayerNear(player, cells))
+                for (Player player : game.getPlayers()) {
+                    if (game.getActualPlayer().canSee(player, game.getCells()) && !game.getActualPlayer().isPlayerNear(player, game.getCells()))
                         possibleTarget.add(player);
                 }
                 return !possibleTarget.isEmpty();
@@ -882,38 +814,29 @@ public abstract class Weapon {
             @Override
             protected boolean validateTargets() {
                 if (basicTarget.size() != 1) return false;
-                return (shooter.canSee(basicTarget.get(0), cells) && !shooter.isPlayerNear(basicTarget.get(0), cells));
+                return (game.getActualPlayer().canSee(basicTarget.get(0), game.getCells()) && !game.getActualPlayer().isPlayerNear(basicTarget.get(0), game.getCells()));
             }
 
             @Override
             public void basicFire() {
-                basicTarget.get(0).takeHits(shooter, 1, 0);
+                basicTarget.get(0).takeHits(game.getActualPlayer(), 1, 0);
                 if (!alternativeFire) {
-                    for (Player player : players) {
+                    for (Player player : game.getPlayers()) {
                         if (player.getPosition().equals(basicTarget.get(0).getPosition()))
-                            player.takeHits(shooter, 0, 1);
+                            player.takeHits(game.getActualPlayer(), 0, 1);
                     }
                 } else {
-                    for (Player player : players) {
+                    for (Player player : game.getPlayers()) {
                         if (player.getPosition().equals(basicTarget.get(0).getPosition()))
-                            player.takeHits(shooter, 0, 2);
+                            player.takeHits(game.getActualPlayer(), 0, 2);
                     }
                 }
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
 
         public class Flamethrower extends Weapon {
-            public Flamethrower(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public Flamethrower(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 alternativePayment.add(YELLOW);
                 alternativePayment.add(YELLOW);
@@ -922,8 +845,8 @@ public abstract class Weapon {
             @Override
             protected boolean canFire() {
                 possibleTarget.clear();
-                for (Player player : players) {
-                    if (shooter.isPlayerNear(player, cells) || shooter.isPlayerNear2(player, cells))
+                for (Player player : game.getPlayers()) {
+                    if (game.getActualPlayer().isPlayerNear(player, game.getCells()) || game.getActualPlayer().isPlayerNear2(player, game.getCells()))
                         possibleTarget.add(player);
                 }
                 return !possibleTarget.isEmpty();
@@ -940,19 +863,20 @@ public abstract class Weapon {
             protected boolean validateTargets() {
                 if (!alternativeFire) {
                     if (basicTarget.isEmpty() || basicTarget.size() > 2) return false;
-                    if (basicTarget.size() == 1 && (shooter.isPlayerNear(basicTarget.get(0), cells) ||
-                            shooter.isPlayerNear2(basicTarget.get(0), cells))) return true;
-                    return basicTarget.size() == 2 && ((shooter.isPlayerNear(basicTarget.get(0), cells) &&
-                            shooter.isPlayerNear2(basicTarget.get(1), cells)) ||
-                            (shooter.isPlayerNear(basicTarget.get(1), cells) &&
-                                    shooter.isPlayerNear2(basicTarget.get(0), cells)));
+                    if (basicTarget.size() == 1 && (game.getActualPlayer().isPlayerNear(basicTarget.get(0), game.getCells()) ||
+                            game.getActualPlayer().isPlayerNear2(basicTarget.get(0), game.getCells()))) return true;
+                    return basicTarget.size() == 2 && ((game.getActualPlayer().isPlayerNear(basicTarget.get(0), game.getCells()) &&
+                            game.getActualPlayer().isPlayerNear2(basicTarget.get(1), game.getCells())) ||
+                            (game.getActualPlayer().isPlayerNear(basicTarget.get(1), game.getCells()) &&
+                                    game.getActualPlayer().isPlayerNear2(basicTarget.get(0), game.getCells())));
                 } else {
                     if (basicTargetPoint.size() != 2) return false;
-                    if (!(shooter.isCellNear(basicTargetPoint.get(0), cells) &&
-                            shooter.isCellNear2Straight(basicTargetPoint.get(1), cells))) return false;
+                    if (!(game.getActualPlayer().isCellNear(basicTargetPoint.get(0), game.getCells()) &&
+                            game.getActualPlayer().isCellNear2Straight(basicTargetPoint.get(1), game.getCells())))
+                        return false;
                     basicTarget.clear();
                     firstAdditionalTarget.clear();
-                    for (Player player : players) {
+                    for (Player player : game.getPlayers()) {
                         if (player.getPosition().equals(basicTargetPoint.get(0))) basicTarget.add(player);
                         else if (player.getPosition().equals(basicTargetPoint.get(1)))
                             firstAdditionalTarget.add(player);
@@ -965,31 +889,22 @@ public abstract class Weapon {
             public void basicFire() {
                 if (!alternativeFire) {
                     for (Player player : basicTarget) {
-                        player.takeHits(shooter, 1, 0);
+                        player.takeHits(game.getActualPlayer(), 1, 0);
                     }
                 } else {
                     for (Player player : basicTarget) {
-                        player.takeHits(shooter, 2, 0);
+                        player.takeHits(game.getActualPlayer(), 2, 0);
                     }
                     for (Player player : firstAdditionalTarget) {
-                        player.takeHits(shooter, 1, 0);
+                        player.takeHits(game.getActualPlayer(), 1, 0);
                     }
                 }
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
 
         public class GrenadeLauncher extends Weapon {
-            public GrenadeLauncher(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                   boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public GrenadeLauncher(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 firstAdditionalPayment.add(RED);
             }
@@ -1011,18 +926,19 @@ public abstract class Weapon {
             @Override
             protected boolean validateTargets() {
                 if (basicTarget.size() != 1 || basicTargetPoint.size() > 1) return false;
-                if (!shooter.canSee(basicTarget.get(0), cells)) return false;
+                if (!game.getActualPlayer().canSee(basicTarget.get(0), game.getCells())) return false;
                 if (fireSort.size() == 2 && (firstAdditionalTargetPoint.size() != 1 ||
-                        !shooter.canSeeCell(firstAdditionalTargetPoint.get(0), cells))) return false;
+                        !game.getActualPlayer().canSeeCell(firstAdditionalTargetPoint.get(0), game.getCells())))
+                    return false;
                 firstAdditionalTarget.clear();
                 if (fireSort.size() == 2) {
-                    for (Player player : players) {
+                    for (Player player : game.getPlayers()) {
                         if (player.getPosition().equals(firstAdditionalTargetPoint.get(0)) &&
-                                !player.equals(shooter)) firstAdditionalTarget.add(player);
+                                !player.equals(game.getActualPlayer())) firstAdditionalTarget.add(player);
                     }
                 }
                 if (!basicTargetPoint.isEmpty()) {
-                    if (!basicTarget.get(0).isCellNear(basicTargetPoint.get(0), cells)) return false;
+                    if (!basicTarget.get(0).isCellNear(basicTargetPoint.get(0), game.getCells())) return false;
                     if (fireSort.size() == 2) {
                         if (fireSort.get(0) == 1) {
                             if (basicTargetPoint.get(0).equals(firstAdditionalTargetPoint.get(0)))
@@ -1037,26 +953,21 @@ public abstract class Weapon {
 
             @Override
             public void basicFire() {
-                basicTarget.get(0).takeHits(shooter, 1, 0);
+                basicTarget.get(0).takeHits(game.getActualPlayer(), 1, 0);
                 if (!basicTargetPoint.isEmpty()) basicTarget.get(0).setPosition(basicTargetPoint.get(0));
             }
 
             @Override
             public void firstAdditionalFire() {
                 for (Player player : firstAdditionalTarget) {
-                    player.takeHits(shooter, 1, 0);
+                    player.takeHits(game.getActualPlayer(), 1, 0);
                 }
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
 
         public class RocketLauncher extends Weapon {
-            public RocketLauncher(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                  boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public RocketLauncher(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
                 basicPayment.add(RED);
                 firstAdditionalPayment.add(BLUE);
@@ -1082,21 +993,21 @@ public abstract class Weapon {
                 secondAdditionalTarget.clear();
                 if (fireSort.contains(2)) {
                     if (firstAdditionalTargetPoint.size() != 1) return false;
-                    if (!game.canMove(shooter.getPosition(), firstAdditionalTargetPoint.get(0), 0, 2))
+                    if (!game.canMove(game.getActualPlayer().getPosition(), firstAdditionalTargetPoint.get(0), 0, 2))
                         if (fireSort.indexOf(2) < fireSort.indexOf(1)) {
-                            if (!(basicTarget.get(0).canBeSeenFrom(firstAdditionalTargetPoint.get(0), cells)))
+                            if (!(basicTarget.get(0).canBeSeenFrom(firstAdditionalTargetPoint.get(0), game.getCells())))
                                 return false;
                         } else {
-                            if (!shooter.canSee(basicTarget.get(0), cells)) return false;
+                            if (!game.getActualPlayer().canSee(basicTarget.get(0), game.getCells())) return false;
                         }
                 } else {
-                    if (!shooter.canSee(basicTarget.get(0), cells)) return false;
+                    if (!game.getActualPlayer().canSee(basicTarget.get(0), game.getCells())) return false;
                 }
                 if (!basicTargetPoint.isEmpty()) {
                     if (basicTargetPoint.size() != 1 ||
-                            !basicTarget.get(0).isCellNear(basicTargetPoint.get(0), cells)) return false;
+                            !basicTarget.get(0).isCellNear(basicTargetPoint.get(0), game.getCells())) return false;
                 }
-                for (Player player : players) {
+                for (Player player : game.getPlayers()) {
                     if (player.getPosition().equals(basicTarget.get(0).getPosition()))
                         secondAdditionalTarget.add(player);
                 }
@@ -1105,27 +1016,26 @@ public abstract class Weapon {
 
             @Override
             public void basicFire() {
-                basicTarget.get(0).takeHits(shooter, 2, 0);
+                basicTarget.get(0).takeHits(game.getActualPlayer(), 2, 0);
                 if (!basicTargetPoint.isEmpty()) basicTarget.get(0).setPosition(basicTargetPoint.get(0));
             }
 
             @Override
             public void firstAdditionalFire() {
-                shooter.setPosition(firstAdditionalTargetPoint.get(0));
+                game.getActualPlayer().setPosition(firstAdditionalTargetPoint.get(0));
             }
 
             @Override
             public void secondAdditionalFire() {
                 for (Player player : secondAdditionalTarget) {
-                    player.takeHits(shooter, 1, 0);
+                    player.takeHits(game.getActualPlayer(), 1, 0);
                 }
             }
         }
 
         public class Railgun extends Weapon {
-            public Railgun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public Railgun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 basicPayment.add(YELLOW);
                 basicPayment.add(BLUE);
@@ -1134,9 +1044,10 @@ public abstract class Weapon {
             @Override
             protected boolean canFire() {
                 possibleTarget.clear();
-                for (Player player : players) {
-                    if (!player.equals(shooter) && (player.getPosition().x == shooter.getPosition().x ||
-                            player.getPosition().y == shooter.getPosition().y)) possibleTarget.add(player);
+                for (Player player : game.getPlayers()) {
+                    if (!player.equals(game.getActualPlayer()) && (player.getPosition().x == game.getActualPlayer().getPosition().x ||
+                            player.getPosition().y == game.getActualPlayer().getPosition().y))
+                        possibleTarget.add(player);
                 }
                 return !possibleTarget.isEmpty();
             }
@@ -1152,20 +1063,20 @@ public abstract class Weapon {
             protected boolean validateTargets() {
                 if (basicTarget.isEmpty() || basicTarget.size() > 2) return false;
                 if (basicTarget.size() == 1 && !alternativeFire) {
-                    return !basicTarget.get(0).equals(shooter) &&
-                            (basicTarget.get(0).getPosition().x == shooter.getPosition().x ||
-                                    basicTarget.get(0).getPosition().y == shooter.getPosition().y);
+                    return !basicTarget.get(0).equals(game.getActualPlayer()) &&
+                            (basicTarget.get(0).getPosition().x == game.getActualPlayer().getPosition().x ||
+                                    basicTarget.get(0).getPosition().y == game.getActualPlayer().getPosition().y);
                 }
                 if (basicTarget.size() == 2 && alternativeFire && !basicTarget.get(0).equals(basicTarget.get(1))) {
                     for (Player player : basicTarget) {
-                        if (player.equals(shooter)) return false;
+                        if (player.equals(game.getActualPlayer())) return false;
                     }
                     if (basicTarget.get(0).getPosition().x == basicTarget.get(1).getPosition().x) {
-                        return (basicTarget.get(0).getPosition().y - shooter.getPosition().y) *
-                                (basicTarget.get(1).getPosition().y - shooter.getPosition().y) >= 0;
+                        return (basicTarget.get(0).getPosition().y - game.getActualPlayer().getPosition().y) *
+                                (basicTarget.get(1).getPosition().y - game.getActualPlayer().getPosition().y) >= 0;
                     } else if (basicTarget.get(0).getPosition().y == basicTarget.get(1).getPosition().y) {
-                        return (basicTarget.get(0).getPosition().x - shooter.getPosition().x) *
-                                (basicTarget.get(1).getPosition().x - shooter.getPosition().x) >= 0;
+                        return (basicTarget.get(0).getPosition().x - game.getActualPlayer().getPosition().x) *
+                                (basicTarget.get(1).getPosition().x - game.getActualPlayer().getPosition().x) >= 0;
                     }
                 }
                 return false;
@@ -1174,27 +1085,18 @@ public abstract class Weapon {
             @Override
             public void basicFire() {
                 if (!alternativeFire) {
-                    basicTarget.get(0).takeHits(shooter, 3, 0);
+                    basicTarget.get(0).takeHits(game.getActualPlayer(), 3, 0);
                 } else {
                     for (Player player : basicTarget) {
-                        player.takeHits(shooter, 2, 0);
+                        player.takeHits(game.getActualPlayer(), 2, 0);
                     }
                 }
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
 
         public class Cyberblade extends Weapon {
-            public Cyberblade(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                              boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public Cyberblade(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 basicPayment.add(RED);
                 secondAdditionalPayment.add(YELLOW);
@@ -1203,9 +1105,9 @@ public abstract class Weapon {
             @Override
             protected boolean canFire() {
                 possibleTarget.clear();
-                for (Player player : players) {
-                    if (!player.equals(shooter) && (shooter.getPosition().equals(player.getPosition()) ||
-                            shooter.isPlayerNear(player, cells))) possibleTarget.add(player);
+                for (Player player : game.getPlayers()) {
+                    if (!player.equals(game.getActualPlayer()) && (game.getActualPlayer().getPosition().equals(player.getPosition()) ||
+                            game.getActualPlayer().isPlayerNear(player, game.getCells()))) possibleTarget.add(player);
                 }
                 return !possibleTarget.isEmpty();
             }
@@ -1221,24 +1123,28 @@ public abstract class Weapon {
             @Override
             protected boolean validateTargets() {
                 if (basicTarget.size() != 1) return false;
-                if (fireSort.size() == 1) return shooter.getPosition().equals(basicTarget.get(0).getPosition());
+                if (fireSort.size() == 1)
+                    return game.getActualPlayer().getPosition().equals(basicTarget.get(0).getPosition());
                 if (fireSort.contains(2)) {
                     if (firstAdditionalTargetPoint.size() != 1 ||
-                            !shooter.isCellNear(firstAdditionalTargetPoint.get(0), cells)) return false;
+                            !game.getActualPlayer().isCellNear(firstAdditionalTargetPoint.get(0), game.getCells()))
+                        return false;
                     if (fireSort.indexOf(2) < fireSort.indexOf(1)) {
                         if (!basicTarget.get(0).getPosition().equals(firstAdditionalTargetPoint.get(0))) return false;
                     } else {
-                        if (!shooter.getPosition().equals(basicTarget.get(0).getPosition())) return false;
+                        if (!game.getActualPlayer().getPosition().equals(basicTarget.get(0).getPosition()))
+                            return false;
                     }
                 }
                 if (fireSort.contains(3) && secondAdditionalTarget.size() != 1) return false;
                 if (fireSort.contains(3) && !fireSort.contains(2) &&
-                        !shooter.getPosition().equals(secondAdditionalTarget.get(0).getPosition())) return false;
+                        !game.getActualPlayer().getPosition().equals(secondAdditionalTarget.get(0).getPosition()))
+                    return false;
                 if (fireSort.contains(2) && fireSort.contains(3)) {
                     if (fireSort.indexOf(2) < fireSort.indexOf(3)) {
                         return secondAdditionalTarget.get(0).getPosition().equals(firstAdditionalTargetPoint.get(0));
                     } else {
-                        return shooter.getPosition().equals(secondAdditionalTarget.get(0).getPosition());
+                        return game.getActualPlayer().getPosition().equals(secondAdditionalTarget.get(0).getPosition());
                     }
                 }
                 return true;
@@ -1246,24 +1152,23 @@ public abstract class Weapon {
 
             @Override
             public void basicFire() {
-                basicTarget.get(0).takeHits(shooter, 2, 0);
+                basicTarget.get(0).takeHits(game.getActualPlayer(), 2, 0);
             }
 
             @Override
             public void firstAdditionalFire() {
-                shooter.setPosition(firstAdditionalTargetPoint.get(0));
+                game.getActualPlayer().setPosition(firstAdditionalTargetPoint.get(0));
             }
 
             @Override
             public void secondAdditionalFire() {
-                secondAdditionalTarget.get(0).takeHits(shooter, 2, 0);
+                secondAdditionalTarget.get(0).takeHits(game.getActualPlayer(), 2, 0);
             }
         }
 
         public class ZX2 extends Weapon {
-            public ZX2(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                       boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public ZX2(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 basicPayment.add(RED);
             }
@@ -1285,11 +1190,12 @@ public abstract class Weapon {
             protected boolean validateTargets() {
                 if (basicTarget.isEmpty()) return false;
                 if (!alternativeFire &&
-                        (basicTarget.size() != 1 || !shooter.canSee(basicTarget.get(0), cells))) return false;
+                        (basicTarget.size() != 1 || !game.getActualPlayer().canSee(basicTarget.get(0), game.getCells())))
+                    return false;
                 if (alternativeFire) {
                     if (basicTarget.size() > 3) return false;
                     for (Player player : basicTarget) {
-                        if (!shooter.canSee(player, cells)) return false;
+                        if (!game.getActualPlayer().canSee(player, game.getCells())) return false;
                     }
                 }
                 return true;
@@ -1298,36 +1204,27 @@ public abstract class Weapon {
             @Override
             public void basicFire() {
                 if (!alternativeFire) {
-                    basicTarget.get(0).takeHits(shooter, 1, 2);
+                    basicTarget.get(0).takeHits(game.getActualPlayer(), 1, 2);
                 } else {
                     for (Player player : basicTarget) {
-                        player.takeHits(shooter, 0, 1);
+                        player.takeHits(game.getActualPlayer(), 0, 1);
                     }
                 }
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
 
         public class Shotgun extends Weapon {
-            public Shotgun(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                           boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public Shotgun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 basicPayment.add(YELLOW);
             }
 
             @Override
             protected boolean canFire() {
-                for (Player player : players) {
-                    if (!shooter.equals(player) && (shooter.getPosition().equals(player.getPosition()) ||
-                            shooter.isPlayerNear(player, cells))) possibleTarget.add(player);
+                for (Player player : game.getPlayers()) {
+                    if (!game.getActualPlayer().equals(player) && (game.getActualPlayer().getPosition().equals(player.getPosition()) ||
+                            game.getActualPlayer().isPlayerNear(player, game.getCells()))) possibleTarget.add(player);
                 }
                 return !possibleTarget.isEmpty();
             }
@@ -1343,12 +1240,12 @@ public abstract class Weapon {
             protected boolean validateTargets() {
                 if (basicTarget.size() != 1) return false;
                 if (!alternativeFire) {
-                    if (!shooter.getPosition().equals(basicTarget.get(0).getPosition())) return false;
+                    if (!game.getActualPlayer().getPosition().equals(basicTarget.get(0).getPosition())) return false;
                     if (!basicTargetPoint.isEmpty()) {
-                        return (basicTargetPoint.size() == 1 && shooter.isCellNear(basicTargetPoint.get(0), cells));
+                        return (basicTargetPoint.size() == 1 && game.getActualPlayer().isCellNear(basicTargetPoint.get(0), game.getCells()));
                     }
                 } else {
-                    return shooter.isPlayerNear(basicTarget.get(0), cells);
+                    return game.getActualPlayer().isPlayerNear(basicTarget.get(0), game.getCells());
                 }
                 return true;
             }
@@ -1356,28 +1253,19 @@ public abstract class Weapon {
             @Override
             public void basicFire() {
                 if (!alternativeFire) {
-                    basicTarget.get(0).takeHits(shooter, 3, 0);
+                    basicTarget.get(0).takeHits(game.getActualPlayer(), 3, 0);
                     if (!basicTargetPoint.isEmpty()) {
                         basicTarget.get(0).setPosition(basicTargetPoint.get(0));
                     }
                 } else {
-                    basicTarget.get(0).takeHits(shooter, 2, 0);
+                    basicTarget.get(0).takeHits(game.getActualPlayer(), 2, 0);
                 }
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
 
         public class PowerGlove extends Weapon {
-            public PowerGlove(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                              boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public PowerGlove(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 basicPayment.add(BLUE);
                 alternativePayment.add(BLUE);
@@ -1386,8 +1274,8 @@ public abstract class Weapon {
             @Override
             protected boolean canFire() {
                 possibleTarget.clear();
-                for (Player player : players) {
-                    if (shooter.isPlayerNear(player, cells) || shooter.isPlayerNear2(player, cells))
+                for (Player player : game.getPlayers()) {
+                    if (game.getActualPlayer().isPlayerNear(player, game.getCells()) || game.getActualPlayer().isPlayerNear2(player, game.getCells()))
                         possibleTarget.add(player);
                 }
                 return !possibleTarget.isEmpty();
@@ -1404,13 +1292,14 @@ public abstract class Weapon {
             protected boolean validateTargets() {
                 if (basicTarget.isEmpty() && basicTargetPoint.isEmpty()) return false;
                 if (!alternativeFire) {
-                    return (basicTarget.size() == 1 && shooter.isPlayerNear(basicTarget.get(0), cells));
+                    return (basicTarget.size() == 1 && game.getActualPlayer().isPlayerNear(basicTarget.get(0), game.getCells()));
                 } else {
                     if (basicTargetPoint.isEmpty() || basicTargetPoint.size() > 2 ||
                             basicTarget.size() > 2) return false;
                     if (basicTargetPoint.size() == 1) {
-                        if (!(shooter.isCellNear(basicTargetPoint.get(0), cells) ||
-                                shooter.isCellNear2Straight(basicTargetPoint.get(0), cells))) return false;
+                        if (!(game.getActualPlayer().isCellNear(basicTargetPoint.get(0), game.getCells()) ||
+                                game.getActualPlayer().isCellNear2Straight(basicTargetPoint.get(0), game.getCells())))
+                            return false;
                         if (basicTarget.size() > 1) return false;
                         if (!basicTarget.isEmpty()) {
                             return basicTarget.get(0).getPosition().equals(basicTargetPoint.get(0));
@@ -1426,14 +1315,14 @@ public abstract class Weapon {
                                     basicTarget.get(1).getPosition().equals(basicTargetPoint.get(1)))) return false;
                         }
                         for (Bounds.Direction d : Bounds.Direction.values()) {
-                            if (cells[shooter.getPosition().x][shooter.getPosition().y].getBounds().getType(d) !=
+                            if (game.getCells()[game.getActualPlayer().getPosition().x][game.getActualPlayer().getPosition().y].getBounds().getType(d) !=
                                     Bounds.Type.WALL &&
-                                    shooter.getPosition().x + d.getdX() == basicTargetPoint.get(0).x &&
-                                    shooter.getPosition().y + d.getdY() == basicTargetPoint.get(0).y) {
-                                if (cells[shooter.getPosition().x + d.getdX()][shooter.getPosition().y + d.getdY()]
+                                    game.getActualPlayer().getPosition().x + d.getdX() == basicTargetPoint.get(0).x &&
+                                    game.getActualPlayer().getPosition().y + d.getdY() == basicTargetPoint.get(0).y) {
+                                if (game.getCells()[game.getActualPlayer().getPosition().x + d.getdX()][game.getActualPlayer().getPosition().y + d.getdY()]
                                         .getBounds().getType(d) != Bounds.Type.WALL &&
-                                        shooter.getPosition().x + 2 * d.getdX() == basicTargetPoint.get(1).x &&
-                                        shooter.getPosition().y + 2 * d.getdY() == basicTargetPoint.get(1).y)
+                                        game.getActualPlayer().getPosition().x + 2 * d.getdX() == basicTargetPoint.get(1).x &&
+                                        game.getActualPlayer().getPosition().y + 2 * d.getdY() == basicTargetPoint.get(1).y)
                                     return true;
                             }
                         }
@@ -1445,31 +1334,22 @@ public abstract class Weapon {
             @Override
             public void basicFire() {
                 if (!alternativeFire) {
-                    shooter.setPosition(basicTarget.get(0).getPosition());
-                    basicTarget.get(0).takeHits(shooter, 1, 2);
+                    game.getActualPlayer().setPosition(basicTarget.get(0).getPosition());
+                    basicTarget.get(0).takeHits(game.getActualPlayer(), 1, 2);
                 } else {
                     for (int i = 0; i < basicTargetPoint.size(); i++) {
-                        shooter.setPosition(basicTargetPoint.get(i));
+                        game.getActualPlayer().setPosition(basicTargetPoint.get(i));
                         if (basicTarget.size() > i) {
-                            basicTarget.get(i).takeHits(shooter, 2, 0);
+                            basicTarget.get(i).takeHits(game.getActualPlayer(), 2, 0);
                         }
                     }
                 }
             }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
-            }
         }
 
         public class Shockwave extends Weapon {
-            public Shockwave(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                             boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public Shockwave(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 alternativePayment.add(YELLOW);
             }
@@ -1477,8 +1357,8 @@ public abstract class Weapon {
             @Override
             protected boolean canFire() {
                 possibleTarget.clear();
-                for (Player player : players) {
-                    if (shooter.isPlayerNear(player, cells)) possibleTarget.add(player);
+                for (Player player : game.getPlayers()) {
+                    if (game.getActualPlayer().isPlayerNear(player, game.getCells())) possibleTarget.add(player);
                 }
                 return !possibleTarget.isEmpty();
             }
@@ -1495,7 +1375,7 @@ public abstract class Weapon {
                 if (!alternativeFire) {
                     if (basicTarget.isEmpty() || basicTarget.size() > 3) return false;
                     for (Player player : basicTarget) {
-                        if (!shooter.isPlayerNear(player, cells)) return false;
+                        if (!game.getActualPlayer().isPlayerNear(player, game.getCells())) return false;
                     }
                     for (int i = 0; i < basicTarget.size() - 1; i++) {
                         for (Player player : basicTarget.subList(i + 1, basicTarget.size() - 1)) {
@@ -1504,8 +1384,8 @@ public abstract class Weapon {
                     }
                 } else {
                     basicTarget.clear();
-                    for (Player player : players) {
-                        if (shooter.isPlayerNear(player, cells)) basicTarget.add(player);
+                    for (Player player : game.getPlayers()) {
+                        if (game.getActualPlayer().isPlayerNear(player, game.getCells())) basicTarget.add(player);
                     }
                     return !basicTarget.isEmpty();
                 }
@@ -1515,23 +1395,14 @@ public abstract class Weapon {
             @Override
             public void basicFire() {
                 for (Player player : basicTarget) {
-                    player.takeHits(shooter, 1, 0);
+                    player.takeHits(game.getActualPlayer(), 1, 0);
                 }
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
 
         public class Sledgehammer extends Weapon {
-            public Sledgehammer(@NotNull Cell[][] cells, @NotNull ArrayList<Player> players, @NotNull Player shooter,
-                                boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(cells, players, shooter, alternativeFire, powerUpsPay);
+            public Sledgehammer(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+                super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
                 alternativePayment.add(RED);
             }
@@ -1539,8 +1410,8 @@ public abstract class Weapon {
             @Override
             protected boolean canFire() {
                 possibleTarget.clear();
-                for (Player player : players) {
-                    if (shooter.getPosition().equals(player.getPosition())) possibleTarget.add(player);
+                for (Player player : game.getPlayers()) {
+                    if (game.getActualPlayer().getPosition().equals(player.getPosition())) possibleTarget.add(player);
                 }
                 return !possibleTarget.isEmpty();
             }
@@ -1555,12 +1426,12 @@ public abstract class Weapon {
             @Override
             protected boolean validateTargets() {
                 if (basicTarget.size() != 1) return false;
-                if (!basicTarget.get(0).getPosition().equals(shooter.getPosition())) return false;
+                if (!basicTarget.get(0).getPosition().equals(game.getActualPlayer().getPosition())) return false;
                 if (!alternativeFire) {
                     if (!basicTargetPoint.isEmpty()) {
                         if (basicTargetPoint.size() != 1) return false;
-                        return shooter.isCellNear(basicTargetPoint.get(0), cells) ||
-                                shooter.isCellNear2Straight(basicTargetPoint.get(0), cells);
+                        return game.getActualPlayer().isCellNear(basicTargetPoint.get(0), game.getCells()) ||
+                                game.getActualPlayer().isCellNear2Straight(basicTargetPoint.get(0), game.getCells());
                     }
                 }
                 return true;
@@ -1569,21 +1440,13 @@ public abstract class Weapon {
             @Override
             public void basicFire() {
                 if (!alternativeFire) {
-                    basicTarget.get(0).takeHits(shooter, 2, 0);
+                    basicTarget.get(0).takeHits(game.getActualPlayer(), 2, 0);
                 } else {
-                    basicTarget.get(0).takeHits(shooter, 3, 0);
+                    basicTarget.get(0).takeHits(game.getActualPlayer(), 3, 0);
                     if (!basicTargetPoint.isEmpty()) {
                         basicTarget.get(0).setPosition(basicTargetPoint.get(0));
                     }
                 }
-            }
-
-            @Override
-            public void firstAdditionalFire() {
-            }
-
-            @Override
-            public void secondAdditionalFire() {
             }
         }
     }

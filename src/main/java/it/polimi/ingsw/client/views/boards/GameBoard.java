@@ -32,20 +32,20 @@ public class GameBoard extends AbstractBoard {
         super(dimension);
         this.game = game;
 
-        addSprite(new Sprite(0, 0, new Dimension(width / 2, height), () -> ImageIO.read(Game.class.getResourceAsStream("Game/" + game.getType().getLeft() + ".png"))));
-        addSprite(new Sprite(width / 2, 0, new Dimension(width / 2, height), () -> ImageIO.read(Game.class.getResourceAsStream("Game/" + game.getType().getRight() + ".png"))));
+        addSprite(new Sprite(0, 0, width / 2, height, () -> ImageIO.read(Game.class.getResourceAsStream("Game/" + game.getType().getLeft() + ".png"))));
+        addSprite(new Sprite(width / 2, 0, width / 2, height, () -> ImageIO.read(Game.class.getResourceAsStream("Game/" + game.getType().getRight() + ".png"))));
 
-        weapon = new Sprite(WEAPON_POSITION.x, WEAPON_POSITION.y, WEAPON_DIMEMSION, () -> ImageIO.read(Weapon.class.getResourceAsStream("Weapon/" + "back" + ".png")));
+        weapon = new Sprite(WEAPON_POSITION, WEAPON_DIMEMSION, () -> ImageIO.read(Weapon.class.getResourceAsStream("Weapon/" + "back" + ".png")));
         weapon.setDraggable(true);
         weapon.setTag("weapon");
         addSprite(weapon);
 
-        powerup = new Sprite(POWERUP_POSITION.x, POWERUP_POSITION.y, POWERUP_DIMEMSION, () -> ImageIO.read(PowerUp.class.getResourceAsStream("PowerUp/" + "back" + ".png")));
+        powerup = new Sprite(POWERUP_POSITION, POWERUP_DIMEMSION, () -> ImageIO.read(PowerUp.class.getResourceAsStream("PowerUp/" + "back" + ".png")));
         powerup.setDraggable(true);
         powerup.setTag("powerup");
         addSprite(powerup);
 
-        ammoCard = new Sprite(AMMOCARD_POSITION.x, AMMOCARD_POSITION.y, AMMOCARD_DIMEMSION, () -> ImageIO.read(AmmoCard.class.getResourceAsStream("AmmoCard/" + "back" + ".png")));
+        ammoCard = new Sprite(AMMOCARD_POSITION, AMMOCARD_DIMEMSION, () -> ImageIO.read(AmmoCard.class.getResourceAsStream("AmmoCard/" + "back" + ".png")));
         ammoCard.setDraggable(true);
         ammoCard.setTag("ammocard");
         addSprite(ammoCard);

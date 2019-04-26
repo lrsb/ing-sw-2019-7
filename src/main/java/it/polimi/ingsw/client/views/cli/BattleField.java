@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.views.cli;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -95,12 +94,7 @@ public class BattleField {
     }
 
     final void plot() {
-        //clearConsole();
-        try {
-            Runtime.getRuntime().exec("clear");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        clearConsole();
         System.out.print(Color.ANSI_YELLOW.escape());
         for (int r = 0; r < MAX_VERT_TILES; r++) {
             System.out.println();

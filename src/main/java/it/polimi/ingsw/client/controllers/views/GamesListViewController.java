@@ -1,7 +1,7 @@
-package it.polimi.ingsw.client.controllers;
+package it.polimi.ingsw.client.controllers.views;
 
-import it.polimi.ingsw.client.controllers.base.BaseViewController;
-import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.controllers.views.base.BaseViewController;
+import it.polimi.ingsw.client.controllers.views.base.NavigationController;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
