@@ -75,14 +75,83 @@ public abstract class Game implements Serializable {
     }
 
     //da chiamare ogni volta che un giocatore finisce un turno
-    public void pointsRedistribution() {
-        for (Player player : players) {
-            if (player.amIDead()) {
-                for (String name : player.getDamagesTaken()) {
-
+    public void deathPointsRedistribution() {
+        int turnsDeaths = 0;
+        for (Player deadPlayer : players) {
+            if (deadPlayer.amIDead()) {
+                turnsDeaths++;
+                killshots.add(deadPlayer.getDamagesTaken().get(10));
+                if (deadPlayer.getDamagesTaken().size() == 12) {
+                    killshots.add(deadPlayer.getDamagesTaken().get(11));
+                    for (Player player : players) {
+                        if (player.getNickname().equals(deadPlayer.getDamagesTaken().get(11)))
+                            player.takeHits(deadPlayer, 0, 1);
+                    }
                 }
+                for (Player player : players) {
+                    if (player.getNickname().equals(deadPlayer.getDamagesTaken().get(0))) player.addPoints(1);
+                }
+                ArrayList<Integer> redistributionPoints = new ArrayList<>();
+                ArrayList<String> redistributionString = new ArrayList<>();
+                for (String nickname : deadPlayer.getDamagesTaken()) {
+                    if (!redistributionString.contains(nickname)) {
+                        redistributionString.add(nickname);
+                        redistributionPoints.add(1);
+                    } else {
+                        redistributionPoints.set(redistributionString.indexOf(nickname),
+                                redistributionPoints.get(redistributionString.indexOf(nickname)) + 1);
+                    }
+                }
+                int hitter = redistributionString.size();
+                for (int j = hitter - 1; j > 0; j--) {
+                    for (int i = 0; i < j; i++) {
+                        if (redistributionPoints.get(i) < redistributionPoints.get(i + 1)) {
+                            String tmpString = redistributionString.get(i);
+                            Integer tmpInteger = redistributionPoints.get(i);
+                            redistributionString.set(i, redistributionString.get(i + 1));
+                            redistributionPoints.set(i, redistributionPoints.get(i + 1));
+                            redistributionString.set(i + 1, tmpString);
+                            redistributionPoints.set(i + 1, tmpInteger);
+                        }
+                    }
+                }
+                int points;
+                switch (deadPlayer.getDeaths()) {
+                    case (0):
+                        points = 8;
+                        break;
+                    case (1):
+                        points = 6;
+                        break;
+                    case (2):
+                        points = 4;
+                        break;
+                    case (3):
+                        points = 2;
+                        break;
+                    default:
+                        points = 1;
+                        break;
+                }
+                for (String nickname : redistributionString) {
+                    for (Player player : players) {
+                        if (player.getNickname().equals(nickname)) {
+                            player.addPoints(points);
+                            if (points > 2) points -= 2;
+                            else points = 1;
+                        }
+                    }
+                }
+                deadPlayer.incrementDeaths();
+                deadPlayer.getDamagesTaken().clear();
+                //TODO: reborn of deadPlayer
             }
         }
+        if (turnsDeaths > 1) getActualPlayer().addPoints(1);
+    }
+
+    public void killshotsPointsRedistribution() {
+        //TODO
     }
 
     public enum Type {

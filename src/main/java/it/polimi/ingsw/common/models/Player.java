@@ -43,6 +43,18 @@ public class Player implements Serializable {
         return damagesTaken;
     }
 
+    public int getDeaths() {
+        return deaths;
+    }
+
+    public void incrementDeaths() {
+        deaths++;
+    }
+
+    public void addPoints(int pointsAdded) {
+        points += pointsAdded;
+    }
+
     public boolean hasWeapon(@NotNull Weapon weapon) {
         return weapons.contains(weapon);
     }
