@@ -29,6 +29,13 @@ public class Deck<T extends Serializable> implements Serializable {
     private final @NotNull ArrayList<T> discardedCards = new ArrayList<>();
     private final boolean shuffleable;
 
+    /**
+     * Create a new Deck.
+     *
+     * @param cards       The cards included in the deck.
+     * @param shuffleable true if the deck is shuffleable when finished.
+     * @throws EmptyDeckException Thrown when {@code cards} is empty.
+     */
     private Deck(@NotNull ArrayList<T> cards, boolean shuffleable) throws EmptyDeckException {
         if (cards.isEmpty()) throw new EmptyDeckException();
         this.playableCards.addAll(cards);
@@ -89,6 +96,16 @@ public class Deck<T extends Serializable> implements Serializable {
             exitedCards.remove(exitedCard);
             discardedCards.add(exitedCard);
         } else throw new CardNotFoundException();
+    }
+
+    /**
+     * Returns the number of playable cards.
+     *
+     * @return The number of playable cards.
+     */
+    @Contract(pure = true)
+    public int remainedCards() {
+        return playableCards.size();
     }
 
     private void shuffleDeck() throws EmptyDeckException {

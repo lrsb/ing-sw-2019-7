@@ -2,6 +2,7 @@ package it.polimi.ingsw.common.models;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -12,18 +13,18 @@ import java.util.UUID;
 public class Player implements Serializable {
     private static final long serialVersionUID = 1;
 
-    private UUID uuid;
-    private String nickname;
-    private Point position;
-    private ArrayList<String> damagesTaken = new ArrayList<>();
-    private ArrayList<String> marksTaken = new ArrayList<>();
+    private @NotNull UUID uuid;
+    private @NotNull String nickname;
+    private @Nullable Point position;
+    private @NotNull ArrayList<String> damagesTaken = new ArrayList<>();
+    private @NotNull ArrayList<String> marksTaken = new ArrayList<>();
     private int deaths = 0;
     private int points = 0;
-    private int[] cubes = {3, 3, 3}; //r, y, b
-    private ArrayList<PowerUp> powerUps = new ArrayList<>();//3 al massimo e consumabili
-    private ArrayList<Weapon> weapons = new ArrayList<>();//3 al massimo e scambiabili
-    private boolean[] isReloaded = {true, true, true};
-    private ArrayList<AmmoCard> ammoCards = new ArrayList<>();
+    private @NotNull int[] cubes = {3, 3, 3};
+    private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();//3 al massimo e consumabili
+    private @NotNull ArrayList<Weapon> weapons = new ArrayList<>();//3 al massimo e scambiabili
+    private @NotNull boolean[] isReloaded = {true, true, true};
+    private @NotNull ArrayList<AmmoCard> ammoCards = new ArrayList<>();
     private boolean isFirstMove = true;
 
     public Player(@NotNull User user) {
@@ -31,15 +32,15 @@ public class Player implements Serializable {
         this.nickname = user.getNickname();
     }
 
-    public UUID getUuid() {
+    public @NotNull UUID getUuid() {
         return uuid;
     }
 
-    public String getNickname() {
+    public @NotNull String getNickname() {
         return nickname;
     }
 
-    public ArrayList<String> getDamagesTaken() {
+    public @NotNull ArrayList<String> getDamagesTaken() {
         return damagesTaken;
     }
 
@@ -141,7 +142,7 @@ public class Player implements Serializable {
         ammoCards.add(ammoCard);
     }
 
-    public List<PowerUp> getPowerUps() {
+    public @NotNull List<PowerUp> getPowerUps() {
         return powerUps;
     }
 
@@ -178,7 +179,7 @@ public class Player implements Serializable {
     public boolean isPlayerNear(@NotNull Player player, @NotNull Cell[][] cells) {
         for (Bounds.Direction d : Bounds.Direction.values()) {
             if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL &&
-                    player.getPosition().x == position.x + d.getdX() && player.getPosition().y == position.y + d.getdY())
+                    player.position.x == position.x + d.getdX() && player.position.y == position.y + d.getdY())
                 return true;
         }
         return false;
@@ -188,8 +189,8 @@ public class Player implements Serializable {
         for (Bounds.Direction d : Bounds.Direction.values()) {
             if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL) {
                 if (cells[position.x + d.getdX()][position.y + d.getdY()].getBounds().getType(d) != Bounds.Type.WALL &&
-                        player.getPosition().x == position.x + 2 * d.getdX() &&
-                        player.getPosition().y == position.y + 2 * d.getdY()) return true;
+                        player.position.x == position.x + 2 * d.getdX() &&
+                        player.position.y == position.y + 2 * d.getdY()) return true;
             }
         }
         return false;

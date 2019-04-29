@@ -7,34 +7,35 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.common.models.AmmoCard.Color.*;
 
 @SuppressWarnings("SpellCheckingInspection")
 public abstract class Weapon {
-    private @NotNull Game game;
-    private boolean alternativeFire;
+    @NotNull Game game;
+    boolean alternativeFire;
     private @NotNull ArrayList<PowerUp> powerUpsPay;
 
-    private @NotNull ArrayList<AmmoCard.Color> basicPayment = new ArrayList<>();
-    private @NotNull ArrayList<AmmoCard.Color> firstAdditionalPayment = new ArrayList<>();
-    private @NotNull ArrayList<AmmoCard.Color> secondAdditionalPayment = new ArrayList<>();
-    private @NotNull ArrayList<AmmoCard.Color> alternativePayment = new ArrayList<>();
+    @NotNull ArrayList<AmmoCard.Color> basicPayment = new ArrayList<>();
+    @NotNull ArrayList<AmmoCard.Color> firstAdditionalPayment = new ArrayList<>();
+    @NotNull ArrayList<AmmoCard.Color> secondAdditionalPayment = new ArrayList<>();
+    @NotNull ArrayList<AmmoCard.Color> alternativePayment = new ArrayList<>();
 
-    private @NotNull ArrayList<Player> possibleTarget = new ArrayList<>();
-    private @NotNull ArrayList<Point> possibleTargetPoint = new ArrayList<>();
-    private @NotNull ArrayList<Player> basicTarget = new ArrayList<>();
-    private @NotNull ArrayList<Point> basicTargetPoint = new ArrayList<>();
-    private @NotNull ArrayList<Player> firstAdditionalTarget = new ArrayList<>();
-    private @NotNull ArrayList<Point> firstAdditionalTargetPoint = new ArrayList<>();
-    private @NotNull ArrayList<Player> secondAdditionalTarget = new ArrayList<>();
-    private @NotNull ArrayList<Point> secondAdditionalTargetPoint = new ArrayList<>();  //forse non serve mai
-    private @NotNull ArrayList<Integer> fireSort = new ArrayList<>();
+    @NotNull ArrayList<Player> possibleTarget = new ArrayList<>();
+    @NotNull ArrayList<Point> possibleTargetPoint = new ArrayList<>();
+    @NotNull ArrayList<Player> basicTarget = new ArrayList<>();
+    @NotNull ArrayList<Point> basicTargetPoint = new ArrayList<>();
+    @NotNull ArrayList<Player> firstAdditionalTarget = new ArrayList<>();
+    @NotNull ArrayList<Point> firstAdditionalTargetPoint = new ArrayList<>();
+    @NotNull ArrayList<Player> secondAdditionalTarget = new ArrayList<>();
+    @NotNull ArrayList<Point> secondAdditionalTargetPoint = new ArrayList<>();  //forse non serve mai
+    @NotNull ArrayList<Integer> fireSort = new ArrayList<>();
 
     //Come passare gli array di cui sopra?
 
     @Contract(pure = true)
-    private Weapon(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+    Weapon(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
         this.game = game;
         this.alternativeFire = alternativeFire;
         this.powerUpsPay = powerUpsPay;
@@ -150,20 +151,19 @@ public abstract class Weapon {
         return payCost();
     }
 
-    protected abstract boolean canFire();
+    abstract boolean canFire();
 
-    protected abstract boolean validateTargets();
+    abstract boolean validateTargets();
 
-    protected abstract boolean validateFireSort();
+    abstract boolean validateFireSort();
 
-    private void addVisibleTarget() {
+    void addVisibleTarget() {
         possibleTarget.clear();
-        for (Player p : game.getPlayers()) {
-            if (game.getActualPlayer().canSee(p, game.getCells())) possibleTarget.add(p);
-        }
+        possibleTarget.addAll(game.getPlayers().parallelStream().filter(e -> game.getActualPlayer().canSee(e, game.getCells())).collect(Collectors.toList()));
+        //for (var p : game.getPlayers()) if (game.getActualPlayer().canSee(p, game.getCells())) possibleTarget.add(p);
     }
 
-    private void addNonVisibleTarget() {
+    void addNonVisibleTarget() {
         possibleTarget.clear();
         for (Player player : game.getPlayers()) {
             if (!(game.getActualPlayer().canSee(player, game.getCells())) && !(game.getActualPlayer().equals(player)))
@@ -171,7 +171,7 @@ public abstract class Weapon {
         }
     }
 
-    private void addVisibleSquare() {
+    void addVisibleSquare() {
         int x, y;
         Point point;
         possibleTargetPoint.clear();
@@ -183,12 +183,12 @@ public abstract class Weapon {
         }
     } //forse mai usato
 
-    private void addBasicTarget(@Nullable Player target, @Nullable Point point) {
+    void addBasicTarget(@Nullable Player target, @Nullable Point point) {
         basicTarget.add(target);
         basicTargetPoint.add(point);
     }
 
-    protected void basicFire() {
+    void basicFire() {
     }
 
     public void addFirstAdditionalTarget(@Nullable Player target, @Nullable Point point) {
@@ -196,7 +196,7 @@ public abstract class Weapon {
         firstAdditionalTargetPoint.add(point);
     }
 
-    protected void firstAdditionalFire() {
+    void firstAdditionalFire() {
     }
 
     public void addSecondAdditionalTarget(@Nullable Player target, @Nullable Point point) {
@@ -204,7 +204,7 @@ public abstract class Weapon {
         secondAdditionalTargetPoint.add(point);
     }
 
-    protected void secondAdditionalFire() {
+    void secondAdditionalFire() {
     }
 
     @Contract(value = "null -> false", pure = true)
@@ -215,8 +215,9 @@ public abstract class Weapon {
 
     //shoot è di Weapon astratta, ma tutti i metodi chiamati all'interno devono essere specifici dell'arma usata
     public boolean shoot() {
-        if (game.getActualPlayer().hasWeapon(this) && game.getActualPlayer().isALoadedGun(this) && canFire() && validateFireSort() && validateTargets() && payCost()) {
-            for (var fireNumber : fireSort) {
+        if (game.getActualPlayer().hasWeapon(this) && game.getActualPlayer().isALoadedGun(this) && canFire() &&
+                validateFireSort() && validateTargets() && payCost()) {
+            for (var fireNumber : fireSort)
                 switch (fireNumber) {
                     case 1:
                         basicFire();
@@ -227,7 +228,6 @@ public abstract class Weapon {
                     case 3:
                         secondAdditionalFire();
                         break;
-                }
             }
             return true;
         }
@@ -261,7 +261,7 @@ public abstract class Weapon {
         public @Nullable <T extends Weapon> T build(@NotNull Game game, boolean alternativeFire) {
             try {
                 //noinspection unchecked
-                return (T) getWeaponClass().getDeclaredConstructors()[0].newInstance(game.getCells(), alternativeFire);
+                return (T) getWeaponClass().getDeclaredConstructors()[0].newInstance(game, alternativeFire, new ArrayList<>());
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
                 return null;
@@ -269,8 +269,8 @@ public abstract class Weapon {
         }
     }
 
-    private class Weapons {
-        private class LockRifle extends Weapon {
+    private static class Weapons {
+        private static class LockRifle extends Weapon {
             private LockRifle(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
@@ -319,7 +319,7 @@ public abstract class Weapon {
             }
         }
 
-        private class MachineGun extends Weapon {
+        private static class MachineGun extends Weapon {
             private MachineGun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
@@ -390,7 +390,7 @@ public abstract class Weapon {
             }
         }
 
-        private class Thor extends Weapon {
+        private static class Thor extends Weapon {
             private Thor(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
@@ -441,7 +441,7 @@ public abstract class Weapon {
             }
         }
 
-        private class PlasmaGun extends Weapon {
+        private static class PlasmaGun extends Weapon {
             private PlasmaGun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
@@ -496,7 +496,7 @@ public abstract class Weapon {
             }
         }
 
-        public class Whisper extends Weapon {
+        private static class Whisper extends Weapon {
             public Whisper(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
@@ -528,7 +528,7 @@ public abstract class Weapon {
             }
         }
 
-        public class Electroscythe extends Weapon {
+        private static class Electroscythe extends Weapon {
             public Electroscythe(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
@@ -572,7 +572,7 @@ public abstract class Weapon {
             }
         }
 
-        public class TractorBeam extends Weapon {
+        private static class TractorBeam extends Weapon {
             public TractorBeam(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(BLUE);
@@ -615,7 +615,7 @@ public abstract class Weapon {
             }
         }
 
-        public class VortexCannon extends Weapon {
+        private static class VortexCannon extends Weapon {
             public VortexCannon(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
@@ -687,7 +687,7 @@ public abstract class Weapon {
             }
         }
 
-        public class Furnace extends Weapon {
+        private static class Furnace extends Weapon {
             public Furnace(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
@@ -754,7 +754,7 @@ public abstract class Weapon {
             }
         }
 
-        public class Heatseeker extends Weapon {
+        private static class Heatseeker extends Weapon {
             public Heatseeker(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
@@ -787,7 +787,7 @@ public abstract class Weapon {
             }
         }
 
-        public class Hellion extends Weapon {
+        private static class Hellion extends Weapon {
             public Hellion(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
@@ -835,7 +835,7 @@ public abstract class Weapon {
             }
         }
 
-        public class Flamethrower extends Weapon {
+        private static class Flamethrower extends Weapon {
             public Flamethrower(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
@@ -903,7 +903,7 @@ public abstract class Weapon {
             }
         }
 
-        public class GrenadeLauncher extends Weapon {
+        private static class GrenadeLauncher extends Weapon {
             public GrenadeLauncher(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
@@ -966,7 +966,7 @@ public abstract class Weapon {
             }
         }
 
-        public class RocketLauncher extends Weapon {
+        private static class RocketLauncher extends Weapon {
             public RocketLauncher(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(RED);
@@ -1034,7 +1034,7 @@ public abstract class Weapon {
             }
         }
 
-        public class Railgun extends Weapon {
+        private static class Railgun extends Weapon {
             public Railgun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
@@ -1095,7 +1095,7 @@ public abstract class Weapon {
             }
         }
 
-        public class Cyberblade extends Weapon {
+        private static class Cyberblade extends Weapon {
             public Cyberblade(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
@@ -1167,7 +1167,7 @@ public abstract class Weapon {
             }
         }
 
-        public class ZX2 extends Weapon {
+        private static class ZX2 extends Weapon {
             public ZX2(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
@@ -1214,7 +1214,7 @@ public abstract class Weapon {
             }
         }
 
-        public class Shotgun extends Weapon {
+        private static class Shotgun extends Weapon {
             public Shotgun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
@@ -1264,7 +1264,7 @@ public abstract class Weapon {
             }
         }
 
-        public class PowerGlove extends Weapon {
+        private static class PowerGlove extends Weapon {
             public PowerGlove(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
@@ -1348,7 +1348,7 @@ public abstract class Weapon {
             }
         }
 
-        public class Shockwave extends Weapon {
+        private static class Shockwave extends Weapon {
             public Shockwave(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
@@ -1401,7 +1401,7 @@ public abstract class Weapon {
             }
         }
 
-        public class Sledgehammer extends Weapon {
+        private static class Sledgehammer extends Weapon {
             public Sledgehammer(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
                 super(game, alternativeFire, powerUpsPay);
                 basicPayment.add(YELLOW);
