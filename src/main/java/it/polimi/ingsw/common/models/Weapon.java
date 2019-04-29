@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.MalformedParametersException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -15,13 +16,10 @@ import static it.polimi.ingsw.common.models.AmmoCard.Color.*;
 public abstract class Weapon {
     @NotNull Game game;
     boolean alternativeFire;
-    private @NotNull ArrayList<PowerUp> powerUpsPay;
-
     @NotNull ArrayList<AmmoCard.Color> basicPayment = new ArrayList<>();
     @NotNull ArrayList<AmmoCard.Color> firstAdditionalPayment = new ArrayList<>();
     @NotNull ArrayList<AmmoCard.Color> secondAdditionalPayment = new ArrayList<>();
     @NotNull ArrayList<AmmoCard.Color> alternativePayment = new ArrayList<>();
-
     @NotNull ArrayList<Player> possibleTarget = new ArrayList<>();
     @NotNull ArrayList<Point> possibleTargetPoint = new ArrayList<>();
     @NotNull ArrayList<Player> basicTarget = new ArrayList<>();
@@ -31,6 +29,7 @@ public abstract class Weapon {
     @NotNull ArrayList<Player> secondAdditionalTarget = new ArrayList<>();
     @NotNull ArrayList<Point> secondAdditionalTargetPoint = new ArrayList<>();  //forse non serve mai
     @NotNull ArrayList<Integer> fireSort = new ArrayList<>();
+    private @NotNull ArrayList<PowerUp> powerUpsPay;
 
     //Come passare gli array di cui sopra?
 
@@ -183,12 +182,12 @@ public abstract class Weapon {
         }
     } //forse mai usato
 
-    void addBasicTarget(@Nullable Player target, @Nullable Point point) {
+    public void addBasicTarget(@Nullable Player target, @Nullable Point point) {
         basicTarget.add(target);
         basicTargetPoint.add(point);
     }
 
-    void basicFire() {
+    public void basicFire() {
     }
 
     public void addFirstAdditionalTarget(@Nullable Player target, @Nullable Point point) {
@@ -196,7 +195,7 @@ public abstract class Weapon {
         firstAdditionalTargetPoint.add(point);
     }
 
-    void firstAdditionalFire() {
+    public void firstAdditionalFire() {
     }
 
     public void addSecondAdditionalTarget(@Nullable Player target, @Nullable Point point) {
@@ -204,7 +203,7 @@ public abstract class Weapon {
         secondAdditionalTargetPoint.add(point);
     }
 
-    void secondAdditionalFire() {
+    public void secondAdditionalFire() {
     }
 
     @Contract(value = "null -> false", pure = true)
@@ -228,7 +227,7 @@ public abstract class Weapon {
                     case 3:
                         secondAdditionalFire();
                         break;
-            }
+                }
             return true;
         }
         return false;
@@ -258,13 +257,13 @@ public abstract class Weapon {
         }
 
         //FIXME: aggiornare firma
-        public @Nullable <T extends Weapon> T build(@NotNull Game game, boolean alternativeFire) {
+        public @NotNull <T extends Weapon> T build(@NotNull Game game, boolean alternativeFire) throws MalformedParametersException {
             try {
                 //noinspection unchecked
                 return (T) getWeaponClass().getDeclaredConstructors()[0].newInstance(game, alternativeFire, new ArrayList<>());
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
-                return null;
+                throw new MalformedParametersException();
             }
         }
     }
@@ -309,12 +308,12 @@ public abstract class Weapon {
             }
 
             @Override
-            protected void basicFire() {
+            public void basicFire() {
                 basicTarget.get(0).takeHits(game.getActualPlayer(), 2, 1);
             }
 
             @Override
-            protected void firstAdditionalFire() {
+            public void firstAdditionalFire() {
                 firstAdditionalTarget.get(0).takeHits(game.getActualPlayer(), 0, 1);
             }
         }
