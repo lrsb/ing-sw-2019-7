@@ -2,27 +2,30 @@ package it.polimi.ingsw.common.models;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class AmmoCardTest {
-
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     void testAllAmmoCard() {
         for (var type : AmmoCard.Type.values())
             for (var left : AmmoCard.Color.values())
                 for (var right : AmmoCard.Color.values()) {
+                    left.getIndex();
+                    right.getIndex();
                     var ammoCard = new AmmoCard(type, left, right);
                     assertEquals(ammoCard.getType(), type);
                     assertEquals(ammoCard.getLeft(), left);
                     assertEquals(ammoCard.getRight(), right);
                     assertEquals(ammoCard, new AmmoCard(type, left, right));
-                    var otherType = Stream.of(AmmoCard.Type.values()).filter(e -> e != type).findAny();
-                    var otherLeft = Stream.of(AmmoCard.Color.values()).filter(e -> e != left).findAny();
-                    var otherRight = Stream.of(AmmoCard.Color.values()).filter(e -> e != right).findAny();
-                    if (otherType.isEmpty() || otherLeft.isEmpty() || otherRight.isEmpty()) fail();
-                    assertNotEquals(ammoCard, new AmmoCard(otherType.get(), otherLeft.get(), otherRight.get()));
+                    for (var type1 : AmmoCard.Type.values())
+                        for (var left1 : AmmoCard.Color.values())
+                            for (var right1 : AmmoCard.Color.values())
+                                if (type == type1 && left == left1 && right == right1)
+                                    assertEquals(ammoCard, new AmmoCard(type1, left1, right1));
+                                else assertNotEquals(ammoCard, new AmmoCard(type1, left1, right1));
+                    assertNotEquals(ammoCard, new Object());
                 }
     }
 }

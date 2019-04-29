@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +37,7 @@ public class Deck<T extends Serializable> implements Serializable {
      * @param shuffleable true if the deck is shuffleable when finished.
      * @throws EmptyDeckException Thrown when {@code cards} is empty.
      */
-    private Deck(@NotNull ArrayList<T> cards, boolean shuffleable) throws EmptyDeckException {
+    Deck(@NotNull List<T> cards, boolean shuffleable) throws EmptyDeckException {
         if (cards.isEmpty()) throw new EmptyDeckException();
         this.playableCards.addAll(cards);
         this.shuffleable = shuffleable;
@@ -75,8 +76,10 @@ public class Deck<T extends Serializable> implements Serializable {
      * @param n Number of cards that you have to remove from the deck.
      * @return List of card removed from the deck.
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
+     * @throws InvalidParameterException Thrown when {@code n} is grater than the available cards.
      */
     public @NotNull List<T> exitCards(int n) throws EmptyDeckException {
+        if (playableCards.size() + discardedCards.size() < n) throw new InvalidParameterException();
         if (playableCards.size() < n) if (shuffleable) shuffleDeck();
         else throw new EmptyDeckException();
         var list = new ArrayList<T>();

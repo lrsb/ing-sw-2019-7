@@ -1,10 +1,14 @@
 package it.polimi.ingsw.common.models;
 
+import it.polimi.ingsw.client.views.sprite.Displayable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.MalformedParametersException;
 import java.util.ArrayList;
@@ -234,7 +238,7 @@ public abstract class Weapon {
     }
 
     @SuppressWarnings("SpellCheckingInspection")
-    public enum Name {
+    public enum Name implements Displayable {
         LOCK_RIFLE(Weapons.LockRifle.class), MACHINE_GUN(Weapons.MachineGun.class), THOR(Weapons.Thor.class),
         PLASMA_GUN(Weapons.PlasmaGun.class), WHISPER(Weapons.Whisper.class), ELECTROSCYTHE(Weapons.Electroscythe.class),
         TRACTOR_BEAM(Weapons.TractorBeam.class), VORTEX_CANNON(Weapons.VortexCannon.class),
@@ -265,6 +269,11 @@ public abstract class Weapon {
                 e.printStackTrace();
                 throw new MalformedParametersException();
             }
+        }
+
+        @Override
+        public @NotNull BufferedImage getImage() throws IOException {
+            return ImageIO.read(Weapon.class.getResourceAsStream("Weapon/" + toString() + ".png"));
         }
     }
 
