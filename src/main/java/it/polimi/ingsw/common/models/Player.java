@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Player implements Serializable {
     private static final long serialVersionUID = 1;
@@ -23,8 +24,8 @@ public class Player implements Serializable {
     private int deaths = 0;
     private int points = 0;
     private @NotNull int[] cubes = {3, 3, 3};
-    private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();//3 al massimo e consumabili
-    private @NotNull HashMap<Weapon.Name, Boolean> weapons = new HashMap<>();//3 al massimo e scambiabili
+    private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();
+    private @NotNull HashMap<Weapon.Name, Boolean> weapons = new HashMap<>();
     private @NotNull ArrayList<AmmoCard> ammoCards = new ArrayList<>();
     private boolean isFirstMove = true;
 
@@ -137,9 +138,10 @@ public class Player implements Serializable {
         powerUps.add(powerUp);
     }
 
-    public void addWeapon(Weapon weapon) {
+    public void addWeapon(Weapon.Name weapon) {
         assert weapons.size() < 3;
-        weapons.add(weapon);
+        //TODO: e gia carica?
+        weapons.put(weapon, false);
     }
 
     public void addAmmoCard(AmmoCard ammoCard) {
@@ -151,29 +153,27 @@ public class Player implements Serializable {
         return powerUps;
     }
 
-    public Point getPosition() {
+    public @Nullable Point getPosition() {
         return position;
     }
 
-    public void setPosition(Point position) {
+    public void setPosition(@Nullable Point position) {
         this.position = position;
     }
 
     @Contract(pure = true)
-    public boolean canSee(@NotNull Player player, @NotNull Cell[][] cells) {
-        if (nickname.equals(player.nickname)) return false;
+    public boolean canSeeNotSame(@NotNull Player player, @NotNull Cell[][] cells) {
+        if (equals(player) || position == null || player.position == null) return false;
         if (cells[position.x][position.y].getColor() == cells[player.position.x][player.position.y].getColor())
             return true;
-        for (var direction : Bounds.Direction.values())
-            if (cells[position.x][position.y].getBounds().getType(direction) == Bounds.Type.DOOR &&
-                    cells[position.x + direction.getdX()][position.y + direction.getdY()].getColor()
-                            == cells[player.position.x][player.position.y].getColor()) return true;
-        return false;
+        return Stream.of(Bounds.Direction.values()).filter(e -> cells[position.x][position.y].getBounds().getType(e) == Bounds.Type.DOOR)
+                .anyMatch(e -> cells[position.x + e.getdX()][position.y + e.getdY()].getColor() ==
+                        cells[player.position.x][player.position.y].getColor());
     }
 
     public @NotNull List<Player> getVisiblePlayers(@NotNull Game game) {
         return game.getPlayers().parallelStream()
-                .filter(e -> !game.getActualPlayer().equals(e) && game.getActualPlayer().canSee(e, game.getCells())).collect(Collectors.toList());
+                .filter(e -> !game.getActualPlayer().equals(e) && game.getActualPlayer().canSeeNotSame(e, game.getCells())).collect(Collectors.toList());
     }
 
     public boolean canBeSeenFrom(@NotNull Point point, @NotNull Cell[][] cells) {
@@ -238,6 +238,6 @@ public class Player implements Serializable {
     @Contract(value = "null -> false", pure = true)
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Player && ((Player) obj).nickname.equals(nickname);
+        return obj instanceof Player && ((Player) obj).uuid.equals(uuid);
     }
 }

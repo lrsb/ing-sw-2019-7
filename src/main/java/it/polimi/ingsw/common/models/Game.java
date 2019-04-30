@@ -2,12 +2,14 @@ package it.polimi.ingsw.common.models;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public abstract class Game implements Serializable {
     public static final int MAX_PLAYERS = 5;
@@ -62,16 +64,18 @@ public abstract class Game implements Serializable {
     }
 
     @Contract(pure = true)
-    public boolean canMove(@NotNull Point from, @NotNull Point to, int step, int maxStep) {
+    public boolean canMove(@Nullable Point from, @Nullable Point to, int maxStep) {
+        return from != null && to != null && canMoveImpl(from, to, 0, maxStep);
+    }
+
+    @Contract(pure = true)
+    private boolean canMoveImpl(@NotNull Point from, @NotNull Point to, int step, int maxStep) {
         if (from.x < 0 || from.x >= cells.length || from.y < 0 || from.y >= cells[from.x].length ||
                 to.x < 0 || to.x >= cells.length || to.y < 0 || to.y >= cells[to.x].length || step >= maxStep || step < 0)
             return false;
         if (from.equals(to)) return true;
-        var north = cells[from.x][from.y].getBounds().getType(Bounds.Direction.N) != Bounds.Type.WALL && canMove(new Point(from.x, to.y + 1), to, step + 1, maxStep);
-        var south = cells[from.x][from.y].getBounds().getType(Bounds.Direction.S) != Bounds.Type.WALL && canMove(new Point(from.x, to.y - 1), to, step + 1, maxStep);
-        var east = cells[from.x][from.y].getBounds().getType(Bounds.Direction.E) != Bounds.Type.WALL && canMove(new Point(from.x + 1, to.y), to, step + 1, maxStep);
-        var west = cells[from.x][from.y].getBounds().getType(Bounds.Direction.W) != Bounds.Type.WALL && canMove(new Point(from.x - 1, to.y), to, step + 1, maxStep);
-        return north || south || east || west;
+        return Stream.of(Bounds.Direction.values()).anyMatch(e -> cells[from.x][from.y].getBounds().getType(e) != Bounds.Type.WALL &&
+                canMoveImpl(new Point(from.x + e.getdX(), to.y + e.getdY()), to, step + 1, maxStep));
     }
 
     //da chiamare ogni volta che un giocatore finisce un turno
