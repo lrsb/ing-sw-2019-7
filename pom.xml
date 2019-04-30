@@ -5,7 +5,7 @@
     <artifactId>ing-sw-2019-7</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>
-    <name>AM7</name>
+    <name>ing-sw-2019-7</name>
     <url>http://maven.apache.org</url>
 
     <properties>

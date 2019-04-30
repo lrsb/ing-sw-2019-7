@@ -7,8 +7,10 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Player implements Serializable {
     private static final long serialVersionUID = 1;
@@ -22,8 +24,7 @@ public class Player implements Serializable {
     private int points = 0;
     private @NotNull int[] cubes = {3, 3, 3};
     private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();//3 al massimo e consumabili
-    private @NotNull ArrayList<Weapon> weapons = new ArrayList<>();//3 al massimo e scambiabili
-    private @NotNull boolean[] isReloaded = {true, true, true};
+    private @NotNull HashMap<Weapon.Name, Boolean> weapons = new HashMap<>();//3 al massimo e scambiabili
     private @NotNull ArrayList<AmmoCard> ammoCards = new ArrayList<>();
     private boolean isFirstMove = true;
 
@@ -56,12 +57,16 @@ public class Player implements Serializable {
         points += pointsAdded;
     }
 
-    public boolean hasWeapon(@NotNull Weapon weapon) {
-        return weapons.contains(weapon);
+    public boolean hasWeapon(@Nullable Weapon.Name weapon) {
+        return weapons.get(weapon) != null;
     }
 
-    public boolean isALoadedGun(@NotNull Weapon weapon) {
-        return isReloaded[weapons.indexOf(weapon)];
+    public boolean isALoadedGun(@Nullable Weapon.Name weapon) {
+        return hasWeapon(weapon) && weapons.get(weapon);
+    }
+
+    public boolean unloadWeapon(@Nullable Weapon.Name weapon) {
+        return hasWeapon(weapon) && weapons.put(weapon, false) != null;
     }
 
     //gives damages, convert marks to damages and finally gives marks
@@ -93,7 +98,7 @@ public class Player implements Serializable {
 
     //controllo se l'arma che vuole caricare sia in suo possesso e che non sia già carica
     public boolean reload(Weapon.Name weapon) {
-        for (Weapon w : weapons) {
+        for (Weapon.Name w : weapons.keySet()) {
             if (w.getClass().equals(weapon.getWeaponClass()) && !(isReloaded[weapons.indexOf(w)])) {
                 if (w.chargingOrGrabbing()) {
                     isReloaded[weapons.indexOf(w)] = true;
@@ -164,6 +169,11 @@ public class Player implements Serializable {
                     cells[position.x + direction.getdX()][position.y + direction.getdY()].getColor()
                             == cells[player.position.x][player.position.y].getColor()) return true;
         return false;
+    }
+
+    public @NotNull List<Player> getVisiblePlayers(@NotNull Game game) {
+        return game.getPlayers().parallelStream()
+                .filter(e -> !game.getActualPlayer().equals(e) && game.getActualPlayer().canSee(e, game.getCells())).collect(Collectors.toList());
     }
 
     public boolean canBeSeenFrom(@NotNull Point point, @NotNull Cell[][] cells) {

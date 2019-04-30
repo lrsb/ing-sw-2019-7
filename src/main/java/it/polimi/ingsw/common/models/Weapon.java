@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.MalformedParametersException;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static it.polimi.ingsw.common.models.AmmoCard.Color.*;
 
@@ -20,194 +20,98 @@ import static it.polimi.ingsw.common.models.AmmoCard.Color.*;
 public abstract class Weapon {
     @NotNull Game game;
     boolean alternativeFire;
-    @NotNull ArrayList<AmmoCard.Color> basicPayment = new ArrayList<>();
-    @NotNull ArrayList<AmmoCard.Color> firstAdditionalPayment = new ArrayList<>();
-    @NotNull ArrayList<AmmoCard.Color> secondAdditionalPayment = new ArrayList<>();
-    @NotNull ArrayList<AmmoCard.Color> alternativePayment = new ArrayList<>();
-    @NotNull ArrayList<Player> possibleTarget = new ArrayList<>();
-    @NotNull ArrayList<Point> possibleTargetPoint = new ArrayList<>();
-    @NotNull ArrayList<Player> basicTarget = new ArrayList<>();
-    @NotNull ArrayList<Point> basicTargetPoint = new ArrayList<>();
-    @NotNull ArrayList<Player> firstAdditionalTarget = new ArrayList<>();
-    @NotNull ArrayList<Point> firstAdditionalTargetPoint = new ArrayList<>();
-    @NotNull ArrayList<Player> secondAdditionalTarget = new ArrayList<>();
-    @NotNull ArrayList<Point> secondAdditionalTargetPoint = new ArrayList<>();  //forse non serve mai
-    @NotNull ArrayList<Integer> fireSort = new ArrayList<>();
-    private @NotNull ArrayList<PowerUp> powerUpsPay;
 
-    //Come passare gli array di cui sopra?
+    @NotNull ArrayList<Player> basicTargets = new ArrayList<>();
+    @NotNull ArrayList<Point> basicTargetsPoint = new ArrayList<>();
+    @NotNull ArrayList<AmmoCard.Color> basicAlternativeCost = new ArrayList<>();
+    @NotNull ArrayList<PowerUp> basicAlternativePayment = new ArrayList<>();
+
+    @NotNull ArrayList<Player> firstAdditionalTargets = new ArrayList<>();
+    @NotNull ArrayList<Point> firstAdditionalTargetsPoint = new ArrayList<>();
+    @NotNull ArrayList<AmmoCard.Color> firstAdditionalCost = new ArrayList<>();
+    @NotNull ArrayList<PowerUp> firstAdditionalPayment = new ArrayList<>();
+
+    @NotNull ArrayList<Player> secondAdditionalTargets = new ArrayList<>();
+    @NotNull ArrayList<Point> secondAdditionalTargetPoint = new ArrayList<>();
+    @NotNull ArrayList<AmmoCard.Color> secondAdditionalCost = new ArrayList<>();
+    @NotNull ArrayList<PowerUp> secondAdditionalPayment = new ArrayList<>();
 
     @Contract(pure = true)
-    Weapon(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
+    Weapon(@NotNull Game game, boolean alternativeFire) {
         this.game = game;
         this.alternativeFire = alternativeFire;
-        this.powerUpsPay = powerUpsPay;
     }
 
-    @Contract(pure = true)
-    private int getColoredPayment(@NotNull ArrayList<AmmoCard.Color> payment, @NotNull AmmoCard.Color color) {
-        var result = 0;
-        for (AmmoCard.Color cube : payment) if (cube == color) result++;
-        return result;
+    private static @NotNull int[] convertCost(@NotNull ArrayList<AmmoCard.Color> cost) {
+        int[] costArray = new int[values().length];
+        Stream.of(values()).forEach(e -> costArray[e.getIndex()] = (int) cost.stream().filter(f -> e == f).count());
+        return costArray;
     }
 
-    @Contract(pure = true)
-    private int getPowerUpsColoredPayment(@NotNull AmmoCard.Color color) {
-        var result = 0;
-        for (PowerUp powerUp : powerUpsPay) if (powerUp.getAmmoColor() == color) result++;
-        return result;
+    public final boolean basicFire() {
+        var cost = convertCost(basicAlternativeCost);
+        var realPlayers = convertToRealPlayers(basicTargets);
+        if (!(game.getActualPlayer().isALoadedGun(Weapon.Name.getName(getClass())) && canBasicFire()) ||
+                !canFire(cost, alternativeFire ? basicAlternativePayment : new ArrayList<>())) return false;
+        game.getActualPlayer().unloadWeapon(Weapon.Name.getName(getClass()));
+        fire(cost, alternativeFire ? basicAlternativePayment : new ArrayList<>());
+        basicFireImpl(realPlayers);
+        return true;
     }
 
-    //return true if game.getActualPlayer() can pay and remove cost from game.getActualPlayer() (works for fireCost, reloading and grubbing)
-    private boolean payCost() {
-        //red, blue e yellow avranno il valore del costo totale
-        //altNomeColore hanno il valore dei cubi che vengono invece pagati tramite PowerUp
-        var red = 0;
-        var yellow = 0;
-        var blue = 0;
-        var altRed = 0;
-        var altYellow = 0;
-        var altBlue = 0;
-        if (!fireSort.isEmpty()) { //se c'è fireSort sta facendo fuoco, "else" vuole ricaricare o prendere l'arma
-            for (var i : fireSort) {
-                switch (i) {
-                    case 1:
-                        if (alternativeFire) {
-                            red += getColoredPayment(alternativePayment, RED);
-                            yellow += getColoredPayment(alternativePayment, YELLOW);
-                            blue += getColoredPayment(alternativePayment, BLUE);
-                        }
-                        break;
-                    case 2:
-                        red += getColoredPayment(firstAdditionalPayment, RED);
-                        yellow += getColoredPayment(firstAdditionalPayment, YELLOW);
-                        blue += getColoredPayment(firstAdditionalPayment, BLUE);
-                        break;
-                    case 3:
-                        red += getColoredPayment(secondAdditionalPayment, RED);
-                        yellow += getColoredPayment(secondAdditionalPayment, YELLOW);
-                        blue += getColoredPayment(secondAdditionalPayment, BLUE);
-                        break;
-                    default:
-                        return false;
-                }
-            }
-        } else {
-            red = getColoredPayment(basicPayment, RED);
-            yellow = getColoredPayment(basicPayment, YELLOW);
-            blue = getColoredPayment(basicPayment, BLUE);
-            if (!game.getActualPlayer().hasWeapon(this)) {
-                switch (basicPayment.get(0)) {
-                    case RED:
-                        red--;
-                        break;
-                    case YELLOW:
-                        yellow--;
-                        break;
-                    case BLUE:
-                        blue--;
-                        break;
-                }
-            }
-        }
-        altRed = getPowerUpsColoredPayment(RED);
-        altYellow = getPowerUpsColoredPayment(YELLOW);
-        altBlue = getPowerUpsColoredPayment(BLUE);
-        if (game.getActualPlayer().getColoredCubes(RED) >= red - altRed && red - altRed >= 0
-                && game.getActualPlayer().getColoredCubes(YELLOW) >= yellow - altYellow && yellow - altYellow >= 0
-                && game.getActualPlayer().getColoredCubes(BLUE) >= blue - altBlue && blue - altBlue >= 0) {
-            for (PowerUp p : powerUpsPay) {
-                switch (p.getAmmoColor()) {
-                    case RED:
-                        if (altRed > 0) {
-                            game.getActualPlayer().removePowerUp(p);
-                            altRed--;
-                            red--;
-                        }
-                        break;
-                    case YELLOW:
-                        if (altYellow > 0) {
-                            game.getActualPlayer().removePowerUp(p);
-                            altYellow--;
-                            yellow--;
-                        }
-                        break;
-                    case BLUE:
-                        if (altBlue > 0) {
-                            game.getActualPlayer().removePowerUp(p);
-                            altBlue--;
-                            blue--;
-                        }
-                        break;
-                }
-            }
-            game.getActualPlayer().removeColoredCubes(RED, red);
-            game.getActualPlayer().removeColoredCubes(YELLOW, yellow);
-            game.getActualPlayer().removeColoredCubes(BLUE, blue);
-            return true;
-        }
+    abstract boolean canBasicFire();
+
+    abstract void basicFireImpl(@NotNull ArrayList<Player> targets);
+
+    public final boolean firstAdditionalFire() {
+        var cost = convertCost(firstAdditionalCost);
+        var realPlayers = convertToRealPlayers(firstAdditionalTargets);
+        if (!canFirstAdditionalFire() || !canFire(cost, firstAdditionalPayment)) return false;
+        fire(cost, firstAdditionalPayment);
+        firstAdditionalFireImpl(realPlayers);
+        return true;
+    }
+
+    boolean canFirstAdditionalFire() {
         return false;
     }
 
-    boolean chargingOrGrabbing() {
-        fireSort.clear();
-        return payCost();
+    void firstAdditionalFireImpl(@NotNull ArrayList<Player> targets) {
     }
 
-    abstract boolean canFire();
-
-    abstract boolean validateTargets();
-
-    abstract boolean validateFireSort();
-
-    void addVisibleTarget() {
-        possibleTarget.clear();
-        possibleTarget.addAll(game.getPlayers().parallelStream().filter(e -> game.getActualPlayer().canSee(e, game.getCells())).collect(Collectors.toList()));
-        //for (var p : game.getPlayers()) if (game.getActualPlayer().canSee(p, game.getCells())) possibleTarget.add(p);
+    public final boolean secondAdditionalFire() {
+        var cost = convertCost(secondAdditionalCost);
+        var realPlayers = convertToRealPlayers(secondAdditionalTargets);
+        if (!canSecondAdditionalFire() || !canFire(cost, secondAdditionalPayment)) return false;
+        fire(cost, secondAdditionalPayment);
+        secondAdditionalFireImpl(realPlayers);
+        return true;
     }
 
-    void addNonVisibleTarget() {
-        possibleTarget.clear();
-        for (Player player : game.getPlayers()) {
-            if (!(game.getActualPlayer().canSee(player, game.getCells())) && !(game.getActualPlayer().equals(player)))
-                possibleTarget.add(player);
-        }
+    boolean canSecondAdditionalFire() {
+        return false;
     }
 
-    void addVisibleSquare() {
-        int x, y;
-        Point point;
-        possibleTargetPoint.clear();
-        for (x = 0; x < 4; x++) {
-            for (y = 0; y < 3; y++) {
-                point = new Point(x, y);
-                if (game.getActualPlayer().canSeeCell(point, game.getCells())) possibleTargetPoint.add(point);
-            }
-        }
-    } //forse mai usato
-
-    public void addBasicTarget(@Nullable Player target, @Nullable Point point) {
-        basicTarget.add(target);
-        basicTargetPoint.add(point);
+    void secondAdditionalFireImpl(@NotNull ArrayList<Player> targets) {
     }
 
-    public void basicFire() {
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private boolean canFire(@NotNull int[] cost, @NotNull ArrayList<PowerUp> payment) {
+        payment.forEach(e -> cost[e.getAmmoColor().getIndex()]--);
+        return Stream.of(AmmoCard.Color.values()).map(e -> cost[e.getIndex()] <= game.getActualPlayer().getColoredCubes(e))
+                .reduce(true, (e, f) -> e && f);
     }
 
-    public void addFirstAdditionalTarget(@Nullable Player target, @Nullable Point point) {
-        firstAdditionalTarget.add(target);
-        firstAdditionalTargetPoint.add(point);
+    private void fire(@NotNull int[] cost, @NotNull ArrayList<PowerUp> payment) {
+        payment.forEach(e -> game.getActualPlayer().getPowerUps().remove(e));
+        Stream.of(AmmoCard.Color.values()).forEach(e -> game.getActualPlayer().removeColoredCubes(e, cost[e.getIndex()]));
     }
 
-    public void firstAdditionalFire() {
-    }
-
-    public void addSecondAdditionalTarget(@Nullable Player target, @Nullable Point point) {
-        secondAdditionalTarget.add(target);
-        secondAdditionalTargetPoint.add(point);
-    }
-
-    public void secondAdditionalFire() {
+    @SuppressWarnings({"SuspiciousListRemoveInLoop", "unchecked"})
+    private @NotNull ArrayList<Player> convertToRealPlayers(@NotNull ArrayList<Player> players) {
+        var realPlayers = (ArrayList<Player>) game.players.clone();
+        for (var i = 0; i < realPlayers.size(); i++) if (!players.contains(realPlayers.get(i))) realPlayers.remove(i);
+        return realPlayers;
     }
 
     @Contract(value = "null -> false", pure = true)
@@ -216,55 +120,54 @@ public abstract class Weapon {
         return obj instanceof Weapon && ((Weapon) obj).getClass().equals(getClass());
     }
 
-    //shoot è di Weapon astratta, ma tutti i metodi chiamati all'interno devono essere specifici dell'arma usata
-    public boolean shoot() {
-        if (game.getActualPlayer().hasWeapon(this) && game.getActualPlayer().isALoadedGun(this) && canFire() &&
-                validateFireSort() && validateTargets() && payCost()) {
-            for (var fireNumber : fireSort)
-                switch (fireNumber) {
-                    case 1:
-                        basicFire();
-                        break;
-                    case 2:
-                        firstAdditionalFire();
-                        break;
-                    case 3:
-                        secondAdditionalFire();
-                        break;
-                }
-            return true;
-        }
-        return false;
-    }
-
-    @SuppressWarnings("SpellCheckingInspection")
+    //TODO: sistemare
     public enum Name implements Displayable {
-        LOCK_RIFLE(Weapons.LockRifle.class), MACHINE_GUN(Weapons.MachineGun.class), THOR(Weapons.Thor.class),
-        PLASMA_GUN(Weapons.PlasmaGun.class), WHISPER(Weapons.Whisper.class), ELECTROSCYTHE(Weapons.Electroscythe.class),
-        TRACTOR_BEAM(Weapons.TractorBeam.class), VORTEX_CANNON(Weapons.VortexCannon.class),
-        FURNACE(Weapons.Furnace.class), HEATSEEKER(Weapons.Heatseeker.class), HELLION(Weapons.Hellion.class),
-        FLAMETHROWER(Weapons.Flamethrower.class), GRENADE_LAUNCHER(Weapons.GrenadeLauncher.class),
-        ROCKET_LAUNCHER(Weapons.RocketLauncher.class), RAILGUN(Weapons.Railgun.class),
-        CYBERBLADE(Weapons.Cyberblade.class), ZX2(Weapons.ZX2.class), SHOTGUN(Weapons.Shotgun.class),
-        POWER_GLOVE(Weapons.PowerGlove.class), SHOCKWAVE(Weapons.Shockwave.class), SLEDGEHAMMER(Weapons.Sledgehammer.class);
+        LOCK_RIFLE(Weapons.LockRifle.class, RED, new int[]{0, 1, 1}), MACHINE_GUN(Weapons.MachineGun.class, RED, new int[]{0, 1, 1}),
+        THOR(Weapons.Thor.class, RED, new int[]{0, 1, 1}), PLASMA_GUN(Weapons.PlasmaGun.class, RED, new int[]{0, 1, 1}),
+        WHISPER(Weapons.Whisper.class, RED, new int[]{0, 1, 1}), ELECTROSCYTHE(Weapons.Electroscythe.class, RED, new int[]{0, 1, 1}),
+        TRACTOR_BEAM(Weapons.TractorBeam.class, RED, new int[]{0, 1, 1}), VORTEX_CANNON(Weapons.VortexCannon.class, RED, new int[]{0, 1, 1}),
+        FURNACE(Weapons.Furnace.class, RED, new int[]{0, 1, 1}), HEATSEEKER(Weapons.Heatseeker.class, RED, new int[]{0, 1, 1}),
+        HELLION(Weapons.Hellion.class, RED, new int[]{0, 1, 1}), FLAMETHROWER(Weapons.Flamethrower.class, RED, new int[]{0, 1, 1}),
+        GRENADE_LAUNCHER(Weapons.GrenadeLauncher.class, RED, new int[]{0, 1, 1}), ROCKET_LAUNCHER(Weapons.RocketLauncher.class, RED, new int[]{0, 1, 1}),
+        RAILGUN(Weapons.Railgun.class, RED, new int[]{0, 1, 1}), CYBERBLADE(Weapons.Cyberblade.class, RED, new int[]{0, 1, 1}),
+        ZX2(Weapons.ZX2.class, RED, new int[]{0, 1, 1}), SHOTGUN(Weapons.Shotgun.class, RED, new int[]{0, 1, 1}),
+        POWER_GLOVE(Weapons.PowerGlove.class, RED, new int[]{0, 1, 1}), SHOCKWAVE(Weapons.Shockwave.class, RED, new int[]{0, 1, 1}),
+        SLEDGEHAMMER(Weapons.Sledgehammer.class, RED, new int[]{0, 1, 1});
 
-        private final Class<? extends Weapon> weaponClass;
+        private final @NotNull Class<? extends Weapon> weaponClass;
+        private final @NotNull AmmoCard.Color color;
+        private final @NotNull int[] grabCost;
 
         @Contract(pure = true)
-        Name(Class<? extends Weapon> weaponClass) {
+        Name(@NotNull Class<? extends Weapon> weaponClass, @NotNull AmmoCard.Color color, @NotNull int[] grabCost) {
             this.weaponClass = weaponClass;
+            this.color = color;
+            this.grabCost = grabCost;
+        }
+
+        public static @Nullable Name getName(@NotNull Class<? extends Weapon> weaponClass) {
+            return Stream.of(values()).filter(e -> e.weaponClass.equals(weaponClass)).findAny().orElse(null);
         }
 
         @Contract(pure = true)
-        public Class<? extends Weapon> getWeaponClass() {
+        public @NotNull Class<? extends Weapon> getWeaponClass() {
             return weaponClass;
         }
 
-        //FIXME: aggiornare firma
+        @Contract(pure = true)
+        public @NotNull AmmoCard.Color getColor() {
+            return color;
+        }
+
+        @Contract(pure = true)
+        public int getGrabCost(@NotNull AmmoCard.Color color) {
+            return grabCost[color.getIndex()];
+        }
+
         public @NotNull <T extends Weapon> T build(@NotNull Game game, boolean alternativeFire) throws MalformedParametersException {
             try {
                 //noinspection unchecked
-                return (T) getWeaponClass().getDeclaredConstructors()[0].newInstance(game, alternativeFire, new ArrayList<>());
+                return (T) getWeaponClass().getDeclaredConstructors()[0].newInstance(game, alternativeFire);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
                 throw new MalformedParametersException();
@@ -277,130 +180,82 @@ public abstract class Weapon {
         }
     }
 
+    //TODO: sistemare, ho implementato le prime due classi, occhio che in fire devi usre takehit sul parametro
     private static class Weapons {
         private static class LockRifle extends Weapon {
-            private LockRifle(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
-                basicPayment.add(BLUE);
-                basicPayment.add(BLUE);
-                firstAdditionalPayment.add(RED);
-            }
-
-            //per ora dice se può essere usata, al di fuori del "è carica?"
-            @Override
-            protected boolean canFire() {
-                addVisibleTarget();
-                return !possibleTarget.isEmpty();
+            private LockRifle(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
+                firstAdditionalCost.add(RED);
             }
 
             @Override
-            protected boolean validateFireSort() {
-                return fireSort.get(0) == 1 && (fireSort.size() == 1 || (fireSort.size() == 2 && fireSort.get(1) == 2));
+            boolean canBasicFire() {
+                return game.getActualPlayer().canSee(basicTargets.get(0), game.getCells());
             }
 
             @Override
-            protected boolean validateTargets() {
-                for (Integer mode : fireSort) {
-                    switch (mode) {
-                        case (1):
-                            if (!game.getActualPlayer().canSee(basicTarget.get(0), game.getCells())) return false;
-                            break;
-                        case (2):
-                            if (!game.getActualPlayer().canSee(firstAdditionalTarget.get(0), game.getCells()) ||
-                                    firstAdditionalTarget.get(0).equals(basicTarget.get(0))) return false;
-                            break;
-                        default:
-                            return false;
-                    }
-                }
-                return true;
+            void basicFireImpl(@NotNull ArrayList<Player> targets) {
+                targets.get(0).takeHits(game.getActualPlayer(), 2, 1);
             }
 
             @Override
-            public void basicFire() {
-                basicTarget.get(0).takeHits(game.getActualPlayer(), 2, 1);
+            boolean canFirstAdditionalFire() {
+                return !basicTargets.get(0).equals(firstAdditionalTargets.get(0)) &&
+                        game.getActualPlayer().canSee(firstAdditionalTargets.get(0), game.getCells());
             }
 
             @Override
-            public void firstAdditionalFire() {
-                firstAdditionalTarget.get(0).takeHits(game.getActualPlayer(), 0, 1);
+            void firstAdditionalFireImpl(@NotNull ArrayList<Player> targets) {
+                targets.get(0).takeHits(game.getActualPlayer(), 0, 1);
             }
         }
 
         private static class MachineGun extends Weapon {
-            private MachineGun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
-                basicPayment.add(BLUE);
-                basicPayment.add(RED);
-                firstAdditionalPayment.add(YELLOW);
-                secondAdditionalPayment.add(BLUE);
-            }
-
-
-            @Override
-            protected boolean canFire() {
-                addVisibleTarget();
-                return !possibleTarget.isEmpty();
+            private MachineGun(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
+                firstAdditionalCost.add(YELLOW);
+                secondAdditionalCost.add(BLUE);
             }
 
             @Override
-            protected boolean validateFireSort() {
-                if (fireSort.size() == 1 && fireSort.get(0) == 1) return true;
-                if (fireSort.size() == 2 && fireSort.get(0) == 1 && (fireSort.get(1) == 2 || fireSort.get(1) == 3))
-                    return true;
-                return (fireSort.size() == 3 && fireSort.get(0) == 1 && fireSort.get(1) == 2 && fireSort.get(2) == 3);
+            boolean canBasicFire() {
+                return (basicTargets.size() == 1 || basicTargets.size() == 2) &&
+                        basicTargets.stream().allMatch(e -> game.getActualPlayer().canSee(e, game.getCells()));
             }
 
             @Override
-            protected boolean validateTargets() {
-                for (var mode : fireSort) {
-                    switch (mode) {
-                        case 1:
-                            if (basicTarget.size() > 2 || basicTarget.isEmpty()) return false;
-                            if (basicTarget.size() == 2 && basicTarget.get(0).equals(basicTarget.get(1))) return false;
-                            for (var player : basicTarget)
-                                if (!game.getActualPlayer().canSee(player, game.getCells())) return false;
-                            break;
-                        case 2:
-                            if (firstAdditionalTarget.size() != 1) return false;
-                            if (!basicTarget.contains(firstAdditionalTarget.get(0))) return false;
-                            break;
-                        case 3:
-                            if (secondAdditionalTarget.size() > 2 || secondAdditionalTarget.isEmpty()) return false;
-                            for (var player : secondAdditionalTarget)
-                                if (!game.getActualPlayer().canSee(player, game.getCells()) ||
-                                        firstAdditionalTarget.contains(player)) return false;
-                            if (secondAdditionalTarget.size() == 2) {
-                                if (secondAdditionalTarget.get(0).equals(secondAdditionalTarget.get(1))) return false;
-                                if ((basicTarget.contains(secondAdditionalTarget.get(0)) && basicTarget.contains(secondAdditionalTarget.get(1))) ||
-                                        (!basicTarget.contains(secondAdditionalTarget.get(0)) &&
-                                                !basicTarget.contains(secondAdditionalTarget.get(1)))) return false;
-                            }
-                            break;
-                    }
-                }
-                return true;
+            void basicFireImpl(@NotNull ArrayList<Player> targets) {
+                targets.forEach(e -> e.takeHits(game.getActualPlayer(), 1, 0));
             }
 
             @Override
-            public void basicFire() {
-                for (var player : basicTarget) player.takeHits(game.getActualPlayer(), 1, 0);
+            boolean canFirstAdditionalFire() {
+                return basicTargets.stream()
+                        .anyMatch(e -> game.getActualPlayer().canSee(e, game.getCells()) && firstAdditionalTargets.get(0).equals(e));
             }
 
             @Override
-            public void firstAdditionalFire() {
-                firstAdditionalTarget.get(0).takeHits(game.getActualPlayer(), 1, 0);
+            void firstAdditionalFireImpl(@NotNull ArrayList<Player> targets) {
+                targets.get(0).takeHits(game.getActualPlayer(), 1, 0);
             }
 
             @Override
-            public void secondAdditionalFire() {
-                for (var player : secondAdditionalTarget) player.takeHits(game.getActualPlayer(), 1, 0);
+            boolean canSecondAdditionalFire() {
+                return (secondAdditionalTargets.size() == 1 || secondAdditionalTargets.size() == 2) &&
+                        secondAdditionalTargets.stream().allMatch(e ->
+                                (basicTargets.contains(e) && !e.equals(firstAdditionalTargets.get(0))) ||
+                                        (!basicTargets.contains(e) && game.getActualPlayer().canSee(e, game.getCells())));
+            }
+
+            @Override
+            void secondAdditionalFireImpl(@NotNull ArrayList<Player> targets) {
+                targets.forEach(e -> e.takeHits(game.getActualPlayer(), 1, 0));
             }
         }
 
         private static class Thor extends Weapon {
-            private Thor(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            private Thor(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(BLUE);
                 basicPayment.add(RED);
                 firstAdditionalPayment.add(BLUE);
@@ -450,8 +305,8 @@ public abstract class Weapon {
         }
 
         private static class PlasmaGun extends Weapon {
-            private PlasmaGun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            private PlasmaGun(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(BLUE);
                 basicPayment.add(YELLOW);
                 secondAdditionalPayment.add(BLUE);
@@ -505,8 +360,8 @@ public abstract class Weapon {
         }
 
         private static class Whisper extends Weapon {
-            public Whisper(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public Whisper(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(BLUE);
                 basicPayment.add(BLUE);
                 basicPayment.add(YELLOW);
@@ -537,8 +392,8 @@ public abstract class Weapon {
         }
 
         private static class Electroscythe extends Weapon {
-            public Electroscythe(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public Electroscythe(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(BLUE);
                 alternativePayment.add(BLUE);
                 alternativePayment.add(RED);
@@ -581,8 +436,8 @@ public abstract class Weapon {
         }
 
         private static class TractorBeam extends Weapon {
-            public TractorBeam(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public TractorBeam(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(BLUE);
                 alternativePayment.add(RED);
                 alternativePayment.add(YELLOW);
@@ -624,8 +479,8 @@ public abstract class Weapon {
         }
 
         private static class VortexCannon extends Weapon {
-            public VortexCannon(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public VortexCannon(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(RED);
                 basicPayment.add(BLUE);
                 firstAdditionalPayment.add(RED);
@@ -696,8 +551,8 @@ public abstract class Weapon {
         }
 
         private static class Furnace extends Weapon {
-            public Furnace(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public Furnace(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(RED);
                 basicPayment.add(BLUE);
             }
@@ -763,8 +618,8 @@ public abstract class Weapon {
         }
 
         private static class Heatseeker extends Weapon {
-            public Heatseeker(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public Heatseeker(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(RED);
                 basicPayment.add(RED);
                 basicPayment.add(YELLOW);
@@ -796,8 +651,8 @@ public abstract class Weapon {
         }
 
         private static class Hellion extends Weapon {
-            public Hellion(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public Hellion(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(RED);
                 basicPayment.add(YELLOW);
                 alternativePayment.add(RED);
@@ -844,8 +699,8 @@ public abstract class Weapon {
         }
 
         private static class Flamethrower extends Weapon {
-            public Flamethrower(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public Flamethrower(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(RED);
                 alternativePayment.add(YELLOW);
                 alternativePayment.add(YELLOW);
@@ -912,8 +767,8 @@ public abstract class Weapon {
         }
 
         private static class GrenadeLauncher extends Weapon {
-            public GrenadeLauncher(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public GrenadeLauncher(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(RED);
                 firstAdditionalPayment.add(RED);
             }
@@ -975,8 +830,8 @@ public abstract class Weapon {
         }
 
         private static class RocketLauncher extends Weapon {
-            public RocketLauncher(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public RocketLauncher(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(RED);
                 basicPayment.add(RED);
                 firstAdditionalPayment.add(BLUE);
@@ -1043,8 +898,8 @@ public abstract class Weapon {
         }
 
         private static class Railgun extends Weapon {
-            public Railgun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public Railgun(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(YELLOW);
                 basicPayment.add(YELLOW);
                 basicPayment.add(BLUE);
@@ -1104,8 +959,8 @@ public abstract class Weapon {
         }
 
         private static class Cyberblade extends Weapon {
-            public Cyberblade(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public Cyberblade(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(YELLOW);
                 basicPayment.add(RED);
                 secondAdditionalPayment.add(YELLOW);
@@ -1176,8 +1031,8 @@ public abstract class Weapon {
         }
 
         private static class ZX2 extends Weapon {
-            public ZX2(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public ZX2(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(YELLOW);
                 basicPayment.add(RED);
             }
@@ -1223,8 +1078,8 @@ public abstract class Weapon {
         }
 
         private static class Shotgun extends Weapon {
-            public Shotgun(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public Shotgun(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(YELLOW);
                 basicPayment.add(YELLOW);
             }
@@ -1273,8 +1128,8 @@ public abstract class Weapon {
         }
 
         private static class PowerGlove extends Weapon {
-            public PowerGlove(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public PowerGlove(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(YELLOW);
                 basicPayment.add(BLUE);
                 alternativePayment.add(BLUE);
@@ -1357,8 +1212,8 @@ public abstract class Weapon {
         }
 
         private static class Shockwave extends Weapon {
-            public Shockwave(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public Shockwave(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(YELLOW);
                 alternativePayment.add(YELLOW);
             }
@@ -1410,8 +1265,8 @@ public abstract class Weapon {
         }
 
         private static class Sledgehammer extends Weapon {
-            public Sledgehammer(@NotNull Game game, boolean alternativeFire, @NotNull ArrayList<PowerUp> powerUpsPay) {
-                super(game, alternativeFire, powerUpsPay);
+            public Sledgehammer(@NotNull Game game, boolean alternativeFire) {
+                super(game, alternativeFire);
                 basicPayment.add(YELLOW);
                 alternativePayment.add(RED);
             }
