@@ -14,7 +14,7 @@ public class PlayerBoard extends AbstractBoard {
     public PlayerBoard(@NotNull Dimension dimension, @NotNull Player player) throws IOException {
         super(dimension);
         this.player = player;
-        addSprite(new Sprite(0, 0, width, height, () -> ImageIO.read(Player.class.getResourceAsStream("Player/" + "D-Struct-OrFrontBoard" + ".png"))));
+        addSprite(new Sprite(0, 0, width, height, ImageIO.read(Player.class.getResourceAsStream("Player/" + "D-Struct-OrFrontBoard" + ".png"))));
     }
 
     @Override

@@ -97,19 +97,6 @@ public class Player implements Serializable {
         return damagesTaken.size() >= 11;
     }
 
-    //controllo se l'arma che vuole caricare sia in suo possesso e che non sia già carica
-    public boolean reload(Weapon.Name weapon) {
-        for (Weapon.Name w : weapons.keySet()) {
-            if (w.getClass().equals(weapon.getWeaponClass()) && !(isReloaded[weapons.indexOf(w)])) {
-                if (w.chargingOrGrabbing()) {
-                    isReloaded[weapons.indexOf(w)] = true;
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public void setPlayed() {
         isFirstMove = false;
     }

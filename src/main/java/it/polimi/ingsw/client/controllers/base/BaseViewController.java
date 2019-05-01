@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.controllers.views.base;
+package it.polimi.ingsw.client.controllers.base;
 
 import org.jetbrains.annotations.NotNull;
 

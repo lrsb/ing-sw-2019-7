@@ -1,7 +1,7 @@
-package it.polimi.ingsw.client.controllers.views;
+package it.polimi.ingsw.client.controllers;
 
-import it.polimi.ingsw.client.controllers.views.base.BaseViewController;
-import it.polimi.ingsw.client.controllers.views.base.NavigationController;
+import it.polimi.ingsw.client.controllers.base.BaseViewController;
+import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.views.boards.PlayerBoard;
 import it.polimi.ingsw.common.models.Player;
 import it.polimi.ingsw.common.models.User;

@@ -8,13 +8,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.Optional;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Sprite {
-    private @NotNull Point position;
-    private @NotNull Dimension dimension;
+    private int x;
+    private int y;
+    private int width;
+    private int height;
+
     private @NotNull BufferedImage bufferedImage;
     private @Nullable String tag;
 
@@ -26,17 +28,21 @@ public class Sprite {
     private @Nullable Interpolator interpolator;
 
     @Contract(pure = true)
-    public Sprite(int x, int y, int width, int height, @NotNull Displayable displayable) throws IOException {
-        this.position = new Point(x, y);
-        this.dimension = new Dimension(width, height);
-        this.bufferedImage = displayable.getImage();
+    public Sprite(int x, int y, int width, int height, @NotNull BufferedImage bufferedImage) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.bufferedImage = bufferedImage;
     }
 
     @Contract(pure = true)
-    public Sprite(@NotNull Point position, @NotNull Dimension dimension, @NotNull Displayable displayable) throws IOException {
-        this.position = position;
-        this.dimension = dimension;
-        this.bufferedImage = displayable.getImage();
+    public Sprite(@NotNull Point position, @NotNull Dimension dimension, @NotNull BufferedImage bufferedImage) {
+        this.x = position.x;
+        this.y = position.y;
+        this.width = dimension.width;
+        this.height = dimension.height;
+        this.bufferedImage = bufferedImage;
     }
 
     public @NotNull BufferedImage getBufferedImage() {
@@ -44,30 +50,32 @@ public class Sprite {
     }
 
     public int getX() {
-        return position.x;
+        return x;
     }
 
     public void setX(int x) {
-        position.x = x;
+        x = x;
         updated();
     }
 
     public int getY() {
-        return position.y;
+        return y;
     }
 
     public void setY(int y) {
-        position.y = y;
+        y = y;
         updated();
     }
 
     public void translate(int dx, int dy) {
-        position.translate(dx, dy);
+        x += dx;
+        y += dy;
         updated();
     }
 
     public void moveTo(int x, int y) {
-        position.move(x, y);
+        this.x = x;
+        this.y = y;
         updated();
     }
 
@@ -77,11 +85,12 @@ public class Sprite {
     }
 
     public @NotNull Dimension getDimension() {
-        return dimension;
+        return new Dimension(width, height);
     }
 
     public void setDimension(@NotNull Dimension dimension) {
-        this.dimension = dimension;
+        this.width = dimension.width;
+        this.height = dimension.height;
         updated();
     }
 
@@ -118,7 +127,12 @@ public class Sprite {
     }
 
     public @NotNull Point getPosition() {
-        return new Point(position);
+        return new Point(x, y);
+    }
+
+    public void setPosition(@NotNull Point position) {
+        this.x = position.x;
+        this.y = position.y;
     }
 
     public void remove() {
@@ -135,15 +149,12 @@ public class Sprite {
 
     void interpolate() {
         if (interpolator != null) {
-            if (interpolator.getEndMillis() < System.currentTimeMillis()) {
-                position.x = interpolator.getEndPoint().x;
-                position.y = interpolator.getEndPoint().y;
+            if (System.currentTimeMillis() > interpolator.getEndMillis()) {
+                setPosition(interpolator.getEndPoint());
                 interpolator.onInterpolationCompleted();
                 interpolator = null;
             } else try {
-                var point = interpolator.interpolate(System.currentTimeMillis());
-                position.x = point.x;
-                position.y = point.y;
+                setPosition(interpolator.interpolate(System.currentTimeMillis()));
             } catch (TimestampOutOfRangeException timestampOutOfRangeException) {
                 timestampOutOfRangeException.printStackTrace();
                 interpolator.onInterpolationCompleted();

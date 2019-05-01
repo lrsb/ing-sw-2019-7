@@ -1,12 +1,10 @@
-package it.polimi.ingsw.client.controllers.data;
+package it.polimi.ingsw.client.others;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.prefs.Preferences;
-
-public class PreferenceController {
-    private static final @NotNull Preferences preferences = Preferences.userRoot().node(PreferenceController.class.getName());
+public class Preferences {
+    private static final @NotNull java.util.prefs.Preferences preferences = java.util.prefs.Preferences.userRoot().node(Preferences.class.getName());
 
     public static @Nullable String getToken() {
         return preferences.get("token", null);

@@ -1,10 +1,10 @@
 package it.polimi.ingsw.common.models;
 
+import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.sprite.Displayable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Serializable;
@@ -67,9 +67,13 @@ public class AmmoCard implements Displayable, Serializable {
     }
 
     @Override
-    public @NotNull BufferedImage getImage() throws IOException {
-        return ImageIO.read(AmmoCard.class.getResourceAsStream("AmmoCard/" + type.name().substring(0, 1) +
-                left.name().substring(0, 1) + right.name().substring(0, 1) + ".png"));
+    public @NotNull BufferedImage getFrontImage() throws IOException {
+        return Utils.readImage(getClass(), type.name().substring(0, 1) + left.name().substring(0, 1) + right.name().substring(0, 1));
+    }
+
+    @Override
+    public @NotNull BufferedImage getBackImage() throws IOException {
+        return Utils.readImage(getClass(), "back");
     }
 
     @Contract(value = "null -> false", pure = true)

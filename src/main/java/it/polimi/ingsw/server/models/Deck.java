@@ -11,9 +11,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class is composed of three deck that contains the playable, exited ( on the game board or in players' hand)
@@ -75,7 +76,7 @@ public class Deck<T extends Serializable> implements Serializable {
      *
      * @param n Number of cards that you have to remove from the deck.
      * @return List of card removed from the deck.
-     * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
+     * @throws EmptyDeckException        Thrown when there are no more available cards, and the deck is not shuffleable.
      * @throws InvalidParameterException Thrown when {@code n} is grater than the available cards.
      */
     public @NotNull List<T> exitCards(int n) throws EmptyDeckException {
@@ -125,26 +126,13 @@ public class Deck<T extends Serializable> implements Serializable {
 
         @Contract(" -> new")
         public static @NotNull Deck<AmmoCard> newAmmoDeck() {
-            return new Deck<>(new ArrayList<>(Arrays.asList(
-                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.RED, AmmoCard.Color.RED),
-                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
-                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
-                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.RED, AmmoCard.Color.RED),
-                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.RED, AmmoCard.Color.RED),
-                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
-                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
-                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.RED, AmmoCard.Color.RED),
-                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.YELLOW, AmmoCard.Color.RED, AmmoCard.Color.RED),
-                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.RED, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
-                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
-                    new AmmoCard(AmmoCard.Type.BLUE, AmmoCard.Color.RED, AmmoCard.Color.RED),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
+            var cards = Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).filter(f -> !e.name().equals(f.name()))
+                    .map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toCollection(ArrayList::new));
+            cards.addAll(Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values())
+                    .filter(f -> !e.name().equals(f.name())).map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toList()));
+            cards.addAll(Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values())
+                    .filter(f -> !e.name().equals(f.name())).map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toList()));
+            cards.addAll(List.of(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.RED),
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.RED),
@@ -155,13 +143,14 @@ public class Deck<T extends Serializable> implements Serializable {
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.RED),
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.BLUE))), true);
+                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.BLUE)));
+            return new Deck<>(cards, true);
         }
 
-        //TODO: impl
         @Contract(" -> new")
         public static @NotNull Deck<PowerUp> newPowerUpsDeck() {
-            return new Deck<>(new ArrayList<>(), true);
+            return new Deck<>(new ArrayList<>(Stream.of(PowerUp.Type.values()).map(e -> Stream.of(AmmoCard.Color.values())
+                    .map(f -> new PowerUp(f, e))).flatMap(e -> e).collect(Collectors.toList())), true);
         }
 
         @Contract(" -> new")

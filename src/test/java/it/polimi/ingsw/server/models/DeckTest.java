@@ -39,9 +39,27 @@ class DeckTest {
     void testAmmoDeck() {
         var ammoDeck = Deck.Creator.newAmmoDeck();
         ammoDeck.exitCards(ammoDeck.remainedCards()).parallelStream().forEach(e -> {
-            assertDoesNotThrow(e::getImage);
+            assertDoesNotThrow(e::getFrontImage);
+            assertDoesNotThrow(e::getBackImage);
             try {
-                assertNotEquals(e.getImage(), null);
+                assertNotEquals(e.getFrontImage(), null);
+                assertNotEquals(e.getBackImage(), null);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                fail();
+            }
+        });
+    }
+
+    @Test
+    void testPowerUpDeck() {
+        var powerUpDeck = Deck.Creator.newPowerUpsDeck();
+        powerUpDeck.exitCards(powerUpDeck.remainedCards()).parallelStream().forEach(e -> {
+            assertDoesNotThrow(e::getFrontImage);
+            assertDoesNotThrow(e::getBackImage);
+            try {
+                assertNotEquals(e.getFrontImage(), null);
+                assertNotEquals(e.getBackImage(), null);
             } catch (IOException ex) {
                 ex.printStackTrace();
                 fail();
@@ -53,9 +71,11 @@ class DeckTest {
     void testWeaponDeck() {
         var weaponsDeck = Deck.Creator.newWeaponsDeck();
         weaponsDeck.exitCards(weaponsDeck.remainedCards()).parallelStream().forEach(e -> {
-            assertDoesNotThrow(e::getImage);
+            assertDoesNotThrow(e::getFrontImage);
+            assertDoesNotThrow(e::getBackImage);
             try {
-                assertNotEquals(e.getImage(), null);
+                assertNotEquals(e.getFrontImage(), null);
+                assertNotEquals(e.getBackImage(), null);
             } catch (IOException ex) {
                 ex.printStackTrace();
                 fail();

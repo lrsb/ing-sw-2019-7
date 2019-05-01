@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -16,16 +17,16 @@ public class GameImpl extends Game implements Serializable {
     private static final long serialVersionUID = 1;
 
     private Deck<AmmoCard> ammoDeck = Deck.Creator.newAmmoDeck();
-    private Deck<PowerUp> powerUpsDeck; //= Deck.Creator.newPowerUpsDeck();
-    private Deck<Weapon.Name> weaponsDeck; //= Deck.Creator.newWeaponsDeck();
+    private Deck<PowerUp> powerUpsDeck = Deck.Creator.newPowerUpsDeck();
+    private Deck<Weapon.Name> weaponsDeck = Deck.Creator.newWeaponsDeck();
 
     private List<PowerUp> exitedPowerUps;
 
     private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players) {
         super(uuid, type, cells, players);
-        //redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
-        //blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
-        //yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         //Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(ammoDeck.exitCard())));
     }
 
@@ -58,7 +59,7 @@ public class GameImpl extends Game implements Serializable {
     //RUN AROUND - Start
 
     public boolean moveTo(@NotNull Point to) {
-        if (!canMove(getActualPlayer().getPosition(), to, 0, 3)) return false;
+        if (!canMove(getActualPlayer().getPosition(), to, 3)) return false;
         getActualPlayer().setPosition(to);
         return true;
     }
@@ -66,9 +67,9 @@ public class GameImpl extends Game implements Serializable {
     //RUN AROUND - End
     //GRAB STUFF - Start
 
-    public boolean grabIn(@NotNull Point point, @Nullable Weapon weapon) {
+    public boolean grabIn(@NotNull Point point, @Nullable Weapon.Name weapon) {
         assert point.x >= 0 && point.x < MAX_X && point.y >= 0 && point.y < MAX_Y;
-        if (!canMove(getActualPlayer().getPosition(), point, 0, 1)) return false;
+        if (!canMove(getActualPlayer().getPosition(), point, 1)) return false;
         getActualPlayer().setPosition(point);
         //TODO: pay cost
         if (cells[point.x][point.y].isSpawnPoint()) switch (cells[point.x][point.y].getColor()) {
