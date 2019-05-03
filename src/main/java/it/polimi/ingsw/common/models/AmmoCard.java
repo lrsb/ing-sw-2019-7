@@ -37,6 +37,18 @@ public class AmmoCard implements Displayable, Serializable {
     }
 
     /**
+     * Create a copy of the given AmmoCard.
+     *
+     * @param ammoCard The AmmmoCard.
+     */
+    @Contract(pure = true)
+    public AmmoCard(@NotNull AmmoCard ammoCard) {
+        this.type = ammoCard.type;
+        this.left = ammoCard.left;
+        this.right = ammoCard.right;
+    }
+
+    /**
      * Get the type of the top element.
      *
      * @return Type of top element.

@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 public class GameImpl extends Game implements Serializable {
     private static final long serialVersionUID = 1;
 
-    private Deck<AmmoCard> ammoDeck = Deck.Creator.newAmmoDeck();
-    private Deck<PowerUp> powerUpsDeck = Deck.Creator.newPowerUpsDeck();
-    private Deck<Weapon.Name> weaponsDeck = Deck.Creator.newWeaponsDeck();
+    private @NotNull Deck<AmmoCard> ammoDeck = Deck.Creator.newAmmoDeck();
+    private @NotNull Deck<PowerUp> powerUpsDeck = Deck.Creator.newPowerUpsDeck();
+    private @NotNull Deck<Weapon.Name> weaponsDeck = Deck.Creator.newWeaponsDeck();
 
-    private List<PowerUp> exitedPowerUps;
+    private @NotNull ArrayList<PowerUp> exitedPowerUps = new ArrayList<>();
 
     private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players) {
         super(uuid, type, cells, players);
@@ -31,7 +31,7 @@ public class GameImpl extends Game implements Serializable {
     }
 
     public List<PowerUp> getFirstMoveColors() {
-        exitedPowerUps = powerUpsDeck.exitCards(2);
+        exitedPowerUps.addAll(powerUpsDeck.exitCards(2));
         return exitedPowerUps;
     }
 

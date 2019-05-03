@@ -17,20 +17,22 @@ import java.util.stream.Stream;
 
 import static it.polimi.ingsw.common.models.AmmoCard.Color.*;
 
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings({"SpellCheckingInspection"})
 public abstract class Weapon {
     @NotNull Game game;
     boolean alternativeFire;
 
     @NotNull ArrayList<Player> basicTargets = new ArrayList<>();
-    @NotNull ArrayList<Point> basicTargetsPoint = new ArrayList<>();
+    @Nullable Point basicTargetsPoint;
     @NotNull ArrayList<AmmoCard.Color> basicAlternativeCost = new ArrayList<>();
+
     @NotNull ArrayList<Player> firstAdditionalTargets = new ArrayList<>();
-    @NotNull ArrayList<Point> firstAdditionalTargetsPoint = new ArrayList<>();
-    @NotNull ArrayList<AmmoCard.Color> firstAdditionalCost = new ArrayList<>();
+    @Nullable Point firstAdditionalTargetsPoint;
+    @Nullable AmmoCard.Color firstAdditionalCost;
+
     @NotNull ArrayList<Player> secondAdditionalTargets = new ArrayList<>();
-    @NotNull ArrayList<Point> secondAdditionalTargetPoint = new ArrayList<>();
-    @NotNull ArrayList<AmmoCard.Color> secondAdditionalCost = new ArrayList<>();
+    @Nullable AmmoCard.Color secondAdditionalCost;
+
     private @NotNull ArrayList<PowerUp> basicAlternativePayment = new ArrayList<>();
     private @NotNull ArrayList<PowerUp> firstAdditionalPayment = new ArrayList<>();
     private @NotNull ArrayList<PowerUp> secondAdditionalPayment = new ArrayList<>();
@@ -41,20 +43,20 @@ public abstract class Weapon {
         this.alternativeFire = alternativeFire;
     }
 
-    private static @NotNull int[] convertCost(@NotNull ArrayList<AmmoCard.Color> cost) {
-        int[] costArray = new int[values().length];
-        Stream.of(values()).forEach(e -> costArray[e.getIndex()] = (int) cost.stream().filter(f -> e == f).count());
-        return costArray;
-    }
-
     public final boolean basicFire() {
-        var cost = convertCost(basicAlternativeCost);
-        if (!(game.getActualPlayer().isALoadedGun(Weapon.Name.getName(getClass())) && canBasicFire()) ||
-                !canFire(cost, alternativeFire ? basicAlternativePayment : new ArrayList<>())) return false;
-        game.getActualPlayer().unloadWeapon(Weapon.Name.getName(getClass()));
-        fire(cost, alternativeFire ? basicAlternativePayment : new ArrayList<>());
-        basicFireImpl();
-        return true;
+        try {
+            int[] cost = new int[values().length];
+            Stream.of(values()).forEach(e -> cost[e.getIndex()] = (int) basicAlternativeCost.stream().filter(f -> e == f).count());
+            if (!(game.getActualPlayer().isALoadedGun(Weapon.Name.getName(getClass())) && canBasicFire()) ||
+                    !canFire(cost, alternativeFire ? basicAlternativePayment : new ArrayList<>())) return false;
+            game.getActualPlayer().unloadWeapon(Weapon.Name.getName(getClass()));
+            fire(cost, alternativeFire ? basicAlternativePayment : new ArrayList<>());
+            basicFireImpl();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Contract(pure = true)
@@ -63,11 +65,17 @@ public abstract class Weapon {
     abstract void basicFireImpl();
 
     public final boolean firstAdditionalFire() {
-        var cost = convertCost(firstAdditionalCost);
-        if (!canFirstAdditionalFire() || !canFire(cost, firstAdditionalPayment)) return false;
-        fire(cost, firstAdditionalPayment);
-        firstAdditionalFireImpl();
-        return true;
+        try {
+            var cost = new int[values().length];
+            if (firstAdditionalCost != null) cost[firstAdditionalCost.getIndex()] = 1;
+            if (!canFirstAdditionalFire() || !canFire(cost, firstAdditionalPayment)) return false;
+            fire(cost, firstAdditionalPayment);
+            firstAdditionalFireImpl();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Contract(pure = true)
@@ -79,11 +87,17 @@ public abstract class Weapon {
     }
 
     public final boolean secondAdditionalFire() {
-        var cost = convertCost(secondAdditionalCost);
-        if (!canSecondAdditionalFire() || !canFire(cost, secondAdditionalPayment)) return false;
-        fire(cost, secondAdditionalPayment);
-        secondAdditionalFireImpl();
-        return true;
+        try {
+            var cost = new int[values().length];
+            if (secondAdditionalCost != null) cost[secondAdditionalCost.getIndex()] = 1;
+            if (!canSecondAdditionalFire() || !canFire(cost, secondAdditionalPayment)) return false;
+            fire(cost, secondAdditionalPayment);
+            secondAdditionalFireImpl();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Contract(pure = true)
@@ -111,6 +125,26 @@ public abstract class Weapon {
         game.getPlayers().stream().filter(e -> e.equals(player)).findAny().ifPresent(secondAdditionalTargets::add);
     }
 
+    public void setBasicTargetsPoint(@NotNull Point basicTargetsPoint) {
+        this.basicTargetsPoint = basicTargetsPoint;
+    }
+
+    public void setFirstAdditionalTargetsPoint(@NotNull Point firstAdditionalTargetsPoint) {
+        this.firstAdditionalTargetsPoint = firstAdditionalTargetsPoint;
+    }
+
+    public void setBasicAlternativePayment(@NotNull ArrayList<PowerUp> basicAlternativePayment) {
+        this.basicAlternativePayment = basicAlternativePayment;
+    }
+
+    public void setFirstAdditionalPayment(@NotNull ArrayList<PowerUp> firstAdditionalPayment) {
+        this.firstAdditionalPayment = firstAdditionalPayment;
+    }
+
+    public void setSecondAdditionalPayment(@NotNull ArrayList<PowerUp> secondAdditionalPayment) {
+        this.secondAdditionalPayment = secondAdditionalPayment;
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean canFire(@NotNull int[] cost, @NotNull ArrayList<PowerUp> payment) {
         payment.forEach(e -> cost[e.getAmmoColor().getIndex()]--);
@@ -129,7 +163,6 @@ public abstract class Weapon {
         return obj instanceof Weapon && ((Weapon) obj).getClass().equals(getClass());
     }
 
-    //TODO: sistemare
     public enum Name implements Displayable {
         LOCK_RIFLE(Weapons.LockRifle.class, BLUE, new int[]{0, 0, 1}), MACHINE_GUN(Weapons.MachineGun.class, BLUE, new int[]{1, 0, 0}),
         THOR(Weapons.Thor.class, BLUE, new int[]{1, 0, 0}), PLASMA_GUN(Weapons.PlasmaGun.class, BLUE, new int[]{0, 1, 0}),
@@ -198,7 +231,7 @@ public abstract class Weapon {
         private static class LockRifle extends Weapon {
             private LockRifle(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
-                firstAdditionalCost.add(RED);
+                firstAdditionalCost = RED;
             }
 
             @Override
@@ -226,8 +259,8 @@ public abstract class Weapon {
         private static class MachineGun extends Weapon {
             private MachineGun(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
-                firstAdditionalCost.add(YELLOW);
-                secondAdditionalCost.add(BLUE);
+                firstAdditionalCost = YELLOW;
+                secondAdditionalCost = BLUE;
             }
 
             @Override
@@ -269,8 +302,8 @@ public abstract class Weapon {
         private static class Thor extends Weapon {
             private Thor(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
-                firstAdditionalCost.add(BLUE);
-                secondAdditionalCost.add(BLUE);
+                firstAdditionalCost = BLUE;
+                secondAdditionalCost = BLUE;
             }
 
             @Override
@@ -307,21 +340,23 @@ public abstract class Weapon {
         private static class PlasmaGun extends Weapon {
             private PlasmaGun(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
-                secondAdditionalCost.add(BLUE);
+                secondAdditionalCost = BLUE;
             }
 
             @Override
             boolean canBasicFire() {
+                if (firstAdditionalTargetsPoint == null) return false;
                 var mockPlayer = new Player(new User(""));
-                mockPlayer.setPosition(firstAdditionalTargetsPoint.get(0));
+                mockPlayer.setPosition(firstAdditionalTargetsPoint);
                 return game.getActualPlayer().canSeeNotSame(basicTargets.get(0), game.getCells()) ||
-                        (game.canMove(game.getActualPlayer().getPosition(), firstAdditionalTargetsPoint.get(0), 2) &&
+                        (game.canMove(game.getActualPlayer().getPosition(), firstAdditionalTargetsPoint, 2) &&
                                 mockPlayer.canSeeNotSame(basicTargets.get(0), game.getCells()));
             }
 
             @Override
             void basicFireImpl() {
-                game.getActualPlayer().setPosition(firstAdditionalTargetsPoint.get(0));
+                if (firstAdditionalTargetsPoint == null) return;
+                game.getActualPlayer().setPosition(firstAdditionalTargetsPoint);
                 basicTargets.get(0).takeHits(game.getActualPlayer(), 2, 0);
             }
 
@@ -376,16 +411,18 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
+                if (basicTargetsPoint == null) return false;
                 var mockPlayer = new Player(new User(""));
-                mockPlayer.setPosition(basicTargetsPoint.get(0));
+                mockPlayer.setPosition(basicTargetsPoint);
                 return (alternativeFire && game.canMove(basicTargets.get(0).getPosition(), game.getActualPlayer().getPosition(), 2)) ||
-                        (!alternativeFire && game.canMove(basicTargets.get(0).getPosition(), basicTargetsPoint.get(0), 2) &&
+                        (!alternativeFire && game.canMove(basicTargets.get(0).getPosition(), basicTargetsPoint, 2) &&
                                 game.getActualPlayer().canSeeNotSame(mockPlayer, game.getCells()));
             }
 
             @Override
             void basicFireImpl() {
-                if (!alternativeFire) basicTargets.get(0).setPosition(basicTargetsPoint.get(0));
+                if (basicTargetsPoint == null) return;
+                if (!alternativeFire) basicTargets.get(0).setPosition(basicTargetsPoint);
                 basicTargets.get(0).takeHits(game.getActualPlayer(), alternativeFire ? 3 : 1, 0);
             }
         }
@@ -393,19 +430,35 @@ public abstract class Weapon {
         private static class VortexCannon extends Weapon {
             private VortexCannon(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
-                firstAdditionalCost.add(RED);
+                firstAdditionalCost = RED;
             }
 
             @Override
             boolean canBasicFire() {
-                return !basicTargetsPoint.get(0).equals(game.getActualPlayer().getPosition()) &&
-                        game.canMove(basicTargets.get(0).getPosition(), basicTargetsPoint.get(0), 1);
+                return basicTargetsPoint != null && !basicTargetsPoint.equals(game.getActualPlayer().getPosition()) &&
+                        game.canMove(basicTargets.get(0).getPosition(), basicTargetsPoint, 1);
             }
 
             @Override
             void basicFireImpl() {
-                basicTargets.get(0).setPosition(basicTargetsPoint.get(0));
+                if (basicTargetsPoint == null) return;
+                basicTargets.get(0).setPosition(basicTargetsPoint);
                 basicTargets.get(0).takeHits(game.getActualPlayer(), 2, 0);
+            }
+
+            @Override
+            boolean canFirstAdditionalFire() {
+                return basicTargetsPoint != null && (firstAdditionalTargets.size() == 1 || firstAdditionalTargets.size() == 2) &&
+                        firstAdditionalTargets.stream().allMatch(e -> !e.equals(basicTargets.get(0)) &&
+                                game.canMove(e.getPosition(), basicTargetsPoint, 1));
+            }
+
+            @Override
+            void firstAdditionalFireImpl() {
+                if (basicTargetsPoint != null) firstAdditionalTargets.forEach(e -> {
+                    e.setPosition(basicTargetsPoint);
+                    e.takeHits(game.getActualPlayer(), 1, 0);
+                });
             }
         }
 
@@ -416,12 +469,19 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                return false;
+                if (basicTargetsPoint == null) return false;
+                if (alternativeFire) return game.canMove(game.getActualPlayer().getPosition(), basicTargetsPoint, 1);
+                return game.getCell(game.getActualPlayer().getPosition()).getColor() != game.getCell(basicTargetsPoint).getColor() &&
+                        game.getActualPlayer().canSeeCell(basicTargetsPoint, game.getCells());
             }
 
             @Override
             void basicFireImpl() {
-
+                if (basicTargetsPoint == null) return;
+                if (alternativeFire) game.getPlayers().stream().filter(e -> e.getPosition().equals(basicTargetsPoint))
+                        .forEach(e -> e.takeHits(game.getActualPlayer(), 1, 1));
+                else game.getPlayers().stream().filter(e -> game.getCell(e.getPosition()).getColor() ==
+                        game.getCell(basicTargetsPoint).getColor()).forEach(e -> e.takeHits(game.getActualPlayer(), 1, 0));
             }
         }
 
@@ -432,12 +492,12 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                return false;
+                return !game.getActualPlayer().canSeeNotSame(basicTargets.get(0), game.getCells());
             }
 
             @Override
             void basicFireImpl() {
-
+                basicTargets.get(0).takeHits(game.getActualPlayer(), 3, 0);
             }
         }
 
@@ -449,12 +509,15 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                return false;
+                return game.getActualPlayer().getPosition().equals(basicTargets.get(0).getPosition()) &&
+                        !game.canMove(game.getActualPlayer().getPosition(), basicTargets.get(0).getPosition(), 1);
             }
 
             @Override
             void basicFireImpl() {
-
+                basicTargets.get(0).takeHits(game.getActualPlayer(), 1, 0);
+                game.getPlayers().stream().filter(e -> basicTargets.get(0).getPosition().equals(e.getPosition()))
+                        .forEach(e -> e.takeHits(game.getActualPlayer(), 0, alternativeFire ? 2 : 1));
             }
         }
 
@@ -478,7 +541,7 @@ public abstract class Weapon {
         private static class GrenadeLauncher extends Weapon {
             private GrenadeLauncher(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
-                firstAdditionalCost.add(RED);
+                firstAdditionalCost = RED;
             }
 
             @Override
@@ -495,8 +558,8 @@ public abstract class Weapon {
         private static class RocketLauncher extends Weapon {
             private RocketLauncher(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
-                firstAdditionalCost.add(BLUE);
-                secondAdditionalCost.add(YELLOW);
+                firstAdditionalCost = BLUE;
+                secondAdditionalCost = YELLOW;
             }
 
             @Override
@@ -529,7 +592,7 @@ public abstract class Weapon {
         private static class Cyberblade extends Weapon {
             private Cyberblade(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
-                secondAdditionalCost.add(YELLOW);
+                secondAdditionalCost = YELLOW;
             }
 
             @Override

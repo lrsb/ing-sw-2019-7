@@ -47,6 +47,12 @@ public abstract class Game implements Serializable {
         return cells;
     }
 
+    public @Nullable Cell getCell(@Nullable Point point) {
+        if (point == null || point.x < 0 || point.x >= cells.length || point.y < 0 || point.y >= cells[point.x].length)
+            return null;
+        return cells[point.x][point.y];
+    }
+
     public @NotNull Type getType() {
         return type;
     }
