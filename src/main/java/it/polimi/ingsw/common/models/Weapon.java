@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import static it.polimi.ingsw.common.models.AmmoCard.Color.*;
 
-@SuppressWarnings({"SpellCheckingInspection"})
+@SuppressWarnings({"SpellCheckingInspection", "unused", "BooleanMethodIsAlwaysInverted", "UnusedReturnValue", "WeakerAccess"})
 public abstract class Weapon {
     @NotNull Game game;
     boolean alternativeFire;
@@ -145,7 +145,6 @@ public abstract class Weapon {
         this.secondAdditionalPayment = secondAdditionalPayment;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean canFire(@NotNull int[] cost, @NotNull ArrayList<PowerUp> payment) {
         payment.forEach(e -> cost[e.getAmmoColor().getIndex()]--);
         return Stream.of(AmmoCard.Color.values()).map(e -> cost[e.getIndex()] <= game.getActualPlayer().getColoredCubes(e))

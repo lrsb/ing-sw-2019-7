@@ -126,11 +126,12 @@ public class Deck<T extends Serializable> implements Serializable {
 
         @Contract(" -> new")
         public static @NotNull Deck<AmmoCard> newAmmoDeck() {
-            var cardsStream = Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).filter(f -> !e.name().equals(f.name()))
-                    .map(f -> new AmmoCard(e, f, f))).flatMap(e -> e);
-            var cards = cardsStream.collect(Collectors.toCollection(ArrayList::new));
-            cards.addAll(cardsStream.map(AmmoCard::new).collect(Collectors.toList()));
-            cards.addAll(cardsStream.map(AmmoCard::new).collect(Collectors.toList()));
+            var cards = Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).filter(f -> !e.name().equals(f.name()))
+                    .map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toCollection(ArrayList::new));
+            cards.addAll(Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values())
+                    .filter(f -> !e.name().equals(f.name())).map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toList()));
+            cards.addAll(Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values())
+                    .filter(f -> !e.name().equals(f.name())).map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toList()));
             cards.addAll(List.of(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.RED),
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),

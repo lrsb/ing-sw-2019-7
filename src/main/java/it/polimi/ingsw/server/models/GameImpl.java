@@ -105,6 +105,10 @@ public class GameImpl extends Game implements Serializable {
         seqPlay++;
     }
 
+    public boolean doAction(@NotNull Action action) {
+        return false;
+    }
+
     public static class Creator {
         @Contract(pure = true)
         private Creator() {

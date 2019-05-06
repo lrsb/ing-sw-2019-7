@@ -22,7 +22,6 @@ import java.util.stream.StreamSupport;
 
 import static com.mongodb.client.model.Filters.eq;
 
-//TODO: impl
 public class ServerController implements API {
     private static final @NotNull MongoCollection<Document> rooms = Server.mongoDatabase.getCollection("rooms");
     private static final @NotNull MongoCollection<Document> games = Server.mongoDatabase.getCollection("games");
@@ -50,7 +49,9 @@ public class ServerController implements API {
     public @Nullable List<Room> getRooms(@Nullable String token) {
         var user = SecureUserController.getUser(token);
         if (user == null) return null;
-        return convertCollection(rooms, Room.class);
+        var gson = new Gson();
+        return StreamSupport.stream(rooms.find().filter(eq("gameCreated", false)).spliterator(), true)
+                .map(e -> gson.fromJson(e.toJson(), Room.class)).collect(Collectors.toList());
     }
 
     @Override
@@ -71,7 +72,7 @@ public class ServerController implements API {
 
     @Override
     public @Nullable Room createRoom(@Nullable String token, @Nullable String name) {
-        try {
+        if (name != null) try {
             var user = SecureUserController.getUser(token);
             if (user == null) return null;
             var room = new Room(name, user);
@@ -79,13 +80,13 @@ public class ServerController implements API {
             return room;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     @Override
     public @Nullable UUID startGame(@Nullable String token, @Nullable UUID roomUuid) {
-        try {
+        if (roomUuid != null) try {
             var user = SecureUserController.getUser(token);
             if (user == null) return null;
             var room = new Gson().fromJson(rooms.find(eq("uuid", roomUuid)).first().toJson(), Room.class);
@@ -94,25 +95,36 @@ public class ServerController implements API {
             games.insertOne(Document.parse(new Gson().toJson(game)));
             room.setGameCreated();
             informRoomUsers(room);
+            //rooms.deleteOne(eq("uuid", roomUuid));
             rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
             return game.getUuid();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     @Override
     public boolean doAction(@Nullable String token, @Nullable Action action) {
-        var user = SecureUserController.getUser(token);
-        return user == null;
-
+        if (action != null) try {
+            var user = SecureUserController.getUser(token);
+            if (user == null) return false;
+            var game = new Gson().fromJson(games.find(eq("uuid", action.getGameUuid())).first().toJson(), GameImpl.class);
+            if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid()))) return false;
+            var value = game.doAction(action);
+            if (value) games.replaceOne(eq("uuid", action.getGameUuid()), Document.parse(new Gson().toJson(game)));
+            informGamePlayers(game);
+            return value;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
     public void addGameListener(@Nullable String token, @Nullable GameListener listener) {
         var user = SecureUserController.getUser(token);
-        if (user == null) return;
+        if (user == null || listener == null) return;
         gameListeners.put(user.getUuid(), listener);
     }
 
@@ -126,7 +138,7 @@ public class ServerController implements API {
     @Override
     public void addRoomListener(@Nullable String token, @Nullable RoomListener listener) {
         var user = SecureUserController.getUser(token);
-        if (user == null) return;
+        if (user == null || listener == null) return;
         roomListeners.put(user.getUuid(), listener);
     }
 
@@ -155,10 +167,5 @@ public class ServerController implements API {
                 ex.printStackTrace();
             }
         });
-    }
-
-    private @NotNull <T> List<T> convertCollection(@NotNull MongoCollection<Document> collection, @NotNull Class<T> type) {
-        var gson = new Gson();
-        return StreamSupport.stream(collection.find().spliterator(), false).map(e -> gson.fromJson(e.toJson(), type)).collect(Collectors.toList());
     }
 }
