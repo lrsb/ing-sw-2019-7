@@ -7,8 +7,6 @@ import it.polimi.ingsw.client.others.Preferences;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 public class GamesListViewController extends BaseViewController {
@@ -34,8 +32,8 @@ public class GamesListViewController extends BaseViewController {
     private void update() throws Exception {
         var roomList = Client.API.getRooms(Preferences.getToken());
         var tableModel = new DefaultTableModel();
-        tableModel.addColumn(new Object[] {"Nome", "N. giocatori", " modalità"});
-        roomList.stream().map(e -> new Object[] {e.getName(), e.getUsers().size() + "/5"}).forEach(tableModel::addRow);
+        tableModel.addColumn(new Object[]{"Nome", "N. giocatori", " modalità"});
+        roomList.stream().map(e -> new Object[]{e.getName(), e.getUsers().size() + "/5"}).forEach(tableModel::addRow);
         table.setModel(tableModel);
     }
 }

@@ -71,24 +71,24 @@ public class Player implements Serializable {
     }
 
     //gives damages, convert marks to damages and finally gives marks
-    public void takeHits(@NotNull Player shooter, int damages, int marks) {
+    public void takeHits(@NotNull Game game, int damages, int marks) {
         for (int i = 0; i < damages; i++) {
-            if (damagesTaken.size() < 12) damagesTaken.add(shooter.nickname);
+            if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().nickname);
         }
         if (damages > 0) {
             for (String name : marksTaken) {
-                if (shooter.nickname.equals(name)) {
+                if (game.getActualPlayer().nickname.equals(name)) {
                     marksTaken.remove(name);
-                    if (damagesTaken.size() < 12) damagesTaken.add(shooter.nickname);
+                    if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().nickname);
                 }
             }
         }
         int oldMarks = 0;
         for (String name : marksTaken) {
-            if (shooter.nickname.equals(name)) oldMarks++;
+            if (game.getActualPlayer().nickname.equals(name)) oldMarks++;
         }
         for (int i = 0; i < marks && oldMarks + i < 3; i++) {
-            marksTaken.add(shooter.nickname);
+            marksTaken.add(game.getActualPlayer().nickname);
         }
     }
 
@@ -173,11 +173,14 @@ public class Player implements Serializable {
         return false;
     }
 
-    public boolean isPlayerNear(@NotNull Player player, @NotNull Cell[][] cells) {
-        for (Bounds.Direction d : Bounds.Direction.values()) {
-            if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL &&
-                    player.position.x == position.x + d.getdX() && player.position.y == position.y + d.getdY())
-                return true;
+    public boolean isPointAtMaxDistanceInDirection(@NotNull Point point, @NotNull Cell[][] cells, int maxDistance, @NotNull Bounds.Direction direction) {
+        int countDistance = 0, x = position.x, y = position.y;
+        while (countDistance < maxDistance) {
+            if (cells[x][y].getBounds().getType(direction) == Bounds.Type.WALL) return false;
+            countDistance++;
+            x += direction.getdX();
+            y += direction.getdY();
+            if (x == point.getX() && y == point.getY()) return true;
         }
         return false;
     }

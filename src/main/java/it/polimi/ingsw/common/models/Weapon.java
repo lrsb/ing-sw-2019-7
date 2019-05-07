@@ -240,7 +240,7 @@ public abstract class Weapon {
 
             @Override
             void basicFireImpl() {
-                basicTargets.get(0).takeHits(game.getActualPlayer(), 2, 1);
+                basicTargets.get(0).takeHits(game, 2, 1);
             }
 
             @Override
@@ -251,7 +251,7 @@ public abstract class Weapon {
 
             @Override
             void firstAdditionalFireImpl() {
-                firstAdditionalTargets.get(0).takeHits(game.getActualPlayer(), 0, 1);
+                firstAdditionalTargets.get(0).takeHits(game, 0, 1);
             }
         }
 
@@ -270,7 +270,7 @@ public abstract class Weapon {
 
             @Override
             void basicFireImpl() {
-                basicTargets.forEach(e -> e.takeHits(game.getActualPlayer(), 1, 0));
+                basicTargets.forEach(e -> e.takeHits(game, 1, 0));
             }
 
             @Override
@@ -281,7 +281,7 @@ public abstract class Weapon {
 
             @Override
             void firstAdditionalFireImpl() {
-                firstAdditionalTargets.get(0).takeHits(game.getActualPlayer(), 1, 0);
+                firstAdditionalTargets.get(0).takeHits(game, 1, 0);
             }
 
             @Override
@@ -294,7 +294,7 @@ public abstract class Weapon {
 
             @Override
             void secondAdditionalFireImpl() {
-                secondAdditionalTargets.forEach(e -> e.takeHits(game.getActualPlayer(), 1, 0));
+                secondAdditionalTargets.forEach(e -> e.takeHits(game, 1, 0));
             }
         }
 
@@ -312,7 +312,7 @@ public abstract class Weapon {
 
             @Override
             void basicFireImpl() {
-                basicTargets.get(0).takeHits(game.getActualPlayer(), 2, 0);
+                basicTargets.get(0).takeHits(game, 2, 0);
             }
 
             @Override
@@ -322,17 +322,18 @@ public abstract class Weapon {
 
             @Override
             void firstAdditionalFireImpl() {
-                firstAdditionalTargets.get(0).takeHits(game.getActualPlayer(), 1, 0);
+                firstAdditionalTargets.get(0).takeHits(game, 1, 0);
             }
 
             @Override
             boolean canSecondAdditionalFire() {
-                return firstAdditionalTargets.get(0).canSeeNotSame(secondAdditionalTargets.get(0), game.getCells());
+                return !basicTargets.get(0).equals(secondAdditionalTargets.get(0)) &&
+                        firstAdditionalTargets.get(0).canSeeNotSame(secondAdditionalTargets.get(0), game.getCells());
             }
 
             @Override
             void secondAdditionalFireImpl() {
-                secondAdditionalTargets.get(0).takeHits(game.getActualPlayer(), 2, 0);
+                secondAdditionalTargets.get(0).takeHits(game, 2, 0);
             }
         }
 
@@ -344,24 +345,25 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                if (firstAdditionalTargetsPoint == null) return false;
+                if (firstAdditionalTargetsPoint == null) return game.getActualPlayer()
+                        .canSeeNotSame(basicTargets.get(0), game.getCells());
                 var mockPlayer = new Player(new User(""));
                 mockPlayer.setPosition(firstAdditionalTargetsPoint);
-                return game.getActualPlayer().canSeeNotSame(basicTargets.get(0), game.getCells()) ||
-                        (game.canMove(game.getActualPlayer().getPosition(), firstAdditionalTargetsPoint, 2) &&
-                                mockPlayer.canSeeNotSame(basicTargets.get(0), game.getCells()));
+                return game.canMove(game.getActualPlayer().getPosition(), firstAdditionalTargetsPoint, 2) &&
+                        (mockPlayer.canSeeNotSame(basicTargets.get(0), game.getCells()) ||
+                                game.getActualPlayer().canSeeNotSame(basicTargets.get(0), game.getCells()));
             }
 
             @Override
             void basicFireImpl() {
-                if (firstAdditionalTargetsPoint == null) return;
-                game.getActualPlayer().setPosition(firstAdditionalTargetsPoint);
-                basicTargets.get(0).takeHits(game.getActualPlayer(), 2, 0);
+                if (firstAdditionalTargetsPoint != null)
+                    game.getActualPlayer().setPosition(firstAdditionalTargetsPoint);
+                basicTargets.get(0).takeHits(game, 2, 0);
             }
 
             @Override
             void secondAdditionalFireImpl() {
-                secondAdditionalTargets.get(0).takeHits(game.getActualPlayer(), 1, 0);
+                secondAdditionalTargets.get(0).takeHits(game, 1, 0);
             }
         }
 
@@ -373,13 +375,12 @@ public abstract class Weapon {
             @Override
             boolean canBasicFire() {
                 return game.getActualPlayer().canSeeNotSame(basicTargets.get(0), game.getCells()) &&
-                        !game.canMove(game.getActualPlayer().getPosition(), basicTargets.get(0).getPosition(), 0) &&
                         !game.canMove(game.getActualPlayer().getPosition(), basicTargets.get(0).getPosition(), 1);
             }
 
             @Override
             void basicFireImpl() {
-                basicTargets.get(0).takeHits(game.getActualPlayer(), 3, 1);
+                basicTargets.get(0).takeHits(game, 3, 1);
             }
         }
 
@@ -398,7 +399,7 @@ public abstract class Weapon {
             void basicFireImpl() {
                 if (game.getActualPlayer().getPosition() != null)
                     game.getPlayers().stream().filter(e -> game.getActualPlayer().getPosition().equals(e.getPosition()))
-                            .forEach(e -> e.takeHits(game.getActualPlayer(), alternativeFire ? 2 : 1, 0));
+                            .forEach(e -> e.takeHits(game, alternativeFire ? 2 : 1, 0));
             }
         }
 
@@ -422,7 +423,7 @@ public abstract class Weapon {
             void basicFireImpl() {
                 if (basicTargetsPoint == null) return;
                 if (!alternativeFire) basicTargets.get(0).setPosition(basicTargetsPoint);
-                basicTargets.get(0).takeHits(game.getActualPlayer(), alternativeFire ? 3 : 1, 0);
+                basicTargets.get(0).takeHits(game, alternativeFire ? 3 : 1, 0);
             }
         }
 
@@ -442,7 +443,7 @@ public abstract class Weapon {
             void basicFireImpl() {
                 if (basicTargetsPoint == null) return;
                 basicTargets.get(0).setPosition(basicTargetsPoint);
-                basicTargets.get(0).takeHits(game.getActualPlayer(), 2, 0);
+                basicTargets.get(0).takeHits(game, 2, 0);
             }
 
             @Override
@@ -456,7 +457,7 @@ public abstract class Weapon {
             void firstAdditionalFireImpl() {
                 if (basicTargetsPoint != null) firstAdditionalTargets.forEach(e -> {
                     e.setPosition(basicTargetsPoint);
-                    e.takeHits(game.getActualPlayer(), 1, 0);
+                    e.takeHits(game, 1, 0);
                 });
             }
         }
@@ -478,9 +479,9 @@ public abstract class Weapon {
             void basicFireImpl() {
                 if (basicTargetsPoint == null) return;
                 if (alternativeFire) game.getPlayers().stream().filter(e -> e.getPosition().equals(basicTargetsPoint))
-                        .forEach(e -> e.takeHits(game.getActualPlayer(), 1, 1));
+                        .forEach(e -> e.takeHits(game, 1, 1));
                 else game.getPlayers().stream().filter(e -> game.getCell(e.getPosition()).getColor() ==
-                        game.getCell(basicTargetsPoint).getColor()).forEach(e -> e.takeHits(game.getActualPlayer(), 1, 0));
+                        game.getCell(basicTargetsPoint).getColor()).forEach(e -> e.takeHits(game, 1, 0));
             }
         }
 
@@ -496,7 +497,7 @@ public abstract class Weapon {
 
             @Override
             void basicFireImpl() {
-                basicTargets.get(0).takeHits(game.getActualPlayer(), 3, 0);
+                basicTargets.get(0).takeHits(game, 3, 0);
             }
         }
 
@@ -514,9 +515,9 @@ public abstract class Weapon {
 
             @Override
             void basicFireImpl() {
-                basicTargets.get(0).takeHits(game.getActualPlayer(), 1, 0);
+                basicTargets.get(0).takeHits(game, 1, 0);
                 game.getPlayers().stream().filter(e -> basicTargets.get(0).getPosition().equals(e.getPosition()))
-                        .forEach(e -> e.takeHits(game.getActualPlayer(), 0, alternativeFire ? 2 : 1));
+                        .forEach(e -> e.takeHits(game, 0, alternativeFire ? 2 : 1));
             }
         }
 
@@ -528,12 +529,37 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                return false;
+                if (!alternativeFire && !basicTargets.isEmpty() && basicTargets.size() < 3)
+                    return Stream.of(Bounds.Direction.values()).anyMatch(e ->
+                            basicTargets.stream().allMatch(f -> game.getActualPlayer()
+                                    .isPointAtMaxDistanceInDirection(f.getPosition(), game.getCells(), 2, e))) &&
+                            (basicTargets.size() != 2 ||
+                                    (basicTargets.stream().mapToDouble(e -> e.getPosition().getX()).reduce(1, (e, f) -> e * f) == 2) ||
+                                    (basicTargets.stream().mapToDouble(e -> e.getPosition().getY()).reduce(1, (e, f) -> e * f) == 2));
+                else return basicTargetsPoint != null && Stream.of(Bounds.Direction.values())
+                        .anyMatch(e -> game.getActualPlayer()
+                                .isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 2, e));
             }
 
             @Override
             void basicFireImpl() {
-
+                if (!alternativeFire) basicTargets.forEach(e -> e.takeHits(game, 1, 0));
+                else {
+                    if (Stream.of(Bounds.Direction.values()).noneMatch(e -> game.getActualPlayer()
+                            .isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 1, e))) {
+                        Stream.of(Bounds.Direction.values()).filter(e -> game.getActualPlayer()
+                                .isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 2, e))
+                                .forEach(e -> game.getPlayersAtPosition
+                                        (new Point((int) basicTargetsPoint.getX() - e.getdX(),
+                                                (int) basicTargetsPoint.getY() - e.getdY()))
+                                        .forEach(f -> f.takeHits(game, 2, 0)));
+                        game.getPlayersAtPosition(basicTargetsPoint)
+                                .forEach(e -> e.takeHits(game, 1, 0));
+                    } else {
+                        game.getPlayersAtPosition(basicTargetsPoint)
+                                .forEach(e -> e.takeHits(game, 2, 0));
+                    }
+                }
             }
         }
 
@@ -545,6 +571,7 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
+
                 return false;
             }
 
