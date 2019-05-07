@@ -52,8 +52,7 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
                 Object scale = field.get(graphicsDevice);
                 if (scale instanceof Integer && (Integer) scale == 2) isRetina = true;
             }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (NoSuchFieldException | IllegalAccessException ignored) {
         }
         return isRetina;
     }
