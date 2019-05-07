@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.network;
 
+import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.network.socket.AdrenalinePacket;
@@ -7,7 +8,7 @@ import it.polimi.ingsw.common.network.socket.AdrenalineSocket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocketListener;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,18 +20,18 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
     public void onNewPacket(@NotNull AdrenalineSocket socket, @NotNull AdrenalinePacket packet) {
         try {
             var token = packet.getToken();
-            ArrayList<String> userInfo;
+            List<String> userInfo;
             switch (packet.getType()) {
                 case AUTH_USER:
-                    //noinspection unchecked
-                    userInfo = packet.getAssociatedObject(ArrayList.class);
-                    //noinspection ConstantConditions
+                    //noinspection Convert2Diamond
+                    userInfo = packet.getAssociatedObject(new TypeToken<List<String>>() {
+                    });
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.AUTH_USER, null, Server.controller.authUser(userInfo.get(0), userInfo.get(1))));
                     break;
                 case CREATE_USER:
-                    //noinspection unchecked
-                    userInfo = packet.getAssociatedObject(ArrayList.class);
-                    //noinspection ConstantConditions
+                    //noinspection Convert2Diamond
+                    userInfo = packet.getAssociatedObject(new TypeToken<List<String>>() {
+                    });
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_USER, null, Server.controller.createUser(userInfo.get(0), userInfo.get(1))));
                     break;
                 case GET_ACTIVE_GAME:

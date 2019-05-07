@@ -143,7 +143,8 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                     break;
                 case GET_ROOMS:
                     //TODO:test
-                    getRooms = packet.getAssociatedObject(new TypeToken<>() {
+                    //noinspection Convert2Diamond
+                    getRooms = packet.getAssociatedObject(new TypeToken<List<Room>>() {
                     });
                     break;
                 case JOIN_ROOM:
