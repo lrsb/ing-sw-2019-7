@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.network;
 
+import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
@@ -15,7 +16,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class ClientSocketImpl implements API, AdrenalineSocketListener {
     private final @NotNull AdrenalineSocket adrenalineSocket;
@@ -138,8 +142,9 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                     activeGame = packet.getAssociatedObject(UUID.class);
                     break;
                 case GET_ROOMS:
-                    //noinspection unchecked
-                    getRooms = packet.getAssociatedObject(ArrayList.class);
+                    //TODO:test
+                    getRooms = packet.getAssociatedObject(new TypeToken<>() {
+                    });
                     break;
                 case JOIN_ROOM:
                     joinRoom = packet.getAssociatedObject(Room.class);

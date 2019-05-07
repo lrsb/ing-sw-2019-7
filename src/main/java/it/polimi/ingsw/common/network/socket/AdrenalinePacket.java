@@ -1,6 +1,7 @@
 package it.polimi.ingsw.common.network.socket;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,6 +33,15 @@ public class AdrenalinePacket implements Serializable {
     public @Nullable <T> T getAssociatedObject(@NotNull Class<T> type) {
         try {
             return new Gson().fromJson((String) new Gson().fromJson(jsonObject, ArrayList.class).get(1), type);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public @Nullable <T> T getAssociatedObject(@NotNull TypeToken<T> type) {
+        try {
+            return new Gson().fromJson((String) new Gson().fromJson(jsonObject, ArrayList.class).get(1), type.getType());
         } catch (Exception e) {
             e.printStackTrace();
             return null;

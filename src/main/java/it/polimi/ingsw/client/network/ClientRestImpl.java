@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.network;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
@@ -20,7 +21,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class ClientRestImpl implements API {
     private final @NotNull HttpClient client = HttpClient.newHttpClient();
@@ -73,8 +77,8 @@ public class ClientRestImpl implements API {
     public @Nullable List<Room> getRooms(@NotNull String token) {
         try {
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/getRooms")).GET().header("auth-token", token).build();
-            //noinspection unchecked
-            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), ArrayList.class);
+            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), new TypeToken<List<Room>>() {
+            }.getType());
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

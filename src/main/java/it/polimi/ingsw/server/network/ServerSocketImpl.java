@@ -52,10 +52,10 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     Server.controller.doAction(token, packet.getAssociatedObject(Action.class));
                     break;
                 case GAME_UPDATE:
-                    Server.controller.addGameListener(token, game -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, game)));
+                    Server.controller.addGameListener(token, e -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, e)));
                     break;
                 case ROOM_UPDATE:
-                    Server.controller.addRoomListener(token, room -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, null, room)));
+                    Server.controller.addRoomListener(token, e -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, null, e)));
                     break;
                 case REMOVE_GAME_UPDATES:
                     Server.controller.removeGameListener(token);

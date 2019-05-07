@@ -124,7 +124,7 @@ public class ServerRestImpl extends NanoWSD {
             executorService.submit(() -> {
                 while (isOpen()) try {
                     sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Ping, true, ""));
-                    Thread.sleep(50000);
+                    Thread.sleep(30000);
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                     Thread.currentThread().interrupt();
