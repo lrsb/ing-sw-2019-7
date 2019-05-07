@@ -194,6 +194,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
             Thread.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 }

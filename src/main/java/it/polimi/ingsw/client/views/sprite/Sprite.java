@@ -54,7 +54,7 @@ public class Sprite {
     }
 
     public void setX(int x) {
-        x = x;
+        this.x = x;
         updated();
     }
 
@@ -63,7 +63,7 @@ public class Sprite {
     }
 
     public void setY(int y) {
-        y = y;
+        this.y = y;
         updated();
     }
 
