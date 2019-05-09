@@ -22,5 +22,3 @@ deploy:
       echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
       docker push registry.heroku.com/$HEROKU_APP_NAME/web;
       heroku container:release web --app $HEROKU_APP_NAME
-    on:
-      branch: master
