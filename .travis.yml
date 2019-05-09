@@ -9,10 +9,6 @@ script:
   - mvn clean verify
   - bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
 
-after_success:
-  - mvn clean package -Dmaven.test.skip=true
-  - docker build -t webswing .
-
 deploy:
   - provider: heroku
     api_key:
@@ -20,9 +16,8 @@ deploy:
 
   - provider: script
     script:
+      mvn clean package -Dmaven.test.skip=true;
+      docker build -t webswing .;
       echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com;
       docker push registry.heroku.com/$HEROKU_APP_NAME/web;
       heroku container:release web --app $HEROKU_APP_NAME
-
-    on:
-      branch: master
