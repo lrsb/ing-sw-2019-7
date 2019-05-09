@@ -19,8 +19,8 @@ public class Player implements Serializable {
     private @NotNull UUID uuid;
     private @NotNull String nickname;
     private @Nullable Point position;
-    private @NotNull ArrayList<String> damagesTaken = new ArrayList<>();
-    private @NotNull ArrayList<String> marksTaken = new ArrayList<>();
+    private @NotNull ArrayList<UUID> damagesTaken = new ArrayList<>();
+    private @NotNull ArrayList<UUID> marksTaken = new ArrayList<>();
     private int deaths = 0;
     private int points = 0;
     private @NotNull int[] cubes = {3, 3, 3};
@@ -42,7 +42,7 @@ public class Player implements Serializable {
         return nickname;
     }
 
-    public @NotNull ArrayList<String> getDamagesTaken() {
+    public @NotNull ArrayList<UUID> getDamagesTaken() {
         return damagesTaken;
     }
 
@@ -73,22 +73,25 @@ public class Player implements Serializable {
     //gives damages, convert marks to damages and finally gives marks
     public void takeHits(@NotNull Game game, int damages, int marks) {
         for (int i = 0; i < damages; i++) {
-            if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().nickname);
+            if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().uuid);
         }
         if (damages > 0) {
-            for (String name : marksTaken) {
-                if (game.getActualPlayer().nickname.equals(name)) {
-                    marksTaken.remove(name);
-                    if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().nickname);
+            for (UUID hitterUuid : marksTaken) {
+                if (game.getActualPlayer().uuid.equals(hitterUuid)) {
+                    marksTaken.remove(hitterUuid);
+                    if (damagesTaken.size() < 12) {
+                        damagesTaken.add(game.getActualPlayer().uuid);
+                        if (!game.lastsDamaged.contains(this)) game.lastsDamaged.add(this);
+                    }
                 }
             }
         }
         int oldMarks = 0;
-        for (String name : marksTaken) {
-            if (game.getActualPlayer().nickname.equals(name)) oldMarks++;
+        for (UUID hitterUuid : marksTaken) {
+            if (game.getActualPlayer().uuid.equals(hitterUuid)) oldMarks++;
         }
         for (int i = 0; i < marks && oldMarks + i < 3; i++) {
-            marksTaken.add(game.getActualPlayer().nickname);
+            marksTaken.add(game.getActualPlayer().uuid);
         }
     }
 
@@ -109,8 +112,6 @@ public class Player implements Serializable {
         return cubes[color.getIndex()];
     }
 
-    //removes ammos when player has to pay a cost
-    //!!!A PLAYER CAN PAY EVEN WITH POWERUPS!!!
     public void removeColoredCubes(@NotNull AmmoCard.Color color, int number) {
         cubes[color.getIndex()] -= number;
     }
@@ -127,7 +128,7 @@ public class Player implements Serializable {
 
     public void addWeapon(Weapon.Name weapon) {
         assert weapons.size() < 3;
-        //TODO: e gia carica?
+        //TODO: è gia carica?
         weapons.put(weapon, false);
     }
 

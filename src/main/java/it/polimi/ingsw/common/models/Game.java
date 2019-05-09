@@ -22,6 +22,7 @@ public abstract class Game implements Serializable {
     protected final @NotNull Cell[][] cells;
     protected final @NotNull Type type;
     protected final @NotNull ArrayList<Player> players = new ArrayList<>();
+    protected final @NotNull ArrayList<Player> lastsDamaged = new ArrayList<>();
     protected int seqPlay = 0;
 
     protected int skulls = 5;
