@@ -17,7 +17,8 @@ deploy:
   - provider: script
     script:
       mvn clean package -Dmaven.test.skip=true;
-      docker build -t webswing .;
-      docker tag webswing registry.heroku.com/$HEROKU_APP_NAME/web;
-      echo $HEROKU_PASSWORD | docker login -u _ --password-stdin registry.heroku.com;
-      docker push registry.heroku.com/$HEROKU_APP_NAME/web
+      docker build -t registry.heroku.com/$HEROKU_APP_NAME/web .;
+      echo $HEROKU_API_KEY | docker login -u _ --password-stdin registry.heroku.com;
+      docker push registry.heroku.com/$HEROKU_APP_NAME/web;
+      heroku auth:token;
+      heroku container:release web --app $HEROKU_APP_NAME
