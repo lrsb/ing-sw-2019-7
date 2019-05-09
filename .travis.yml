@@ -2,11 +2,25 @@ language: java
 jdk: openjdk11
 sudo: false
 
+services:
+  - docker
+
 script:
   - mvn clean verify
   - bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
 
+after_success:
+  - mvn clean package -Dmaven.test.skip=true
+  - docker build -t webswing .
+
 deploy:
-  provider: heroku
-  api_key:
-    secure: dUY05bkhWaAuPgZyauLY6l3z/nD9bSD6um2nXGOmVrPB/YmzyXSlxu3Gxx8CXgNiib4E2/hnpvBUwwYIVwkOgp++ScrKmWpOWa0RdfY4P6bPv7dbjSdSf8esyjgA0DY69QAXk8ngbQ+e/PrxPwGzKNj0rfwMZsbT2lMAvVptPFQUB2G1tD27yN2yoblxJDPq43Y8XC+LER+uA+R8OHVJkTZgZjXxPgbsLY4jTgoAplDHpRqzcuMDsMKm1DRzC4fyjM74M7o9K1AHFhevbssoAOszjWts57JrdrEs0P0BZaGjvFkaWom8TNcN2LwjqZCOjXPbYZBFn1MYN2jZbZFsqjB/BZqGRWu6Mnlu/HQ4cKrYIBAWuxfRrZDu4YlaTte4WGNOkBt8dQAhwL+ss/waCcIyEgwEkwqmy0+YSGGeNC49bT9C28DrZhplhBeauIB+Z+xmr6BVKHogrIKchuPCm989Hd5ajVoRxpGAC6qk01F4nM2PKuvJz7X6N3K0VmROqnbbqoQ6LFBzK66wImSJau7LCFg13GeDFTeBfv/w9SHF8BtSt6ZJ6Z7U7XokUru8QHbTE4gS+AZcRyFMtYlcpqBZ2Ll7X647nojd5TBBXHEKsKnJZmhz1EM+9BIjERG1LNaug5LyRvTmS1STigZNoUrBy7xWaxYrL0JpAL5rASk=
+  - provider: heroku
+    api_key: secure: dUY05bkhWaAuPgZyauLY6l3z/nD9bSD6um2nXGOmVrPB/YmzyXSlxu3Gxx8CXgNiib4E2/hnpvBUwwYIVwkOgp++ScrKmWpOWa0RdfY4P6bPv7dbjSdSf8esyjgA0DY69QAXk8ngbQ+e/PrxPwGzKNj0rfwMZsbT2lMAvVptPFQUB2G1tD27yN2yoblxJDPq43Y8XC+LER+uA+R8OHVJkTZgZjXxPgbsLY4jTgoAplDHpRqzcuMDsMKm1DRzC4fyjM74M7o9K1AHFhevbssoAOszjWts57JrdrEs0P0BZaGjvFkaWom8TNcN2LwjqZCOjXPbYZBFn1MYN2jZbZFsqjB/BZqGRWu6Mnlu/HQ4cKrYIBAWuxfRrZDu4YlaTte4WGNOkBt8dQAhwL+ss/waCcIyEgwEkwqmy0+YSGGeNC49bT9C28DrZhplhBeauIB+Z+xmr6BVKHogrIKchuPCm989Hd5ajVoRxpGAC6qk01F4nM2PKuvJz7X6N3K0VmROqnbbqoQ6LFBzK66wImSJau7LCFg13GeDFTeBfv/w9SHF8BtSt6ZJ6Z7U7XokUru8QHbTE4gS+AZcRyFMtYlcpqBZ2Ll7X647nojd5TBBXHEKsKnJZmhz1EM+9BIjERG1LNaug5LyRvTmS1STigZNoUrBy7xWaxYrL0JpAL5rASk=
+
+  - provider: script
+    script:
+      echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
+      docker push registry.heroku.com/$HEROKU_APP_NAME/web;
+      heroku container:release web --app $HEROKU_APP_NAME
+    on:
+      branch: master

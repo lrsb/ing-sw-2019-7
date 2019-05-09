@@ -1,10 +1,14 @@
 package it.polimi.ingsw.common.models;
 
+import it.polimi.ingsw.client.others.Utils;
+import it.polimi.ingsw.client.views.sprite.Displayable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class Game implements Serializable {
+public abstract class Game implements Displayable, Serializable {
     public static final int MAX_PLAYERS = 5;
     public static final int MIN_PLAYERS = 3;
     protected static final int MAX_X = 4;
@@ -85,6 +89,16 @@ public abstract class Game implements Serializable {
 
     public @NotNull List<Player> getPlayersAtPosition(@NotNull Point point) {
         return players.parallelStream().filter(e -> e.getPosition() != null).filter(e -> e.getPosition().equals(point)).collect(Collectors.toList());
+    }
+
+    @Override
+    public @NotNull BufferedImage getBackImage() throws IOException {
+        return Utils.readJpgImage(Game.class, getType().getLeft());
+    }
+
+    @Override
+    public @NotNull BufferedImage getFrontImage() throws IOException {
+        return Utils.readJpgImage(Game.class, getType().getRight());
     }
 
     public enum Type {

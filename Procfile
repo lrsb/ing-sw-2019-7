@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -Dserver.port=$PORT -cp target/classes:target/dependency/* it.polimi.ingsw.Server -h
+web: java $JAVA_OPTS -Dserver.port=$PORT -cp target/classes:target/lib/* it.polimi.ingsw.Server -h

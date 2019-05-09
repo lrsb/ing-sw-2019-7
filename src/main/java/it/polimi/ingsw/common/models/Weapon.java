@@ -218,12 +218,12 @@ public abstract class Weapon {
 
         @Override
         public @NotNull BufferedImage getFrontImage() throws IOException {
-            return Utils.readImage(Weapon.class, toString());
+            return Utils.readPngImage(Weapon.class, toString());
         }
 
         @Override
         public @NotNull BufferedImage getBackImage() throws IOException {
-            return Utils.readImage(Weapon.class, "back");
+            return Utils.readPngImage(Weapon.class, "back");
         }
     }
 

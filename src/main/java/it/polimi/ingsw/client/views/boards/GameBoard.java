@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.views.boards;
 
+import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.sprite.Sprite;
 import it.polimi.ingsw.client.views.sprite.interpolators.LinearInterpolator;
 import it.polimi.ingsw.common.models.AmmoCard;
@@ -8,7 +9,6 @@ import it.polimi.ingsw.common.models.PowerUp;
 import it.polimi.ingsw.common.models.Weapon;
 import org.jetbrains.annotations.NotNull;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
 
@@ -29,23 +29,20 @@ public class GameBoard extends AbstractBoard {
     private @NotNull Game game;
 
     public GameBoard(@NotNull Dimension dimension, @NotNull Game game) throws IOException {
-        super(dimension);
+        super(dimension, Utils.joinBufferedImage(game.getBackImage(), game.getFrontImage()));
         this.game = game;
 
-        addSprite(new Sprite(0, 0, width / 2, height, ImageIO.read(Game.class.getResourceAsStream("Game/" + game.getType().getLeft() + ".png"))));
-        addSprite(new Sprite(width / 2, 0, width / 2, height, ImageIO.read(Game.class.getResourceAsStream("Game/" + game.getType().getRight() + ".png"))));
-
-        weapon = new Sprite(WEAPON_POSITION, WEAPON_DIMEMSION, ImageIO.read(Weapon.class.getResourceAsStream("Weapon/" + "back" + ".png")));
+        weapon = new Sprite(WEAPON_POSITION, WEAPON_DIMEMSION, Utils.readPngImage(Weapon.class, "back"));
         weapon.setDraggable(true);
         weapon.setTag("weapon");
         addSprite(weapon);
 
-        powerup = new Sprite(POWERUP_POSITION, POWERUP_DIMEMSION, ImageIO.read(PowerUp.class.getResourceAsStream("PowerUp/" + "back" + ".png")));
+        powerup = new Sprite(POWERUP_POSITION, POWERUP_DIMEMSION, Utils.readPngImage(PowerUp.class, "back"));
         powerup.setDraggable(true);
         powerup.setTag("powerup");
         addSprite(powerup);
 
-        ammoCard = new Sprite(AMMOCARD_POSITION, AMMOCARD_DIMEMSION, ImageIO.read(AmmoCard.class.getResourceAsStream("AmmoCard/" + "back" + ".png")));
+        ammoCard = new Sprite(AMMOCARD_POSITION, AMMOCARD_DIMEMSION, Utils.readPngImage(AmmoCard.class, "back"));
         ammoCard.setDraggable(true);
         ammoCard.setTag("ammocard");
         addSprite(ammoCard);

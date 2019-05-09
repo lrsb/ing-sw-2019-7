@@ -7,16 +7,20 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public abstract class AbstractBoard extends SpriteBoard implements SpriteBoardListener {
     protected final int width;
     protected final int height;
+    protected final @NotNull BufferedImage background;
     protected @Nullable GameBoardListener gameBoardListener;
 
-    protected AbstractBoard(@NotNull Dimension dimension) {
+    protected AbstractBoard(@NotNull Dimension dimension, @NotNull BufferedImage background) {
+        super(background);
         super.setBoardListener(this);
         this.width = dimension.width;
         this.height = dimension.height;
+        this.background = background;
     }
 
     @Contract(value = "_, _ -> new", pure = true)

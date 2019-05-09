@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -15,11 +16,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable {
     private static final int FRAMERATE = 60;
     private final @NotNull ArrayList<Sprite> sprites = new ArrayList<>();
+    private final @Nullable BufferedImage background;
     private final @Nullable AtomicBoolean needRepaint = new AtomicBoolean(true);
     private @Nullable SpriteBoardListener boardListener;
     private boolean closed = false;
 
-    public SpriteBoard() {
+    public SpriteBoard(@Nullable BufferedImage background) {
+        this.background = background;
         var mouseListener = new SpriteMouseAdapter();
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
@@ -41,7 +44,7 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
         }).start();
     }
 
-    private static boolean isRetina() {
+    protected static boolean isRetina() {
         var isRetina = false;
         GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         try {
@@ -77,6 +80,8 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
         super.paintComponent(g);
         var graphics = (Graphics2D) g;
         if (isRetina()) graphics.scale(0.5, 0.5);
+        if (background != null)
+            graphics.drawImage(background, 0, 0, isRetina() ? getWidth() * 2 : getWidth(), isRetina() ? getHeight() * 2 : getHeight(), this);
         sprites.forEach(e -> {
             var image = e.getBufferedImage();
             /*if (e.getRotation() != 0) {

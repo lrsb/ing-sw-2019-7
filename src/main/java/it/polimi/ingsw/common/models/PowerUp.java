@@ -53,12 +53,12 @@ public class PowerUp implements Displayable, Serializable {
 
     @Override
     public @NotNull BufferedImage getFrontImage() throws IOException {
-        return Utils.readImage(getClass(), type.name().substring(0, 3) + ammoColor.name().substring(0, 1));
+        return Utils.readPngImage(getClass(), type.name().substring(0, 3) + ammoColor.name().substring(0, 1));
     }
 
     @Override
     public @NotNull BufferedImage getBackImage() throws IOException {
-        return Utils.readImage(getClass(), "back");
+        return Utils.readPngImage(getClass(), "back");
     }
 
     /**
