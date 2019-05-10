@@ -61,6 +61,10 @@ public class Player implements Serializable {
         points += pointsAdded;
     }
 
+    public boolean hasPowerUp(@NotNull PowerUp powerUp) {
+        return powerUps.contains(powerUp);
+    }
+
     public boolean hasWeapon(@Nullable Weapon.Name weapon) {
         return weapons.get(weapon) != null;
     }

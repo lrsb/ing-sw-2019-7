@@ -21,6 +21,10 @@ public class PowerUp implements Displayable, Serializable {
 
     private final @NotNull AmmoCard.Color ammoColor;
     private final @NotNull Type type;
+    private final @NotNull Game game;
+    private @Nullable Player target;
+    private @Nullable Point targetPoint;
+
 
     /**
      * PowerUp constructor.
@@ -29,9 +33,10 @@ public class PowerUp implements Displayable, Serializable {
      * @param type      Indicate the the type of the powerUp card ( ex: Teleporter).
      */
     @Contract(pure = true)
-    public PowerUp(@NotNull AmmoCard.Color ammoColor, @NotNull Type type) {
+    public PowerUp(@NotNull AmmoCard.Color ammoColor, @NotNull Type type, @NotNull Game game) {
         this.ammoColor = ammoColor;
         this.type = type;
+        this.game = game;
     }
 
     /**
@@ -52,6 +57,14 @@ public class PowerUp implements Displayable, Serializable {
     @Contract(pure = true)
     public @NotNull Type getType() {
         return type;
+    }
+
+    public void addTarget(@NotNull Player target) {
+        this.target = target;
+    }
+
+    public void addTargetPoint(@NotNull Point targetPoint) {
+        this.targetPoint = targetPoint;
     }
 
     @Override
@@ -83,7 +96,14 @@ public class PowerUp implements Displayable, Serializable {
         TARGETING_SCOPE, NEWTON, TAGBACK_GRENADE, TELEPORTER
     }
 
-    public boolean canBeUsed(@Nullable Player target, @Nullable Point targetPoint, @Nullable Game game) {
+    public boolean use() {
+        if ((this.getType() == Type.TAGBACK_GRENADE && target.hasPowerUp(this) ||
+                game.getActualPlayer().hasPowerUp(this)) && canBeUsed()) effect();
+        else return false;
+        return true;
+    }
+
+    private boolean canBeUsed() {
         switch (getType()) {
             case TARGETING_SCOPE:
                 return game.getLastsDamaged().contains(target);
@@ -100,7 +120,7 @@ public class PowerUp implements Displayable, Serializable {
         return false;
     }
 
-    public void use(@Nullable Player target, @Nullable Point targetPoint, @Nullable Game game) {
+    private void effect() {
         switch (getType()) {
             case TARGETING_SCOPE:
                 if (target.getDamagesTaken().size() < 12) target.getDamagesTaken().add(game.getActualPlayer().getUuid());
@@ -112,11 +132,12 @@ public class PowerUp implements Displayable, Serializable {
                 //TODO: controlla -> qui dico che target è chi lo usa!!!
                 if (game.getActualPlayer().getMarksTaken().stream().filter(e -> e.equals(target.getUuid())).count() < 3)
                     game.getActualPlayer().getMarksTaken().add(target.getUuid());
-                break;
+                target.removePowerUp(this);
+                return;
             case TELEPORTER:
                 game.getActualPlayer().setPosition(targetPoint);
                 break;
         }
-        //TODO: discard card
+        game.getActualPlayer().removePowerUp(this);
     }
 }
