@@ -666,13 +666,14 @@ public abstract class Weapon {
                                 (basicTargets.stream()
                                 .allMatch(e -> e.getPosition().getX() == game.getActualPlayer().getPosition().getX()) &&
                                 basicTargets.stream().mapToDouble(e -> e.getPosition().getY())
-                                        .reduce(1, (e, f) -> (e - game.getActualPlayer().getPosition().getY())*
+                                        .reduce(1, (e, f) -> e *
                                                 (f - game.getActualPlayer().getPosition().getY())) >= 0 ||
                                 basicTargets.stream()
                                 .allMatch(e -> e.getPosition().getY() == game.getActualPlayer().getPosition().getY()) &&
                                 basicTargets.stream().mapToDouble(e -> e.getPosition().getX())
-                                        .reduce(1, (e, f) -> (e - game.getActualPlayer().getPosition().getX())*
+                                        .reduce(1, (e, f) -> e *
                                                 (f - game.getActualPlayer().getPosition().getX())) >= 0);
+                //TODO: controllare la reduce
             }
 
             @Override
@@ -732,12 +733,14 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                return false;
+                return !basicTargets.isEmpty() &&
+                        (!alternativeFire && basicTargets.size() == 1 || alternativeFire && basicTargets.size() < 4) &&
+                        basicTargets.stream().allMatch(e -> game.getActualPlayer().canSeeNotSame(e, game.getCells()));
             }
 
             @Override
             void basicFireImpl() {
-
+                basicTargets.forEach(e -> e.takeHits(game, alternativeFire ? 0 : 1, alternativeFire ? 1 : 2));
             }
         }
 
@@ -748,12 +751,18 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                return false;
+                return basicTargets.size() == 1 && (!alternativeFire &&
+                        basicTargets.get(0).getPosition().equals(game.getActualPlayer().getPosition()) &&
+                        (basicTargetsPoint == null ||
+                                game.canMove(basicTargets.get(0).getPosition(), basicTargetsPoint, 1)) ||
+                        alternativeFire && !basicTargets.get(0).getPosition().equals(game.getActualPlayer().getPosition()) &&
+                        game.canMove(game.getActualPlayer().getPosition(), basicTargets.get(0).getPosition(), 1));
             }
 
             @Override
             void basicFireImpl() {
-
+                basicTargets.get(0).takeHits(game, alternativeFire ? 2 : 3, 0);
+                if (!alternativeFire) basicTargets.get(0).setPosition(basicTargetsPoint);
             }
 
         }
@@ -766,12 +775,49 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                return false;
+                if (alternativeFire) {
+                    if (basicTargetsPoint == null || game.getActualPlayer().getPosition().equals(basicTargetsPoint) ||
+                            Stream.of(Bounds.Direction.values()).noneMatch(e -> game.getActualPlayer()
+                                    .isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 2, e) &&
+                                    (basicTargets.isEmpty() || basicTargets.stream().allMatch(f ->
+                                            !game.getActualPlayer().getPosition().equals(f.getPosition()) &&
+                                                    game.getActualPlayer().isPointAtMaxDistanceInDirection
+                                                            (f.getPosition(), game.getCells(), 2, e)))))
+                        return false;
+                    if (basicTargets.isEmpty()) return true;
+                    else if (basicTargets.size() == 1)
+                        return !(!game.canMove(game.getActualPlayer().getPosition(), basicTargets.get(0).getPosition(), 1) &&
+                                game.canMove(game.getActualPlayer().getPosition(), basicTargetsPoint, 1));
+                    else if (basicTargets.size() == 2)
+                        return !basicTargets.get(0).getPosition().equals(basicTargets.get(1).getPosition()) &&
+                                !game.canMove(game.getActualPlayer().getPosition(), basicTargetsPoint, 1);
+                    return false;
+                } else {
+                    return basicTargets.size() == 1 &&
+                            !game.getActualPlayer().getPosition().equals(basicTargets.get(0).getPosition()) &&
+                            game.canMove(game.getActualPlayer().getPosition(), basicTargets.get(0).getPosition(), 1);
+                }
             }
 
             @Override
             void basicFireImpl() {
-
+                if (!alternativeFire) {
+                    game.getActualPlayer().setPosition(basicTargets.get(0).getPosition());
+                    basicTargets.get(0).takeHits(game, 1, 2);
+                } else {
+                    Stream.of(Bounds.Direction.values()).filter(e -> game.getActualPlayer()
+                            .isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 2, e))
+                            .forEach(e -> game.getActualPlayer().setPosition
+                                    (new Point((int) game.getActualPlayer().getPosition().getX() + e.getdX(),
+                                            (int) game.getActualPlayer().getPosition().getY() + e.getdY())));
+                    basicTargets.stream().filter(e -> game.getActualPlayer().getPosition().equals(e.getPosition()))
+                            .forEach(e -> e.takeHits(game, 2, 0));
+                    if (!game.getActualPlayer().getPosition().equals(basicTargetsPoint)) {
+                        game.getActualPlayer().setPosition(basicTargetsPoint);
+                        basicTargets.stream().filter(e -> game.getActualPlayer().getPosition().equals(e.getPosition()))
+                                .forEach(e -> e.takeHits(game, 2, 0));
+                    }
+                }
             }
 
         }
@@ -784,12 +830,21 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                return false;
+                return alternativeFire || !basicTargets.isEmpty() && basicTargets.size() < 3 && basicTargets.stream()
+                        .allMatch(e -> game.canMove(game.getActualPlayer().getPosition(), e.getPosition(), 1) &&
+                                !game.getActualPlayer().getPosition().equals(e.getPosition())) &&
+                        basicTargets.stream().map(e -> e.getPosition()).distinct().count() == basicTargets.size();
             }
 
             @Override
             void basicFireImpl() {
-
+                if (!alternativeFire) {
+                    basicTargets.forEach(e -> e.takeHits(game, 1, 0));
+                } else {
+                    game.getPlayers().parallelStream().filter(e -> !game.getActualPlayer().equals(e.getPosition()) &&
+                            game.canMove(game.getActualPlayer().getPosition(), e.getPosition(), 1))
+                            .forEach(e -> e.takeHits(game, 1, 0));
+                }
             }
         }
 
@@ -801,12 +856,17 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                return false;
+                return basicTargets.size() == 1 &&
+                        game.getActualPlayer().getPosition().equals(basicTargets.get(0).getPosition()) &&
+                        (!alternativeFire || basicTargetsPoint == null ||
+                                Stream.of(Bounds.Direction.values()).anyMatch(e -> game.getActualPlayer()
+                                        .isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 2, e)));
             }
 
             @Override
             void basicFireImpl() {
-
+                basicTargets.get(0).takeHits(game, alternativeFire ? 3 : 2, 0);
+                if (alternativeFire && basicTargetsPoint != null) basicTargets.get(0).setPosition(basicTargetsPoint);
             }
         }
     }
