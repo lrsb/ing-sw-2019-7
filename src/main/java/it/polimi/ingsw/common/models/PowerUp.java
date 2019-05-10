@@ -4,10 +4,13 @@ import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.sprite.Displayable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.stream.Stream;
 
 /**
  * Each powerup card is composed in 2 parts: it has a specific type and a color.
@@ -77,6 +80,43 @@ public class PowerUp implements Displayable, Serializable {
      * {@link PowerUp} Type enum
      */
     public enum Type {
-        TARGETING_SCOPE, NEWTON, TAGBACK_GRANADE, TELEPORTER
+        TARGETING_SCOPE, NEWTON, TAGBACK_GRENADE, TELEPORTER
+    }
+
+    public boolean canBeUsed(@Nullable Player target, @Nullable Point targetPoint, @Nullable Game game) {
+        switch (getType()) {
+            case TARGETING_SCOPE:
+                return game.getLastsDamaged().contains(target);
+            case NEWTON:
+                return game.getPlayers().contains(target) && !game.getActualPlayer().equals(target) &&
+                        !target.getPosition().equals(targetPoint) && Stream.of(Bounds.Direction.values())
+                        .anyMatch(e -> target.isPointAtMaxDistanceInDirection(targetPoint, game.getCells(), 2, e));
+            case TAGBACK_GRENADE:
+                return game.getTagbackPlayers().contains(target);
+            case TELEPORTER:
+                //TODO: controlla -> metto un numero esagerato di passi per verificare che non inserisca una casella fuori da game
+                return targetPoint != null && game.canMove(game.getActualPlayer().getPosition(), targetPoint, 20);
+        }
+        return false;
+    }
+
+    public void use(@Nullable Player target, @Nullable Point targetPoint, @Nullable Game game) {
+        switch (getType()) {
+            case TARGETING_SCOPE:
+                if (target.getDamagesTaken().size() < 12) target.getDamagesTaken().add(game.getActualPlayer().getUuid());
+                break;
+            case NEWTON:
+                target.setPosition(targetPoint);
+                break;
+            case TAGBACK_GRENADE:
+                //TODO: controlla -> qui dico che target è chi lo usa!!!
+                if (game.getActualPlayer().getMarksTaken().stream().filter(e -> e.equals(target.getUuid())).count() < 3)
+                    game.getActualPlayer().getMarksTaken().add(target.getUuid());
+                break;
+            case TELEPORTER:
+                game.getActualPlayer().setPosition(targetPoint);
+                break;
+        }
+        //TODO: discard card
     }
 }

@@ -68,6 +68,17 @@ public abstract class Game implements Displayable, Serializable {
         return players.get(seqPlay % players.size());
     }
 
+    public @NotNull ArrayList<Player> getLastsDamaged() {
+        return lastsDamaged;
+    }
+
+    public @NotNull ArrayList<Player> getTagbackPlayers() {
+        ArrayList<Player> tagbackPlayers = new ArrayList<>();
+        lastsDamaged.parallelStream().filter(e -> e.getPowerUps().parallelStream()
+                .anyMatch(f -> f.getType().equals(PowerUp.Type.TAGBACK_GRENADE))).forEach(e -> tagbackPlayers.add(e));
+        return tagbackPlayers;
+    }
+
     public boolean isFirstMove() {
         return getActualPlayer().isFirstMove();
     }

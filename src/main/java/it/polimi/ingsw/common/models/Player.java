@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Player implements Serializable {
@@ -44,6 +43,10 @@ public class Player implements Serializable {
 
     public @NotNull ArrayList<UUID> getDamagesTaken() {
         return damagesTaken;
+    }
+
+    public @NotNull ArrayList<UUID> getMarksTaken() {
+        return marksTaken;
     }
 
     public int getDeaths() {
@@ -159,21 +162,6 @@ public class Player implements Serializable {
                         cells[player.position.x][player.position.y].getColor());
     }
 
-    public @NotNull List<Player> getVisiblePlayers(@NotNull Game game) {
-        return game.getPlayers().parallelStream()
-                .filter(e -> !game.getActualPlayer().equals(e) && game.getActualPlayer().canSeeNotSame(e, game.getCells())).collect(Collectors.toList());
-    }
-
-    public boolean canBeSeenFrom(@NotNull Point point, @NotNull Cell[][] cells) {
-        if (cells[point.x][point.y].getColor() == cells[position.x][position.y].getColor()) return true;
-        for (Bounds.Direction d : Bounds.Direction.values()) {
-            if (cells[point.x][point.y].getBounds().getType(d) != Bounds.Type.WALL &&
-                    cells[position.x][position.y].getColor() !=
-                            cells[point.x + d.getdX()][point.y + d.getdY()].getColor()) return true;
-        }
-        return false;
-    }
-
     public boolean isPointAtMaxDistanceInDirection(@NotNull Point point, @NotNull Cell[][] cells, int maxDistance, @NotNull Bounds.Direction direction) {
         int countDistance = 0, x = position.x, y = position.y;
         while (countDistance < maxDistance) {
@@ -186,43 +174,12 @@ public class Player implements Serializable {
         return false;
     }
 
-    public boolean isPlayerNear2(@NotNull Player player, @NotNull Cell[][] cells) {
-        for (Bounds.Direction d : Bounds.Direction.values()) {
-            if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL) {
-                if (cells[position.x + d.getdX()][position.y + d.getdY()].getBounds().getType(d) != Bounds.Type.WALL &&
-                        player.position.x == position.x + 2 * d.getdX() &&
-                        player.position.y == position.y + 2 * d.getdY()) return true;
-            }
-        }
-        return false;
-    }
-
     public boolean canSeeCell(@NotNull Point point, @NotNull Cell[][] cells) {
         if (cells[position.x][position.y].getColor() == cells[point.x][point.y].getColor()) return true;
         for (var direction : Bounds.Direction.values())
             if (cells[position.x][position.y].getBounds().getType(direction) == Bounds.Type.DOOR &&
                     cells[position.x + direction.getdX()][position.y + direction.getdY()].getColor()
                             == cells[point.x][point.y].getColor()) return true;
-        return false;
-    }
-
-    public boolean isCellNear(@NotNull Point point, @NotNull Cell[][] cells) {
-        for (Bounds.Direction d : Bounds.Direction.values()) {
-            if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL &&
-                    point.x == position.x + d.getdX() && point.y == position.y + d.getdY())
-                return true;
-        }
-        return false;
-    }
-
-    public boolean isCellNear2Straight(@NotNull Point point, @NotNull Cell[][] cells) {
-        for (Bounds.Direction d : Bounds.Direction.values()) {
-            if (cells[position.x][position.y].getBounds().getType(d) != Bounds.Type.WALL) {
-                if (cells[position.x + d.getdX()][position.y + d.getdY()].getBounds().getType(d) != Bounds.Type.WALL &&
-                        point.x == position.x + 2 * d.getdX() &&
-                        point.y == position.y + 2 * d.getdY()) return true;
-            }
-        }
         return false;
     }
 
