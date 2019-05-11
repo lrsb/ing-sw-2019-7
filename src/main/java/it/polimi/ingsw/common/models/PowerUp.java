@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.util.stream.Stream;
 
 /**
- * Each powerup card is composed in 2 parts: it has a specific type and a color.
+ * Each PowerUp card is composed in 2 parts: it has a specific type and a color.
  * For each type you have 3 card available, one for each color.
  */
 public class PowerUp implements Displayable, Serializable {
@@ -21,10 +21,8 @@ public class PowerUp implements Displayable, Serializable {
 
     private final @NotNull AmmoCard.Color ammoColor;
     private final @NotNull Type type;
-    private final @NotNull Game game;
     private @Nullable Player target;
     private @Nullable Point targetPoint;
-
 
     /**
      * PowerUp constructor.
@@ -33,10 +31,9 @@ public class PowerUp implements Displayable, Serializable {
      * @param type      Indicate the the type of the powerUp card ( ex: Teleporter).
      */
     @Contract(pure = true)
-    public PowerUp(@NotNull AmmoCard.Color ammoColor, @NotNull Type type, @NotNull Game game) {
+    public PowerUp(@NotNull AmmoCard.Color ammoColor, @NotNull Type type) {
         this.ammoColor = ammoColor;
         this.type = type;
-        this.game = game;
     }
 
     /**
@@ -59,11 +56,11 @@ public class PowerUp implements Displayable, Serializable {
         return type;
     }
 
-    public void addTarget(@NotNull Player target) {
+    public void setTarget(@NotNull Player target) {
         this.target = target;
     }
 
-    public void addTargetPoint(@NotNull Point targetPoint) {
+    public void setTargetPoint(@NotNull Point targetPoint) {
         this.targetPoint = targetPoint;
     }
 
@@ -89,21 +86,15 @@ public class PowerUp implements Displayable, Serializable {
         return obj instanceof PowerUp && ammoColor == ((PowerUp) obj).ammoColor && type == ((PowerUp) obj).type;
     }
 
-    /**
-     * {@link PowerUp} Type enum
-     */
-    public enum Type {
-        TARGETING_SCOPE, NEWTON, TAGBACK_GRENADE, TELEPORTER
+    public boolean use(@NotNull Game game) {
+        if ((this.getType() == Type.TAGBACK_GRENADE && target.hasPowerUp(this) || game.getActualPlayer().hasPowerUp(this)) && canBeUsed(game)) {
+            useImpl(game);
+            return true;
+        }
+        return false;
     }
 
-    public boolean use() {
-        if ((this.getType() == Type.TAGBACK_GRENADE && target.hasPowerUp(this) ||
-                game.getActualPlayer().hasPowerUp(this)) && canBeUsed()) effect();
-        else return false;
-        return true;
-    }
-
-    private boolean canBeUsed() {
+    private boolean canBeUsed(@NotNull Game game) {
         switch (getType()) {
             case TARGETING_SCOPE:
                 return game.getLastsDamaged().contains(target);
@@ -120,10 +111,11 @@ public class PowerUp implements Displayable, Serializable {
         return false;
     }
 
-    private void effect() {
+    private void useImpl(@NotNull Game game) {
         switch (getType()) {
             case TARGETING_SCOPE:
-                if (target.getDamagesTaken().size() < 12) target.getDamagesTaken().add(game.getActualPlayer().getUuid());
+                if (target.getDamagesTaken().size() < 12)
+                    target.getDamagesTaken().add(game.getActualPlayer().getUuid());
                 break;
             case NEWTON:
                 target.setPosition(targetPoint);
@@ -139,5 +131,12 @@ public class PowerUp implements Displayable, Serializable {
                 break;
         }
         game.getActualPlayer().removePowerUp(this);
+    }
+
+    /**
+     * {@link PowerUp} Type enum
+     */
+    public enum Type {
+        TARGETING_SCOPE, NEWTON, TAGBACK_GRENADE, TELEPORTER
     }
 }
