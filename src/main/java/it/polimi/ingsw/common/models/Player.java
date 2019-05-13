@@ -76,7 +76,7 @@ public class Player implements Serializable {
         int maximumPoints = 8;
         for (int i = 0; i < deaths; i++) {
             maximumPoints -= 2;
-            if (maximumPoints < 2) maximumPoints = 1;
+            if (maximumPoints < 2) return 1;
         }
         return maximumPoints;
     }
@@ -128,6 +128,15 @@ public class Player implements Serializable {
         for (int i = 0; i < marks && oldMarks + i < 3; i++) {
             marksTaken.add(game.getActualPlayer().uuid);
         }
+    }
+
+    public void addDamage(@NotNull Player hitter) {
+        if (damagesTaken.size() < 12) damagesTaken.add(hitter.getUuid());
+    }
+
+    public void addMark(@NotNull Player avenger) {
+        if (marksTaken.parallelStream().filter(e -> e == avenger.getUuid()).count() < 3)
+            marksTaken.add(avenger.getUuid());
     }
 
     public void setPlayed() {

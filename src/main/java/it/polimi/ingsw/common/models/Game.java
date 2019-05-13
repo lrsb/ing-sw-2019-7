@@ -75,7 +75,7 @@ public abstract class Game implements Displayable, Serializable {
     public @NotNull ArrayList<Player> getTagbackPlayers() {
         ArrayList<Player> tagbackPlayers = new ArrayList<>();
         lastsDamaged.parallelStream().filter(e -> e.getPowerUps().parallelStream()
-                .anyMatch(f -> f.getType().equals(PowerUp.Type.TAGBACK_GRENADE))).forEach(e -> tagbackPlayers.add(e));
+                .anyMatch(f -> f.getType().equals(PowerUp.Type.TAGBACK_GRENADE))).forEach(tagbackPlayers::add);
         return tagbackPlayers;
     }
 
@@ -85,7 +85,7 @@ public abstract class Game implements Displayable, Serializable {
 
     private ArrayList<Player> getDeadPlayers() {
         ArrayList<Player> deadPlayers = new ArrayList<>();
-        getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() > 10).forEach(e -> deadPlayers.add(e));
+        getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() > 10).forEach(deadPlayers::add);
         return deadPlayers;
     }
 
@@ -93,8 +93,16 @@ public abstract class Game implements Displayable, Serializable {
         getActualPlayer().addPoints(getDeadPlayers().size() > 1 ? 1 : 0);
         getDeadPlayers().forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f)
-                .forEach(g -> g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 :
-                        e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f)))));
+                .forEach(g -> {g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 :
+                        e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
+                g.addPoints(e.getSortedHitters().indexOf(f) == 1 ? 1 : 0);
+                if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) e.addMark(g);})));
+        getDeadPlayers().forEach(Player::incrementDeaths);
+    }
+
+    private void reborn() {
+        /*TODO: foreach in getDeadPlayer draw a PowerUpCard and discard a PowerUp
+           player respawn on the spawnpoint of the color of the discarded PowerUp*/
     }
 
     @Contract(pure = true)
