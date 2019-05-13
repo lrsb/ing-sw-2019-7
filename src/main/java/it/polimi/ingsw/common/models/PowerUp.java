@@ -122,8 +122,7 @@ public class PowerUp implements Displayable, Serializable {
                 break;
             case TAGBACK_GRENADE:
                 //TODO: controlla -> qui dico che target è chi lo usa!!!
-                if (game.getActualPlayer().getMarksTaken().stream().filter(e -> e.equals(target.getUuid())).count() < 3)
-                    game.getActualPlayer().getMarksTaken().add(target.getUuid());
+                game.getActualPlayer().addMark(target);
                 target.removePowerUp(this);
                 return;
             case TELEPORTER:

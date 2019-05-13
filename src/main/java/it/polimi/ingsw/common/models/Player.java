@@ -73,12 +73,7 @@ public class Player implements Serializable {
     }
 
     public int getMaximumPoints() {
-        int maximumPoints = 8;
-        for (int i = 0; i < deaths; i++) {
-            maximumPoints -= 2;
-            if (maximumPoints < 2) return 1;
-        }
-        return maximumPoints;
+        return 2 * deaths >= 8 ? 1 : 8 - 2 * deaths;
     }
 
     public void incrementDeaths() {
