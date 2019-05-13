@@ -83,6 +83,20 @@ public abstract class Game implements Displayable, Serializable {
         return getActualPlayer().isFirstMove();
     }
 
+    private ArrayList<Player> getDeadPlayers() {
+        ArrayList<Player> deadPlayers = new ArrayList<>();
+        getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() > 10).forEach(e -> deadPlayers.add(e));
+        return deadPlayers;
+    }
+
+    private void deathPointsRedistribution() {
+        getActualPlayer().addPoints(getDeadPlayers().size() > 1 ? 1 : 0);
+        getDeadPlayers().forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
+                .filter(g -> g.getUuid() == f)
+                .forEach(g -> g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 :
+                        e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f)))));
+    }
+
     @Contract(pure = true)
     public boolean canMove(@Nullable Point from, @Nullable Point to, int maxStep) {
         return from != null && to != null && canMoveImpl(from, to, 0, maxStep);

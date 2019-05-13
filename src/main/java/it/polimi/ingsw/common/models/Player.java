@@ -45,12 +45,40 @@ public class Player implements Serializable {
         return damagesTaken;
     }
 
+    public @NotNull ArrayList<UUID> getSortedHitters() {
+        ArrayList<UUID> sortedHitters = new ArrayList<>();
+        for (var uuid : damagesTaken) if (!sortedHitters.contains(uuid)) sortedHitters.add(uuid);
+        if (!sortedHitters.isEmpty()) {
+            for (int i = 0; i < sortedHitters.size() - 1; i++) {
+                int finalI = i;
+                int iHits = (int) damagesTaken.parallelStream().filter(e -> e == sortedHitters.get(finalI)).count();
+                for (int j = i + 1; j < sortedHitters.size(); j++) {
+                    int finalJ = j;
+                    int jHits = (int) damagesTaken.parallelStream().filter(e -> e == sortedHitters.get(finalJ)).count();
+                    if (jHits > iHits || jHits == iHits &&
+                            damagesTaken.indexOf(sortedHitters.get(j)) < damagesTaken.indexOf(sortedHitters.get(i))) {
+                        UUID tmp = sortedHitters.get(i);
+                        sortedHitters.set(i, sortedHitters.get(j));
+                        sortedHitters.set(j, tmp);
+                        iHits = jHits;
+                    }
+                }
+            }
+        }
+        return sortedHitters;
+    }
+
     public @NotNull ArrayList<UUID> getMarksTaken() {
         return marksTaken;
     }
 
-    public int getDeaths() {
-        return deaths;
+    public int getMaximumPoints() {
+        int maximumPoints = 8;
+        for (int i = 0; i < deaths; i++) {
+            maximumPoints -= 2;
+            if (maximumPoints < 2) maximumPoints = 1;
+        }
+        return maximumPoints;
     }
 
     public void incrementDeaths() {
@@ -100,11 +128,6 @@ public class Player implements Serializable {
         for (int i = 0; i < marks && oldMarks + i < 3; i++) {
             marksTaken.add(game.getActualPlayer().uuid);
         }
-    }
-
-    //use this at each other's player end turn
-    public boolean amIDead() {
-        return damagesTaken.size() >= 11;
     }
 
     public void setPlayed() {
