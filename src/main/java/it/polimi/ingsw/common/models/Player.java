@@ -95,8 +95,8 @@ public class Player implements Serializable {
         return hasWeapon(weapon) && weapons.get(weapon);
     }
 
-    public boolean unloadWeapon(@Nullable Weapon.Name weapon) {
-        return hasWeapon(weapon) && weapons.put(weapon, false) != null;
+    public void unloadWeapon(@Nullable Weapon.Name weapon) {
+        weapons.put(weapon, false);
     }
 
     //gives damages, convert marks to damages and finally gives marks
@@ -164,9 +164,15 @@ public class Player implements Serializable {
     }
 
     public void addWeapon(Weapon.Name weapon) {
+        weapons.put(weapon, true);
+    }
 
-        //TODO: è gia carica?
-        weapons.put(weapon, false);
+    public void removeWeapon(Weapon.Name weapon) {
+        weapons.remove(weapon);
+    }
+
+    public int getWeaponsSize() {
+        return weapons.size();
     }
 
     public void ammoCardRecharging(@NotNull AmmoCard ammoCard, @Nullable PowerUp powerUp) {

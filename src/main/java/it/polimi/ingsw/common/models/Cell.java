@@ -69,12 +69,12 @@ public class Cell implements Serializable {
         return weapons;
     }
 
-    public boolean addWeapon(Weapon.Name weapon) {
-        if (isSpawnPoint() && weapons.size() < 3) {
-            this.weapons.add(weapon);
-            return true;
-        }
-        return false;
+    public void addWeapon(Weapon.Name weapon) {
+        if (isSpawnPoint() && weapons.size() < 3) this.weapons.add(weapon);
+    }
+
+    public void removeWeapon(Weapon.Name weapon) {
+        if (isSpawnPoint() && weapons.contains(weapon)) weapons.remove(weapon);
     }
 
     /**

@@ -137,6 +137,10 @@ public abstract class Weapon {
         this.firstAdditionalTargetsPoint = firstAdditionalTargetsPoint;
     }
 
+    public void setSecondAdditionalTargetsPoint(@NotNull Point secondAdditionalTargetsPoint) {
+        this.secondAdditionalTargetsPoint = secondAdditionalTargetsPoint;
+    }
+
     public void setBasicAlternativePayment(@NotNull ArrayList<PowerUp> basicAlternativePayment) {
         this.basicAlternativePayment = basicAlternativePayment;
     }
