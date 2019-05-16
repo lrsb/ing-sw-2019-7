@@ -1,5 +1,7 @@
 package it.polimi.ingsw.client.others;
 
+import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.controllers.startup.LoginViewController;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -29,5 +31,11 @@ public class Utils {
         g2.drawImage(img2, null, img1.getWidth(), 0);
         g2.dispose();
         return newImage;
+    }
+
+    public static void jumpBackToLogin(@NotNull NavigationController navigationController) {
+        Preferences.deleteToken();
+        navigationController.popToRootViewController();
+        navigationController.presentViewController(LoginViewController.class, true);
     }
 }

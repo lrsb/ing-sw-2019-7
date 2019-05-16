@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.network;
 
-import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
@@ -133,34 +132,32 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
         try {
             switch (packet.getType()) {
                 case AUTH_USER:
-                    authUser = packet.getAssociatedObject(String.class);
+                    authUser = packet.getAssociatedObject();
                     break;
                 case CREATE_USER:
-                    createUser = packet.getAssociatedObject(String.class);
+                    createUser = packet.getAssociatedObject();
                     break;
                 case GET_ACTIVE_GAME:
-                    activeGame = packet.getAssociatedObject(UUID.class);
+                    activeGame = packet.getAssociatedObject();
                     break;
                 case GET_ROOMS:
                     //TODO:test
-                    //noinspection Convert2Diamond
-                    getRooms = packet.getAssociatedObject(new TypeToken<List<Room>>() {
-                    });
+                    getRooms = packet.getAssociatedObject();
                     break;
                 case JOIN_ROOM:
-                    joinRoom = packet.getAssociatedObject(Room.class);
+                    joinRoom = packet.getAssociatedObject();
                     break;
                 case CREATE_ROOM:
-                    createRoom = packet.getAssociatedObject(Room.class);
+                    createRoom = packet.getAssociatedObject();
                     break;
                 case START_GAME:
-                    startGame = packet.getAssociatedObject(UUID.class);
+                    startGame = packet.getAssociatedObject();
                     break;
                 case DO_ACTION:
-                    doMove = packet.getAssociatedObject(boolean.class);
+                    doMove = packet.getAssociatedObject();
                     break;
                 case GAME_UPDATE:
-                    var game = packet.getAssociatedObject(Game.class);
+                    Game game = packet.getAssociatedObject();
                     if (game != null) Optional.ofNullable(gameListener).ifPresent(f -> {
                         try {
                             f.onGameUpdate(game);
@@ -170,7 +167,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                     });
                     break;
                 case ROOM_UPDATE:
-                    var room = packet.getAssociatedObject(Room.class);
+                    Room room = packet.getAssociatedObject();
                     if (room != null) Optional.ofNullable(roomListener).ifPresent(f -> {
                         try {
                             f.onRoomUpdate(room);

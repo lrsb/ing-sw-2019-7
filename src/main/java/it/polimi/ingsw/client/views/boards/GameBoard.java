@@ -12,14 +12,13 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.io.IOException;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class GameBoard extends AbstractBoard {
-    private final @NotNull Dimension WEAPON_DIMEMSION = transformDim(0.091, 0.214);
-    private final @NotNull Dimension POWERUP_DIMEMSION = transformDim(0.068, 0.136);
+    private final @NotNull Dimension WEAPON_DIMEMSION = transformDim(0.09, 0.2);
+    private final @NotNull Dimension POWERUP_DIMEMSION = transformDim(0.068, 0.13);
     private final @NotNull Sprite weapon;
 
-    private final @NotNull Point WEAPON_POSITION = transformPoint(0.877, 0.269);
-    private final @NotNull Point POWERUP_POSITION = transformPoint(0.902, 0.055);
+    private final @NotNull Point WEAPON_POSITION = transformPoint(0.879, 0.26);
+    private final @NotNull Point POWERUP_POSITION = transformPoint(0.902, 0.05);
     private final @NotNull Sprite powerup;
 
     private final @NotNull Dimension AMMOCARD_DIMEMSION = transformDim(0.07, 0.1);

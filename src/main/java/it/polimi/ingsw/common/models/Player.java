@@ -142,7 +142,7 @@ public class Player implements Serializable {
     }
 
 
-    private void addCube (@NotNull AmmoCard.Color color) {
+    private void addCube(@NotNull AmmoCard.Color color) {
         if (cubes[color.getIndex()] < 3) cubes[color.getIndex()]++;
     }
 

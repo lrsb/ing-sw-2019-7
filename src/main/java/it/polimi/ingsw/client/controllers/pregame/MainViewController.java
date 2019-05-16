@@ -1,10 +1,11 @@
-package it.polimi.ingsw.client.controllers;
+package it.polimi.ingsw.client.controllers.pregame;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.sprite.Sprite;
 import it.polimi.ingsw.client.views.sprite.SpriteBoard;
@@ -19,17 +20,28 @@ public class MainViewController extends BaseViewController {
     private SpriteBoard logo;
     private JButton elencoPartiteButton;
     private JButton nuovaPartitaButton;
-    private JButton opzioniButton;
-    private JButton CLIButton;
+    private JButton cliButton;
+    private JButton esciButton;
 
     public MainViewController(@NotNull NavigationController navigationController) throws IOException {
         super("Benvenuto", 400, 300, navigationController);
         $$$setupUI$$$();
         setContentPane(panel);
         logo.addSprite(new Sprite(10, 40, 370, 70, Utils.readPngImage(getClass(), "logo")));
-        nuovaPartitaButton.addActionListener(e -> getNavigationController().presentViewController(GameViewController.class));
+        nuovaPartitaButton.addActionListener(e -> getNavigationController().presentViewController(NewRoomViewController.class));
         elencoPartiteButton.addActionListener(e -> getNavigationController().presentViewController(GamesListViewController.class));
-        opzioniButton.addActionListener(e -> getNavigationController().presentViewController(SettingsViewController.class));
+        cliButton.addActionListener(e -> {
+            //TODO: passare a cli
+        });
+        esciButton.addActionListener(e -> {
+            Preferences.deleteToken();
+            Utils.jumpBackToLogin(getNavigationController());
+        });
+    }
+
+    @Override
+    public void close() {
+        logo = null;
     }
 
     private void createUIComponents() {
@@ -66,12 +78,12 @@ public class MainViewController extends BaseViewController {
         panel2.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panel2.add(spacer2, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        opzioniButton = new JButton();
-        opzioniButton.setText("Opzioni");
-        panel2.add(opzioniButton, new GridConstraints(3, 1, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        CLIButton = new JButton();
-        CLIButton.setText("CLI");
-        panel2.add(CLIButton, new GridConstraints(4, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        cliButton = new JButton();
+        cliButton.setText("CLI");
+        panel2.add(cliButton, new GridConstraints(3, 1, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        esciButton = new JButton();
+        esciButton.setText("Esci");
+        panel2.add(esciButton, new GridConstraints(4, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer3 = new Spacer();
         panel2.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer4 = new Spacer();
@@ -105,4 +117,5 @@ public class MainViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
+
 }

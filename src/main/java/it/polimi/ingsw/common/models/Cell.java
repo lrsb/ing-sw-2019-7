@@ -32,7 +32,10 @@ public class Cell implements Serializable {
         this.color = color;
         this.bounds = bounds;
         this.spawnPoint = spawnPoint;
-        if (spawnPoint) { this.weapons = new ArrayList<>(); this.ammoCard = null;}
+        if (spawnPoint) {
+            this.weapons = new ArrayList<>();
+            this.ammoCard = null;
+        }
     }
 
     /**

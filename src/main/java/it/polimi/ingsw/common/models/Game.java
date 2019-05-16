@@ -92,10 +92,12 @@ public abstract class Game implements Displayable, Serializable {
         getActualPlayer().addPoints(getDeadPlayers().size() > 1 ? 1 : 0);
         getDeadPlayers().forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f)
-                .forEach(g -> {g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 :
-                        e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
-                g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
-                if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) e.addMark(g);})));
+                .forEach(g -> {
+                    g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 :
+                            e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
+                    g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
+                    if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) e.addMark(g);
+                })));
         getDeadPlayers().forEach(Player::incrementDeaths);
     }
 

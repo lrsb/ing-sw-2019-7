@@ -35,8 +35,9 @@ public class NavigationController implements Closeable {
      *
      * @param controllerClass The BaseViewController to present.
      * @param <T>             View controller type.
+     * @param deleteFromStack If the actual view controller need to be removed from history.
      */
-    public <T extends BaseViewController> void presentViewController(@NotNull Class<T> controllerClass) {
+    public <T extends BaseViewController> void presentViewController(@NotNull Class<T> controllerClass, boolean deleteFromStack) {
         try {
             //noinspection unchecked
             var viewController = (T) controllerClass.getDeclaredConstructors()[0].newInstance(this);
@@ -44,9 +45,21 @@ public class NavigationController implements Closeable {
             viewControllers.get(viewControllers.size() - 2).nextViewControllerInstantiated(viewController);
             viewControllers.get(viewControllers.size() - 2).setVisible(false);
             viewControllers.get(viewControllers.size() - 1).setVisible(true);
+            if (deleteFromStack) viewControllers.remove(viewControllers.size() - 2).dispose();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * When you have to present a new BaseViewController, you can use this method.
+     * After the new viewController is presented, the previous is hided.
+     *
+     * @param controllerClass The BaseViewController to present.
+     * @param <T>             View controller type.
+     */
+    public <T extends BaseViewController> void presentViewController(@NotNull Class<T> controllerClass) {
+        presentViewController(controllerClass, false);
     }
 
     /**
@@ -85,15 +98,18 @@ public class NavigationController implements Closeable {
     /**
      * Closes the controller.
      */
+    @SuppressWarnings("ForLoopReplaceableByForEach")
     @Override
     public void close() {
-        viewControllers.forEach(this::disposeViewController);
+        for (var i = 0; i < viewControllers.size(); i++) disposeViewController(viewControllers.get(i));
         viewControllers.clear();
     }
 
     private void disposeViewController(@NotNull BaseViewController viewController) {
         viewController.controllerPopped();
         viewController.setVisible(false);
+        viewController.close();
         viewController.dispose();
+        viewControllers.remove(viewController);
     }
 }

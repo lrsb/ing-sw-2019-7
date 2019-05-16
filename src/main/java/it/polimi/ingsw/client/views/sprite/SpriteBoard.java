@@ -8,12 +8,13 @@ import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable {
+public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
     private static final int FRAMERATE = 60;
     private final @NotNull ArrayList<Sprite> sprites = new ArrayList<>();
     private final @Nullable BufferedImage background;

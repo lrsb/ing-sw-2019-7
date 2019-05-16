@@ -1,15 +1,12 @@
 package it.polimi.ingsw.server.network;
 
-import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.Server;
-import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.network.socket.AdrenalinePacket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocketListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,15 +20,11 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
             List<String> userInfo;
             switch (packet.getType()) {
                 case AUTH_USER:
-                    //noinspection Convert2Diamond
-                    userInfo = packet.getAssociatedObject(new TypeToken<List<String>>() {
-                    });
+                    userInfo = packet.getAssociatedObject();
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.AUTH_USER, null, Server.controller.authUser(userInfo.get(0), userInfo.get(1))));
                     break;
                 case CREATE_USER:
-                    //noinspection Convert2Diamond
-                    userInfo = packet.getAssociatedObject(new TypeToken<List<String>>() {
-                    });
+                    userInfo = packet.getAssociatedObject();
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_USER, null, Server.controller.createUser(userInfo.get(0), userInfo.get(1))));
                     break;
                 case GET_ACTIVE_GAME:
@@ -41,16 +34,16 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GET_ROOMS, null, Server.controller.getRooms(token)));
                     break;
                 case JOIN_ROOM:
-                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.JOIN_ROOM, null, Server.controller.joinRoom(token, packet.getAssociatedObject(UUID.class))));
+                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.JOIN_ROOM, null, Server.controller.joinRoom(token, packet.getAssociatedObject())));
                     break;
                 case CREATE_ROOM:
-                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_ROOM, null, Server.controller.createRoom(token, packet.getAssociatedObject(String.class))));
+                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_ROOM, null, Server.controller.createRoom(token, packet.getAssociatedObject())));
                     break;
                 case START_GAME:
-                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.START_GAME, null, Server.controller.startGame(token, packet.getAssociatedObject(UUID.class))));
+                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.START_GAME, null, Server.controller.startGame(token, packet.getAssociatedObject())));
                     break;
                 case DO_ACTION:
-                    Server.controller.doAction(token, packet.getAssociatedObject(Action.class));
+                    Server.controller.doAction(token, packet.getAssociatedObject());
                     break;
                 case GAME_UPDATE:
                     Server.controller.addGameListener(token, e -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, e)));

@@ -98,7 +98,10 @@ public class GameImpl extends Game implements Serializable {
         if (Stream.of(AmmoCard.Color.values())
                 .allMatch(e -> getActualPlayer().getColoredCubes(e) >= cost[e.getIndex()])) {
             if (powerUpPayment != null)
-                powerUpPayment.forEach(e -> { getActualPlayer().removePowerUp(e); powerUpsDeck.discardCard(e); });
+                powerUpPayment.forEach(e -> {
+                    getActualPlayer().removePowerUp(e);
+                    powerUpsDeck.discardCard(e);
+                });
             Stream.of(AmmoCard.Color.values()).forEach(e -> getActualPlayer().removeColoredCubes(e, cost[e.getIndex()]));
             return true;
         }
@@ -108,11 +111,12 @@ public class GameImpl extends Game implements Serializable {
     //GRAB STUFF - End
 
     private void nextTurn() {
-        for (var cells : cells) for (var cell : cells) {
-            if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
-            if (cell.isSpawnPoint() && cell.getWeapons().size() < 3 && weaponsDeck.remainedCards() > 0)
-                cell.addWeapon(weaponsDeck.exitCard());
-        }
+        for (var cells : cells)
+            for (var cell : cells) {
+                if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
+                if (cell.isSpawnPoint() && cell.getWeapons().size() < 3 && weaponsDeck.remainedCards() > 0)
+                    cell.addWeapon(weaponsDeck.exitCard());
+            }
         deathPointsRedistribution();
         reborn();
         seqPlay++;

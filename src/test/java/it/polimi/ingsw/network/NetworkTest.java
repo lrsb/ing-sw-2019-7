@@ -36,7 +36,7 @@ class NetworkTest {
         assertEquals(client.joinRoom("", TEST_UUID).getName(), "ok");
         assertEquals(client.createRoom("", "").getName(), "ok");
         assertEquals(client.startGame("", TEST_UUID), TEST_UUID);
-        assertTrue(client.doAction("", new Action()));
+        assertTrue(client.doAction("", new Action(Action.Type.RELOAD, UUID.randomUUID(), null, null, null, null)));
         client.addGameListener("", e -> fail());
         client.removeGameListener("");
         client.addRoomListener("", e -> fail());
