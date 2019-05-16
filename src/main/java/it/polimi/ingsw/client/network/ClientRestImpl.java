@@ -63,10 +63,10 @@ public class ClientRestImpl implements API {
     }
 
     @Override
-    public @Nullable UUID getActiveGame(@NotNull String token) throws RemoteException {
+    public @Nullable Game getActiveGame(@NotNull String token) throws RemoteException {
         try {
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/getActiveGame")).GET().header("auth-token", token).build();
-            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), UUID.class);
+            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), Game.class);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RemoteException();
@@ -108,10 +108,10 @@ public class ClientRestImpl implements API {
     }
 
     @Override
-    public @Nullable UUID startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+    public @Nullable Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         try {
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/startGame?uuid=" + roomUuid)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
-            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), UUID.class);
+            return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), Game.class);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RemoteException();

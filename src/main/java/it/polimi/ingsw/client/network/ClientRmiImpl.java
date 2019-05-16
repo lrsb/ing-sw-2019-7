@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.network;
 
 import it.polimi.ingsw.common.models.Action;
+import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
@@ -34,7 +35,7 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
-    public @Nullable UUID getActiveGame(@NotNull String token) throws RemoteException {
+    public @Nullable Game getActiveGame(@NotNull String token) throws RemoteException {
         return remote.getActiveGame(token);
     }
 
@@ -54,7 +55,7 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
-    public @Nullable UUID startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+    public @Nullable Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         return remote.startGame(token, roomUuid);
     }
 

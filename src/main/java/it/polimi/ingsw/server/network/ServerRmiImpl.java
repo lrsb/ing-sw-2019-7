@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.network;
 
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Action;
+import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
@@ -30,7 +31,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements API {
     }
 
     @Override
-    public @Nullable UUID getActiveGame(@NotNull String token) {
+    public @Nullable Game getActiveGame(@NotNull String token) {
         return Server.controller.getActiveGame(token);
     }
 
@@ -50,7 +51,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements API {
     }
 
     @Override
-    public @Nullable UUID startGame(@NotNull String token, @NotNull UUID roomUuid) {
+    public @Nullable Game startGame(@NotNull String token, @NotNull UUID roomUuid) {
         return Server.controller.startGame(token, roomUuid);
     }
 

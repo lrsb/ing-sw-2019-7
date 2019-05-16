@@ -3,6 +3,7 @@ package it.polimi.ingsw.network;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.client.network.ClientRmiImpl;
 import it.polimi.ingsw.common.models.Action;
+import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.GameListener;
@@ -31,11 +32,11 @@ class NetworkTest {
         var client = new ClientRmiImpl(LocateRegistry.getRegistry(HOST, Server.RMI_PORT).lookup(Server.RMI_NAME));
         assertEquals(client.authUser("", ""), "ok");
         assertEquals(client.createUser("", ""), "ok");
-        assertEquals(client.getActiveGame(""), TEST_UUID);
+        assertNull(client.getActiveGame(""));
         assertEquals(client.getRooms("").get(0).getName(), "ok");
         assertEquals(client.joinRoom("", TEST_UUID).getName(), "ok");
         assertEquals(client.createRoom("", "").getName(), "ok");
-        assertEquals(client.startGame("", TEST_UUID), TEST_UUID);
+        assertNull(client.startGame("", TEST_UUID));
         assertTrue(client.doAction("", new Action(Action.Type.RELOAD, UUID.randomUUID(), null, null, null, null)));
         client.addGameListener("", e -> fail());
         client.removeGameListener("");
@@ -60,8 +61,8 @@ class NetworkTest {
         }
 
         @Override
-        public @Nullable UUID getActiveGame(@NotNull String token) {
-            return TEST_UUID;
+        public @Nullable Game getActiveGame(@NotNull String token) {
+            return null;
         }
 
         @Override
@@ -80,8 +81,8 @@ class NetworkTest {
         }
 
         @Override
-        public @Nullable UUID startGame(@NotNull String token, @NotNull UUID roomUuid) {
-            return TEST_UUID;
+        public @Nullable Game startGame(@NotNull String token, @NotNull UUID roomUuid) {
+            return null;
         }
 
         @Override

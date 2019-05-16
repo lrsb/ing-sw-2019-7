@@ -39,7 +39,7 @@ public class ServerController implements API {
     }
 
     @Override
-    public @Nullable UUID getActiveGame(@Nullable String token) {
+    public @Nullable Game getActiveGame(@Nullable String token) {
         var user = SecureUserController.getUser(token);
         if (user == null) return null;
         return null;
@@ -85,7 +85,7 @@ public class ServerController implements API {
     }
 
     @Override
-    public @Nullable UUID startGame(@Nullable String token, @Nullable UUID roomUuid) {
+    public @Nullable Game startGame(@Nullable String token, @Nullable UUID roomUuid) {
         if (roomUuid != null) try {
             var user = SecureUserController.getUser(token);
             if (user == null) return null;
@@ -97,7 +97,7 @@ public class ServerController implements API {
             informRoomUsers(room);
             //rooms.deleteOne(eq("uuid", roomUuid));
             rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
-            return game.getUuid();
+            return new Gson().fromJson(new Gson().toJson(game), Game.class);
         } catch (Exception e) {
             e.printStackTrace();
         }

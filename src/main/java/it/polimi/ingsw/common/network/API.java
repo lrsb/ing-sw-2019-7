@@ -1,6 +1,7 @@
 package it.polimi.ingsw.common.network;
 
 import it.polimi.ingsw.common.models.Action;
+import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,7 @@ public interface API extends Remote {
 
     @Nullable String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException;
 
-    @Nullable UUID getActiveGame(@NotNull String token) throws RemoteException;
+    @Nullable Game getActiveGame(@NotNull String token) throws RemoteException;
 
     @Nullable List<Room> getRooms(@NotNull String token) throws RemoteException;
 
@@ -23,7 +24,7 @@ public interface API extends Remote {
 
     @Nullable Room createRoom(@NotNull String token, @NotNull String name) throws RemoteException;
 
-    @Nullable UUID startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
+    @Nullable Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
 
     boolean doAction(@NotNull String token, @NotNull Action action) throws RemoteException;
 

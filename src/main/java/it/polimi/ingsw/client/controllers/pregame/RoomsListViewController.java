@@ -18,7 +18,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GamesListViewController extends BaseViewController {
+public class RoomsListViewController extends BaseViewController {
     private JPanel panel;
     private JButton ricaricaButton;
     private JTable table;
@@ -26,7 +26,7 @@ public class GamesListViewController extends BaseViewController {
 
     private List<Room> rooms;
 
-    public GamesListViewController(@NotNull NavigationController navigationController) {
+    public RoomsListViewController(@NotNull NavigationController navigationController) {
         super("Elenco partite", 800, 600, navigationController);
         setContentPane(panel);
         update();

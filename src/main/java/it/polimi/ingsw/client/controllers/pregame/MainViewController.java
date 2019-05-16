@@ -29,7 +29,7 @@ public class MainViewController extends BaseViewController {
         setContentPane(panel);
         logo.addSprite(new Sprite(10, 40, 370, 70, Utils.readPngImage(getClass(), "logo")));
         nuovaPartitaButton.addActionListener(e -> getNavigationController().presentViewController(NewRoomViewController.class));
-        elencoPartiteButton.addActionListener(e -> getNavigationController().presentViewController(GamesListViewController.class));
+        elencoPartiteButton.addActionListener(e -> getNavigationController().presentViewController(RoomsListViewController.class));
         cliButton.addActionListener(e -> {
             //TODO: passare a cli
         });
