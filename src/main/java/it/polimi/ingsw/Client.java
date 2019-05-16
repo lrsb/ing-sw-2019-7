@@ -12,7 +12,7 @@ public class Client {
     public static void main(String[] args) {
         if (args != null) for (var arg : args)
             if (arg.equals("-h")) {
-                Client.API = new ClientRestImpl("");
+                Client.API = new ClientRestImpl("ing-sw-2019-7.herokuapp.com");
                 new NavigationController(LoginViewController.class);
                 return;
             }

@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.MalformedParametersException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static it.polimi.ingsw.common.models.AmmoCard.Color.*;
@@ -113,16 +114,19 @@ public abstract class Weapon {
         return canBasicFire() && canFirstAdditionalFire() && canSecondAdditionalFire();
     }
 
-    public void addBasicTarget(@NotNull Player player) {
-        game.getPlayers().stream().filter(e -> e.equals(player)).findAny().ifPresent(basicTargets::add);
+    public void addBasicTarget(@NotNull UUID playerUuid) {
+        if (game.getActualPlayer().getUuid().equals(playerUuid)) return;
+        game.getPlayers().stream().filter(e -> e.getUuid().equals(playerUuid)).findAny().ifPresent(basicTargets::add);
     }
 
-    public void addFirstAdditionalTarget(@NotNull Player player) {
-        game.getPlayers().stream().filter(e -> e.equals(player)).findAny().ifPresent(firstAdditionalTargets::add);
+    public void addFirstAdditionalTarget(@NotNull UUID playerUuid) {
+        if (game.getActualPlayer().getUuid().equals(playerUuid)) return;
+        game.getPlayers().stream().filter(e -> e.getUuid().equals(playerUuid)).findAny().ifPresent(firstAdditionalTargets::add);
     }
 
-    public void addSecondAdditionalTarget(@NotNull Player player) {
-        game.getPlayers().stream().filter(e -> e.equals(player)).findAny().ifPresent(secondAdditionalTargets::add);
+    public void addSecondAdditionalTarget(@NotNull UUID playerUuid) {
+        if (game.getActualPlayer().getUuid().equals(playerUuid)) return;
+        game.getPlayers().stream().filter(e -> e.getUuid().equals(playerUuid)).findAny().ifPresent(secondAdditionalTargets::add);
     }
 
     public void setBasicTargetsPoint(@NotNull Point basicTargetsPoint) {
