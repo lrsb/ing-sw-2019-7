@@ -31,9 +31,8 @@ public abstract class Game implements Displayable, Serializable {
 
     protected int skulls = 5;
 
-    protected ArrayList<Weapon.Name> redWeapons;
-    protected ArrayList<Weapon.Name> blueWeapons;
-    protected ArrayList<Weapon.Name> yellowWeapons;
+    //aggiunto perchè non basta che skulls == 0
+    protected boolean lastTurn = false;
 
     protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players) {
         this.uuid = uuid;
@@ -83,25 +82,25 @@ public abstract class Game implements Displayable, Serializable {
         return getActualPlayer().isFirstMove();
     }
 
-    private ArrayList<Player> getDeadPlayers() {
+    protected ArrayList<Player> getDeadPlayers() {
         ArrayList<Player> deadPlayers = new ArrayList<>();
         getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() > 10).forEach(deadPlayers::add);
         return deadPlayers;
     }
 
-    private void deathPointsRedistribution() {
+    protected void deathPointsRedistribution() {
         getActualPlayer().addPoints(getDeadPlayers().size() > 1 ? 1 : 0);
         getDeadPlayers().forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f)
                 .forEach(g -> {g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 :
                         e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
-                g.addPoints(e.getSortedHitters().indexOf(f) == 1 ? 1 : 0);
+                g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
                 if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) e.addMark(g);})));
         getDeadPlayers().forEach(Player::incrementDeaths);
     }
 
-    private void reborn() {
-        /*TODO: foreach in getDeadPlayer draw a PowerUpCard and discard a PowerUp
+    protected void reborn() {
+        /*TODO: foreach in getDeadPlayer draw a PowerUpCard and discard a PowerUp,
            player respawn on the spawnpoint of the color of the discarded PowerUp*/
     }
 

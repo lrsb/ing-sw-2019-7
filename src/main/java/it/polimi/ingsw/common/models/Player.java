@@ -25,7 +25,6 @@ public class Player implements Serializable {
     private @NotNull int[] cubes = {3, 3, 3};
     private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();
     private @NotNull HashMap<Weapon.Name, Boolean> weapons = new HashMap<>();
-    private @NotNull ArrayList<AmmoCard> ammoCards = new ArrayList<>();
     private boolean isFirstMove = true;
 
     public Player(@NotNull User user) {
@@ -142,6 +141,11 @@ public class Player implements Serializable {
         return isFirstMove;
     }
 
+
+    private void addCube (@NotNull AmmoCard.Color color) {
+        if (cubes[color.getIndex()] < 3) cubes[color.getIndex()]++;
+    }
+
     public int getColoredCubes(@NotNull AmmoCard.Color color) {
         return cubes[color.getIndex()];
     }
@@ -155,20 +159,33 @@ public class Player implements Serializable {
         //TODO spostare powerUps nelle carte scartate
     }
 
-    public void addPowerUp(PowerUp powerUp) {
-        assert powerUps.size() < 3;
+    public void addPowerUp(@NotNull PowerUp powerUp) {
         powerUps.add(powerUp);
     }
 
     public void addWeapon(Weapon.Name weapon) {
-        assert weapons.size() < 3;
+
         //TODO: è gia carica?
         weapons.put(weapon, false);
     }
 
-    public void addAmmoCard(AmmoCard ammoCard) {
-        assert ammoCards.size() < 3;
-        ammoCards.add(ammoCard);
+    public void ammoCardRecharging(@NotNull AmmoCard ammoCard, @Nullable PowerUp powerUp) {
+        switch (ammoCard.getType()) {
+            case POWER_UP:
+                addPowerUp(powerUp);
+                break;
+            case RED:
+                addCube(AmmoCard.Color.RED);
+                break;
+            case YELLOW:
+                addCube(AmmoCard.Color.YELLOW);
+                break;
+            case BLUE:
+                addCube(AmmoCard.Color.BLUE);
+                break;
+        }
+        addCube(ammoCard.getRight());
+        addCube(ammoCard.getLeft());
     }
 
     public @NotNull List<PowerUp> getPowerUps() {

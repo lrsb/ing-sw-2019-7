@@ -87,7 +87,8 @@ public class PowerUp implements Displayable, Serializable {
     }
 
     public boolean use(@NotNull Game game) {
-        if ((this.getType() == Type.TAGBACK_GRENADE && target.hasPowerUp(this) || game.getActualPlayer().hasPowerUp(this)) && canBeUsed(game)) {
+        if ((this.getType() == Type.TAGBACK_GRENADE && target.hasPowerUp(this) ||
+                game.getActualPlayer().hasPowerUp(this) && getType() != Type.TAGBACK_GRENADE) && canBeUsed(game)) {
             useImpl(game);
             return true;
         }
@@ -105,8 +106,7 @@ public class PowerUp implements Displayable, Serializable {
             case TAGBACK_GRENADE:
                 return game.getTagbackPlayers().contains(target);
             case TELEPORTER:
-                //TODO: controlla -> metto un numero esagerato di passi per verificare che non inserisca una casella fuori da game
-                return targetPoint != null && game.canMove(game.getActualPlayer().getPosition(), targetPoint, 20);
+                return targetPoint != null && game.canMove(game.getActualPlayer().getPosition(), targetPoint, 11);
         }
         return false;
     }
@@ -121,7 +121,6 @@ public class PowerUp implements Displayable, Serializable {
                 target.setPosition(targetPoint);
                 break;
             case TAGBACK_GRENADE:
-                //TODO: controlla -> qui dico che target è chi lo usa!!!
                 game.getActualPlayer().addMark(target);
                 target.removePowerUp(this);
                 return;

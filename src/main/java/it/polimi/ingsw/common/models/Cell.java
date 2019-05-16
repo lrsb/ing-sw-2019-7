@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Cell class, each cell is the atom of the board, some cells are spawnpoint, the otherone are just normal cells which
@@ -17,6 +18,7 @@ public class Cell implements Serializable {
     private @NotNull Bounds bounds;
     private boolean spawnPoint;
     private @Nullable AmmoCard ammoCard;
+    private @Nullable ArrayList<Weapon.Name> weapons;
 
     /**
      * Create new cell.
@@ -24,14 +26,13 @@ public class Cell implements Serializable {
      * @param color      The color of the cell.
      * @param bounds     Related bounds of the cell.
      * @param spawnPoint True if this cell is a spawnpoint.
-     * @param ammoCard   If this cell isn't a spawnpoint, the associated {@link AmmoCard}.
      */
     @Contract(pure = true)
-    public Cell(@NotNull Color color, @NotNull Bounds bounds, boolean spawnPoint, @Nullable AmmoCard ammoCard) {
+    public Cell(@NotNull Color color, @NotNull Bounds bounds, boolean spawnPoint) {
         this.color = color;
         this.bounds = bounds;
         this.spawnPoint = spawnPoint;
-        this.ammoCard = ammoCard;
+        if (spawnPoint) { this.weapons = new ArrayList<>(); this.ammoCard = null;}
     }
 
     /**
@@ -59,6 +60,18 @@ public class Cell implements Serializable {
      */
     public void setAmmoCard(@Nullable AmmoCard ammoCard) {
         this.ammoCard = ammoCard;
+    }
+
+    public ArrayList<Weapon.Name> getWeapons() {
+        return weapons;
+    }
+
+    public boolean addWeapon(Weapon.Name weapon) {
+        if (isSpawnPoint() && weapons.size() < 3) {
+            this.weapons.add(weapon);
+            return true;
+        }
+        return false;
     }
 
     /**
