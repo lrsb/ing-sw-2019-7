@@ -25,11 +25,11 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
 
     private volatile @Nullable String authUser;
     private volatile @Nullable String createUser;
-    private volatile @Nullable UUID activeGame;
+    private volatile @Nullable Game activeGame;
     private volatile @Nullable List<Room> getRooms;
     private volatile @Nullable Room joinRoom;
     private volatile @Nullable Room createRoom;
-    private volatile @Nullable UUID startGame;
+    private volatile @Nullable Game startGame;
     private volatile @Nullable Boolean doMove;
     private @Nullable GameListener gameListener;
     private @Nullable RoomListener roomListener;
@@ -56,7 +56,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     }
 
     @Override
-    public @Nullable UUID getActiveGame(@NotNull String token) {
+    public @Nullable Game getActiveGame(@NotNull String token) {
         activeGame = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.GET_ACTIVE_GAME, null, null));
         while (activeGame == null) wait1ms();
@@ -88,7 +88,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     }
 
     @Override
-    public @Nullable UUID startGame(@NotNull String token, @NotNull UUID roomUuid) {
+    public @Nullable Game startGame(@NotNull String token, @NotNull UUID roomUuid) {
         startGame = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.START_GAME, token, roomUuid));
         while (startGame == null) wait1ms();
