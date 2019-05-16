@@ -482,7 +482,8 @@ public abstract class Weapon {
             @Override
             void basicFireImpl() {
                 if (basicTargetsPoint == null) return;
-                if (alternativeFire) game.getPlayers().stream().filter(e -> e.getPosition().equals(basicTargetsPoint))
+                if (alternativeFire)
+                    game.getPlayers().stream().filter(e -> Opt.of(e.getPosition()).e(f -> f.equals(basicTargetsPoint)).get(false))
                         .forEach(e -> e.takeHits(game, 1, 1));
                 else game.getPlayers().stream().filter(e -> game.getCell(e.getPosition()).getColor() ==
                         game.getCell(basicTargetsPoint).getColor()).forEach(e -> e.takeHits(game, 1, 0));

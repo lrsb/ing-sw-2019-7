@@ -4,10 +4,10 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Function;
+
 /**
- * {@link java.util.Optional} sucks.
- *
- * @param <T>
+ * Optionals in Java sucks.
  */
 public class Opt<T> {
     private T opt;
@@ -33,21 +33,28 @@ public class Opt<T> {
      *
      * @return A Opt that contains the return object.
      */
-    public <U> Opt<U> e(OptLambda<T, U> lambda) {
+    public <U> @NotNull Opt<U> e(Function<T, U> function) {
         if (opt == null) return new Opt<>(null);
-        return new Opt<>(lambda.run(opt));
+        return new Opt<>(function.apply(opt));
     }
 
     /**
      * Get the object, it can be null.
      *
-     * @return The object
+     * @return The object.
      */
     public @Nullable T get() {
         return opt;
     }
 
-    public interface OptLambda<T, U> {
-        @Nullable U run(@NotNull T notNull);
+    /**
+     * Get the object, if is null is replaced with notNull param.
+     *
+     * @param or The object used to replace the original if is null.
+     * @return A not null object.
+     */
+    public @NotNull T get(@NotNull T or) {
+        var object = get();
+        return object == null ? or : object;
     }
 }
