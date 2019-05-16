@@ -18,7 +18,7 @@ class WeaponTest {
             var game = GameImpl.Creator.newGame(UUID.randomUUID(), users);
             game.getPlayers().forEach(f -> f.setPosition(new Point(new SecureRandom().nextInt(3), new SecureRandom().nextInt(3))));
             var weapon = e.build(game, false);
-            weapon.addBasicTarget(game.getPlayers().get(3));
+            weapon.addBasicTarget(game.getPlayers().get(3).getUuid());
             weapon.basicFire();
         });
     }
