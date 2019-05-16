@@ -475,7 +475,7 @@ public abstract class Weapon {
             boolean canBasicFire() {
                 if (basicTargetsPoint == null) return false;
                 if (alternativeFire) return game.canMove(game.getActualPlayer().getPosition(), basicTargetsPoint, 1);
-                return game.getCell(game.getActualPlayer().getPosition()).getColor() != game.getCell(basicTargetsPoint).getColor() &&
+                return Opt.of(game.getCell(game.getActualPlayer().getPosition())).e(Cell::getColor).get() != Opt.of(game.getCell(basicTargetsPoint)).e(Cell::getColor).get() &&
                         game.getActualPlayer().canSeeCell(basicTargetsPoint, game.getCells());
             }
 
