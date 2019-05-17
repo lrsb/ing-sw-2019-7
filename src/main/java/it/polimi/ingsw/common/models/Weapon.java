@@ -19,6 +19,9 @@ import java.util.stream.Stream;
 import static it.polimi.ingsw.common.models.AmmoCard.Color.*;
 
 public abstract class Weapon {
+    public final static int FIRST = 1;
+    public final static int SECOND = 2;
+
     @NotNull Game game;
     boolean alternativeFire;
 
@@ -44,7 +47,7 @@ public abstract class Weapon {
         this.alternativeFire = alternativeFire;
     }
 
-    public final boolean basicFire() {
+    private boolean basicFire() {
         try {
             int[] cost = new int[values().length];
             Stream.of(values()).forEach(e -> cost[e.getIndex()] = (int) basicAlternativeCost.stream().filter(f -> e == f).count());
@@ -65,7 +68,7 @@ public abstract class Weapon {
 
     abstract void basicFireImpl();
 
-    public final boolean firstAdditionalFire() {
+    private boolean firstAdditionalFire() {
         try {
             var cost = new int[values().length];
             if (firstAdditionalCost != null) cost[firstAdditionalCost.getIndex()] = 1;
@@ -87,7 +90,7 @@ public abstract class Weapon {
     void firstAdditionalFireImpl() {
     }
 
-    public final boolean secondAdditionalFire() {
+    private boolean secondAdditionalFire() {
         try {
             var cost = new int[values().length];
             if (secondAdditionalCost != null) cost[secondAdditionalCost.getIndex()] = 1;
@@ -110,8 +113,24 @@ public abstract class Weapon {
     }
 
     @Contract(pure = true)
-    public final boolean canAllFire() {
-        return canBasicFire() && canFirstAdditionalFire() && canSecondAdditionalFire();
+    public final boolean fire(int option) {
+        if (!canBasicFire()) return false;
+        switch (option) {
+            case 0:
+                return basicFire();
+            case 1:
+                if (canFirstAdditionalFire()) return basicFire() && firstAdditionalFire();
+                break;
+            case 2:
+                if (canSecondAdditionalFire() && !getClass().equals(Weapons.Thor.class))
+                    return basicFire() && secondAdditionalFire();
+                break;
+            case 3:
+                if (canFirstAdditionalFire() && canSecondAdditionalFire())
+                    return basicFire() && firstAdditionalFire() && secondAdditionalFire();
+                break;
+        }
+        return false;
     }
 
     public void addBasicTarget(@NotNull UUID playerUuid) {
@@ -153,6 +172,7 @@ public abstract class Weapon {
         this.secondAdditionalPayment = secondAdditionalPayment;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean canFire(@NotNull int[] cost, @NotNull ArrayList<PowerUp> payment) {
         payment.forEach(e -> cost[e.getAmmoColor().getIndex()]--);
         return Stream.of(AmmoCard.Color.values()).map(e -> cost[e.getIndex()] <= game.getActualPlayer().getColoredCubes(e))
