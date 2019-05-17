@@ -29,7 +29,7 @@ public class ServerRestImpl extends NanoWSD {
     }
 
     @Override
-    protected WebSocket openWebSocket(IHTTPSession ihttpSession) {
+    protected WebSocket openWebSocket(@NotNull IHTTPSession ihttpSession) {
         return new AdrenalineWebSocket(ihttpSession);
     }
 

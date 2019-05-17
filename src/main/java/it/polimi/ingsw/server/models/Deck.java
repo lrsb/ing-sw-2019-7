@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  *
  * @param <T> Indicate the type of cards in the deck.
  */
-@SuppressWarnings({"WeakerAccess", "SpellCheckingInspection", "unused", "UnusedReturnValue"})
+@SuppressWarnings({"SpellCheckingInspection", "UnusedReturnValue", "WeakerAccess"})
 public class Deck<T extends Serializable> implements Serializable {
     private static final long serialVersionUID = 1;
 

@@ -18,7 +18,7 @@ public class NavigationController implements Closeable {
      * @param controllerClass The root view controller, a BaseViewController can't be reused.
      * @param <T>             View controller type.
      */
-    public <T extends BaseViewController> NavigationController(@NotNull Class<T> controllerClass) {
+    public @NotNull <T extends BaseViewController> NavigationController(@NotNull Class<T> controllerClass) {
         try {
             @SuppressWarnings("unchecked")
             var viewController = (T) controllerClass.getDeclaredConstructors()[0].newInstance(this);

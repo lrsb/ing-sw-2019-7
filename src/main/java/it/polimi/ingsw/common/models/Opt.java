@@ -10,7 +10,7 @@ import java.util.function.Function;
  * Optionals in Java sucks.
  */
 public class Opt<T> {
-    private T opt;
+    private @Nullable T opt;
 
     @Contract(pure = true)
     private Opt(@Nullable T nullable) {
@@ -35,7 +35,7 @@ public class Opt<T> {
      */
     public <U> @NotNull Opt<U> e(Function<T, U> function) {
         if (opt == null) return new Opt<>(null);
-        return new Opt<>(function.apply(opt));
+        else return new Opt<>(function.apply(opt));
     }
 
     /**

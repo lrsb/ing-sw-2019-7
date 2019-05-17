@@ -59,7 +59,7 @@ public class ServerController implements API {
         try {
             var user = SecureUserController.getUser(token);
             if (user == null) return null;
-            var room = new Gson().fromJson(rooms.find(eq("uuid", roomUuid)).first().toJson(), Room.class);
+            var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid)).first()).e(Document::toJson).get(""), Room.class);
             room.addUser(user);
             rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
             informRoomUsers(room);
@@ -89,7 +89,7 @@ public class ServerController implements API {
         if (roomUuid != null) try {
             var user = SecureUserController.getUser(token);
             if (user == null) return null;
-            var room = new Gson().fromJson(rooms.find(eq("uuid", roomUuid)).first().toJson(), Room.class);
+            var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid)).first()).e(Document::toJson).get(""), Room.class);
             if (room.getUsers().size() < Game.MIN_PLAYERS || room.getUsers().size() > Game.MAX_PLAYERS) return null;
             var game = GameImpl.Creator.newGame(room.getUuid(), room.getUsers());
             games.insertOne(Document.parse(new Gson().toJson(game)));
@@ -109,7 +109,7 @@ public class ServerController implements API {
         if (action != null) try {
             var user = SecureUserController.getUser(token);
             if (user == null) return false;
-            var game = new Gson().fromJson(games.find(eq("uuid", action.getGameUuid())).first().toJson(), GameImpl.class);
+            var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid())).first()).e(Document::toJson).get(""), GameImpl.class);
             if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid()))) return false;
             var value = game.doAction(action);
             if (value) games.replaceOne(eq("uuid", action.getGameUuid()), Document.parse(new Gson().toJson(game)));

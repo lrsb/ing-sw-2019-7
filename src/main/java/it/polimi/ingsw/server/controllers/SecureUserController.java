@@ -3,6 +3,7 @@ package it.polimi.ingsw.server.controllers;
 import com.google.gson.Gson;
 import com.mongodb.client.MongoCollection;
 import it.polimi.ingsw.Server;
+import it.polimi.ingsw.common.models.Opt;
 import it.polimi.ingsw.common.models.User;
 import org.bson.Document;
 import org.jetbrains.annotations.Contract;
@@ -13,7 +14,6 @@ import java.security.SecureRandom;
 
 import static com.mongodb.client.model.Filters.eq;
 
-@SuppressWarnings("ConstantConditions")
 class SecureUserController {
     private static final @NotNull SecureRandom random = new SecureRandom();
     private static final @NotNull char[] symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:".toCharArray();
@@ -28,7 +28,7 @@ class SecureUserController {
     @Contract(pure = true, value = "null -> null")
     static @Nullable User getUser(@Nullable String token) {
         if (token != null) try {
-            return new Gson().fromJson(users.find(eq("token", token)).first().toJson(), User.class);
+            return new Gson().fromJson(Opt.of(users.find(eq("token", token)).first()).e(Document::toJson).get(""), User.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,7 +54,7 @@ class SecureUserController {
     @Contract("null, _ -> null; !null, null -> null")
     static @Nullable String authUser(@Nullable String nickname, @Nullable String password) {
         if (nickname != null && password != null) try {
-            var user = new Gson().fromJson(users.find(eq("nickname", nickname)).first().toJson(), SecureUser.class);
+            var user = new Gson().fromJson(Opt.of(users.find(eq("nickname", nickname)).first()).e(Document::toJson).get(""), SecureUser.class);
             if (!user.getPassword().equals(password)) return null;
             user.setToken(nextToken());
             users.replaceOne(eq("uuid", user.getUuid().toString()), Document.parse(new Gson().toJson(user)));

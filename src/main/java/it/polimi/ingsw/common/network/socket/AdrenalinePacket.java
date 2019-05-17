@@ -13,7 +13,7 @@ import java.util.Arrays;
 public class AdrenalinePacket implements Serializable {
     private static final long serialVersionUID = 1;
 
-    private final @NotNull Type type;
+    private final @Nullable Type type;
     private final @Nullable String jsonObject;
 
     @Contract(pure = true)
@@ -22,7 +22,7 @@ public class AdrenalinePacket implements Serializable {
         this.jsonObject = new Gson().toJson(Arrays.asList(token, new Gson().toJson(object)));
     }
 
-    public @NotNull Type getType() {
+    public @Nullable Type getType() {
         return type;
     }
 
@@ -30,7 +30,7 @@ public class AdrenalinePacket implements Serializable {
         return (String) new Gson().fromJson(jsonObject, ArrayList.class).get(0);
     }
 
-    public @Nullable <T> T getAssociatedObject() {
+    public @NotNull <T> @Nullable T getAssociatedObject() {
         try {
             return new Gson().fromJson((String) new Gson().fromJson(jsonObject, ArrayList.class).get(1), new TypeToken<T>() {
             }.getType());

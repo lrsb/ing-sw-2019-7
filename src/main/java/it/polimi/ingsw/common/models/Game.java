@@ -88,24 +88,6 @@ public abstract class Game implements Displayable, Serializable {
         return deadPlayers;
     }
 
-    protected void deathPointsRedistribution() {
-        getActualPlayer().addPoints(getDeadPlayers().size() > 1 ? 1 : 0);
-        getDeadPlayers().forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
-                .filter(g -> g.getUuid() == f)
-                .forEach(g -> {
-                    g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 :
-                            e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
-                    g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
-                    if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) e.addMark(g);
-                })));
-        getDeadPlayers().forEach(Player::incrementDeaths);
-    }
-
-    protected void reborn() {
-        /*TODO: foreach in getDeadPlayer draw a PowerUpCard and discard a PowerUp,
-           player respawn on the spawnpoint of the color of the discarded PowerUp*/
-    }
-
     @Contract(pure = true)
     public boolean canMove(@Nullable Point from, @Nullable Point to, int maxStep) {
         return from != null && to != null && canMoveImpl(from, to, 0, maxStep);
