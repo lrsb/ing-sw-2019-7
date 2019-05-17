@@ -9,6 +9,7 @@ import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.models.User;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -60,7 +61,13 @@ public class RoomsListViewController extends BaseViewController {
     }
 
     private void refreshTable() {
-        var tableModel = new DefaultTableModel();
+        var tableModel = new DefaultTableModel() {
+            @Contract(pure = true)
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         tableModel.addColumn("Nome");
         tableModel.addColumn("N. giocatori");
         rooms.stream().map(f -> new Object[]{f.getName(), f.getUsers().size() + "/5 ("

@@ -15,21 +15,37 @@ import java.rmi.RemoteException;
 
 public class NewRoomViewController extends BaseViewController {
     private JPanel panel;
+    private JTextField textField1;
+    private JButton button;
+
+    private Room room;
 
     public NewRoomViewController(@NotNull NavigationController navigationController) {
         super("Nuova stanza", 600, 400, navigationController);
         setContentPane(panel);
-        Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
-            try {
-                Client.API.addRoomListener(e, this::update);
-            } catch (RemoteException ex) {
-                ex.printStackTrace();
-            }
+
+        getNavigationController().popViewController();
+        button.addActionListener(e -> {
+            Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
+                try {
+                    room = Client.API.createRoom(f, textField1.getText());
+                    getNavigationController().presentViewController(RoomViewController.class, true);
+                } catch (RemoteException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Problemi col server!!");
+                }
+            });
         });
     }
 
-    private void update(Room room) {
+    @Override
+    protected void controllerPopped() {
 
+    }
+
+    @Override
+    protected <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
+        ((RoomViewController) viewController).roomUuid = room.getUuid();
     }
 
     {
@@ -48,10 +64,15 @@ public class NewRoomViewController extends BaseViewController {
      */
     private void $$$setupUI$$$() {
         panel = new JPanel();
-        panel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         final JLabel label1 = new JLabel();
         label1.setText("Da fare");
-        panel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel.add(label1, new GridConstraints(0, 0, 2, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        textField1 = new JTextField();
+        panel.add(textField1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        button = new JButton();
+        button.setText("Button");
+        panel.add(button, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

@@ -72,7 +72,7 @@ public class GameImpl extends Game implements Serializable {
     //GRAB_WEAPON STUFF - Start
 
     private boolean grabIn(@NotNull Point point, @Nullable Weapon.Name weapon, @Nullable Weapon.Name discardedWeaponName, @Nullable ArrayList<PowerUp> powerUpPayment) {
-        if (!canMove(getActualPlayer().getPosition(), point, getActualPlayer().getDamagesTaken().size() >= 3 ? 2 : 1))
+        /*if (!canMove(getActualPlayer().getPosition(), point, getActualPlayer().getDamagesTaken().size() >= 3 ? 2 : 1))
             return false;
         if (Stream.of(Cell.Color.values()).anyMatch(e -> getCell(point).getColor() == e &&
                 getCell(point).isSpawnPoint() && getCell(point).getWeapons().contains(weapon))) {
@@ -95,7 +95,7 @@ public class GameImpl extends Game implements Serializable {
                             getActualPlayer().getPowerUps().size() < 3 ? powerUpsDeck.exitCard() : null);
             ammoDeck.discardCard(getCell(point).getAmmoCard());
             return true;
-        }
+        }*/
         return false;
     }
 
@@ -141,14 +141,14 @@ public class GameImpl extends Game implements Serializable {
     }
 
     private void nextTurn() {
-        for (var cells : cells)
+        /*for (var cells : cells)
             for (var cell : cells) {
                 if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
                 if (cell.isSpawnPoint() && cell.getWeapons().size() < 3 && weaponsDeck.remainedCards() > 0)
                     cell.addWeapon(weaponsDeck.exitCard());
             }
         deathPointsRedistribution();
-        reborn();
+        reborn();*/
         seqPlay++;
     }
 
@@ -176,7 +176,7 @@ public class GameImpl extends Game implements Serializable {
                 if (action.getDestination() == null) return false;
                 return moveTo(action.getDestination());
             case GRAB_WEAPON:
-                if (action.getDestination() == null) action.setDestination(getActualPlayer().getPosition());
+                //if (action.getDestination() == null) action.setDestination(getActualPlayer().getPosition());
                 return grabIn(action.getDestination(), action.getWeapon(), action.getDiscardedWeapon(), action.getPowerUpPayment());
             case FIRE:
                 if (action.getWeapon() != null && getActualPlayer().hasWeapon(action.getWeapon()) &&

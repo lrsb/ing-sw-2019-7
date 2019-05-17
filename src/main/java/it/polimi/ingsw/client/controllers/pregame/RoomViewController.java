@@ -1,12 +1,16 @@
 package it.polimi.ingsw.client.controllers.pregame;
 
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import it.polimi.ingsw.Client;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.controllers.game.GameViewController;
+import it.polimi.ingsw.client.others.Preferences;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.rmi.RemoteException;
 import java.util.UUID;
 
 public class RoomViewController extends BaseViewController {
@@ -14,11 +18,35 @@ public class RoomViewController extends BaseViewController {
 
     public RoomViewController(@NotNull NavigationController navigationController) {
         super("", 600, 400, navigationController);
+        Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
+            try {
+                Client.API.addRoomListener(e, room -> {
+                    if (room.getUuid().equals(roomUuid)) {
+                        //aggiorna ui
+                        getNavigationController().popViewController();
+                        getNavigationController().presentViewController(GameViewController.class, true);
+                    }
+                });
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     @Override
-    protected void onShow() {
+    protected <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
+        super.nextViewControllerInstantiated(viewController);
+    }
 
+    @Override
+    protected void controllerPopped() {
+        Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
+            try {
+                Client.API.removeRoomListener(e);
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     {
