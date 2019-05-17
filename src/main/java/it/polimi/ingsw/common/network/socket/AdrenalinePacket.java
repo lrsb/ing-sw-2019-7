@@ -30,7 +30,7 @@ public class AdrenalinePacket implements Serializable {
         return (String) new Gson().fromJson(jsonObject, ArrayList.class).get(0);
     }
 
-    public @NotNull <T> @Nullable T getAssociatedObject() {
+    public <T> @Nullable T getAssociatedObject() {
         try {
             return new Gson().fromJson((String) new Gson().fromJson(jsonObject, ArrayList.class).get(1), new TypeToken<T>() {
             }.getType());

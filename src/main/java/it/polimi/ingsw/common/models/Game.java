@@ -31,6 +31,10 @@ public abstract class Game implements Displayable, Serializable {
 
     protected int skulls = 5;
 
+    private ArrayList<Weapon.Name> redWeapons;
+    private ArrayList<Weapon.Name> blueWeapons;
+    private ArrayList<Weapon.Name> yellowWeapons;
+
     //aggiunto perchè non basta che skulls == 0
     protected boolean lastTurn = false;
 
@@ -105,6 +109,18 @@ public abstract class Game implements Displayable, Serializable {
 
     public @NotNull List<Player> getPlayersAtPosition(@NotNull Point point) {
         return players.parallelStream().filter(e -> e.getPosition() != null).filter(e -> e.getPosition().equals(point)).collect(Collectors.toList());
+    }
+
+    public @NotNull List<Weapon.Name> getWeapons(@NotNull Cell.Color color) {
+        switch (color) {
+            case RED:
+                return redWeapons;
+            case YELLOW:
+                return yellowWeapons;
+            case BLUE:
+                return blueWeapons;
+        }
+        return new ArrayList<>();
     }
 
     @Override

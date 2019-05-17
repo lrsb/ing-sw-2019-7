@@ -14,8 +14,8 @@ public class Action implements Serializable {
 
     private @Nullable Type actionType;
     private @Nullable UUID gameUuid;
-    private @Nullable Weapon.Name weaponName;
-    private @Nullable Weapon.Name discardedWeaponName;
+    private @Nullable Weapon.Name weapon;
+    private @Nullable Weapon.Name discardedWeapon;
     private @Nullable Point destination;
     private @Nullable PowerUp.Type powerUpType;
     private @Nullable ArrayList<PowerUp> powerUpPayment;
@@ -36,7 +36,7 @@ public class Action implements Serializable {
     private @Nullable ArrayList<PowerUp> secondAdditionalPayment;
 
     @Contract(pure = true)
-    public Action(@NotNull Type actionType, @NotNull UUID gameUuid) {
+    private Action(@NotNull Type actionType, @NotNull UUID gameUuid) {
         this.actionType = actionType;
         this.gameUuid = gameUuid;
     }
@@ -49,135 +49,106 @@ public class Action implements Serializable {
         return gameUuid;
     }
 
-    public @Nullable Weapon.Name getWeaponName() {
-        return weaponName;
+    public @Nullable Weapon.Name getWeapon() {
+        return weapon;
     }
 
-    public void setWeaponName(@Nullable Weapon.Name weaponName) {
-        this.weaponName = weaponName;
-    }
-
-    public @Nullable Weapon.Name getDiscardedWeaponName() {
-        return discardedWeaponName;
-    }
-
-    public void setDiscardedWeaponName(@Nullable Weapon.Name discardedWeaponName) {
-        this.discardedWeaponName = discardedWeaponName;
+    public @Nullable Weapon.Name getDiscardedWeapon() {
+        return discardedWeapon;
     }
 
     public @Nullable Point getDestination() {
         return destination;
     }
 
-    public void setDestination(@NotNull Point point) {
-        this.destination = point;
-    }
-
     public @Nullable PowerUp.Type getPowerUpType() {
         return powerUpType;
-    }
-
-    public void setPowerUpType(@Nullable PowerUp.Type powerUpType) {
-        this.powerUpType = powerUpType;
     }
 
     public @Nullable ArrayList<PowerUp> getPowerUpPayment() {
         return powerUpPayment;
     }
 
-    public void setPowerUpPayment(@Nullable ArrayList<PowerUp> powerUpPayment) {
-        this.powerUpPayment = powerUpPayment;
-    }
-
     public boolean getAlternativeFire() {
         return alternativeFire;
-    }
-
-    public void setAlternativeFire(boolean alternativeFire) {
-        this.alternativeFire = alternativeFire;
     }
 
     public int getOptions() {
         return options;
     }
 
-    public void setOptions(int options) {
-        this.options = options;
-    }
-
     public @Nullable ArrayList<UUID> getBasicTarget() {
         return basicTarget;
-    }
-
-    public void setBasicTarget(@Nullable ArrayList<UUID> basicTarget) {
-        this.basicTarget = basicTarget;
     }
 
     public @Nullable Point getBasicTargetPoint() {
         return basicTargetPoint;
     }
 
-    public void setBasicTargetPoint(@Nullable Point basicTargetPoint) {
-        this.basicTargetPoint = basicTargetPoint;
-    }
-
     public @Nullable ArrayList<UUID> getFirstAdditionalTarget() {
         return firstAdditionalTarget;
-    }
-
-    public void setFirstAdditionalTarget(@Nullable ArrayList<UUID> firstAdditionalTarget) {
-        this.firstAdditionalTarget = firstAdditionalTarget;
     }
 
     public @Nullable Point getFirstAdditionalTargetPoint() {
         return firstAdditionalTargetPoint;
     }
 
-    public void setFirstAdditionalTargetPoint(@Nullable Point firstAdditionalTargetPoint) {
-        this.firstAdditionalTargetPoint = firstAdditionalTargetPoint;
-    }
-
     public @Nullable ArrayList<UUID> getSecondAdditionalTarget() {
         return secondAdditionalTarget;
-    }
-
-    public void setSecondAdditionalTarget(@Nullable ArrayList<UUID> secondAdditionalTarget) {
-        this.secondAdditionalTarget = secondAdditionalTarget;
     }
 
     public @Nullable Point getSecondAdditionalTargetPoint() {
         return secondAdditionalTargetPoint;
     }
 
-    public void setSecondAdditionalTargetPoint(@Nullable Point secondAdditionalTargetPoint) {
-        this.secondAdditionalTargetPoint = secondAdditionalTargetPoint;
-    }
-
     public @Nullable ArrayList<PowerUp> getBasicAlternativePayment() {
         return basicAlternativePayment;
-    }
-
-    public void setBasicAlternativePayment(@Nullable ArrayList<PowerUp> basicAlternativePayment) {
-        this.basicAlternativePayment = basicAlternativePayment;
     }
 
     public @Nullable ArrayList<PowerUp> getFirstAdditionalPayment() {
         return firstAdditionalPayment;
     }
 
-    public void setFirstAdditionalPayment(@Nullable ArrayList<PowerUp> firstAdditionalPayment) {
-        this.firstAdditionalPayment = firstAdditionalPayment;
-    }
-
     public @Nullable ArrayList<PowerUp> getSecondAdditionalPayment() {
         return secondAdditionalPayment;
     }
 
-    public void setSecondAdditionalPayment(@Nullable ArrayList<PowerUp> secondAdditionalPayment) {
-        this.secondAdditionalPayment = secondAdditionalPayment;
+    public enum Type implements Serializable {
+        MOVE, GRAB_WEAPON, GRAB_AMMOCARD, FIRE, USE_POWER_UP, RELOAD, NEXT_TURN
     }
 
-    public enum Type implements Serializable {
-        MOVE, GRAB, FIRE, USE_POWER_UP, RELOAD, NEXT_TURN
+    public static class Builder {
+        private @NotNull UUID gameUuid;
+
+        @Contract(pure = true)
+        private Builder(@NotNull UUID gameUuid) {
+            this.gameUuid = gameUuid;
+        }
+
+        @Contract(value = "_ -> new", pure = true)
+        public static @NotNull Builder create(@NotNull UUID gameUuid) {
+            return new Builder(gameUuid);
+        }
+
+        public @NotNull Action buildMoveAction(@NotNull Point destination) {
+            var action = new Action(Type.MOVE, gameUuid);
+            action.destination = destination;
+            return action;
+        }
+
+        public @NotNull Action buildWeaponGrabAction(@NotNull Point destination, @Nullable Weapon.Name weapon, @Nullable Weapon.Name discardedWeapon, @Nullable ArrayList<PowerUp> alternativePayment) {
+            var action = new Action(Type.GRAB_WEAPON, gameUuid);
+            action.destination = destination;
+            action.weapon = weapon;
+            action.discardedWeapon = discardedWeapon;
+            action.powerUpPayment = alternativePayment;
+            return action;
+        }
+
+        public @NotNull Action buildAmmoCardGrabAction(@NotNull Point destination) {
+            var action = new Action(Type.GRAB_AMMOCARD, gameUuid);
+            action.destination = destination;
+            return action;
+        }
     }
 }
