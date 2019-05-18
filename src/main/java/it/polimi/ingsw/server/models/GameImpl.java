@@ -202,8 +202,8 @@ public class GameImpl extends Game implements Serializable {
         }
 
         //TODO: impl
-        @Contract("_, _ -> new")
-        public static @NotNull GameImpl newGame(@NotNull UUID roomUuid, @NotNull List<User> users) {
+        @Contract("_ -> new")
+        public static @NotNull GameImpl newGame(@NotNull Room room) {
             //assert users.size() >= MIN_PLAYERS && users.size() < MAX_PLAYERS;
             var cells = new Cell[MAX_X][MAX_Y];
             for (var i = 0; i < cells.length; i++) {
@@ -211,7 +211,7 @@ public class GameImpl extends Game implements Serializable {
                     //cells[i][j] = Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
                 }
             }
-            return new GameImpl(roomUuid, Type.SIX_SIX, cells, users.stream().map(Player::new).collect(Collectors.toList()));
+            return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream().map(Player::new).collect(Collectors.toList()));
         }
     }
 }
