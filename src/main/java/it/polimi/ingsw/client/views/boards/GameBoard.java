@@ -57,7 +57,7 @@ public class GameBoard extends AbstractBoard {
 
     @Override
     public void onSpriteClicked(@NotNull Sprite sprite) {
-
+        //TODO
     }
 
     @Override
