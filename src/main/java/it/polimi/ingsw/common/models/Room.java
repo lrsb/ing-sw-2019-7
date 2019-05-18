@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * The place where users wait to begin a new {@link Game} .
+ * The place where users wait to begin a new {@link Game}.
  */
 public class Room implements Serializable {
     private static final long serialVersionUID = 1;
@@ -17,6 +17,8 @@ public class Room implements Serializable {
     private @NotNull String name;
     private @NotNull ArrayList<User> users = new ArrayList<>();
     private boolean gameCreated = false;
+    private int actionTimeout = 30;
+    private Game.Type gameType = Game.Type.FIVE_SIX;
 
     /**
      * Create a new room.
@@ -48,7 +50,7 @@ public class Room implements Serializable {
     }
 
     /**
-     * Get a {@link List} of the users in this room.
+     * Gets a {@link List} of the users in this room.
      *
      * @return A {@link List} of the users in this room.
      */
@@ -82,5 +84,42 @@ public class Room implements Serializable {
      */
     public void setGameCreated() {
         gameCreated = true;
+    }
+
+
+    /**
+     * Gets action timeout.
+     *
+     * @return the action timeout
+     */
+    public int getActionTimeout() {
+        return actionTimeout;
+    }
+
+    /**
+     * Sets action timeout.
+     *
+     * @param actionTimeout the action timeout
+     */
+    public void setActionTimeout(int actionTimeout) {
+        this.actionTimeout = actionTimeout;
+    }
+
+    /**
+     * Gets game type.
+     *
+     * @return the game type
+     */
+    public Game.Type getGameType() {
+        return gameType;
+    }
+
+    /**
+     * Sets game type.
+     *
+     * @param gameType the game type
+     */
+    public void setGameType(Game.Type gameType) {
+        this.gameType = gameType;
     }
 }

@@ -81,6 +81,29 @@ public class Cell implements Serializable {
      * Color enum.
      */
     public enum Color {
-        WHITE, BLUE, RED, PURPLE, YELLOW, GREEN
+        /**
+         * White color.
+         */
+        WHITE,
+        /**
+         * Blue color.
+         */
+        BLUE,
+        /**
+         * Red color.
+         */
+        RED,
+        /**
+         * Purple color.
+         */
+        PURPLE,
+        /**
+         * Yellow color.
+         */
+        YELLOW,
+        /**
+         * Green color.
+         */
+        GREEN
     }
 }

@@ -12,29 +12,44 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.io.IOException;
 
+/**
+ * The type Game board.
+ */
 public class GameBoard extends AbstractBoard {
     private @NotNull Game game;
 
+    /**
+     * Instantiates a new Game board.
+     *
+     * @param dimension the dimension
+     * @param game      the game
+     * @throws IOException the io exception
+     */
     public GameBoard(@NotNull Dimension dimension, @NotNull Game game) throws IOException {
         super(dimension, Utils.joinBufferedImage(game.getBackImage(), game.getFrontImage()));
         this.game = game;
 
-        var weapon = new Sprite(966, 208, 99, 160, Utils.readPngImage(Weapon.class, "back"));
+        var weapon = new Sprite(1052, 227, 108, 177, Utils.readPngImage(Weapon.class, "back"));
         weapon.setDraggable(true);
         weapon.setTag("weapon");
         addSprite(weapon);
 
-        var powerup = new Sprite(992, 40, 74, 104, Utils.readPngImage(PowerUp.class, "back"));
+        var powerup = new Sprite(1081, 46, 81, 115, Utils.readPngImage(PowerUp.class, "back"));
         powerup.setDraggable(true);
         powerup.setTag("powerup");
         addSprite(powerup);
 
-        var ammoCard = new Sprite(16, 650, 80, 80, Utils.readPngImage(AmmoCard.class, "back"));
+        var ammoCard = new Sprite(57, 725, 84, 84, Utils.readPngImage(AmmoCard.class, "back"));
         ammoCard.setDraggable(true);
-        //ammoCard.setTag("ammocard");
+        ammoCard.setTag("ammocard");
         addSprite(ammoCard);
     }
 
+    /**
+     * Update game.
+     *
+     * @param game the game
+     */
     public void updateGame(@NotNull Game game) {
         this.game = game;
         //TODO: update board
@@ -45,42 +60,31 @@ public class GameBoard extends AbstractBoard {
 
     }
 
-    private void spriteMovedTo(@NotNull Sprite sprite, @NotNull Point point) {
-        sprite.moveTo(new LinearInterpolator(sprite.getPosition(), new Point((int) (210 + point.getX() * 172.5), (int) (180 + point.getY() * 150)), 250) {
-        });
-    }
-
     @Override
     public void onSpriteDragged(@NotNull Sprite sprite) {
         if (sprite.getTag() != null) switch (sprite.getTag()) {
             case "weapon":
-                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), new Point(966, 208), 250) {
+                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), new Point(1052, 227), 250) {
                 });
                 return;
             case "powerup":
-                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), new Point(992, 40), 250) {
+                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), new Point(1081, 46), 250) {
                 });
                 return;
             case "ammocard":
-                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), new Point(16, 650), 250) {
+                sprite.moveTo(new LinearInterpolator(sprite.getPosition(), new Point(57, 725), 250) {
                 });
                 return;
             default:
-                if (sprite.getX() > 210 && sprite.getX() + sprite.getDimension().getWidth() < 900 &&
-                        sprite.getY() > 180 && sprite.getY() + sprite.getDimension().getHeight() < 630)
-                    spriteMovedTo(sprite, new Point((int) ((sprite.getX() - 210 + sprite.getDimension().getWidth() / 2) / 172.5),
-                            (sprite.getY() - 180) / 150));
-        }
-        else {
-            if (sprite.getX() > 210 && sprite.getX() + sprite.getDimension().getWidth() < 900 &&
-                    sprite.getY() > 180 && sprite.getY() + sprite.getDimension().getHeight() < 630)
-                spriteMovedTo(sprite, new Point((int) ((sprite.getX() - 210 + sprite.getDimension().getWidth() / 2) / 172.5),
-                        (sprite.getY() - 180) / 150));
+                if (sprite.getX() > 205 && sprite.getX() + sprite.getDimension().getWidth() / 2 < 994 &&
+                        sprite.getY() > 175 && sprite.getY() + sprite.getDimension().getHeight() / 2 < 744)
+                    spriteMovedTo(sprite, new Point((int) ((sprite.getX() + sprite.getDimension().getWidth() / 2 - 205) / 220),
+                            (int) ((sprite.getY() + sprite.getDimension().getWidth() / 2 - 175) / 190)));
         }
     }
 
-    //ne = 217, 182
-    //nw = 902, 177
-    //se = 202, 636
-    //sw = 900, 627
+    private void spriteMovedTo(@NotNull Sprite sprite, @NotNull Point point) {
+        sprite.moveTo(new LinearInterpolator(sprite.getPosition(), new Point((int) (250 + point.getX() * 220), (int) (210 + point.getY() * 190)), 250) {
+        });
+    }
 }

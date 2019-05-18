@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -37,7 +38,7 @@ class NetworkTest {
         assertEquals(client.joinRoom("", TEST_UUID).getName(), "ok");
         assertEquals(client.createRoom("", "").getName(), "ok");
         assertNull(client.startGame("", TEST_UUID));
-        //assertTrue(client.doAction("", new Action()));
+        assertTrue(client.doAction("", Action.Builder.create(UUID.randomUUID()).buildMoveAction(new Point(0, 0))));
         client.addGameListener("", e -> fail());
         client.removeGameListener("");
         client.addRoomListener("", e -> fail());

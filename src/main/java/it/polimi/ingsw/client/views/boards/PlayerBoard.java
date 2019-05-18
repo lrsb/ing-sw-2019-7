@@ -8,9 +8,19 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.io.IOException;
 
+/**
+ * The type Player board.
+ */
 public class PlayerBoard extends AbstractBoard {
     private @NotNull Player player;
 
+    /**
+     * Instantiates a new Player board.
+     *
+     * @param dimension the dimension
+     * @param player    the player
+     * @throws IOException the io exception
+     */
     public PlayerBoard(@NotNull Dimension dimension, @NotNull Player player) throws IOException {
         super(dimension, Utils.readJpgImage(Player.class, "D-Struct-OrFrontBoard"));
         this.player = player;

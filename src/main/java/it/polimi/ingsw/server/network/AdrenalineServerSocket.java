@@ -9,7 +9,16 @@ import java.net.SocketException;
 
 import static it.polimi.ingsw.Server.SOCKET_PORT;
 
+/**
+ * The type Adrenaline server socket.
+ */
 public class AdrenalineServerSocket extends ServerSocket {
+    /**
+     * Instantiates a new Adrenaline server socket.
+     *
+     * @param listener the listener
+     * @throws IOException the io exception
+     */
     public AdrenalineServerSocket(@NotNull AdrenalineServerSocketListener listener) throws IOException {
         super(SOCKET_PORT);
         new Thread(() -> {

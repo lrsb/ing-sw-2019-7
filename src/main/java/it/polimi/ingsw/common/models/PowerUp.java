@@ -28,7 +28,7 @@ public class PowerUp implements Displayable, Serializable {
      * PowerUp constructor.
      *
      * @param ammoColor Indicate the color of the card.
-     * @param type      Indicate the the type of the powerUp card ( ex: Teleporter).
+     * @param type      Indicate the the type of the powerUp card (ex: Teleporter).
      */
     @Contract(pure = true)
     public PowerUp(@NotNull AmmoCard.Color ammoColor, @NotNull Type type) {

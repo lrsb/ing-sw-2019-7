@@ -11,28 +11,119 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * The interface Api.
+ */
 public interface API extends Remote {
+    /**
+     * Auth user string.
+     *
+     * @param nickname the nickname
+     * @param password the password
+     * @return the string
+     * @throws RemoteException the remote exception
+     */
     @Nullable String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException;
 
+    /**
+     * Create user string.
+     *
+     * @param nickname the nickname
+     * @param password the password
+     * @return the string
+     * @throws RemoteException the remote exception
+     */
     @Nullable String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException;
 
+    /**
+     * Gets active game.
+     *
+     * @param token the token
+     * @return the active game
+     * @throws RemoteException the remote exception
+     */
     @Nullable Game getActiveGame(@NotNull String token) throws RemoteException;
 
+    /**
+     * Gets rooms.
+     *
+     * @param token the token
+     * @return the rooms
+     * @throws RemoteException the remote exception
+     */
     @Nullable List<Room> getRooms(@NotNull String token) throws RemoteException;
 
+    /**
+     * Join room room.
+     *
+     * @param token    the token
+     * @param roomUuid the room uuid
+     * @return the room
+     * @throws RemoteException the remote exception
+     */
     @Nullable Room joinRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
 
+    /**
+     * Create room room.
+     *
+     * @param token the token
+     * @param name  the name
+     * @return the room
+     * @throws RemoteException the remote exception
+     */
     @Nullable Room createRoom(@NotNull String token, @NotNull String name) throws RemoteException;
 
+    /**
+     * Start game game.
+     *
+     * @param token    the token
+     * @param roomUuid the room uuid
+     * @return the game
+     * @throws RemoteException the remote exception
+     */
     @Nullable Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
 
+    /**
+     * Do action boolean.
+     *
+     * @param token  the token
+     * @param action the action
+     * @return the boolean
+     * @throws RemoteException the remote exception
+     */
     boolean doAction(@NotNull String token, @NotNull Action action) throws RemoteException;
 
+    /**
+     * Add game listener.
+     *
+     * @param token        the token
+     * @param gameListener the game listener
+     * @throws RemoteException the remote exception
+     */
     void addGameListener(@NotNull String token, @NotNull GameListener gameListener) throws RemoteException;
 
+    /**
+     * Add room listener.
+     *
+     * @param token        the token
+     * @param roomListener the room listener
+     * @throws RemoteException the remote exception
+     */
     void addRoomListener(@NotNull String token, @NotNull RoomListener roomListener) throws RemoteException;
 
+    /**
+     * Remove game listener.
+     *
+     * @param token the token
+     * @throws RemoteException the remote exception
+     */
     void removeGameListener(@NotNull String token) throws RemoteException;
 
+    /**
+     * Remove room listener.
+     *
+     * @param token the token
+     * @throws RemoteException the remote exception
+     */
     void removeRoomListener(@NotNull String token) throws RemoteException;
 }

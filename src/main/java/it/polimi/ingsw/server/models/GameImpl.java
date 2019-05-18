@@ -24,12 +24,11 @@ public class GameImpl extends Game implements Serializable {
 
     private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players) {
         super(uuid, type, cells, players);
-        //TODO: come evitare le celle che non fanno parte della mappa?
-        for (var e : this.cells) for (var cell : e) {
-            //TODO: sistemare
-            //if (cell.isSpawnPoint()) while (cell.getWeapons().size() < 3) cell.addWeapon(weaponsDeck.exitCard());
-            //else cell.setAmmoCard(ammoDeck.exitCard());
-        }
+        //TODO: come evitare le celle che non fanno parte della mappa
+        redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        //Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(ammoDeck.exitCard())));
     }
 
     public List<PowerUp> getFirstMoveColors() {
@@ -69,22 +68,22 @@ public class GameImpl extends Game implements Serializable {
     }
 
     //RUN AROUND - End
-    //GRAB_WEAPON STUFF - Start
+    //GRAB STUFF - Start
 
     private boolean grabIn(@NotNull Point point, @Nullable Weapon.Name weapon, @Nullable Weapon.Name discardedWeaponName, @Nullable ArrayList<PowerUp> powerUpPayment) {
-        /*if (!canMove(getActualPlayer().getPosition(), point, getActualPlayer().getDamagesTaken().size() >= 3 ? 2 : 1))
+        if (!canMove(getActualPlayer().getPosition(), point, getActualPlayer().getDamagesTaken().size() >= 3 ? 2 : 1))
             return false;
         if (Stream.of(Cell.Color.values()).anyMatch(e -> getCell(point).getColor() == e &&
-                getCell(point).isSpawnPoint() && getCell(point).getWeapons().contains(weapon))) {
+                getCell(point).isSpawnPoint() && getWeapons(getCell(point).getColor()).contains(weapon))) {
             if (getActualPlayer().getWeaponsSize() == 3 &&
                     (discardedWeaponName == null || !getActualPlayer().hasWeapon(discardedWeaponName))) return false;
             if (canPayWeaponAndPay(weapon, powerUpPayment)) {
-                getCell(point).removeWeapon(weapon);
+                getWeapons(getCell(point).getColor()).remove(weapon);
                 getActualPlayer().setPosition(point);
                 getActualPlayer().addWeapon(weapon);
                 if (getActualPlayer().getWeaponsSize() == 4) {
                     getActualPlayer().removeWeapon(discardedWeaponName);
-                    getCell(point).addWeapon(discardedWeaponName);
+                    getWeapons(getCell(point).getColor()).add(discardedWeaponName);
                 }
                 return true;
             }
@@ -95,7 +94,7 @@ public class GameImpl extends Game implements Serializable {
                             getActualPlayer().getPowerUps().size() < 3 ? powerUpsDeck.exitCard() : null);
             ammoDeck.discardCard(getCell(point).getAmmoCard());
             return true;
-        }*/
+        }
         return false;
     }
 
@@ -120,7 +119,7 @@ public class GameImpl extends Game implements Serializable {
         return false;
     }
 
-    //GRAB_WEAPON STUFF - End
+    //GRAB STUFF - End
 
     private boolean fireAction(@NotNull Action action) {
         var weapon = action.getWeapon().build(this, action.getAlternativeFire());
@@ -141,14 +140,14 @@ public class GameImpl extends Game implements Serializable {
     }
 
     private void nextTurn() {
-        /*for (var cells : cells)
+        for (var cells : cells)
             for (var cell : cells) {
                 if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
-                if (cell.isSpawnPoint() && cell.getWeapons().size() < 3 && weaponsDeck.remainedCards() > 0)
-                    cell.addWeapon(weaponsDeck.exitCard());
+                if (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
+                    getWeapons(cell.getColor()).add(weaponsDeck.exitCard());
             }
         deathPointsRedistribution();
-        reborn();*/
+        reborn();
         seqPlay++;
     }
 
@@ -176,7 +175,6 @@ public class GameImpl extends Game implements Serializable {
                 if (action.getDestination() == null) return false;
                 return moveTo(action.getDestination());
             case GRAB_WEAPON:
-                //if (action.getDestination() == null) action.setDestination(getActualPlayer().getPosition());
                 return grabIn(action.getDestination(), action.getWeapon(), action.getDiscardedWeapon(), action.getPowerUpPayment());
             case FIRE:
                 if (action.getWeapon() != null && getActualPlayer().hasWeapon(action.getWeapon()) &&
@@ -204,8 +202,8 @@ public class GameImpl extends Game implements Serializable {
         }
 
         //TODO: impl
-        @Contract("_ -> new")
-        public static @NotNull GameImpl newGame(@NotNull Room room) {
+        @Contract("_, _ -> new")
+        public static @NotNull GameImpl newGame(@NotNull UUID roomUuid, @NotNull List<User> users) {
             //assert users.size() >= MIN_PLAYERS && users.size() < MAX_PLAYERS;
             var cells = new Cell[MAX_X][MAX_Y];
             for (var i = 0; i < cells.length; i++) {
@@ -213,7 +211,7 @@ public class GameImpl extends Game implements Serializable {
                     //cells[i][j] = Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
                 }
             }
-            return new GameImpl(room.getUuid(), Type.SIX_SIX, cells, room.getUsers().stream().map(Player::new).collect(Collectors.toList()));
+            return new GameImpl(roomUuid, Type.SIX_SIX, cells, users.stream().map(Player::new).collect(Collectors.toList()));
         }
     }
 }

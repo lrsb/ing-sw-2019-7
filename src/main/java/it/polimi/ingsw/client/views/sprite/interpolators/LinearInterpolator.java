@@ -4,7 +4,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
+/**
+ * The type Linear interpolator.
+ */
 public abstract class LinearInterpolator extends Interpolator {
+    /**
+     * Instantiates a new Linear interpolator.
+     *
+     * @param start    the start
+     * @param end      the end
+     * @param duration the duration
+     */
     public LinearInterpolator(@NotNull Point start, @NotNull Point end, long duration) {
         super(start, System.currentTimeMillis(), end, System.currentTimeMillis() + duration);
     }

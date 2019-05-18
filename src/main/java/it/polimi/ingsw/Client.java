@@ -1,7 +1,7 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.client.controllers.base.NavigationController;
-import it.polimi.ingsw.client.controllers.startup.ConnTypeViewController;
+import it.polimi.ingsw.client.controllers.game.GameViewController;
 import it.polimi.ingsw.client.controllers.startup.LoginViewController;
 import it.polimi.ingsw.client.network.ClientRestImpl;
 import it.polimi.ingsw.common.network.API;
@@ -16,6 +16,6 @@ public class Client {
                 new NavigationController(LoginViewController.class);
                 return;
             }
-        new NavigationController(ConnTypeViewController.class);
+        new NavigationController(GameViewController.class);
     }
 }
