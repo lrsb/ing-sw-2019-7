@@ -35,6 +35,8 @@ public class Action implements Serializable {
     private @Nullable ArrayList<PowerUp> firstAdditionalPayment;
     private @Nullable ArrayList<PowerUp> secondAdditionalPayment;
 
+    private @Nullable UUID target;
+
     @Contract(pure = true)
     private Action(@NotNull Type actionType, @NotNull UUID gameUuid) {
         this.actionType = actionType;
@@ -113,8 +115,12 @@ public class Action implements Serializable {
         return secondAdditionalPayment;
     }
 
+    public @Nullable UUID getTarget() {
+        return target;
+    }
+
     public enum Type implements Serializable {
-        MOVE, GRAB_WEAPON, GRAB_AMMOCARD, FIRE, USE_POWER_UP, RELOAD, NEXT_TURN
+        NOTHING, MOVE, GRAB_WEAPON, GRAB_AMMOCARD, FIRE, USE_POWER_UP, RELOAD, NEXT_TURN
     }
 
     public static class Builder {
@@ -136,7 +142,7 @@ public class Action implements Serializable {
             return action;
         }
 
-        public @NotNull Action buildWeaponGrabAction(@NotNull Point destination, @Nullable Weapon.Name weapon, @Nullable Weapon.Name discardedWeapon, @Nullable ArrayList<PowerUp> alternativePayment) {
+        public @NotNull Action buildWeaponGrabAction(@NotNull Point destination, @NotNull Weapon.Name weapon, @Nullable Weapon.Name discardedWeapon, @Nullable ArrayList<PowerUp> alternativePayment) {
             var action = new Action(Type.GRAB_WEAPON, gameUuid);
             action.destination = destination;
             action.weapon = weapon;
@@ -149,6 +155,55 @@ public class Action implements Serializable {
             var action = new Action(Type.GRAB_AMMOCARD, gameUuid);
             action.destination = destination;
             return action;
+        }
+
+        public @NotNull Action buildFireAction(@NotNull Weapon.Name weapon, @NotNull Point destination,
+                                               @Nullable ArrayList<PowerUp> powerUpPayment, boolean alternativeFire,
+                                               int options, @NotNull ArrayList<UUID> basicTarget,
+                                               @Nullable Point basicTargetPoint,
+                                               @Nullable ArrayList<PowerUp> basicAlternativePayment,
+                                               @NotNull ArrayList<UUID> firstAdditionalTarget,
+                                               @Nullable Point firstAdditionalTargetPoint,
+                                               @Nullable ArrayList<PowerUp> firstAdditionalPayment,
+                                               @NotNull ArrayList<UUID> secondAdditionalTarget,
+                                               @Nullable Point secondAdditionalTargetPoint,
+                                               @Nullable ArrayList<PowerUp> secondAdditionalPayment) {
+            var action = new Action(Type.FIRE, gameUuid);
+            action.weapon = weapon;
+            action.destination = destination;
+            action.powerUpPayment = powerUpPayment;
+            action.alternativeFire = alternativeFire;
+            action.options = options;
+            action.basicTarget = basicTarget;
+            action.basicTargetPoint = basicTargetPoint;
+            action.basicAlternativePayment = basicAlternativePayment;
+            action.firstAdditionalTarget = firstAdditionalTarget;
+            action.firstAdditionalTargetPoint = firstAdditionalTargetPoint;
+            action.firstAdditionalPayment = firstAdditionalPayment;
+            action.secondAdditionalTarget = secondAdditionalTarget;
+            action.secondAdditionalTargetPoint = secondAdditionalTargetPoint;
+            action.secondAdditionalPayment = secondAdditionalPayment;
+            return action;
+        }
+
+        public @NotNull Action buildUsePowerUp(@NotNull PowerUp.Type powerUpType, @Nullable Point destination,
+                                               @Nullable UUID target) {
+            var action = new Action(Type.USE_POWER_UP, gameUuid);
+            action.powerUpType = powerUpType;
+            action.destination = destination;
+            action.target = target;
+            return action;
+        }
+
+        public @NotNull Action buildReload(@NotNull Weapon.Name weapon, @Nullable ArrayList<PowerUp> powerUpPayment) {
+            var action = new Action(Type.RELOAD, gameUuid);
+            action.weapon = weapon;
+            action.powerUpPayment = powerUpPayment;
+            return action;
+        }
+
+        public @NotNull Action buildNextTurn() {
+            return new Action(Type.NEXT_TURN, gameUuid);
         }
     }
 }

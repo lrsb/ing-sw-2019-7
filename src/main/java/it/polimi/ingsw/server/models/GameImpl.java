@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.models;
 
 import it.polimi.ingsw.common.models.*;
+import it.polimi.ingsw.common.models.wrappers.Opt;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,11 +25,12 @@ public class GameImpl extends Game implements Serializable {
 
     private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players) {
         super(uuid, type, cells, players);
-        //TODO: come evitare le celle che non fanno parte della mappa
-        redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
-        blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
-        yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
-        //Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(ammoDeck.exitCard())));
+        //TODO: come evitare le celle che non fanno parte della mappa?
+        for (var e : this.cells) for (var cell : e) {
+            //TODO: sistemare
+            //if (cell.isSpawnPoint()) while (cell.getWeapons().size() < 3) cell.addWeapon(weaponsDeck.exitCard());
+            //else cell.setAmmoCard(ammoDeck.exitCard());
+        }
     }
 
     public List<PowerUp> getFirstMoveColors() {
@@ -68,22 +70,22 @@ public class GameImpl extends Game implements Serializable {
     }
 
     //RUN AROUND - End
-    //GRAB STUFF - Start
+    //GRAB_WEAPON STUFF - Start
 
     private boolean grabIn(@NotNull Point point, @Nullable Weapon.Name weapon, @Nullable Weapon.Name discardedWeaponName, @Nullable ArrayList<PowerUp> powerUpPayment) {
-        if (!canMove(getActualPlayer().getPosition(), point, getActualPlayer().getDamagesTaken().size() >= 3 ? 2 : 1))
+        /*if (!canMove(getActualPlayer().getPosition(), point, getActualPlayer().getDamagesTaken().size() >= 3 ? 2 : 1))
             return false;
         if (Stream.of(Cell.Color.values()).anyMatch(e -> getCell(point).getColor() == e &&
-                getCell(point).isSpawnPoint() && getWeapons(getCell(point).getColor()).contains(weapon))) {
+                getCell(point).isSpawnPoint() && getCell(point).getWeapons().contains(weapon))) {
             if (getActualPlayer().getWeaponsSize() == 3 &&
                     (discardedWeaponName == null || !getActualPlayer().hasWeapon(discardedWeaponName))) return false;
             if (canPayWeaponAndPay(weapon, powerUpPayment)) {
-                getWeapons(getCell(point).getColor()).remove(weapon);
+                getCell(point).removeWeapon(weapon);
                 getActualPlayer().setPosition(point);
                 getActualPlayer().addWeapon(weapon);
                 if (getActualPlayer().getWeaponsSize() == 4) {
                     getActualPlayer().removeWeapon(discardedWeaponName);
-                    getWeapons(getCell(point).getColor()).add(discardedWeaponName);
+                    getCell(point).addWeapon(discardedWeaponName);
                 }
                 return true;
             }
@@ -94,7 +96,7 @@ public class GameImpl extends Game implements Serializable {
                             getActualPlayer().getPowerUps().size() < 3 ? powerUpsDeck.exitCard() : null);
             ammoDeck.discardCard(getCell(point).getAmmoCard());
             return true;
-        }
+        }*/
         return false;
     }
 
@@ -119,7 +121,7 @@ public class GameImpl extends Game implements Serializable {
         return false;
     }
 
-    //GRAB STUFF - End
+    //GRAB_WEAPON STUFF - End
 
     private boolean fireAction(@NotNull Action action) {
         var weapon = action.getWeapon().build(this, action.getAlternativeFire());
@@ -140,18 +142,18 @@ public class GameImpl extends Game implements Serializable {
     }
 
     private void nextTurn() {
-        for (var cells : cells)
+        /*for (var cells : cells)
             for (var cell : cells) {
                 if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
-                if (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
-                    getWeapons(cell.getColor()).add(weaponsDeck.exitCard());
-            }
+                if (cell.isSpawnPoint() && cell.getWeapons().size() < 3 && weaponsDeck.remainedCards() > 0)
+                    cell.addWeapon(weaponsDeck.exitCard());
+            }*/
         deathPointsRedistribution();
         reborn();
         seqPlay++;
     }
 
-    protected void deathPointsRedistribution() {
+    private void deathPointsRedistribution() {
         getActualPlayer().addPoints(getDeadPlayers().size() > 1 ? 1 : 0);
         getDeadPlayers().forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f)
@@ -164,18 +166,20 @@ public class GameImpl extends Game implements Serializable {
         getDeadPlayers().forEach(Player::incrementDeaths);
     }
 
-    protected void reborn() {
+    private void reborn() {
         /*TODO: foreach in getDeadPlayer draw a PowerUpCard and discard a PowerUp,
            player respawn on the spawnpoint of the color of the discarded PowerUp*/
     }
 
     public boolean doAction(@NotNull Action action) {
-        switch (action.getActionType()) {
+        switch (Opt.of(action.getActionType()).get(Action.Type.NOTHING)) {
             case MOVE:
                 if (action.getDestination() == null) return false;
                 return moveTo(action.getDestination());
             case GRAB_WEAPON:
-                return grabIn(action.getDestination(), action.getWeapon(), action.getDiscardedWeapon(), action.getPowerUpPayment());
+                return grabIn(Opt.of(action.getDestination()).get(Opt.of(getActualPlayer().getPosition())
+                        .get(new Point(-1, -1))), action.getWeapon(), action.getDiscardedWeapon(),
+                        action.getPowerUpPayment());
             case FIRE:
                 if (action.getWeapon() != null && getActualPlayer().hasWeapon(action.getWeapon()) &&
                         getActualPlayer().isALoadedGun(action.getWeapon())) return fireAction(action);
@@ -211,7 +215,7 @@ public class GameImpl extends Game implements Serializable {
                     //cells[i][j] = Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
                 }
             }
-            return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream().map(Player::new).collect(Collectors.toList()));
+            return new GameImpl(room.getUuid(), Type.SIX_SIX, cells, room.getUsers().stream().map(Player::new).collect(Collectors.toList()));
         }
     }
 }
