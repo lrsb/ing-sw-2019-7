@@ -114,7 +114,8 @@ public class GameImpl extends Game implements Serializable {
     }
 
     private boolean grabAmmoCard(@NotNull Point to) {
-        if (getCell(to).isSpawnPoint() || getCell(to).getAmmoCard() == null || !canMove(getActualPlayer().getPosition(), to, 1) && !(skulls == 0 &&
+        if (getCell(to).isSpawnPoint() || getCell(to).getAmmoCard() == null ||
+                !canMove(getActualPlayer().getPosition(), to, 1) && !(skulls == 0 &&
                 canMove(getActualPlayer().getPosition(), to, 2)) && !(lastTurn &&
                 canMove(getActualPlayer().getPosition(), to, 3))) return false;
         getActualPlayer().setPosition(to);
@@ -147,13 +148,14 @@ public class GameImpl extends Game implements Serializable {
     }
 
     private void nextTurn() {
-        /*for (var cells : cells)
+        for (var cells : cells)
             for (var cell : cells) {
                 if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
-                if (cell.isSpawnPoint() && cell.getWeapons().size() < 3 && weaponsDeck.remainedCards() > 0)
-                    cell.addWeapon(weaponsDeck.exitCard());
-            }*/
+                if (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
+                    addWeapon(cell.getColor(), weaponsDeck.exitCard());
+            }
         deathPointsRedistribution();
+        if (skulls == 0 && seqPlay % (players.size() - 1) == 0) lastTurn = true;
         reborn();
         seqPlay++;
     }
@@ -162,13 +164,13 @@ public class GameImpl extends Game implements Serializable {
         getActualPlayer().addPoints(getDeadPlayers().size() > 1 ? 1 : 0);
         getDeadPlayers().forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f)
-                .forEach(g -> {
+                .forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 :
                             e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
                     g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
                     if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) e.addMark(g);
                 })));
-        getDeadPlayers().forEach(Player::incrementDeaths);
+        getDeadPlayers().forEach(e -> {e.incrementDeaths(); if (skulls > 0) skulls--;});
     }
 
     private void reborn() {
@@ -208,7 +210,6 @@ public class GameImpl extends Game implements Serializable {
                         !getActualPlayer().isALoadedGun(action.getWeapon()) &&
                         canPayWeaponAndPay(action.getWeapon(), action.getPowerUpPayment());
             case NEXT_TURN:
-                //TODO: controllare se ha fatto le due mosse o da fare se scaduto il tempo
                 nextTurn();
                 return true;
         }
