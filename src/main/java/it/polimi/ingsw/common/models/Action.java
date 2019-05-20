@@ -18,6 +18,7 @@ public class Action implements Serializable {
     private @Nullable Weapon.Name discardedWeapon;
     private @Nullable Point destination;
     private @Nullable PowerUp.Type powerUpType;
+    private @Nullable AmmoCard.Color color;
     private @Nullable ArrayList<PowerUp> powerUpPayment;
 
     private boolean alternativeFire;
@@ -65,6 +66,10 @@ public class Action implements Serializable {
 
     public @Nullable PowerUp.Type getPowerUpType() {
         return powerUpType;
+    }
+
+    public @Nullable AmmoCard.Color getColor() {
+        return color;
     }
 
     public @Nullable ArrayList<PowerUp> getPowerUpPayment() {
@@ -142,7 +147,7 @@ public class Action implements Serializable {
             return action;
         }
 
-        public @NotNull Action buildWeaponGrabAction(@NotNull Point destination, @NotNull Weapon.Name weapon, @Nullable Weapon.Name discardedWeapon, @Nullable ArrayList<PowerUp> alternativePayment) {
+        public @NotNull Action buildWeaponGrabAction(@Nullable Point destination, @NotNull Weapon.Name weapon, @Nullable Weapon.Name discardedWeapon, @Nullable ArrayList<PowerUp> alternativePayment) {
             var action = new Action(Type.GRAB_WEAPON, gameUuid);
             action.destination = destination;
             action.weapon = weapon;
@@ -186,10 +191,11 @@ public class Action implements Serializable {
             return action;
         }
 
-        public @NotNull Action buildUsePowerUp(@NotNull PowerUp.Type powerUpType, @Nullable Point destination,
+        public @NotNull Action buildUsePowerUp(@NotNull PowerUp.Type powerUpType, @NotNull AmmoCard.Color color, @Nullable Point destination,
                                                @Nullable UUID target) {
             var action = new Action(Type.USE_POWER_UP, gameUuid);
             action.powerUpType = powerUpType;
+            action.color = color;
             action.destination = destination;
             action.target = target;
             return action;

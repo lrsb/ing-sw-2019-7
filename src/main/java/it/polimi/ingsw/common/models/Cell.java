@@ -50,6 +50,10 @@ public class Cell implements Serializable {
         return ammoCard;
     }
 
+    public void removeAmmoCard() {
+        ammoCard = null;
+    }
+
     /**
      * Set a new ammo card on a cell.
      *

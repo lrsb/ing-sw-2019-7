@@ -56,11 +56,11 @@ public class PowerUp implements Displayable, Serializable {
         return type;
     }
 
-    public void setTarget(@NotNull Player target) {
+    public void setTarget(@Nullable Player target) {
         this.target = target;
     }
 
-    public void setTargetPoint(@NotNull Point targetPoint) {
+    public void setTargetPoint(@Nullable Point targetPoint) {
         this.targetPoint = targetPoint;
     }
 
@@ -128,7 +128,6 @@ public class PowerUp implements Displayable, Serializable {
                 game.getActualPlayer().setPosition(targetPoint);
                 break;
         }
-        game.getActualPlayer().removePowerUp(this);
     }
 
     /**

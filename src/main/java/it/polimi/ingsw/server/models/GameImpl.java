@@ -72,31 +72,23 @@ public class GameImpl extends Game implements Serializable {
     //RUN AROUND - End
     //GRAB_WEAPON STUFF - Start
 
-    private boolean grabIn(@NotNull Point point, @Nullable Weapon.Name weapon, @Nullable Weapon.Name discardedWeaponName, @Nullable ArrayList<PowerUp> powerUpPayment) {
-        /*if (!canMove(getActualPlayer().getPosition(), point, getActualPlayer().getDamagesTaken().size() >= 3 ? 2 : 1))
-            return false;
-        if (Stream.of(Cell.Color.values()).anyMatch(e -> getCell(point).getColor() == e &&
-                getCell(point).isSpawnPoint() && getCell(point).getWeapons().contains(weapon))) {
-            if (getActualPlayer().getWeaponsSize() == 3 &&
-                    (discardedWeaponName == null || !getActualPlayer().hasWeapon(discardedWeaponName))) return false;
-            if (canPayWeaponAndPay(weapon, powerUpPayment)) {
-                getCell(point).removeWeapon(weapon);
-                getActualPlayer().setPosition(point);
-                getActualPlayer().addWeapon(weapon);
-                if (getActualPlayer().getWeaponsSize() == 4) {
-                    getActualPlayer().removeWeapon(discardedWeaponName);
-                    getCell(point).addWeapon(discardedWeaponName);
-                }
-                return true;
+    private boolean grabWeapon(@NotNull Point to, @NotNull Weapon.Name weapon, @Nullable Weapon.Name discardedWeaponName, @Nullable ArrayList<PowerUp> powerUpPayment) {
+        if (!canMove(getActualPlayer().getPosition(), to, 1) && !(skulls == 0 &&
+                canMove(getActualPlayer().getPosition(), to, 2)) && !(lastTurn &&
+                canMove(getActualPlayer().getPosition(), to, 3)) ||
+                !getCell(to).isSpawnPoint() || !getWeapons(getCell(to).getColor()).contains(weapon) ||
+                getActualPlayer().getWeaponsSize() > 2 && (discardedWeaponName == null ||
+                        !getActualPlayer().hasWeapon(discardedWeaponName))) return false;
+        if (canPayWeaponAndPay(weapon, powerUpPayment)) {
+            getActualPlayer().setPosition(to);
+            getActualPlayer().addWeapon(weapon);
+            removeWeapon(getCell(to).getColor(), weapon);
+            if (getActualPlayer().getWeaponsSize() > 3) {
+                getActualPlayer().removeWeapon(discardedWeaponName);
+                addWeapon(getCell(to).getColor(), discardedWeaponName);
             }
-        } else if (getCell(point).getAmmoCard() != null) {
-            getActualPlayer().setPosition(point);
-            getActualPlayer().ammoCardRecharging(getCell(point).getAmmoCard(),
-                    getCell(point).getAmmoCard().getType() == AmmoCard.Type.POWER_UP &&
-                            getActualPlayer().getPowerUps().size() < 3 ? powerUpsDeck.exitCard() : null);
-            ammoDeck.discardCard(getCell(point).getAmmoCard());
             return true;
-        }*/
+        }
         return false;
     }
 
@@ -119,6 +111,19 @@ public class GameImpl extends Game implements Serializable {
             return true;
         }
         return false;
+    }
+
+    private boolean grabAmmoCard(@NotNull Point to) {
+        if (getCell(to).isSpawnPoint() || getCell(to).getAmmoCard() == null || !canMove(getActualPlayer().getPosition(), to, 1) && !(skulls == 0 &&
+                canMove(getActualPlayer().getPosition(), to, 2)) && !(lastTurn &&
+                canMove(getActualPlayer().getPosition(), to, 3))) return false;
+        getActualPlayer().setPosition(to);
+        getActualPlayer().ammoCardRecharging(getCell(to).getAmmoCard(),
+                getCell(to).getAmmoCard().getType() == AmmoCard.Type.POWER_UP &&
+                        getActualPlayer().getPowerUps().size() > 2 ? powerUpsDeck.exitCard() : null);
+        ammoDeck.discardCard(getCell(to).getAmmoCard());
+        getCell(to).removeAmmoCard();
+        return true;
     }
 
     //GRAB_WEAPON STUFF - End
@@ -171,23 +176,33 @@ public class GameImpl extends Game implements Serializable {
            player respawn on the spawnpoint of the color of the discarded PowerUp*/
     }
 
+    //TODO: creare eccezione per getActualPlayer.getPosition() == null
+    //TODO: creare eccezione per getCell(point) == null
     public boolean doAction(@NotNull Action action) {
+        if (getActualPlayer().getPosition() == null) return false;
         switch (Opt.of(action.getActionType()).get(Action.Type.NOTHING)) {
             case MOVE:
                 if (action.getDestination() == null) return false;
                 return moveTo(action.getDestination());
             case GRAB_WEAPON:
-                return grabIn(Opt.of(action.getDestination()).get(Opt.of(getActualPlayer().getPosition())
-                        .get(new Point(-1, -1))), action.getWeapon(), action.getDiscardedWeapon(),
-                        action.getPowerUpPayment());
+                return grabWeapon(Opt.of(action.getDestination()).get(getActualPlayer().getPosition()),
+                        action.getWeapon(), action.getDiscardedWeapon(), action.getPowerUpPayment());
+            case GRAB_AMMOCARD:
+                return grabAmmoCard(Opt.of(action.getDestination()).get(getActualPlayer().getPosition()));
             case FIRE:
                 if (action.getWeapon() != null && getActualPlayer().hasWeapon(action.getWeapon()) &&
                         getActualPlayer().isALoadedGun(action.getWeapon())) return fireAction(action);
                 return false;
             case USE_POWER_UP:
-                //TODO: creare PowerUp e customizzare
-                return action.getPowerUpType() != null && Stream.of(AmmoCard.Color.values())
-                        .anyMatch(e -> new PowerUp(e, action.getPowerUpType()).use(this));
+                var powerUp = new PowerUp(action.getColor(), action.getPowerUpType());
+                getPlayers().stream().filter(e -> e.getUuid().equals(action.getTarget())).forEach(powerUp::setTarget);
+                powerUp.setTargetPoint(action.getDestination());
+                if (powerUp.use(this)) {
+                    getActualPlayer().removePowerUp(powerUp);
+                    powerUpsDeck.discardCard(powerUp);
+                    return true;
+                }
+                return false;
             case RELOAD:
                 return getActualPlayer().hasWeapon(action.getWeapon()) &&
                         !getActualPlayer().isALoadedGun(action.getWeapon()) &&

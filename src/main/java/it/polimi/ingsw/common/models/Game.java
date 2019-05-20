@@ -196,7 +196,7 @@ public abstract class Game implements Displayable, Serializable {
      * @param color the color
      * @return the weapons
      */
-    public @NotNull ArrayList<Weapon.Name> getWeapons(@NotNull Cell.Color color) {
+    protected @NotNull ArrayList<Weapon.Name> getWeapons(@NotNull Cell.Color color) {
         switch (color) {
             case BLUE:
                 return blueWeapons;
@@ -206,6 +206,28 @@ public abstract class Game implements Displayable, Serializable {
                 return yellowWeapons;
             default:
                 return new ArrayList<>();
+        }
+    }
+
+    protected void addWeapon(@NotNull Cell.Color color, @NotNull Weapon.Name weapon) {
+        switch (color) {
+            case BLUE:
+                blueWeapons.add(weapon);
+            case RED:
+                redWeapons.add(weapon);
+            case YELLOW:
+                yellowWeapons.add(weapon);
+        }
+    }
+
+    protected void removeWeapon(@NotNull Cell.Color color, @NotNull Weapon.Name weapon) {
+        switch (color) {
+            case BLUE:
+                blueWeapons.remove(weapon);
+            case RED:
+                redWeapons.remove(weapon);
+            case YELLOW:
+                yellowWeapons.remove(weapon);
         }
     }
 
