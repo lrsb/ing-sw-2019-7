@@ -19,7 +19,7 @@ class WeaponTest {
             game.getPlayers().forEach(f -> f.setPosition(new Point(new SecureRandom().nextInt(3), new SecureRandom().nextInt(3))));
             var weapon = e.build(game, false);
             weapon.addBasicTarget(game.getPlayers().get(3).getUuid());
-            weapon.basicFire();
+            //weapon.basicFire();
         });
     }
 }
