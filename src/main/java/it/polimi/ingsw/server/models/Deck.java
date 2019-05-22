@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  *
  * @param <T> Indicate the type of cards in the deck.
  */
-@SuppressWarnings({"SpellCheckingInspection", "UnusedReturnValue", "WeakerAccess"})
+@SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class Deck<T extends Serializable> implements Serializable {
     private static final long serialVersionUID = 1;
 
@@ -76,8 +76,7 @@ public class Deck<T extends Serializable> implements Serializable {
      *
      * @param n Number of cards that you have to remove from the deck.
      * @return List of card removed from the deck.
-     * @throws EmptyDeckException        Thrown when there are no more available cards, and the deck is not shuffleable.
-     * @throws InvalidParameterException Thrown when {@code n} is grater than the available cards.
+     * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
      */
     public @NotNull List<T> exitCards(int n) throws EmptyDeckException {
         if (playableCards.size() + discardedCards.size() < n) throw new InvalidParameterException();
@@ -119,11 +118,19 @@ public class Deck<T extends Serializable> implements Serializable {
         Collections.shuffle(playableCards);
     }
 
+    /**
+     * Creator.
+     */
     public static class Creator {
         @Contract(pure = true)
         private Creator() {
         }
 
+        /**
+         * New ammo deck deck.
+         *
+         * @return the deck
+         */
         @Contract(" -> new")
         public static @NotNull Deck<AmmoCard> newAmmoDeck() {
             var cards = Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).filter(f -> !e.name().equals(f.name()))
@@ -147,12 +154,22 @@ public class Deck<T extends Serializable> implements Serializable {
             return new Deck<>(cards, true);
         }
 
+        /**
+         * New power ups deck deck.
+         *
+         * @return the deck
+         */
         @Contract(" -> new")
         public static @NotNull Deck<PowerUp> newPowerUpsDeck() {
             return new Deck<>(Stream.of(PowerUp.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).map(f -> new PowerUp(f, e)))
                     .flatMap(e -> e).collect(Collectors.toCollection(ArrayList::new)), true);
         }
 
+        /**
+         * New weapons deck deck.
+         *
+         * @return the deck
+         */
         @Contract(" -> new")
         public static @NotNull Deck<Weapon.Name> newWeaponsDeck() {
             return new Deck<>(new ArrayList<>(List.of(Weapon.Name.values())), false);

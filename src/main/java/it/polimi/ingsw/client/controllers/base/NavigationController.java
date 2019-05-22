@@ -45,7 +45,7 @@ public class NavigationController implements Closeable {
             viewControllers.get(viewControllers.size() - 2).nextViewControllerInstantiated(viewController);
             viewControllers.get(viewControllers.size() - 2).setVisible(false);
             viewControllers.get(viewControllers.size() - 1).setVisible(true);
-            if (deleteFromStack) viewControllers.remove(viewControllers.size() - 2).dispose();
+            if (deleteFromStack) disposeViewController(viewControllers.get(viewControllers.size() - 2));
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -108,7 +108,6 @@ public class NavigationController implements Closeable {
     private void disposeViewController(@NotNull BaseViewController viewController) {
         viewController.controllerPopped();
         viewController.setVisible(false);
-        viewController.close();
         viewController.dispose();
         viewControllers.remove(viewController);
     }

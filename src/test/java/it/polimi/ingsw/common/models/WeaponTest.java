@@ -14,12 +14,12 @@ class WeaponTest {
     @Test
     void testAllWeapons() {
         Stream.of(Weapon.Name.values()).forEach(e -> {
-            var users = Collections.nCopies(5, null).parallelStream().map(f -> new User(UUID.randomUUID().toString())).collect(Collectors.toList());
-            var game = GameImpl.Creator.newGame(UUID.randomUUID(), users);
+            var room = new Room("", new User(""));
+            Collections.nCopies(5, null).parallelStream().map(f -> new User(UUID.randomUUID().toString())).collect(Collectors.toList()).forEach(room::addUser);
+            var game = GameImpl.Creator.newGame(room);
             game.getPlayers().forEach(f -> f.setPosition(new Point(new SecureRandom().nextInt(3), new SecureRandom().nextInt(3))));
             var weapon = e.build(game, false);
             weapon.addBasicTarget(game.getPlayers().get(3).getUuid());
-            weapon.basicFire();
         });
     }
 }

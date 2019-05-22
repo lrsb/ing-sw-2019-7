@@ -6,9 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.Closeable;
 
-public abstract class BaseViewController extends JFrame implements Closeable {
+public abstract class BaseViewController extends JFrame {
     private @NotNull NavigationController navigationController;
 
     public BaseViewController(@NotNull String title, int width, int height, @NotNull NavigationController navigationController) {
@@ -62,13 +61,9 @@ public abstract class BaseViewController extends JFrame implements Closeable {
         return navigationController;
     }
 
-    <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
+    protected <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
     }
 
-    public void controllerPopped() {
-    }
-
-    @Override
-    public void close() {
+    protected void controllerPopped() {
     }
 }

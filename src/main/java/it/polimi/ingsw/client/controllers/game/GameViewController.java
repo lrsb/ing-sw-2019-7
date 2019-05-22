@@ -6,14 +6,14 @@ import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.views.boards.GameBoard;
 import it.polimi.ingsw.client.views.boards.GameBoardListener;
+import it.polimi.ingsw.common.models.Room;
+import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.server.models.GameImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.UUID;
 
 public class GameViewController extends BaseViewController implements GameBoardListener {
     private JPanel panel;
@@ -23,7 +23,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private JButton exitButton;
 
     public GameViewController(@NotNull NavigationController navigationController) {
-        super("Gioca", 1100, 800, navigationController);
+        super("Gioca", 1200, 900, navigationController);
         $$$setupUI$$$();
         setContentPane(panel);
         yourBoardButton.addActionListener(e -> new NavigationController(PlayerBoardViewController.class));
@@ -37,7 +37,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
     private void createUIComponents() {
         try {
-            gameBoard = new GameBoard(new Dimension(1100, 800), GameImpl.Creator.newGame(UUID.randomUUID(), new ArrayList<>()));
+            gameBoard = new GameBoard(new Dimension(1200, 844), GameImpl.Creator.newGame(new Room("", new User(""))));
             gameBoard.setBoardListener(this);
         } catch (IOException e) {
             e.printStackTrace();
