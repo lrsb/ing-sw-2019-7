@@ -9,6 +9,7 @@ public class BattleField {
     private static final int MAX_VERT_TILES = 4 * 5; //rows.
     private static final int MAX_HORIZ_TILES = 3 * 5; //cols.
 
+
     String[][] tiles = new String[MAX_VERT_TILES][MAX_HORIZ_TILES];
 
     List<String> weapons = new ArrayList<>();
