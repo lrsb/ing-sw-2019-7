@@ -97,9 +97,9 @@ public class ClientRestImpl implements API {
     }
 
     @Override
-    public @Nullable Room createRoom(@NotNull String token, @NotNull String name) throws RemoteException {
+    public @Nullable Room createRoom(@NotNull String token, @NotNull String name, int timeout, @NotNull Game.Type gameType) throws RemoteException {
         try {
-            var request = HttpRequest.newBuilder().uri(URI.create(host + "/createRoom?name=" + name)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
+            var request = HttpRequest.newBuilder().uri(URI.create(host + "/createRoom?name=" + name + "&timeout=" + timeout + "&gameType=" + gameType)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
             return new Gson().fromJson(client.send(request, HttpResponse.BodyHandlers.ofString()).body(), Room.class);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

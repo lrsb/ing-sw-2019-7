@@ -36,7 +36,7 @@ class NetworkTest {
         assertNull(client.getActiveGame(""));
         assertEquals(client.getRooms("").get(0).getName(), "ok");
         assertEquals(client.joinRoom("", TEST_UUID).getName(), "ok");
-        assertEquals(client.createRoom("", "").getName(), "ok");
+        assertEquals(client.createRoom("", "", 30, Game.Type.FIVE_SIX).getName(), "ok");
         assertNull(client.startGame("", TEST_UUID));
         assertTrue(client.doAction("", Action.Builder.create(UUID.randomUUID()).buildMoveAction(new Point(0, 0))));
         client.addGameListener("", e -> fail());
@@ -77,7 +77,7 @@ class NetworkTest {
         }
 
         @Override
-        public @Nullable Room createRoom(@NotNull String token, @NotNull String name) {
+        public @Nullable Room createRoom(@NotNull String token, @NotNull String name, int timeout, Game.@NotNull Type gameType) {
             return new Room("ok", new User("ok"));
         }
 

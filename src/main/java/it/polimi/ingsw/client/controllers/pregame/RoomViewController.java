@@ -4,28 +4,23 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
-import it.polimi.ingsw.client.controllers.game.GameViewController;
 import it.polimi.ingsw.client.others.Preferences;
+import it.polimi.ingsw.common.models.Room;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
-import java.util.UUID;
 
 public class RoomViewController extends BaseViewController {
-    public UUID roomUuid;
+    public Room room;
 
     public RoomViewController(@NotNull NavigationController navigationController) {
         super("", 600, 400, navigationController);
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
                 Client.API.addRoomListener(e, room -> {
-                    if (room.getUuid().equals(roomUuid)) {
-                        //aggiorna ui
-                        getNavigationController().popViewController();
-                        getNavigationController().presentViewController(GameViewController.class, true);
-                    }
+                    if (room.getUuid().equals(this.room.getUuid())) this.room = room;
                 });
             } catch (RemoteException ex) {
                 ex.printStackTrace();
@@ -35,7 +30,7 @@ public class RoomViewController extends BaseViewController {
 
     @Override
     protected <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
-        super.nextViewControllerInstantiated(viewController);
+
     }
 
     @Override
