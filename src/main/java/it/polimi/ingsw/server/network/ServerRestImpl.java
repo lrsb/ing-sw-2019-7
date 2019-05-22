@@ -5,6 +5,7 @@ import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoWSD;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Action;
+import it.polimi.ingsw.common.models.Game;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +65,8 @@ public class ServerRestImpl extends NanoWSD {
                     break;
                 case "/createRoom":
                     if (method == Method.POST)
-                        return newJsonResponse(Server.controller.createRoom(token, session.getParameters().get("name").get(0)));
+                        return newJsonResponse(Server.controller.createRoom(token, session.getParameters().get("name").get(0),
+                                Integer.parseInt(session.getParameters().get("timeout").get(0)), Game.Type.valueOf(session.getParameters().get("gameType").get(0))));
                     break;
                 case "/startGame":
                     if (method == Method.POST)

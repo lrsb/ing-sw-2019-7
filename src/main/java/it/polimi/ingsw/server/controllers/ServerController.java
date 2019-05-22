@@ -72,11 +72,13 @@ public class ServerController implements API {
     }
 
     @Override
-    public @Nullable Room createRoom(@Nullable String token, @Nullable String name) {
+    public @Nullable Room createRoom(@Nullable String token, @Nullable String name, int timeout, @NotNull Game.Type gameType) {
         if (name != null) try {
             var user = SecureUserController.getUser(token);
             if (user == null) return null;
             var room = new Room(name, user);
+            room.setActionTimeout(timeout);
+            room.setGameType(gameType);
             rooms.insertOne(Document.parse(new Gson().toJson(room)));
             return room;
         } catch (Exception e) {
@@ -96,8 +98,8 @@ public class ServerController implements API {
             games.insertOne(Document.parse(new Gson().toJson(game)));
             room.setGameCreated();
             informRoomUsers(room);
-            //rooms.deleteOne(eq("uuid", roomUuid));
-            rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
+            rooms.deleteOne(eq("uuid", roomUuid));
+            //rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
             return new Gson().fromJson(new Gson().toJson(game), Game.class);
         } catch (Exception e) {
             e.printStackTrace();

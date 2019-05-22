@@ -50,8 +50,8 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
-    public @Nullable Room createRoom(@NotNull String token, @NotNull String name) throws RemoteException {
-        return remote.createRoom(token, name);
+    public @Nullable Room createRoom(@NotNull String token, @NotNull String name, int timeout, @NotNull Game.Type gameType) throws RemoteException {
+        return remote.createRoom(token, name, timeout, gameType);
     }
 
     @Override
