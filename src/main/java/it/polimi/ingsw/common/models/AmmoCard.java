@@ -95,12 +95,44 @@ public class AmmoCard implements Displayable, Serializable {
                 ((AmmoCard) obj).type == type && ((AmmoCard) obj).left == left && ((AmmoCard) obj).right == right;
     }
 
+    /**
+     * The enum Type.
+     */
     public enum Type {
-        RED, YELLOW, BLUE, POWER_UP
+        /**
+         * Red type.
+         */
+        RED,
+        /**
+         * Yellow type.
+         */
+        YELLOW,
+        /**
+         * Blue type.
+         */
+        BLUE,
+        /**
+         * Power up type.
+         */
+        POWER_UP
     }
 
+    /**
+     * The enum Color.
+     */
     public enum Color {
-        RED(0), YELLOW(1), BLUE(2);
+        /**
+         * Red color.
+         */
+        RED(0),
+        /**
+         * Yellow color.
+         */
+        YELLOW(1),
+        /**
+         * Blue color.
+         */
+        BLUE(2);
 
         private int index;
 
@@ -109,6 +141,11 @@ public class AmmoCard implements Displayable, Serializable {
             this.index = index;
         }
 
+        /**
+         * Gets index.
+         *
+         * @return the index
+         */
         @Contract(pure = true)
         public int getIndex() {
             return index;

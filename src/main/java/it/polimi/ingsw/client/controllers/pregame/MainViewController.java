@@ -28,6 +28,7 @@ public class MainViewController extends BaseViewController {
         $$$setupUI$$$();
         setContentPane(panel);
         logo.addSprite(new Sprite(10, 40, 370, 70, Utils.readPngImage(getClass(), "logo")));
+
         nuovaPartitaButton.addActionListener(e -> getNavigationController().presentViewController(NewRoomViewController.class));
         elencoPartiteButton.addActionListener(e -> getNavigationController().presentViewController(RoomsListViewController.class));
         cliButton.addActionListener(e -> {
@@ -40,7 +41,7 @@ public class MainViewController extends BaseViewController {
     }
 
     @Override
-    public void close() {
+    protected void controllerPopped() {
         logo = null;
     }
 

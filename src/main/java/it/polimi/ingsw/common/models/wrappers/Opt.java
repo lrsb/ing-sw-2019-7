@@ -1,4 +1,4 @@
-package it.polimi.ingsw.common.models;
+package it.polimi.ingsw.common.models.wrappers;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

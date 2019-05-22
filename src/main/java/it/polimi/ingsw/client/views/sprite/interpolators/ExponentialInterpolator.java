@@ -4,7 +4,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
+/**
+ * The type Exponential interpolator.
+ */
 public abstract class ExponentialInterpolator extends Interpolator {
+    /**
+     * Instantiates a new Exponential interpolator.
+     *
+     * @param start    the start
+     * @param end      the end
+     * @param duration the duration
+     */
     public ExponentialInterpolator(@NotNull Point start, @NotNull Point end, long duration) {
         super(start, System.currentTimeMillis(), end, System.currentTimeMillis() + duration);
     }

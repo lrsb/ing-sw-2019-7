@@ -46,8 +46,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements API {
     }
 
     @Override
-    public @Nullable Room createRoom(@NotNull String token, @NotNull String name) {
-        return Server.controller.createRoom(token, name);
+    public @Nullable Room createRoom(@NotNull String token, @NotNull String name, int timeout, Game.@NotNull Type gameType) {
+        return Server.controller.createRoom(token, name, timeout, gameType);
     }
 
     @Override

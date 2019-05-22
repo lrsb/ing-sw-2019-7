@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.mongodb.client.MongoCollection;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.*;
+import it.polimi.ingsw.common.models.wrappers.Opt;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
@@ -71,11 +72,13 @@ public class ServerController implements API {
     }
 
     @Override
-    public @Nullable Room createRoom(@Nullable String token, @Nullable String name) {
+    public @Nullable Room createRoom(@Nullable String token, @Nullable String name, int timeout, @NotNull Game.Type gameType) {
         if (name != null) try {
             var user = SecureUserController.getUser(token);
             if (user == null) return null;
             var room = new Room(name, user);
+            room.setActionTimeout(timeout);
+            room.setGameType(gameType);
             rooms.insertOne(Document.parse(new Gson().toJson(room)));
             return room;
         } catch (Exception e) {
@@ -91,12 +94,12 @@ public class ServerController implements API {
             if (user == null) return null;
             var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid)).first()).e(Document::toJson).get(""), Room.class);
             if (room.getUsers().size() < Game.MIN_PLAYERS || room.getUsers().size() > Game.MAX_PLAYERS) return null;
-            var game = GameImpl.Creator.newGame(room.getUuid(), room.getUsers());
+            var game = GameImpl.Creator.newGame(room);
             games.insertOne(Document.parse(new Gson().toJson(game)));
             room.setGameCreated();
             informRoomUsers(room);
-            //rooms.deleteOne(eq("uuid", roomUuid));
-            rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
+            rooms.deleteOne(eq("uuid", roomUuid));
+            //rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
             return new Gson().fromJson(new Gson().toJson(game), Game.class);
         } catch (Exception e) {
             e.printStackTrace();

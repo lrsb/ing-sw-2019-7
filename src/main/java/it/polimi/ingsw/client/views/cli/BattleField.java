@@ -6,8 +6,9 @@ import java.util.Random;
 
 public class BattleField {
 
-    private static final int MAX_VERT_TILES = 4*5; //rows.
-    private static final int MAX_HORIZ_TILES = 3*5; //cols.
+    private static final int MAX_VERT_TILES = 4 * 5; //rows.
+    private static final int MAX_HORIZ_TILES = 3 * 5; //cols.
+
 
     String[][] tiles = new String[MAX_VERT_TILES][MAX_HORIZ_TILES];
 
@@ -38,9 +39,9 @@ public class BattleField {
 
         tiles[0][0] = "╔";
         for (int c = 1; c < MAX_HORIZ_TILES - 1; c++) {
-            if (c%5 == 0){
+            if (c % 5 == 0) {
                 tiles[0][c] = "╦";
-            }else {
+            } else {
                 tiles[0][c] = "═";
             }
         }
@@ -48,21 +49,21 @@ public class BattleField {
         tiles[0][MAX_HORIZ_TILES - 1] = "╗";
 
         for (int r = 1; r < MAX_VERT_TILES - 1; r++) {
-            if (r%5 ==0){
+            if (r % 5 == 0) {
                 tiles[r][0] = "╠";
-            }else {
+            } else {
                 tiles[r][0] = "║";
             }
 
             for (int c = 1; c < MAX_HORIZ_TILES - 1; c++) {
-                if (c%5 == 0){
-                    if (r%5 ==0){
-                        tiles [r][c] = "╬";
-                    }else {
+                if (c % 5 == 0) {
+                    if (r % 5 == 0) {
+                        tiles[r][c] = "╬";
+                    } else {
                         tiles[r][c] = "║";
                     }
-                }else {
-                    if (r%5 == 0){
+                } else {
+                    if (r % 5 == 0) {
                         tiles[r][c] = "═";
                     }
                     tiles[r][c] = " ";
@@ -74,9 +75,9 @@ public class BattleField {
 
         tiles[MAX_VERT_TILES - 1][0] = "╚";
         for (int c = 1; c < MAX_HORIZ_TILES - 1; c++) {
-            if (c%5 == 0){
+            if (c % 5 == 0) {
                 tiles[MAX_VERT_TILES - 1][c] = "╩";
-            }else {
+            } else {
                 tiles[MAX_VERT_TILES - 1][c] = "═";
             }
         }
