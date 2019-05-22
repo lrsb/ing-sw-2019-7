@@ -39,7 +39,7 @@ public class AmmoCard implements Displayable, Serializable {
     /**
      * Create a copy of the given AmmoCard.
      *
-     * @param ammoCard The AmmmoCard.
+     * @param ammoCard The AmmoCard.
      */
     @Contract(pure = true)
     public AmmoCard(@NotNull AmmoCard ammoCard) {

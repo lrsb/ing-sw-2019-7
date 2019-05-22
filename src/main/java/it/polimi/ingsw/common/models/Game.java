@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 /**
  * The type Game.
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class Game implements Displayable, Serializable {
     /**
      * The constant MAX_PLAYERS.
@@ -212,11 +213,11 @@ public abstract class Game implements Displayable, Serializable {
     protected void addWeapon(@NotNull Cell.Color color, @NotNull Weapon.Name weapon) {
         switch (color) {
             case BLUE:
-                blueWeapons.add(weapon);
+                if (blueWeapons.size() < 3) blueWeapons.add(weapon);
             case RED:
-                redWeapons.add(weapon);
+                if (redWeapons.size() < 3) redWeapons.add(weapon);
             case YELLOW:
-                yellowWeapons.add(weapon);
+                if (yellowWeapons.size() < 3) yellowWeapons.add(weapon);
         }
     }
 

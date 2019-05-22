@@ -125,7 +125,7 @@ public class Action implements Serializable {
     }
 
     public enum Type implements Serializable {
-        NOTHING, MOVE, GRAB_WEAPON, GRAB_AMMOCARD, FIRE, USE_POWER_UP, RELOAD, NEXT_TURN
+        NOTHING, MOVE, GRAB_WEAPON, GRAB_AMMOCARD, FIRE, USE_POWER_UP, RELOAD, NEXT_TURN, REBORN
     }
 
     public static class Builder {
@@ -210,6 +210,13 @@ public class Action implements Serializable {
 
         public @NotNull Action buildNextTurn() {
             return new Action(Type.NEXT_TURN, gameUuid);
+        }
+
+        public @NotNull Action buildReborn(@NotNull PowerUp.Type powerUpType, @NotNull AmmoCard.Color color) {
+            var action = new Action(Type.REBORN, gameUuid);
+            action.powerUpType = powerUpType;
+            action.color = color;
+            return action;
         }
     }
 }

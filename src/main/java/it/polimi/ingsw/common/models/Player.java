@@ -95,12 +95,12 @@ public class Player implements Serializable {
         return hasWeapon(weapon) && weapons.get(weapon);
     }
 
-    public void unloadWeapon(@Nullable Weapon.Name weapon) {
+    void unloadWeapon(@Nullable Weapon.Name weapon) {
         weapons.put(weapon, false);
     }
 
     //gives damages, convert marks to damages and finally gives marks
-    public void takeHits(@NotNull Game game, int damages, int marks) {
+    void takeHits(@NotNull Game game, int damages, int marks) {
         for (int i = 0; i < damages; i++) {
             if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().uuid);
         }
@@ -110,7 +110,7 @@ public class Player implements Serializable {
                     marksTaken.remove(hitterUuid);
                     if (damagesTaken.size() < 12) {
                         damagesTaken.add(game.getActualPlayer().uuid);
-                        if (!game.lastsDamaged.contains(this)) game.lastsDamaged.add(this);
+                        //game.addToLastsDamaged(getUuid());
                     }
                 }
             }
@@ -155,7 +155,6 @@ public class Player implements Serializable {
 
     public void removePowerUp(@NotNull PowerUp powerUp) {
         powerUps.remove(powerUp);
-        //TODO spostare powerUps nelle carte scartate
     }
 
     public void addPowerUp(@NotNull PowerUp powerUp) {
@@ -177,7 +176,7 @@ public class Player implements Serializable {
     public void ammoCardRecharging(@NotNull AmmoCard ammoCard, @Nullable PowerUp powerUp) {
         switch (ammoCard.getType()) {
             case POWER_UP:
-                addPowerUp(powerUp);
+                if (powerUp != null) addPowerUp(powerUp);
                 break;
             case RED:
                 addCube(AmmoCard.Color.RED);
@@ -216,6 +215,7 @@ public class Player implements Serializable {
     }
 
     public boolean isPointAtMaxDistanceInDirection(@NotNull Point point, @NotNull Cell[][] cells, int maxDistance, @NotNull Bounds.Direction direction) {
+        if (position == null) return false;
         int countDistance = 0, x = position.x, y = position.y;
         while (countDistance < maxDistance) {
             if (cells[x][y].getBounds().getType(direction) == Bounds.Type.WALL) return false;
@@ -228,6 +228,7 @@ public class Player implements Serializable {
     }
 
     public boolean canSeeCell(@NotNull Point point, @NotNull Cell[][] cells) {
+        if (position == null) return false;
         if (cells[position.x][position.y].getColor() == cells[point.x][point.y].getColor()) return true;
         for (var direction : Bounds.Direction.values())
             if (cells[position.x][position.y].getBounds().getType(direction) == Bounds.Type.DOOR &&
