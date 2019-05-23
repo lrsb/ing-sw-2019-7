@@ -24,8 +24,10 @@ class SecureUserController {
 
     @Contract("null -> fail")
     static @NotNull User getUser(@Nullable String token) throws RemoteException {
-        if (token != null) try {
-            return new Gson().fromJson(Opt.of(users.find(eq("token", token)).first()).e(Document::toJson).get(""), User.class);
+        if (token != null && !token.isEmpty()) try {
+            var user = users.find(eq("token", token));
+            if (user.iterator().hasNext()) throw new Exception();
+            return new Gson().fromJson(Opt.of(user.first()).e(Document::toJson).get(""), User.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RemoteException("User not exists!");
