@@ -118,6 +118,7 @@ public class AdrenalinePacket implements Serializable {
         /**
          * Remove room updates type.
          */
-        REMOVE_ROOM_UPDATES
+        REMOVE_ROOM_UPDATES,
+        ERROR
     }
 }

@@ -8,7 +8,6 @@ import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -25,37 +24,37 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
-    public @Nullable String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         return remote.authUser(nickname, password);
     }
 
     @Override
-    public @Nullable String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         return remote.createUser(nickname, password);
     }
 
     @Override
-    public @Nullable Game getActiveGame(@NotNull String token) throws RemoteException {
+    public @NotNull Game getActiveGame(@NotNull String token) throws RemoteException {
         return remote.getActiveGame(token);
     }
 
     @Override
-    public @Nullable List<Room> getRooms(@NotNull String token) throws RemoteException {
+    public @NotNull List<Room> getRooms(@NotNull String token) throws RemoteException {
         return remote.getRooms(token);
     }
 
     @Override
-    public @Nullable Room joinRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+    public @NotNull Room joinRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         return remote.joinRoom(token, roomUuid);
     }
 
     @Override
-    public @Nullable Room createRoom(@NotNull String token, @NotNull String name, int timeout, @NotNull Game.Type gameType) throws RemoteException {
+    public @NotNull Room createRoom(@NotNull String token, @NotNull String name, int timeout, @NotNull Game.Type gameType) throws RemoteException {
         return remote.createRoom(token, name, timeout, gameType);
     }
 
     @Override
-    public @Nullable Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+    public @NotNull Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         return remote.startGame(token, roomUuid);
     }
 

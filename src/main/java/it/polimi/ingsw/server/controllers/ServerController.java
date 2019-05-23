@@ -30,125 +30,119 @@ public class ServerController implements API {
     private final @NotNull HashMap<UUID, RoomListener> roomListeners = new HashMap<>();
 
     @Override
-    public @Nullable String authUser(@Nullable String nickname, @Nullable String password) {
+    public @NotNull String authUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
         return SecureUserController.authUser(nickname, password);
     }
 
     @Override
-    public @Nullable String createUser(@Nullable String nickname, @Nullable String password) {
+    public @NotNull String createUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
         return SecureUserController.createUser(nickname, password);
     }
 
+    //TODO: impl
     @Override
-    public @Nullable Game getActiveGame(@Nullable String token) {
+    public @NotNull Game getActiveGame(@Nullable String token) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (user == null) return null;
         return null;
     }
 
     @Override
-    public @Nullable List<Room> getRooms(@Nullable String token) {
-        var user = SecureUserController.getUser(token);
-        if (user == null) return null;
+    public @NotNull List<Room> getRooms(@Nullable String token) throws RemoteException {
+        SecureUserController.getUser(token);
         var gson = new Gson();
         return StreamSupport.stream(rooms.find().filter(eq("gameCreated", false)).spliterator(), true)
                 .map(e -> gson.fromJson(e.toJson(), Room.class)).collect(Collectors.toList());
     }
 
     @Override
-    public @Nullable Room joinRoom(@Nullable String token, @Nullable UUID roomUuid) {
-        try {
-            var user = SecureUserController.getUser(token);
-            if (user == null) return null;
+    public @NotNull Room joinRoom(@Nullable String token, @Nullable UUID roomUuid) throws RemoteException {
+        var user = SecureUserController.getUser(token);
+        if (roomUuid != null) try {
             var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid)).first()).e(Document::toJson).get(""), Room.class);
-            room.addUser(user);
+            if (!room.addUser(user)) throw new RemoteException("The room is full, go away!!");
             rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
             informRoomUsers(room);
             return room;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        } catch (Exception ignored) {
+            throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
+        else throw new RemoteException("The UUID!!");
     }
 
     @Override
-    public @Nullable Room createRoom(@Nullable String token, @Nullable String name, int timeout, @NotNull Game.Type gameType) {
-        if (name != null) try {
-            var user = SecureUserController.getUser(token);
-            if (user == null) return null;
+    public @NotNull Room createRoom(@Nullable String token, @Nullable String name, int timeout, @Nullable Game.Type gameType) throws RemoteException {
+        var user = SecureUserController.getUser(token);
+        if (name != null && gameType != null) try {
             var room = new Room(name, user);
             room.setActionTimeout(timeout);
             room.setGameType(gameType);
             rooms.insertOne(Document.parse(new Gson().toJson(room)));
             return room;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
+            throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
-        return null;
+        else throw new RemoteException("The parameters!!");
     }
 
     @Override
-    public @Nullable Game startGame(@Nullable String token, @Nullable UUID roomUuid) {
+    public @NotNull Game startGame(@Nullable String token, @Nullable UUID roomUuid) throws RemoteException {
+        var user = SecureUserController.getUser(token);
         if (roomUuid != null) try {
-            var user = SecureUserController.getUser(token);
-            if (user == null) return null;
             var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid)).first()).e(Document::toJson).get(""), Room.class);
-            if (room.getUsers().size() < Game.MIN_PLAYERS || room.getUsers().size() > Game.MAX_PLAYERS) return null;
+            if (!room.getUsers().get(0).getUuid().equals(user.getUuid()))
+                throw new RemoteException("You can't do this!");
             var game = GameImpl.Creator.newGame(room);
             games.insertOne(Document.parse(new Gson().toJson(game)));
             room.setGameCreated();
             informRoomUsers(room);
             rooms.deleteOne(eq("uuid", roomUuid));
-            //rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
             return new Gson().fromJson(new Gson().toJson(game), Game.class);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
+            throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
-        return null;
+        else throw new RemoteException("The UUID!!");
     }
 
     @Override
-    public boolean doAction(@Nullable String token, @Nullable Action action) {
+    public boolean doAction(@Nullable String token, @Nullable Action action) throws RemoteException {
+        var user = SecureUserController.getUser(token);
         if (action != null) try {
-            var user = SecureUserController.getUser(token);
-            if (user == null) return false;
             var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid())).first()).e(Document::toJson).get(""), GameImpl.class);
             if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid()))) return false;
             var value = game.doAction(action);
             if (value) games.replaceOne(eq("uuid", action.getGameUuid()), Document.parse(new Gson().toJson(game)));
             informGamePlayers(game);
             return value;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
+            throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
-        return false;
+        else throw new RemoteException("The action is not valid!!");
     }
 
     @Override
-    public void addGameListener(@Nullable String token, @Nullable GameListener listener) {
+    public void addGameListener(@Nullable String token, @Nullable GameListener listener) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (user == null || listener == null) return;
+        if (listener == null) throw new RemoteException("Where is the listener?!?!");
         gameListeners.put(user.getUuid(), listener);
     }
 
     @Override
-    public void removeGameListener(@Nullable String token) {
+    public void removeGameListener(@Nullable String token) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (user == null) return;
         gameListeners.remove(user.getUuid());
     }
 
     @Override
-    public void addRoomListener(@Nullable String token, @Nullable RoomListener listener) {
+    public void addRoomListener(@Nullable String token, @Nullable RoomListener listener) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (user == null || listener == null) return;
+        if (listener == null) throw new RemoteException("Where is the listener?!?!");
         roomListeners.put(user.getUuid(), listener);
     }
 
     @Override
-    public void removeRoomListener(@Nullable String token) {
+    public void removeRoomListener(@Nullable String token) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (user == null) return;
         roomListeners.remove(user.getUuid());
     }
 
