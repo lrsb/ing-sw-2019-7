@@ -85,7 +85,7 @@ public class GameImpl extends Game implements Serializable {
             getActualPlayer().setPosition(to);
             getActualPlayer().addWeapon(weapon);
             removeWeapon(cell.getColor(), weapon);
-            if (getActualPlayer().getWeaponsSize() > 3) {
+            if (getActualPlayer().getWeaponsSize() > 3 && discardedWeaponName != null) {
                 getActualPlayer().removeWeapon(discardedWeaponName);
                 addWeapon(cell.getColor(), discardedWeaponName);
             }
@@ -136,13 +136,13 @@ public class GameImpl extends Game implements Serializable {
     private boolean fireAction(@NotNull Action action) {
         if (action.getWeapon() == null) return false;
         var weapon = action.getWeapon().build(this, action.getAlternativeFire());
-        if (action.getBasicTarget() != null) action.getBasicTarget().forEach(e -> weapon.addBasicTarget(e));
+        if (action.getBasicTarget() != null) action.getBasicTarget().forEach(weapon::addBasicTarget);
         if (action.getBasicTargetPoint() != null) weapon.setBasicTargetsPoint(action.getBasicTargetPoint());
         if (action.getBasicAlternativePayment() != null)
             weapon.setBasicAlternativePayment(action.getBasicAlternativePayment());
         if ((action.getOptions() & Weapon.FIRST) == 1) {
             if (action.getFirstAdditionalTarget() != null)
-                action.getFirstAdditionalTarget().forEach(e -> weapon.addFirstAdditionalTarget(e));
+                action.getFirstAdditionalTarget().forEach(weapon::addFirstAdditionalTarget);
             if (action.getFirstAdditionalTargetPoint() != null)
                 weapon.setFirstAdditionalTargetsPoint(action.getFirstAdditionalTargetPoint());
             if (action.getFirstAdditionalPayment() != null)
@@ -150,7 +150,7 @@ public class GameImpl extends Game implements Serializable {
         }
         if ((action.getOptions() & Weapon.SECOND) == 2) {
             if (action.getSecondAdditionalTarget() != null)
-                action.getSecondAdditionalTarget().forEach(e -> weapon.addSecondAdditionalTarget(e));
+                action.getSecondAdditionalTarget().forEach(weapon::addSecondAdditionalTarget);
             if (action.getSecondAdditionalTargetPoint() != null)
                 weapon.setSecondAdditionalTargetsPoint(action.getSecondAdditionalTargetPoint());
             if (action.getSecondAdditionalPayment() != null)
