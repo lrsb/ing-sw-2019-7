@@ -35,9 +35,15 @@ public class ClientRestImpl implements API {
     private @Nullable WebSocketClient roomWebSocket;
 
     @Contract(pure = true)
-    public ClientRestImpl(@NotNull String hostname) {
+    public ClientRestImpl(@NotNull String hostname) throws RemoteException {
         this.hostname = hostname;
         this.host = (hostname.equals("localhost") ? "http" : "https") + "://" + hostname;
+        try {
+            client.send(HttpRequest.newBuilder().uri(URI.create(host)).build(), HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            throw new RemoteException();
+        }
     }
 
     private static <T> @NotNull T processResponse(@NotNull HttpResponse<T> response) throws RemoteException {
