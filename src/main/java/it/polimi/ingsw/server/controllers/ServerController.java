@@ -59,9 +59,9 @@ public class ServerController implements API {
     public @NotNull Room joinRoom(@Nullable String token, @Nullable UUID roomUuid) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (roomUuid != null) try {
-            var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid)).first()).e(Document::toJson).get(""), Room.class);
+            var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid.toString())).first()).e(Document::toJson).get(""), Room.class);
             if (!room.addUser(user)) throw new RemoteException("The room is full, go away!!");
-            rooms.replaceOne(eq("uuid", roomUuid), Document.parse(new Gson().toJson(room)));
+            rooms.replaceOne(eq("uuid", roomUuid.toString()), Document.parse(new Gson().toJson(room)));
             informRoomUsers(room);
             return room;
         } catch (Exception ignored) {
@@ -89,14 +89,14 @@ public class ServerController implements API {
     public @NotNull Game startGame(@Nullable String token, @Nullable UUID roomUuid) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (roomUuid != null) try {
-            var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid)).first()).e(Document::toJson).get(""), Room.class);
+            var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid.toString())).first()).e(Document::toJson).get(""), Room.class);
             if (!room.getUsers().get(0).getUuid().equals(user.getUuid()))
                 throw new RemoteException("You can't do this!");
             var game = GameImpl.Creator.newGame(room);
             games.insertOne(Document.parse(new Gson().toJson(game)));
             room.setGameCreated();
             informRoomUsers(room);
-            rooms.deleteOne(eq("uuid", roomUuid));
+            rooms.deleteOne(eq("uuid", roomUuid.toString()));
             return new Gson().fromJson(new Gson().toJson(game), Game.class);
         } catch (Exception ignored) {
             throw new RemoteException("Something went wrong, sometimes it happens!!");
@@ -107,11 +107,12 @@ public class ServerController implements API {
     @Override
     public boolean doAction(@Nullable String token, @Nullable Action action) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (action != null) try {
-            var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid())).first()).e(Document::toJson).get(""), GameImpl.class);
+        if (action != null && action.getGameUuid() != null) try {
+            var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
             if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid()))) return false;
             var value = game.doAction(action);
-            if (value) games.replaceOne(eq("uuid", action.getGameUuid()), Document.parse(new Gson().toJson(game)));
+            if (value)
+                games.replaceOne(eq("uuid", action.getGameUuid().toString()), Document.parse(new Gson().toJson(game)));
             informGamePlayers(game);
             return value;
         } catch (Exception ignored) {

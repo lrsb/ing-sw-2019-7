@@ -14,8 +14,9 @@ import java.awt.*;
 import java.rmi.RemoteException;
 
 public class RoomViewController extends BaseViewController {
-    public RoomViewController(@NotNull NavigationController navigationController, @NotNull Room room) {
+    public RoomViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
         super("", 600, 400, navigationController);
+        var room = (Room) params[0];
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
                 Client.API.addRoomListener(e, f -> {

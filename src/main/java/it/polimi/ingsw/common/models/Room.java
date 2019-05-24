@@ -65,6 +65,7 @@ public class Room implements Serializable {
      * @return true if there was enough space for the user, otherwise false.
      */
     public boolean addUser(@NotNull User user) {
+        if (users.contains(user)) return true;
         if (users.size() > 4) return false;
         users.add(user);
         return true;

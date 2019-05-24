@@ -18,9 +18,11 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
@@ -55,9 +57,12 @@ public class ClientRestImpl implements API {
             throw new RemoteException(response.body() instanceof String ? (String) response.body() : "Unknown error!!");
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     public @NotNull String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         try {
+            nickname = URLEncoder.encode(nickname, StandardCharsets.UTF_8);
+            password = URLEncoder.encode(password, StandardCharsets.UTF_8);
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/authUser?nickname=" + nickname + "&password=" + password)).POST(HttpRequest.BodyPublishers.noBody()).build();
             return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), String.class);
         } catch (IOException | InterruptedException e) {
@@ -66,9 +71,12 @@ public class ClientRestImpl implements API {
         }
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     public @NotNull String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         try {
+            nickname = URLEncoder.encode(nickname, StandardCharsets.UTF_8);
+            password = URLEncoder.encode(password, StandardCharsets.UTF_8);
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/createUser?nickname=" + nickname + "&password=" + password)).POST(HttpRequest.BodyPublishers.noBody()).build();
             return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), String.class);
         } catch (IOException | InterruptedException e) {
@@ -114,6 +122,7 @@ public class ClientRestImpl implements API {
     @Override
     public @NotNull Room createRoom(@NotNull String token, @NotNull String name, int timeout, @NotNull Game.Type gameType) throws RemoteException {
         try {
+            name = URLEncoder.encode(name, StandardCharsets.UTF_8);
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/createRoom?name=" + name + "&timeout=" + timeout + "&gameType=" + gameType)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
             return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), Room.class);
         } catch (IOException | InterruptedException e) {
