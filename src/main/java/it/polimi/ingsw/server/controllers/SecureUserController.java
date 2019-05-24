@@ -56,7 +56,8 @@ class SecureUserController {
     static @NotNull String authUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
         if (nickname != null && password != null) try {
             var user = new Gson().fromJson(Opt.of(users.find(eq("nickname", nickname)).first()).e(Document::toJson).get(""), SecureUser.class);
-            if (!user.getPassword().equals(password)) throw new RemoteException("Wrong username and/or password!");
+            if (user == null || !user.getPassword().equals(password))
+                throw new RemoteException("Wrong username and/or password!");
             user.nextToken();
             users.replaceOne(eq("uuid", user.getUuid().toString()), Document.parse(new Gson().toJson(user)));
             return user.getToken();
