@@ -8,6 +8,7 @@ import it.polimi.ingsw.common.network.socket.AdrenalineSocket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocketListener;
 import org.jetbrains.annotations.NotNull;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -67,6 +68,8 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                 default:
                     throw new IllegalStateException("Unexpected value: " + packet.getType());
             }
+        } catch (RemoteException e) {
+            socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ERROR, null, e));
         } catch (Exception e) {
             e.printStackTrace();
         }

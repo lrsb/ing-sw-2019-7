@@ -7,10 +7,10 @@ import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.rmi.RemoteException;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,8 +25,8 @@ public class ServerRestImpl extends NanoWSD {
         start(Integer.MAX_VALUE, false);
     }
 
-    private static @NotNull Response newJsonResponse(@Nullable Object object) {
-        return object != null ? NanoHTTPD.newFixedLengthResponse(new Gson().toJson(object)) : newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, null);
+    private static @NotNull Response newJsonResponse(@NotNull Object object) {
+        return NanoHTTPD.newFixedLengthResponse(new Gson().toJson(object));
     }
 
     @Override
@@ -79,8 +79,8 @@ public class ServerRestImpl extends NanoWSD {
                 default:
                     return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (RemoteException e) {
+            return newFixedLengthResponse(Response.Status.NOT_ACCEPTABLE, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         }
         return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
     }
