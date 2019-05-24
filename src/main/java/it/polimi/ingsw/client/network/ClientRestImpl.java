@@ -8,6 +8,7 @@ import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.Contract;
@@ -48,6 +49,8 @@ public class ClientRestImpl implements API {
 
     private static <T> @NotNull T processResponse(@NotNull HttpResponse<T> response) throws RemoteException {
         if (response.statusCode() == 200) return response.body();
+        if (response.statusCode() == 401)
+            throw new UserRemoteException(response.body() instanceof String ? (String) response.body() : "Unknown error!!");
         else
             throw new RemoteException(response.body() instanceof String ? (String) response.body() : "Unknown error!!");
     }

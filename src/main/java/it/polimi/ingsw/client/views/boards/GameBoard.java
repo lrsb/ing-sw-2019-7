@@ -87,4 +87,8 @@ public class GameBoard extends AbstractBoard {
         sprite.moveTo(new LinearInterpolator(sprite.getPosition(), new Point((int) (250 + point.getX() * 220), (int) (210 + point.getY() * 190)), 250) {
         });
     }
+
+    public @NotNull Game getGame() {
+        return game;
+    }
 }

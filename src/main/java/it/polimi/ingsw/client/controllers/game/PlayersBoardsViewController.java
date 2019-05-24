@@ -5,8 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.views.boards.PlayerBoard;
-import it.polimi.ingsw.common.models.Player;
-import it.polimi.ingsw.common.models.User;
+import it.polimi.ingsw.common.models.Game;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -17,14 +16,14 @@ public class PlayersBoardsViewController extends BaseViewController {
     private JPanel panel;
     private JScrollPane scrollPane;
 
-    public PlayersBoardsViewController(@NotNull NavigationController navigationController) throws IOException {
+    public PlayersBoardsViewController(@NotNull NavigationController navigationController, @NotNull Game game) throws IOException {
         super("Plance", 600, 600, navigationController);
         setContentPane(panel);
         Container cont = new Container();
         cont.setLayout(new GridLayout(0, 1));
-        for (var i = 0; i < 5; i++) {
-            cont.add(new JLabel("player" + i));
-            cont.add(new PlayerBoard(new Dimension(600, 170), new Player(new User("ciao"))));
+        for (var player : game.getPlayers()) {
+            cont.add(new JLabel(player.getNickname()));
+            cont.add(new PlayerBoard(new Dimension(600, 170), player));
         }
         scrollPane.getViewport().setView(cont);
     }

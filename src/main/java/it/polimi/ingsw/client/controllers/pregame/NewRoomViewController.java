@@ -7,8 +7,10 @@ import it.polimi.ingsw.Client;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.others.Preferences;
+import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -31,37 +33,33 @@ public class NewRoomViewController extends BaseViewController {
     public NewRoomViewController(@NotNull NavigationController navigationController) {
         super("Nuova stanza", 600, 400, navigationController);
         setContentPane(panel);
-        goButton.addActionListener(e -> {
-            Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
-                if (roomNameField.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Inserisci un nome!!");
-                } else if (timeoutSpinner.getAutoscrolls()) {
-                    JOptionPane.showMessageDialog(null, "Intervallo di timeout non valido!!");
-                } else try {
-                    var gameType = Game.Type.FIVE_FIVE;
-                    if (fivefive.isSelected()) {
-                        gameType = Game.Type.FIVE_FIVE;
-                    } else if (sixsix.isSelected()) {
-                        gameType = Game.Type.SIX_SIX;
-                    } else if (fivesix.isSelected()) {
-                        gameType = Game.Type.FIVE_SIX;
-                    } else if (sixfive.isSelected()) {
-                        gameType = Game.Type.SIX_FIVE;
-                    }
-                    room = Client.API.createRoom(f, roomNameField.getText(), (int) timeoutSpinner.getValue(), gameType);
-                    getNavigationController().presentViewController(RoomViewController.class, true);
-                } catch (RemoteException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Problemi col server!!");
+        goButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
+            if (roomNameField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Inserisci un nome!!");
+            } else if (timeoutSpinner.getAutoscrolls()) {
+                JOptionPane.showMessageDialog(null, "Intervallo di timeout non valido!!");
+            } else try {
+                var gameType = Game.Type.FIVE_FIVE;
+                if (fivefive.isSelected()) {
+                    //noinspection ConstantConditions
+                    gameType = Game.Type.FIVE_FIVE;
+                } else if (sixsix.isSelected()) {
+                    gameType = Game.Type.SIX_SIX;
+                } else if (fivesix.isSelected()) {
+                    gameType = Game.Type.FIVE_SIX;
+                } else if (sixfive.isSelected()) {
+                    gameType = Game.Type.SIX_FIVE;
                 }
-            });
-        });
+                room = Client.API.createRoom(f, roomNameField.getText(), (int) timeoutSpinner.getValue(), gameType);
+                getNavigationController().presentViewController(true, RoomViewController.class, room);
+            } catch (UserRemoteException ex) {
+                Utils.jumpBackToLogin(getNavigationController());
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Problemi col server!!");
+            }
+        }));
         backButton.addActionListener(e -> getNavigationController().popViewController());
-    }
-
-    @Override
-    protected <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
-        ((RoomViewController) viewController).room = room;
     }
 
     {

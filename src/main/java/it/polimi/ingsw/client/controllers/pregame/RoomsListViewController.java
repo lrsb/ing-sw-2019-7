@@ -11,7 +11,6 @@ import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.models.User;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -27,7 +26,6 @@ public class RoomsListViewController extends BaseViewController {
     private JButton joinButton;
 
     private List<Room> rooms;
-    private @Nullable Room room;
 
     public RoomsListViewController(@NotNull NavigationController navigationController) {
         super("Elenco partite", 800, 600, navigationController);
@@ -37,20 +35,13 @@ public class RoomsListViewController extends BaseViewController {
         joinButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             if (table.getSelectedRow() == -1) JOptionPane.showMessageDialog(null, "Seleziona una partita");
             else try {
-                room = Client.API.joinRoom(f, rooms.get(table.getSelectedRow()).getUuid());
-                getNavigationController().presentViewController(RoomViewController.class, true);
+                getNavigationController().presentViewController(true, RoomViewController.class,
+                        Client.API.joinRoom(f, rooms.get(table.getSelectedRow()).getUuid()));
             } catch (RemoteException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Problemi col server!!");
             }
         }));
-    }
-
-    @Override
-    protected <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
-        if (viewController instanceof RoomViewController) {
-            ((RoomViewController) viewController).room = room;
-        }
     }
 
     private void update() {

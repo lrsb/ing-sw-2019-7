@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.UUID;
 
 public class GameViewController extends BaseViewController implements GameBoardListener {
     private JPanel panel;
@@ -22,17 +23,33 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private JButton playersBoardButton;
     private JButton exitButton;
 
-    public GameViewController(@NotNull NavigationController navigationController) {
+    private @NotNull UUID gameUuid;
+
+    public GameViewController(@NotNull NavigationController navigationController, @NotNull UUID gameUuid) {
         super("Gioca", 1200, 900, navigationController);
         $$$setupUI$$$();
+        this.gameUuid = gameUuid;
         setContentPane(panel);
-        yourBoardButton.addActionListener(e -> new NavigationController(PlayerBoardViewController.class));
-        playersBoardButton.addActionListener(e -> new NavigationController(PlayersBoardsViewController.class));
-        exitButton.addActionListener(e -> {
-            //Client.API.removeGameListener(Preferences.getToken());
+        yourBoardButton.addActionListener(e -> new NavigationController(PlayerBoardViewController.class, gameBoard.getGame()));
+        playersBoardButton.addActionListener(e -> new NavigationController(PlayersBoardsViewController.class, gameBoard.getGame()));
+        /*exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
+            try {
+                Client.API.removeGameListener(f);
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
             navigationController.popViewController();
-        });
-        //Client.API.addGameListener(Preferences.getToken(), e -> gameBoard.updateGame(e));
+        }));
+        Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
+            try {
+                Client.API.addGameListener(e, f -> {
+                    if (gameUuid.equals(f.getUuid())) gameBoard.updateGame(f);
+                });
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Problemi di connessione col server!!");
+            }
+        });*/
     }
 
     private void createUIComponents() {

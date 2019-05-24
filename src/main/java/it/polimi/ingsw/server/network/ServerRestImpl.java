@@ -6,6 +6,7 @@ import fi.iki.elonen.NanoWSD;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -79,6 +80,8 @@ public class ServerRestImpl extends NanoWSD {
                 default:
                     return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
             }
+        } catch (UserRemoteException e) {
+            return newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         } catch (RemoteException e) {
             return newFixedLengthResponse(Response.Status.NOT_ACCEPTABLE, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         }

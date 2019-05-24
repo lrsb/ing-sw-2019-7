@@ -55,8 +55,8 @@ public class ConnTypeViewController extends BaseViewController {
                 return;
             }
             if (Preferences.isLoggedIn())
-                getNavigationController().presentViewController(MainViewController.class, true);
-            else getNavigationController().presentViewController(LoginViewController.class, true);
+                getNavigationController().presentViewController(true, MainViewController.class);
+            else getNavigationController().presentViewController(true, LoginViewController.class);
         });
     }
 

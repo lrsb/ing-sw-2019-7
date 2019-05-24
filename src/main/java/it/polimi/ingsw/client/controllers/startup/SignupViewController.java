@@ -31,7 +31,7 @@ public class SignupViewController extends BaseViewController {
                 else {
                     Preferences.setToken(token);
                     getNavigationController().popToRootViewController();
-                    getNavigationController().presentViewController(MainViewController.class, true);
+                    getNavigationController().presentViewController(true, MainViewController.class);
                 }
             } catch (RemoteException ex) {
                 ex.printStackTrace();

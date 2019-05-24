@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.models.wrappers.Opt;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.bson.Document;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -26,11 +27,11 @@ class SecureUserController {
     static @NotNull User getUser(@Nullable String token) throws RemoteException {
         if (token != null && !token.isEmpty()) try {
             var user = users.find(eq("token", token));
-            if (user.iterator().hasNext()) throw new Exception();
+            if (!user.iterator().hasNext()) throw new Exception();
             return new Gson().fromJson(Opt.of(user.first()).e(Document::toJson).get(""), User.class);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RemoteException("User not exists!");
+            throw new UserRemoteException("User not exists!");
         }
         else throw new RemoteException("The token!!!");
     }
@@ -46,7 +47,7 @@ class SecureUserController {
                 return user.getToken();
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RemoteException("User not exists!");
+                throw new UserRemoteException("User not exists!");
             }
         }
         else throw new RemoteException("Incomplete credentials!");
@@ -63,7 +64,7 @@ class SecureUserController {
             return user.getToken();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RemoteException("User not exists!");
+            throw new UserRemoteException("User not exists!");
         }
         else throw new RemoteException("Incomplete credentials!");
     }

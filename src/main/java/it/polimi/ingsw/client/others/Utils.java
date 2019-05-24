@@ -67,6 +67,6 @@ public class Utils {
     public static void jumpBackToLogin(@NotNull NavigationController navigationController) {
         Preferences.deleteToken();
         navigationController.popToRootViewController();
-        navigationController.presentViewController(LoginViewController.class, true);
+        navigationController.presentViewController(true, LoginViewController.class);
     }
 }

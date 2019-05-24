@@ -5,6 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.views.boards.PlayerBoard;
+import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Player;
 import it.polimi.ingsw.common.models.User;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,7 @@ public class PlayerBoardViewController extends BaseViewController {
     private JPanel panel;
     private PlayerBoard playerBoard;
 
-    public PlayerBoardViewController(@NotNull NavigationController navigationController) {
+    public PlayerBoardViewController(@NotNull NavigationController navigationController, @NotNull Game game) {
         super("La tua plancia", WIDTH, HEIGHT, navigationController);
         $$$setupUI$$$();
         setContentPane(panel);

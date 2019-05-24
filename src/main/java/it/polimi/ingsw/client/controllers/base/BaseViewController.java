@@ -48,20 +48,8 @@ public abstract class BaseViewController extends JFrame {
         });
     }
 
-    @Override
-    public void setVisible(boolean b) {
-        super.setVisible(b);
-        if (b) onShow();
-    }
-
-    protected void onShow() {
-    }
-
     protected @NotNull NavigationController getNavigationController() {
         return navigationController;
-    }
-
-    protected <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
     }
 
     protected void controllerPopped() {
