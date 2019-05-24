@@ -60,22 +60,22 @@ public class ServerRmiImpl extends UnicastRemoteObject implements API {
     }
 
     @Override
-    public void addGameListener(@NotNull String token, @NotNull GameListener listener) throws RemoteException {
-        Server.controller.addGameListener(token, listener);
+    public void addGameListener(@NotNull String token, @NotNull UUID gameUuid, @NotNull GameListener listener) throws RemoteException {
+        Server.controller.addGameListener(token, gameUuid, listener);
     }
 
     @Override
-    public void removeGameListener(@NotNull String token) throws RemoteException {
-        Server.controller.removeGameListener(token);
+    public void removeGameListener(@NotNull String token, @NotNull UUID gameUuid) throws RemoteException {
+        Server.controller.removeGameListener(token, gameUuid);
     }
 
     @Override
-    public void addRoomListener(@NotNull String token, @NotNull RoomListener listener) throws RemoteException {
-        Server.controller.addRoomListener(token, listener);
+    public void addRoomListener(@NotNull String token, @NotNull UUID roomUuid, @NotNull RoomListener listener) throws RemoteException {
+        Server.controller.addRoomListener(token, roomUuid, listener);
     }
 
     @Override
-    public void removeRoomListener(@NotNull String token) throws RemoteException {
-        Server.controller.removeRoomListener(token);
+    public void removeRoomListener(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+        Server.controller.removeRoomListener(token, roomUuid);
     }
 }

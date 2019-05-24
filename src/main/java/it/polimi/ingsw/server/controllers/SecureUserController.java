@@ -41,7 +41,7 @@ class SecureUserController {
         if (nickname != null && password != null) synchronized (users) {
             try {
                 if (users.find(eq("nickname", nickname)).iterator().hasNext())
-                    throw new RemoteException("User already exists!");
+                    throw new UserRemoteException("User already exists!");
                 var user = new SecureUser(nickname, password);
                 users.insertOne(Document.parse(new Gson().toJson(user)));
                 return user.getToken();
@@ -58,7 +58,7 @@ class SecureUserController {
         if (nickname != null && password != null) try {
             var user = new Gson().fromJson(Opt.of(users.find(eq("nickname", nickname)).first()).e(Document::toJson).get(""), SecureUser.class);
             if (user == null || !user.getPassword().equals(password))
-                throw new RemoteException("Wrong username and/or password!");
+                throw new UserRemoteException("Wrong username and/or password!");
             user.nextToken();
             users.replaceOne(eq("uuid", user.getUuid().toString()), Document.parse(new Gson().toJson(user)));
             return user.getToken();

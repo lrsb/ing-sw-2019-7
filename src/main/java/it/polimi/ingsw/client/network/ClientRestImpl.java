@@ -65,6 +65,8 @@ public class ClientRestImpl implements API {
             password = URLEncoder.encode(password, StandardCharsets.UTF_8);
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/authUser?nickname=" + nickname + "&password=" + password)).POST(HttpRequest.BodyPublishers.noBody()).build();
             return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), String.class);
+        } catch (RemoteException e) {
+            throw e;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RemoteException("Unknown error!!");
@@ -79,6 +81,8 @@ public class ClientRestImpl implements API {
             password = URLEncoder.encode(password, StandardCharsets.UTF_8);
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/createUser?nickname=" + nickname + "&password=" + password)).POST(HttpRequest.BodyPublishers.noBody()).build();
             return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), String.class);
+        } catch (RemoteException e) {
+            throw e;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RemoteException("Unknown error!!");
@@ -90,6 +94,8 @@ public class ClientRestImpl implements API {
         try {
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/getActiveGame")).GET().header("auth-token", token).build();
             return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), Game.class);
+        } catch (RemoteException e) {
+            throw e;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RemoteException("Unknown error!!");
@@ -102,6 +108,8 @@ public class ClientRestImpl implements API {
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/getRooms")).GET().header("auth-token", token).build();
             return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), new TypeToken<List<Room>>() {
             }.getType());
+        } catch (RemoteException e) {
+            throw e;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RemoteException("Unknown error!!");
@@ -113,6 +121,8 @@ public class ClientRestImpl implements API {
         try {
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/joinRoom?uuid=" + roomUuid)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
             return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), Room.class);
+        } catch (RemoteException e) {
+            throw e;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RemoteException("Unknown error!!");
@@ -125,6 +135,8 @@ public class ClientRestImpl implements API {
             name = URLEncoder.encode(name, StandardCharsets.UTF_8);
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/createRoom?name=" + name + "&timeout=" + timeout + "&gameType=" + gameType)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
             return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), Room.class);
+        } catch (RemoteException e) {
+            throw e;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RemoteException("Unknown error!!");
@@ -136,6 +148,8 @@ public class ClientRestImpl implements API {
         try {
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/startGame?uuid=" + roomUuid)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
             return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), Game.class);
+        } catch (RemoteException e) {
+            throw e;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RemoteException("Unknown error!!");
@@ -147,6 +161,8 @@ public class ClientRestImpl implements API {
         try {
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/doAction")).POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(action))).header("auth-token", token).build();
             return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), boolean.class);
+        } catch (RemoteException e) {
+            throw e;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             throw new RemoteException("Unknown error!!");
@@ -155,11 +171,11 @@ public class ClientRestImpl implements API {
 
     //TODO: auth-token is cleartext
     @Override
-    public void addGameListener(@NotNull String token, @NotNull GameListener gameListener) throws RemoteException {
+    public void addGameListener(@NotNull String token, @NotNull UUID gameUuid, @NotNull GameListener gameListener) throws RemoteException {
         try {
             var headers = new HashMap<String, String>();
             headers.put("auth-token", token);
-            gameWebSocket = new WebSocketClient(new URI("ws://" + hostname + "/gameUpdate"), headers) {
+            gameWebSocket = new WebSocketClient(new URI("ws://" + hostname + "/gameUpdate?uuid=" + gameUuid), headers) {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
                 }
@@ -191,23 +207,23 @@ public class ClientRestImpl implements API {
     }
 
     @Override
-    public void removeGameListener(@NotNull String token) {
+    public void removeGameListener(@NotNull String token, @NotNull UUID gameUuid) {
         Optional.ofNullable(gameWebSocket).ifPresent(WebSocketClient::close);
         gameWebSocket = null;
     }
 
     @Override
-    public void removeRoomListener(@NotNull String token) {
+    public void removeRoomListener(@NotNull String token, @NotNull UUID roomUuid) {
         Optional.ofNullable(roomWebSocket).ifPresent(WebSocketClient::close);
         roomWebSocket = null;
     }
 
     @Override
-    public void addRoomListener(@NotNull String token, @NotNull RoomListener roomListener) throws RemoteException {
+    public void addRoomListener(@NotNull String token, @NotNull UUID roomUuid, @NotNull RoomListener roomListener) throws RemoteException {
         try {
             var headers = new HashMap<String, String>();
             headers.put("auth-token", token);
-            roomWebSocket = new WebSocketClient(new URI("ws://" + hostname + "/roomUpdate"), headers) {
+            roomWebSocket = new WebSocketClient(new URI("ws://" + hostname + "/roomUpdate?uuid=" + roomUuid), headers) {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
                 }

@@ -34,11 +34,8 @@ public class NewRoomViewController extends BaseViewController {
         super("Nuova stanza", 600, 400, navigationController);
         setContentPane(panel);
         goButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
-            if (roomNameField.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Inserisci un nome!!");
-            } else if (timeoutSpinner.getAutoscrolls()) {
-                JOptionPane.showMessageDialog(null, "Intervallo di timeout non valido!!");
-            } else try {
+            if (roomNameField.getText().isEmpty()) JOptionPane.showMessageDialog(null, "Inserisci un nome!!");
+            else try {
                 var gameType = Game.Type.FIVE_FIVE;
                 if (fivefive.isSelected()) {
                     //noinspection ConstantConditions
@@ -53,10 +50,11 @@ public class NewRoomViewController extends BaseViewController {
                 room = Client.API.createRoom(f, roomNameField.getText(), (int) timeoutSpinner.getValue(), gameType);
                 getNavigationController().presentViewController(true, RoomViewController.class, room);
             } catch (UserRemoteException ex) {
+                ex.printStackTrace();
                 Utils.jumpBackToLogin(getNavigationController());
             } catch (RemoteException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Problemi col server!!");
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         }));
         backButton.addActionListener(e -> getNavigationController().popViewController());

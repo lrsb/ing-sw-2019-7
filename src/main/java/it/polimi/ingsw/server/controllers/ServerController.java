@@ -23,11 +23,12 @@ import java.util.stream.StreamSupport;
 
 import static com.mongodb.client.model.Filters.eq;
 
+@SuppressWarnings("Duplicates")
 public class ServerController implements API {
     private static final @NotNull MongoCollection<Document> rooms = Server.mongoDatabase.getCollection("rooms");
     private static final @NotNull MongoCollection<Document> games = Server.mongoDatabase.getCollection("games");
-    private final @NotNull HashMap<UUID, GameListener> gameListeners = new HashMap<>();
-    private final @NotNull HashMap<UUID, RoomListener> roomListeners = new HashMap<>();
+    private final @NotNull HashMap<UUID, HashMap<UUID, GameListener>> gameListeners = new HashMap<>();
+    private final @NotNull HashMap<UUID, HashMap<UUID, RoomListener>> roomListeners = new HashMap<>();
 
     @Override
     public @NotNull String authUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
@@ -122,37 +123,49 @@ public class ServerController implements API {
     }
 
     @Override
-    public void addGameListener(@Nullable String token, @Nullable GameListener listener) throws RemoteException {
+    public void addGameListener(@Nullable String token, @Nullable UUID gameUuid, @Nullable GameListener listener) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (listener == null) throw new RemoteException("Where is the listener?!?!");
-        gameListeners.put(user.getUuid(), listener);
+        if (gameUuid == null || listener == null) throw new RemoteException("What the heck?!?!");
+        var hashMap = gameListeners.getOrDefault(user.getUuid(), new HashMap<>());
+        hashMap.put(gameUuid, listener);
+        gameListeners.put(user.getUuid(), hashMap);
     }
 
     @Override
-    public void removeGameListener(@Nullable String token) throws RemoteException {
+    public void removeGameListener(@Nullable String token, @Nullable UUID gameUuid) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        gameListeners.remove(user.getUuid());
+        if (gameUuid == null) throw new RemoteException("What the heck?!?!");
+        var hashMap = gameListeners.getOrDefault(user.getUuid(), new HashMap<>());
+        hashMap.remove(gameUuid);
+        gameListeners.put(user.getUuid(), hashMap);
     }
 
     @Override
-    public void addRoomListener(@Nullable String token, @Nullable RoomListener listener) throws RemoteException {
+    public void addRoomListener(@Nullable String token, @Nullable UUID roomUuid, @Nullable RoomListener listener) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (listener == null) throw new RemoteException("Where is the listener?!?!");
-        roomListeners.put(user.getUuid(), listener);
+        if (roomUuid == null || listener == null) throw new RemoteException("What the heck?!?!");
+        var hashMap = roomListeners.getOrDefault(user.getUuid(), new HashMap<>());
+        hashMap.put(roomUuid, listener);
+        roomListeners.put(user.getUuid(), hashMap);
     }
 
     @Override
-    public void removeRoomListener(@Nullable String token) throws RemoteException {
+    public void removeRoomListener(@Nullable String token, @Nullable UUID roomUuid) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        roomListeners.remove(user.getUuid());
+        if (roomUuid == null) throw new RemoteException("What the heck?!?!");
+        var hashMap = roomListeners.getOrDefault(user.getUuid(), new HashMap<>());
+        hashMap.remove(roomUuid);
+        roomListeners.put(user.getUuid(), hashMap);
     }
 
     private void informGamePlayers(@NotNull Game game) {
         game.getPlayers().parallelStream().map(Player::getUuid).map(gameListeners::get).filter(Objects::nonNull).forEach(e -> {
             try {
-                e.onGameUpdate(game);
+                e.getOrDefault(game.getUuid(), f -> {
+                }).onGameUpdate(game);
             } catch (RemoteException ex) {
                 ex.printStackTrace();
+                e.remove(game.getUuid());
             }
         });
     }
@@ -160,9 +173,11 @@ public class ServerController implements API {
     private void informRoomUsers(@NotNull Room room) {
         room.getUsers().parallelStream().map(User::getUuid).map(roomListeners::get).filter(Objects::nonNull).forEach(e -> {
             try {
-                e.onRoomUpdate(room);
+                e.getOrDefault(room.getUuid(), f -> {
+                }).onRoomUpdate(room);
             } catch (RemoteException ex) {
                 ex.printStackTrace();
+                e.remove(room.getUuid());
             }
         });
     }

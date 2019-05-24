@@ -98,7 +98,8 @@ public class ServerRestImpl extends NanoWSD {
             try {
                 switch (getHandshakeRequest().getUri()) {
                     case "/gameUpdate":
-                        Server.controller.addGameListener(getHandshakeRequest().getHeaders().get("auth-token"), game -> {
+                        Server.controller.addGameListener(getHandshakeRequest().getHeaders().get("auth-token"),
+                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)), game -> {
                             try {
                                 sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(game)));
                             } catch (IOException e) {
@@ -108,7 +109,8 @@ public class ServerRestImpl extends NanoWSD {
                         schedulePing();
                         break;
                     case "/roomUpdate":
-                        Server.controller.addRoomListener(getHandshakeRequest().getHeaders().get("auth-token"), update -> {
+                        Server.controller.addRoomListener(getHandshakeRequest().getHeaders().get("auth-token"),
+                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)), update -> {
                             try {
                                 sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(update)));
                             } catch (IOException e) {
@@ -167,10 +169,12 @@ public class ServerRestImpl extends NanoWSD {
             try {
                 switch (getHandshakeRequest().getUri()) {
                     case "/gameUpdate":
-                        Server.controller.removeGameListener(getHandshakeRequest().getHeaders().get("auth-token"));
+                        Server.controller.removeGameListener(getHandshakeRequest().getHeaders().get("auth-token"),
+                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)));
                         break;
                     case "/roomUpdate":
-                        Server.controller.removeRoomListener(getHandshakeRequest().getHeaders().get("auth-token"));
+                        Server.controller.removeRoomListener(getHandshakeRequest().getHeaders().get("auth-token"),
+                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

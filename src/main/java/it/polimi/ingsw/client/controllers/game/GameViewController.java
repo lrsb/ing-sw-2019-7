@@ -2,18 +2,23 @@ package it.polimi.ingsw.client.controllers.game;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import it.polimi.ingsw.Client;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.others.Preferences;
+import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.boards.GameBoard;
 import it.polimi.ingsw.client.views.boards.GameBoardListener;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.models.User;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import it.polimi.ingsw.server.models.GameImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.UUID;
 
 public class GameViewController extends BaseViewController implements GameBoardListener {
@@ -25,31 +30,36 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
     private @NotNull UUID gameUuid;
 
-    public GameViewController(@NotNull NavigationController navigationController, @NotNull UUID gameUuid) {
+    public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
         super("Gioca", 1200, 900, navigationController);
         $$$setupUI$$$();
-        this.gameUuid = gameUuid;
+        gameUuid = (UUID) params[0];
         setContentPane(panel);
         yourBoardButton.addActionListener(e -> new NavigationController(PlayerBoardViewController.class, gameBoard.getGame()));
         playersBoardButton.addActionListener(e -> new NavigationController(PlayersBoardsViewController.class, gameBoard.getGame()));
-        /*exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
+        exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             try {
-                Client.API.removeGameListener(f);
+                Client.API.removeGameListener(f, gameUuid);
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
             } catch (RemoteException ex) {
                 ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
             navigationController.popViewController();
         }));
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                Client.API.addGameListener(e, f -> {
-                    if (gameUuid.equals(f.getUuid())) gameBoard.updateGame(f);
-                });
+                Client.API.addGameListener(e, gameUuid, f -> gameBoard.updateGame(f));
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
             } catch (RemoteException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Problemi di connessione col server!!");
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
-        });*/
+        });
     }
 
     private void createUIComponents() {

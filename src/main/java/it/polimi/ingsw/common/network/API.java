@@ -99,33 +99,37 @@ public interface API extends Remote {
      * Add game listener.
      *
      * @param token        the token
+     * @param gameUuid     the game uuid
      * @param gameListener the game listener
      * @throws RemoteException the remote exception
      */
-    void addGameListener(@NotNull String token, @NotNull GameListener gameListener) throws RemoteException;
+    void addGameListener(@NotNull String token, @NotNull UUID gameUuid, @NotNull GameListener gameListener) throws RemoteException;
 
     /**
      * Add room listener.
      *
      * @param token        the token
+     * @param roomUuid     the room uuid
      * @param roomListener the room listener
      * @throws RemoteException the remote exception
      */
-    void addRoomListener(@NotNull String token, @NotNull RoomListener roomListener) throws RemoteException;
+    void addRoomListener(@NotNull String token, @NotNull UUID roomUuid, @NotNull RoomListener roomListener) throws RemoteException;
 
     /**
      * Remove game listener.
      *
-     * @param token the token
+     * @param token    the token
+     * @param gameUuid the game uuid
      * @throws RemoteException the remote exception
      */
-    void removeGameListener(@NotNull String token) throws RemoteException;
+    void removeGameListener(@NotNull String token, @NotNull UUID gameUuid) throws RemoteException;
 
     /**
      * Remove room listener.
      *
-     * @param token the token
+     * @param token    the token
+     * @param roomUuid the room uuid
      * @throws RemoteException the remote exception
      */
-    void removeRoomListener(@NotNull String token) throws RemoteException;
+    void removeRoomListener(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
 }

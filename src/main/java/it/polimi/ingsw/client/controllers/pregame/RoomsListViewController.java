@@ -7,8 +7,10 @@ import it.polimi.ingsw.Client;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.others.Preferences;
+import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.models.User;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,9 +39,12 @@ public class RoomsListViewController extends BaseViewController {
             else try {
                 getNavigationController().presentViewController(true, RoomViewController.class,
                         Client.API.joinRoom(f, rooms.get(table.getSelectedRow()).getUuid()));
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
             } catch (RemoteException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Problemi col server!!");
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         }));
     }
@@ -47,16 +52,14 @@ public class RoomsListViewController extends BaseViewController {
     private void update() {
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                var roomList = Client.API.getRooms(e);
-                if (roomList == null) {
-                    JOptionPane.showMessageDialog(null, "Problemi col server!!");
-                    return;
-                }
-                rooms = roomList;
+                rooms = Client.API.getRooms(e);
                 refreshTable();
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
             } catch (RemoteException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Problemi col server!!");
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
     }
