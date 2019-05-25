@@ -5,8 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.views.boards.PlayerBoard;
-import it.polimi.ingsw.common.models.Player;
-import it.polimi.ingsw.common.models.User;
+import it.polimi.ingsw.common.models.Game;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -15,18 +14,18 @@ import java.io.IOException;
 
 public class PlayersBoardsViewController extends BaseViewController {
     private JPanel panel;
-    private JScrollPane scrollPane;
+    private JTabbedPane tabbedPane;
 
-    public PlayersBoardsViewController(@NotNull NavigationController navigationController) throws IOException {
-        super("Plance", 600, 600, navigationController);
+    public PlayersBoardsViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
+        super("Plance", 900, 270, navigationController);
         setContentPane(panel);
-        Container cont = new Container();
-        cont.setLayout(new GridLayout(0, 1));
-        for (var i = 0; i < 5; i++) {
-            cont.add(new JLabel("player" + i));
-            cont.add(new PlayerBoard(new Dimension(600, 170), new Player(new User("ciao"))));
-        }
-        scrollPane.getViewport().setView(cont);
+        ((Game) params[0]).getPlayers().forEach(e -> {
+            try {
+                tabbedPane.addTab(e.getNickname(), new PlayerBoard(e));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     {
@@ -46,8 +45,8 @@ public class PlayersBoardsViewController extends BaseViewController {
     private void $$$setupUI$$$() {
         panel = new JPanel();
         panel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        scrollPane = new JScrollPane();
-        panel.add(scrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        tabbedPane = new JTabbedPane();
+        panel.add(tabbedPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
     }
 
     /**

@@ -64,22 +64,22 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
-    public void addGameListener(@NotNull String token, @NotNull GameListener gameListener) throws RemoteException {
-        remote.addGameListener(token, (GameListener) UnicastRemoteObject.exportObject(gameListener, 0));
+    public void addGameListener(@NotNull String token, @NotNull UUID gameUuid, @NotNull GameListener gameListener) throws RemoteException {
+        remote.addGameListener(token, gameUuid, (GameListener) UnicastRemoteObject.exportObject(gameListener, 0));
     }
 
     @Override
-    public void addRoomListener(@NotNull String token, @NotNull RoomListener roomListener) throws RemoteException {
-        remote.addRoomListener(token, (RoomListener) UnicastRemoteObject.exportObject(roomListener, 0));
+    public void addRoomListener(@NotNull String token, @NotNull UUID roomUuid, @NotNull RoomListener roomListener) throws RemoteException {
+        remote.addRoomListener(token, roomUuid, (RoomListener) UnicastRemoteObject.exportObject(roomListener, 0));
     }
 
     @Override
-    public void removeGameListener(@NotNull String token) throws RemoteException {
-        remote.removeGameListener(token);
+    public void removeGameListener(@NotNull String token, @NotNull UUID gameUuid) throws RemoteException {
+        remote.removeGameListener(token, gameUuid);
     }
 
     @Override
-    public void removeRoomListener(@NotNull String token) throws RemoteException {
-        remote.removeRoomListener(token);
+    public void removeRoomListener(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+        remote.removeRoomListener(token, roomUuid);
     }
 }

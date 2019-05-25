@@ -1,5 +1,6 @@
 package it.polimi.ingsw.common.models;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -39,5 +40,11 @@ public class User implements Serializable {
      */
     public @NotNull String getNickname() {
         return nickname;
+    }
+
+    @Contract(value = "null -> false", pure = true)
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof User && ((User) obj).getUuid().equals(uuid);
     }
 }

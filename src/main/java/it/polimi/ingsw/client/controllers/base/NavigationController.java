@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.controllers.base;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
@@ -18,10 +19,13 @@ public class NavigationController implements Closeable {
      * @param controllerClass The root view controller, a BaseViewController can't be reused.
      * @param <T>             View controller type.
      */
-    public @NotNull <T extends BaseViewController> NavigationController(@NotNull Class<T> controllerClass) {
+    @SuppressWarnings("unchecked")
+    public @NotNull <T extends BaseViewController> NavigationController(@NotNull Class<T> controllerClass, @Nullable Object... params) {
         try {
-            @SuppressWarnings("unchecked")
-            var viewController = (T) controllerClass.getDeclaredConstructors()[0].newInstance(this);
+            BaseViewController viewController;
+            if (params == null || params.length == 0)
+                viewController = (T) controllerClass.getDeclaredConstructors()[0].newInstance(this);
+            else viewController = (T) controllerClass.getDeclaredConstructors()[0].newInstance(this, params);
             viewControllers.add(viewController);
             viewController.setVisible(true);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -37,12 +41,14 @@ public class NavigationController implements Closeable {
      * @param <T>             View controller type.
      * @param deleteFromStack If the actual view controller need to be removed from history.
      */
-    public <T extends BaseViewController> void presentViewController(@NotNull Class<T> controllerClass, boolean deleteFromStack) {
+    @SuppressWarnings("unchecked")
+    public <T extends BaseViewController> void presentViewController(boolean deleteFromStack, @NotNull Class<T> controllerClass, @Nullable Object... params) {
         try {
-            //noinspection unchecked
-            var viewController = (T) controllerClass.getDeclaredConstructors()[0].newInstance(this);
+            BaseViewController viewController;
+            if (params == null || params.length == 0)
+                viewController = (T) controllerClass.getDeclaredConstructors()[0].newInstance(this);
+            else viewController = (T) controllerClass.getDeclaredConstructors()[0].newInstance(this, params);
             viewControllers.add(viewController);
-            viewControllers.get(viewControllers.size() - 2).nextViewControllerInstantiated(viewController);
             viewControllers.get(viewControllers.size() - 2).setVisible(false);
             viewControllers.get(viewControllers.size() - 1).setVisible(true);
             if (deleteFromStack) disposeViewController(viewControllers.get(viewControllers.size() - 2));
@@ -58,8 +64,8 @@ public class NavigationController implements Closeable {
      * @param controllerClass The BaseViewController to present.
      * @param <T>             View controller type.
      */
-    public <T extends BaseViewController> void presentViewController(@NotNull Class<T> controllerClass) {
-        presentViewController(controllerClass, false);
+    public <T extends BaseViewController> void presentViewController(@NotNull Class<T> controllerClass, Object... params) {
+        presentViewController(false, controllerClass, params);
     }
 
     /**

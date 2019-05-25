@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.models.wrappers.Opt;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.bson.Document;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -26,11 +27,11 @@ class SecureUserController {
     static @NotNull User getUser(@Nullable String token) throws RemoteException {
         if (token != null && !token.isEmpty()) try {
             var user = users.find(eq("token", token));
-            if (user.iterator().hasNext()) throw new Exception();
+            if (!user.iterator().hasNext()) throw new Exception();
             return new Gson().fromJson(Opt.of(user.first()).e(Document::toJson).get(""), User.class);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RemoteException("User not exists!");
+            throw new UserRemoteException("User not exists!");
         }
         else throw new RemoteException("The token!!!");
     }
@@ -40,13 +41,13 @@ class SecureUserController {
         if (nickname != null && password != null) synchronized (users) {
             try {
                 if (users.find(eq("nickname", nickname)).iterator().hasNext())
-                    throw new RemoteException("User already exists!");
+                    throw new UserRemoteException("User already exists!");
                 var user = new SecureUser(nickname, password);
                 users.insertOne(Document.parse(new Gson().toJson(user)));
                 return user.getToken();
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RemoteException("User not exists!");
+                throw new UserRemoteException("User not exists!");
             }
         }
         else throw new RemoteException("Incomplete credentials!");
@@ -57,13 +58,13 @@ class SecureUserController {
         if (nickname != null && password != null) try {
             var user = new Gson().fromJson(Opt.of(users.find(eq("nickname", nickname)).first()).e(Document::toJson).get(""), SecureUser.class);
             if (user == null || !user.getPassword().equals(password))
-                throw new RemoteException("Wrong username and/or password!");
+                throw new UserRemoteException("Wrong username and/or password!");
             user.nextToken();
             users.replaceOne(eq("uuid", user.getUuid().toString()), Document.parse(new Gson().toJson(user)));
             return user.getToken();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RemoteException("User not exists!");
+            throw new UserRemoteException("User not exists!");
         }
         else throw new RemoteException("Incomplete credentials!");
     }

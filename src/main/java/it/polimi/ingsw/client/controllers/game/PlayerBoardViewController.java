@@ -14,21 +14,18 @@ import java.awt.*;
 import java.io.IOException;
 
 public class PlayerBoardViewController extends BaseViewController {
-    public static final int HEIGHT = 200;
-    public static final int WIDTH = (int) (HEIGHT * 4.06);
-
     private JPanel panel;
     private PlayerBoard playerBoard;
 
-    public PlayerBoardViewController(@NotNull NavigationController navigationController) {
-        super("La tua plancia", WIDTH, HEIGHT, navigationController);
+    public PlayerBoardViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
+        super("La tua plancia", 800, 200, navigationController);
         $$$setupUI$$$();
         setContentPane(panel);
     }
 
     private void createUIComponents() {
         try {
-            playerBoard = new PlayerBoard(new Dimension(WIDTH, (int) (HEIGHT * 0.89)), new Player(new User("ciao")));
+            playerBoard = new PlayerBoard(new Player(new User("ciao")));
         } catch (IOException e) {
             e.printStackTrace();
         }

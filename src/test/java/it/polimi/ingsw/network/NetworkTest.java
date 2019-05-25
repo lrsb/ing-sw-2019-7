@@ -10,7 +10,6 @@ import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
 import it.polimi.ingsw.server.network.ServerRmiImpl;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -33,16 +32,16 @@ class NetworkTest {
         var client = new ClientRmiImpl(LocateRegistry.getRegistry(HOST, Server.RMI_PORT).lookup(Server.RMI_NAME));
         assertEquals(client.authUser("", ""), "ok");
         assertEquals(client.createUser("", ""), "ok");
-        assertNull(client.getActiveGame(""));
+        assertDoesNotThrow(() -> client.getActiveGame(""));
         assertEquals(client.getRooms("").get(0).getName(), "ok");
         assertEquals(client.joinRoom("", TEST_UUID).getName(), "ok");
         assertEquals(client.createRoom("", "", 30, Game.Type.FIVE_SIX).getName(), "ok");
-        assertNull(client.startGame("", TEST_UUID));
+        assertDoesNotThrow(() -> client.startGame("", TEST_UUID));
         assertTrue(client.doAction("", Action.Builder.create(UUID.randomUUID()).buildMoveAction(new Point(0, 0))));
-        client.addGameListener("", e -> fail());
-        client.removeGameListener("");
-        client.addRoomListener("", e -> fail());
-        client.removeRoomListener("");
+        client.addGameListener("", TEST_UUID, e -> fail());
+        client.removeGameListener("", TEST_UUID);
+        client.addRoomListener("", TEST_UUID, e -> fail());
+        client.removeRoomListener("", TEST_UUID);
     }
 
 
@@ -51,38 +50,45 @@ class NetworkTest {
             super();
         }
 
+        @NotNull
         @Override
-        public @Nullable String authUser(@NotNull String nickname, @NotNull String password) {
+        public String authUser(@NotNull String nickname, @NotNull String password) {
             return "ok";
         }
 
+        @NotNull
         @Override
-        public @Nullable String createUser(@NotNull String nickname, @NotNull String password) {
+        public String createUser(@NotNull String nickname, @NotNull String password) {
             return "ok";
         }
 
+        @NotNull
         @Override
-        public @Nullable Game getActiveGame(@NotNull String token) {
+        public Game getActiveGame(@NotNull String token) {
             return null;
         }
 
+        @NotNull
         @Override
-        public @Nullable List<Room> getRooms(@NotNull String token) {
+        public List<Room> getRooms(@NotNull String token) {
             return List.of(new Room("ok", new User("ok")));
         }
 
+        @NotNull
         @Override
-        public @Nullable Room joinRoom(@NotNull String token, @NotNull UUID roomUuid) {
+        public Room joinRoom(@NotNull String token, @NotNull UUID roomUuid) {
             return new Room("ok", new User("ok"));
         }
 
+        @NotNull
         @Override
-        public @Nullable Room createRoom(@NotNull String token, @NotNull String name, int timeout, Game.@NotNull Type gameType) {
+        public Room createRoom(@NotNull String token, @NotNull String name, int timeout, Game.@NotNull Type gameType) {
             return new Room("ok", new User("ok"));
         }
 
+        @NotNull
         @Override
-        public @Nullable Game startGame(@NotNull String token, @NotNull UUID roomUuid) {
+        public Game startGame(@NotNull String token, @NotNull UUID roomUuid) {
             return null;
         }
 
@@ -92,22 +98,22 @@ class NetworkTest {
         }
 
         @Override
-        public void addGameListener(@NotNull String token, @NotNull GameListener listener) {
+        public void addGameListener(@NotNull String token, @NotNull UUID gameUuid, @NotNull GameListener listener) {
             assertNotNull(listener);
         }
 
         @Override
-        public void removeGameListener(@NotNull String token) {
+        public void removeGameListener(@NotNull String token, @NotNull UUID gameUuid) {
             assertNotNull(token);
         }
 
         @Override
-        public void addRoomListener(@NotNull String token, @NotNull RoomListener listener) {
+        public void addRoomListener(@NotNull String token, @NotNull UUID roomUuid, @NotNull RoomListener listener) {
             assertNotNull(listener);
         }
 
         @Override
-        public void removeRoomListener(@NotNull String token) {
+        public void removeRoomListener(@NotNull String token, @NotNull UUID roomUuid) {
             assertNotNull(token);
         }
     }

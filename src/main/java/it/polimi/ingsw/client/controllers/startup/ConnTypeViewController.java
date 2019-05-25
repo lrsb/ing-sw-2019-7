@@ -50,13 +50,14 @@ public class ConnTypeViewController extends BaseViewController {
             } catch (RemoteException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Problemi di connessione col server!!");
-            } else {
+            }
+            else {
                 JOptionPane.showMessageDialog(null, "Cazzo fai?!?!");
                 return;
             }
             if (Preferences.isLoggedIn())
-                getNavigationController().presentViewController(MainViewController.class, true);
-            else getNavigationController().presentViewController(LoginViewController.class, true);
+                getNavigationController().presentViewController(false, MainViewController.class);
+            else getNavigationController().presentViewController(false, LoginViewController.class);
         });
     }
 

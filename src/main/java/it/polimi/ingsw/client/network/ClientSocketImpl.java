@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.network;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
@@ -33,7 +34,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     private volatile @Nullable Room joinRoom;
     private volatile @Nullable Room createRoom;
     private volatile @Nullable Game startGame;
-    private volatile @Nullable Boolean doMove;
+    private volatile @Nullable Boolean doAction;
     private volatile boolean gameUpdateRemoved;
     private volatile boolean roomUpdateRemoved;
     private volatile @Nullable RemoteException remoteException;
@@ -106,38 +107,38 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
 
     @Override
     public boolean doAction(@NotNull String token, @NotNull Action action) throws RemoteException {
-        doMove = null;
+        doAction = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.DO_ACTION, token, action));
-        while (doMove == null) wait1ms();
-        return Optional.ofNullable(doMove).orElse(false);
+        while (doAction == null) wait1ms();
+        return Optional.ofNullable(doAction).orElse(false);
     }
 
     @Override
-    public void addGameListener(@NotNull String token, @NotNull GameListener gameListener) throws RemoteException {
-        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, token, null));
+    public void addGameListener(@NotNull String token, @NotNull UUID gameUuid, @NotNull GameListener gameListener) throws RemoteException {
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, token, gameUuid));
         wait1ms();
         this.gameListener = gameListener;
     }
 
     @Override
-    public void addRoomListener(@NotNull String token, @NotNull RoomListener roomListener) throws RemoteException {
-        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, token, null));
+    public void addRoomListener(@NotNull String token, @NotNull UUID roomUuid, @NotNull RoomListener roomListener) throws RemoteException {
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, token, roomUuid));
         wait1ms();
         this.roomListener = roomListener;
     }
 
     @Override
-    public void removeGameListener(@NotNull String token) throws RemoteException {
+    public void removeGameListener(@NotNull String token, @NotNull UUID gameUuid) throws RemoteException {
         gameUpdateRemoved = false;
-        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.REMOVE_GAME_UPDATES, token, null));
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.REMOVE_GAME_UPDATES, token, gameUuid));
         if (!gameUpdateRemoved) wait1ms();
         gameListener = null;
     }
 
     @Override
-    public void removeRoomListener(@NotNull String token) throws RemoteException {
+    public void removeRoomListener(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         roomUpdateRemoved = false;
-        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.REMOVE_ROOM_UPDATES, token, null));
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.REMOVE_ROOM_UPDATES, token, roomUuid));
         if (!roomUpdateRemoved) wait1ms();
         roomListener = null;
     }
@@ -147,32 +148,32 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
         try {
             if (packet.getType() != null) switch (packet.getType()) {
                 case AUTH_USER:
-                    authUser = packet.getAssociatedObject();
+                    authUser = packet.getAssociatedObject(String.class);
                     break;
                 case CREATE_USER:
-                    createUser = packet.getAssociatedObject();
+                    createUser = packet.getAssociatedObject(String.class);
                     break;
                 case GET_ACTIVE_GAME:
-                    activeGame = packet.getAssociatedObject();
+                    activeGame = packet.getAssociatedObject(Game.class);
                     break;
                 case GET_ROOMS:
-                    //TODO:test
-                    getRooms = packet.getAssociatedObject();
+                    getRooms = packet.getAssociatedObject(new TypeToken<List<Room>>() {
+                    });
                     break;
                 case JOIN_ROOM:
-                    joinRoom = packet.getAssociatedObject();
+                    joinRoom = packet.getAssociatedObject(Room.class);
                     break;
                 case CREATE_ROOM:
-                    createRoom = packet.getAssociatedObject();
+                    createRoom = packet.getAssociatedObject(Room.class);
                     break;
                 case START_GAME:
-                    startGame = packet.getAssociatedObject();
+                    startGame = packet.getAssociatedObject(Game.class);
                     break;
                 case DO_ACTION:
-                    doMove = packet.getAssociatedObject();
+                    doAction = packet.getAssociatedObject(boolean.class);
                     break;
                 case GAME_UPDATE:
-                    Game game = packet.getAssociatedObject();
+                    Game game = packet.getAssociatedObject(Game.class);
                     if (game != null) Optional.ofNullable(gameListener).ifPresent(f -> {
                         try {
                             f.onGameUpdate(game);
@@ -182,7 +183,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                     });
                     break;
                 case ROOM_UPDATE:
-                    Room room = packet.getAssociatedObject();
+                    Room room = packet.getAssociatedObject(Room.class);
                     if (room != null) Optional.ofNullable(roomListener).ifPresent(f -> {
                         try {
                             f.onRoomUpdate(room);
@@ -197,10 +198,11 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                     roomUpdateRemoved = true;
                     break;
                 case ERROR:
-                    remoteException = packet.getAssociatedObject();
+                    remoteException = packet.getAssociatedObject(RemoteException.class);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            remoteException = new RemoteException(e.getMessage());
         }
     }
 

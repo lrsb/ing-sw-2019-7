@@ -5,7 +5,6 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
-import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.sprite.Sprite;
 import it.polimi.ingsw.client.views.sprite.SpriteBoard;
@@ -34,10 +33,7 @@ public class MainViewController extends BaseViewController {
         cliButton.addActionListener(e -> {
             //TODO: passare a cli
         });
-        esciButton.addActionListener(e -> {
-            Preferences.deleteToken();
-            Utils.jumpBackToLogin(getNavigationController());
-        });
+        esciButton.addActionListener(e -> Utils.jumpBackToLogin(getNavigationController()));
     }
 
     @Override
@@ -82,15 +78,15 @@ public class MainViewController extends BaseViewController {
         cliButton = new JButton();
         cliButton.setText("CLI");
         panel2.add(cliButton, new GridConstraints(3, 1, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        esciButton = new JButton();
-        esciButton.setText("Logout");
-        panel2.add(esciButton, new GridConstraints(4, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer3 = new Spacer();
         panel2.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer4 = new Spacer();
         panel2.add(spacer4, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer5 = new Spacer();
         panel2.add(spacer5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        esciButton = new JButton();
+        esciButton.setText("Esci");
+        panel2.add(esciButton, new GridConstraints(4, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

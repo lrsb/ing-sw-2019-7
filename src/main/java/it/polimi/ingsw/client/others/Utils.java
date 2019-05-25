@@ -9,41 +9,15 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-/**
- * The type Utils.
- */
 public class Utils {
-    /**
-     * Read png image buffered image.
-     *
-     * @param aClass the a class
-     * @param name   the name
-     * @return the buffered image
-     * @throws IOException the io exception
-     */
     public static @NotNull BufferedImage readPngImage(@NotNull Class aClass, @NotNull String name) throws IOException {
         return ImageIO.read(aClass.getResourceAsStream(aClass.getSimpleName() + "/" + name + ".png"));
     }
 
-    /**
-     * Read jpg image buffered image.
-     *
-     * @param aClass the a class
-     * @param name   the name
-     * @return the buffered image
-     * @throws IOException the io exception
-     */
     public static @NotNull BufferedImage readJpgImage(@NotNull Class aClass, @NotNull String name) throws IOException {
         return ImageIO.read(aClass.getResourceAsStream(aClass.getSimpleName() + "/" + name + ".jpg"));
     }
 
-    /**
-     * Join buffered image buffered image.
-     *
-     * @param img1 the img 1
-     * @param img2 the img 2
-     * @return the buffered image
-     */
     public static @NotNull BufferedImage joinBufferedImage(@NotNull BufferedImage img1, @NotNull BufferedImage img2) {
         var wid = img1.getWidth() + img2.getWidth();
         var height = Math.max(img1.getHeight(), img2.getHeight());
@@ -59,14 +33,9 @@ public class Utils {
         return newImage;
     }
 
-    /**
-     * Jump back to login.
-     *
-     * @param navigationController the navigation controller
-     */
     public static void jumpBackToLogin(@NotNull NavigationController navigationController) {
         Preferences.deleteToken();
         navigationController.popToRootViewController();
-        navigationController.presentViewController(LoginViewController.class, true);
+        navigationController.presentViewController(true, LoginViewController.class);
     }
 }

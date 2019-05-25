@@ -6,6 +6,7 @@ import fi.iki.elonen.NanoWSD;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -79,6 +80,8 @@ public class ServerRestImpl extends NanoWSD {
                 default:
                     return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
             }
+        } catch (UserRemoteException e) {
+            return newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         } catch (RemoteException e) {
             return newFixedLengthResponse(Response.Status.NOT_ACCEPTABLE, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         }
@@ -95,23 +98,25 @@ public class ServerRestImpl extends NanoWSD {
             try {
                 switch (getHandshakeRequest().getUri()) {
                     case "/gameUpdate":
-                        Server.controller.addGameListener(getHandshakeRequest().getHeaders().get("auth-token"), game -> {
-                            try {
-                                sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(game)));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
+                        Server.controller.addGameListener(getHandshakeRequest().getHeaders().get("auth-token"),
+                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)), game -> {
+                                    try {
+                                        sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(game)));
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
                         schedulePing();
                         break;
                     case "/roomUpdate":
-                        Server.controller.addRoomListener(getHandshakeRequest().getHeaders().get("auth-token"), update -> {
-                            try {
-                                sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(update)));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
+                        Server.controller.addRoomListener(getHandshakeRequest().getHeaders().get("auth-token"),
+                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)), update -> {
+                                    try {
+                                        sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(update)));
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
                         schedulePing();
                         break;
                     default:
@@ -164,10 +169,12 @@ public class ServerRestImpl extends NanoWSD {
             try {
                 switch (getHandshakeRequest().getUri()) {
                     case "/gameUpdate":
-                        Server.controller.removeGameListener(getHandshakeRequest().getHeaders().get("auth-token"));
+                        Server.controller.removeGameListener(getHandshakeRequest().getHeaders().get("auth-token"),
+                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)));
                         break;
                     case "/roomUpdate":
-                        Server.controller.removeRoomListener(getHandshakeRequest().getHeaders().get("auth-token"));
+                        Server.controller.removeRoomListener(getHandshakeRequest().getHeaders().get("auth-token"),
+                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
