@@ -209,6 +209,10 @@ public abstract class Game implements Displayable, Serializable {
         }
     }
 
+    public int getSkulls() {
+        return skulls;
+    }
+
     /**
      * Can move boolean.
      *

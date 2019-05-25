@@ -21,7 +21,7 @@ public class PlayersBoardsViewController extends BaseViewController {
         setContentPane(panel);
         ((Game) params[0]).getPlayers().forEach(e -> {
             try {
-                tabbedPane.addTab(e.getNickname(), new PlayerBoard(e));
+                tabbedPane.addTab(e.getNickname(), new PlayerBoard(((Game) params[0]), e));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

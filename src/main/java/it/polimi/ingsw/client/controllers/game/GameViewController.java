@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -92,7 +93,19 @@ public class GameViewController extends BaseViewController implements GameBoardL
         var room = new Room("ciao", new User("user1"));
         Collections.nCopies(4, null).parallelStream().map(f -> new User(UUID.randomUUID().toString().substring(0, 7))).collect(Collectors.toList()).forEach(room::addUser);
         try {
-            gameBoard = new GameBoard(GameImpl.Creator.newGame(room));
+            var game = GameImpl.Creator.newGame(room);
+            game.getPlayers().forEach(e -> {
+                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+            });
+            gameBoard = new GameBoard(game);
             gameBoard.setBoardListener(this);
         } catch (IOException e) {
             e.printStackTrace();

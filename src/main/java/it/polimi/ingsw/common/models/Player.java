@@ -1,10 +1,14 @@
 package it.polimi.ingsw.common.models;
 
+import it.polimi.ingsw.client.others.Utils;
+import it.polimi.ingsw.client.views.sprite.Displayable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,12 +16,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public class Player implements Serializable {
+public class Player implements Displayable, Serializable {
     private static final long serialVersionUID = 1;
 
     private @NotNull UUID uuid;
     private @NotNull String nickname;
     private @Nullable Point position;
+    private @NotNull BoardType boardType;
     private @NotNull ArrayList<UUID> damagesTaken = new ArrayList<>();
     private @NotNull ArrayList<UUID> marksTaken = new ArrayList<>();
     private int deaths = 0;
@@ -27,9 +32,14 @@ public class Player implements Serializable {
     private @NotNull HashMap<Weapon.Name, Boolean> weapons = new HashMap<>();
     private boolean isFirstMove = true;
 
-    public Player(@NotNull User user) {
+    public Player(@NotNull User user, @NotNull BoardType boardType) {
         this.uuid = user.getUuid();
         this.nickname = user.getNickname();
+        this.boardType = boardType;
+    }
+
+    public @NotNull BoardType getBoardType() {
+        return boardType;
     }
 
     public @NotNull UUID getUuid() {
@@ -241,5 +251,31 @@ public class Player implements Serializable {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Player && ((Player) obj).uuid.equals(uuid);
+    }
+
+    @Override
+    public @NotNull BufferedImage getFrontImage() throws IOException {
+        return Utils.readJpgImage(Player.class, boardType.name().substring(0, 3));
+    }
+
+    @Override
+    public @NotNull BufferedImage getBackImage() throws IOException {
+        return Utils.readJpgImage(Player.class, boardType.name().substring(0, 3) + "F");
+    }
+
+    public enum BoardType {
+        BANSHEE(Color.BLUE), D_STRUCT(Color.YELLOW), DOZER(Color.GRAY), SPROG(Color.GREEN), VIOLET(Color.MAGENTA);
+
+        private @NotNull Color color;
+
+        @Contract(pure = true)
+        BoardType(@NotNull Color color) {
+            this.color = color;
+        }
+
+        @Contract(pure = true)
+        public @NotNull Color getColor() {
+            return color;
+        }
     }
 }

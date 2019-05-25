@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
     private static final int FRAMERATE = 60;
     private final @NotNull ArrayList<Sprite> sprites = new ArrayList<>();
-    private final @Nullable BufferedImage background;
     private final @Nullable AtomicBoolean needRepaint = new AtomicBoolean(true);
+    private @Nullable BufferedImage background;
     private @Nullable SpriteBoardListener boardListener;
     private boolean closed = false;
 
@@ -159,6 +159,10 @@ public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
     public void autoRemove(@NotNull Sprite sprite) {
         sprites.remove(sprite);
         repaint();
+    }
+
+    public void setBackground(@NotNull BufferedImage bufferedImage) {
+        background = bufferedImage;
     }
 
     @Override
