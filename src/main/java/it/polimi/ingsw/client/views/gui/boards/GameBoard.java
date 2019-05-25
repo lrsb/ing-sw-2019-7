@@ -1,10 +1,10 @@
-package it.polimi.ingsw.client.views.boards;
+package it.polimi.ingsw.client.views.gui.boards;
 
 import it.polimi.ingsw.client.others.Utils;
-import it.polimi.ingsw.client.views.sprite.Sprite;
-import it.polimi.ingsw.client.views.sprite.SpriteBoard;
-import it.polimi.ingsw.client.views.sprite.SpriteBoardListener;
-import it.polimi.ingsw.client.views.sprite.interpolators.LinearInterpolator;
+import it.polimi.ingsw.client.views.gui.sprite.Sprite;
+import it.polimi.ingsw.client.views.gui.sprite.SpriteBoard;
+import it.polimi.ingsw.client.views.gui.sprite.SpriteBoardListener;
+import it.polimi.ingsw.client.views.gui.sprite.interpolators.LinearInterpolator;
 import it.polimi.ingsw.common.models.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +28,7 @@ public class GameBoard extends SpriteBoard implements SpriteBoardListener {
         this.game = game;
         removeAllSprites();
 
-        instertStaticSprites();
+        insertStaticSprites();
         populateAmmoCard(game);
         populateWeapons(game);
         populateSkulls(game);
@@ -66,7 +66,7 @@ public class GameBoard extends SpriteBoard implements SpriteBoardListener {
         this.gameBoardListener = boardListener;
     }
 
-    private void instertStaticSprites() throws IOException {
+    private void insertStaticSprites() throws IOException {
         var weapon = new Sprite(1053, 227, 108, 177, Utils.readPngImage(Weapon.class, "back"));
         weapon.setDraggable(true);
         weapon.setTag("p:1053,227");

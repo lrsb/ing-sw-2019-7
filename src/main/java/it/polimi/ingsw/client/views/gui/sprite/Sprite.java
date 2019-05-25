@@ -1,7 +1,7 @@
-package it.polimi.ingsw.client.views.sprite;
+package it.polimi.ingsw.client.views.gui.sprite;
 
-import it.polimi.ingsw.client.views.sprite.interpolators.Interpolator;
-import it.polimi.ingsw.client.views.sprite.interpolators.exceptions.TimestampOutOfRangeException;
+import it.polimi.ingsw.client.views.gui.sprite.interpolators.Interpolator;
+import it.polimi.ingsw.client.views.gui.sprite.interpolators.exceptions.TimestampOutOfRangeException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,15 +34,6 @@ public class Sprite {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.bufferedImage = bufferedImage;
-    }
-
-    @Contract(pure = true)
-    public Sprite(@NotNull Point position, @NotNull Dimension dimension, @NotNull BufferedImage bufferedImage) {
-        this.x = position.x;
-        this.y = position.y;
-        this.width = dimension.width;
-        this.height = dimension.height;
         this.bufferedImage = bufferedImage;
     }
 

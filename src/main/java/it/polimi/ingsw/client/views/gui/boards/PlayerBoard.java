@@ -1,9 +1,9 @@
-package it.polimi.ingsw.client.views.boards;
+package it.polimi.ingsw.client.views.gui.boards;
 
 import it.polimi.ingsw.client.others.Utils;
-import it.polimi.ingsw.client.views.sprite.Sprite;
-import it.polimi.ingsw.client.views.sprite.SpriteBoard;
-import it.polimi.ingsw.client.views.sprite.SpriteBoardListener;
+import it.polimi.ingsw.client.views.gui.sprite.Sprite;
+import it.polimi.ingsw.client.views.gui.sprite.SpriteBoard;
+import it.polimi.ingsw.client.views.gui.sprite.SpriteBoardListener;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Player;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 import java.util.stream.Collectors;
 
 public class PlayerBoard extends SpriteBoard implements SpriteBoardListener {
+
     public PlayerBoard(@NotNull Game game, @NotNull Player player) throws IOException {
         super(new SecureRandom().nextBoolean() ? player.getBackImage() : player.getFrontImage());
         var mask = Utils.readPngImage(Player.class, "mark");

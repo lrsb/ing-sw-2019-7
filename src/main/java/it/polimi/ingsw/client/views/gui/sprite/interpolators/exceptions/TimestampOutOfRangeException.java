@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.views.sprite.interpolators.exceptions;
+package it.polimi.ingsw.client.views.gui.sprite.interpolators.exceptions;
 
 public class TimestampOutOfRangeException extends Exception {
     public TimestampOutOfRangeException(String s) {
