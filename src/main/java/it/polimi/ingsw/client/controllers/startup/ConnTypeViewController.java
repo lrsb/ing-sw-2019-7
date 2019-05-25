@@ -50,7 +50,8 @@ public class ConnTypeViewController extends BaseViewController {
             } catch (RemoteException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Problemi di connessione col server!!");
-            } else {
+            }
+            else {
                 JOptionPane.showMessageDialog(null, "Cazzo fai?!?!");
                 return;
             }

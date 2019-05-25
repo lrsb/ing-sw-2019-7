@@ -100,23 +100,23 @@ public class ServerRestImpl extends NanoWSD {
                     case "/gameUpdate":
                         Server.controller.addGameListener(getHandshakeRequest().getHeaders().get("auth-token"),
                                 UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)), game -> {
-                            try {
-                                sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(game)));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
+                                    try {
+                                        sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(game)));
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
                         schedulePing();
                         break;
                     case "/roomUpdate":
                         Server.controller.addRoomListener(getHandshakeRequest().getHeaders().get("auth-token"),
                                 UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)), update -> {
-                            try {
-                                sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(update)));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
+                                    try {
+                                        sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(update)));
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
                         schedulePing();
                         break;
                     default:

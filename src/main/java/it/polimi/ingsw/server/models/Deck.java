@@ -151,6 +151,7 @@ public class Deck<T extends Serializable> implements Serializable {
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.RED),
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE),
                     new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.BLUE)));
+            Collections.shuffle(cards);
             return new Deck<>(cards, true);
         }
 
@@ -161,8 +162,10 @@ public class Deck<T extends Serializable> implements Serializable {
          */
         @Contract(" -> new")
         public static @NotNull Deck<PowerUp> newPowerUpsDeck() {
-            return new Deck<>(Stream.of(PowerUp.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).map(f -> new PowerUp(f, e)))
-                    .flatMap(e -> e).collect(Collectors.toCollection(ArrayList::new)), true);
+            var cards = Stream.of(PowerUp.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).map(f -> new PowerUp(f, e)))
+                    .flatMap(e -> e).collect(Collectors.toCollection(ArrayList::new));
+            Collections.shuffle(cards);
+            return new Deck<>(cards, true);
         }
 
         /**
@@ -172,7 +175,9 @@ public class Deck<T extends Serializable> implements Serializable {
          */
         @Contract(" -> new")
         public static @NotNull Deck<Weapon.Name> newWeaponsDeck() {
-            return new Deck<>(new ArrayList<>(List.of(Weapon.Name.values())), false);
+            var cards = new ArrayList<>(List.of(Weapon.Name.values()));
+            Collections.shuffle(cards);
+            return new Deck<>(cards, false);
         }
     }
 }

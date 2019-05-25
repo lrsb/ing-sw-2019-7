@@ -9,14 +9,13 @@ import it.polimi.ingsw.client.others.Preferences;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.Scanner;
 
 public class Cli {
-    private static@NotNull Scanner in = new Scanner(System.in);
+    private static @NotNull Scanner in = new Scanner(System.in);
 
     private static void connType() throws RemoteException {
         System.out.println("Ciao,benvenuto in Adrenalina, come vuoi effettuare la connessione?");
@@ -31,24 +30,24 @@ public class Cli {
             case 1:
                 try {
                     Client.API = new ClientSocketImpl(ip);
-                } catch (IOException warn){
+                } catch (IOException warn) {
                     System.out.println("Problema con la connessione all'host" + ip);
                 }
                 break;
 
             case 2:
-                try{
+                try {
                     Client.API = new ClientRmiImpl(LocateRegistry.getRegistry(ip, Server.RMI_PORT).lookup(Server.RMI_NAME));
-                }catch (RemoteException | NotBoundException e){
+                } catch (RemoteException | NotBoundException e) {
                     System.out.println("Problema con la connessione all'host " + ip);
                 }
                 break;
 
             case 3:
-                try{
+                try {
                     Client.API = new ClientRestImpl(ip);
                     Client.API.getRooms("");
-                }catch (RemoteException e){
+                } catch (RemoteException e) {
                     System.out.println("Problema con la connessione all'host" + ip);
                 }
                 break;
@@ -76,9 +75,10 @@ public class Cli {
         }
     }
 
-    private static void mainmenu(){
+    private static void mainmenu() {
 
     }
+
     public static void start() throws RemoteException {
         connType();
     }

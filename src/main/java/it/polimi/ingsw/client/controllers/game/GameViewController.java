@@ -2,42 +2,46 @@ package it.polimi.ingsw.client.controllers.game;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import it.polimi.ingsw.Client;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
-import it.polimi.ingsw.client.others.Preferences;
-import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.boards.GameBoard;
 import it.polimi.ingsw.client.views.boards.GameBoardListener;
+import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.models.User;
-import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import it.polimi.ingsw.server.models.GameImpl;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.rmi.RemoteException;
+import java.util.Collections;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class GameViewController extends BaseViewController implements GameBoardListener {
     private JPanel panel;
     private GameBoard gameBoard;
-    private JButton yourBoardButton;
     private JButton playersBoardButton;
     private JButton exitButton;
 
-    private @NotNull UUID gameUuid;
+    private @Nullable NavigationController lastViewController;
 
     public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
         super("Gioca", 1200, 900, navigationController);
         $$$setupUI$$$();
-        gameUuid = (UUID) params[0];
+        //var gameUuid = (UUID) params[0];
         setContentPane(panel);
-        yourBoardButton.addActionListener(e -> new NavigationController(PlayerBoardViewController.class, gameBoard.getGame()));
-        playersBoardButton.addActionListener(e -> new NavigationController(PlayersBoardsViewController.class, gameBoard.getGame()));
-        exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
+        /*yourBoardButton.addActionListener(e -> {
+            if (lastViewController != null) lastViewController.close();
+            lastViewController = new NavigationController(PlayerBoardViewController.class, gameBoard.getGame());
+        });*/
+        playersBoardButton.addActionListener(e -> {
+            if (lastViewController != null) lastViewController.close();
+            lastViewController = new NavigationController(PlayersBoardsViewController.class, gameBoard.getGame());
+        });
+        /*exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             try {
                 Client.API.removeGameListener(f, gameUuid);
             } catch (UserRemoteException ex) {
@@ -51,7 +55,14 @@ public class GameViewController extends BaseViewController implements GameBoardL
         }));
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                Client.API.addGameListener(e, gameUuid, f -> gameBoard.updateGame(f));
+                Client.API.addGameListener(e, gameUuid, f -> {
+                    gameBoard.updateGame(f);
+                    if (lastViewController != null && lastViewController.getViewController(0) != null)
+                        if (lastViewController.getViewController(0) instanceof PlayerBoardViewController)
+                            ((PlayerBoardViewController) lastViewController.getViewController(0));
+                        else if (lastViewController.getViewController(0) instanceof PlayersBoardsViewController)
+                            ((PlayersBoardsViewController) lastViewController.getViewController(0));
+                });
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
                 Utils.jumpBackToLogin(getNavigationController());
@@ -59,12 +70,29 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
-        });
+        });*/
+    }
+
+    @Override
+    public void doAction(@NotNull Action action) {
+        /*Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
+            try {
+                Client.API.doAction(e, action);
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+        });*/
     }
 
     private void createUIComponents() {
+        var room = new Room("ciao", new User("user1"));
+        Collections.nCopies(4, null).parallelStream().map(f -> new User(UUID.randomUUID().toString().substring(0, 7))).collect(Collectors.toList()).forEach(room::addUser);
         try {
-            gameBoard = new GameBoard(new Dimension(1200, 844), GameImpl.Creator.newGame(new Room("", new User(""))));
+            gameBoard = new GameBoard(GameImpl.Creator.newGame(room));
             gameBoard.setBoardListener(this);
         } catch (IOException e) {
             e.printStackTrace();
@@ -84,17 +112,14 @@ public class GameViewController extends BaseViewController implements GameBoardL
         panel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(gameBoard, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        yourBoardButton = new JButton();
-        yourBoardButton.setText("La tua plancia");
-        panel1.add(yourBoardButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         playersBoardButton = new JButton();
-        playersBoardButton.setText("Altre plance");
-        panel1.add(playersBoardButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        playersBoardButton.setText("Visualizza plance");
+        panel1.add(playersBoardButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         exitButton = new JButton();
         exitButton.setText("Esci");
-        panel1.add(exitButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(exitButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
