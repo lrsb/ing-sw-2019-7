@@ -6,8 +6,8 @@ import it.polimi.ingsw.client.network.ClientRestImpl;
 import it.polimi.ingsw.client.network.ClientRmiImpl;
 import it.polimi.ingsw.client.network.ClientSocketImpl;
 import it.polimi.ingsw.client.others.Preferences;
+import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
-import it.polimi.ingsw.common.models.User;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -48,7 +48,8 @@ public class Cli {
                 try {
                     Client.API = new ClientSocketImpl(ip);
                 } catch (IOException warn){
-                    System.out.println("Problema con la connessione all'host" + ip);
+                    System.out.println("Problema con la connessione all'host " + ip);
+                    connType();
                 }
                 break;
 
@@ -57,6 +58,7 @@ public class Cli {
                     Client.API = new ClientRmiImpl(LocateRegistry.getRegistry(ip, Server.RMI_PORT).lookup(Server.RMI_NAME));
                 }catch (RemoteException | NotBoundException e){
                     System.out.println("Problema con la connessione all'host " + ip);
+                    connType();
                 }
                 break;
 
@@ -65,13 +67,14 @@ public class Cli {
                     Client.API = new ClientRestImpl(ip);
                     Client.API.getRooms("");
                 }catch (RemoteException e){
-                    System.out.println("Problema con la connessione all'host" + ip);
+                    System.out.println("Problema con la connessione all'host " + ip);
+                    connType();
                 }
                 break;
         }
         if (Preferences.isLoggedIn()) {
             clearConsole();
-            mainmenu();
+            mainMenu();
         }
         clearConsole();
         login();
@@ -90,7 +93,7 @@ public class Cli {
             } else {
                 Preferences.setToken(token);
                 clearConsole();
-                mainmenu();
+                mainMenu();
             }
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -98,7 +101,7 @@ public class Cli {
         }
     }
 
-    private static void mainmenu(){
+    private static void mainMenu(){
         System.out.println("Adrenalina");
         System.out.println(" ");
         System.out.println("1: nuova partita");
@@ -116,6 +119,43 @@ public class Cli {
         }
     }
     private static void newGame(){
+        clearConsole();
+        System.out.println("NUOVA PARTITA");
+        System.out.println(" ");
+        System.out.println("Inserisci il nome della partita");
+        @NotNull var gameName = in.nextLine();
+        System.out.println("Inserisci il tempo di timeout");
+        @NotNull var timeOut = in.nextInt();
+        System.out.println("Scegli il tipo di campo che vuoi avere:");
+        System.out.println("1: 5 - 5");
+        System.out.println("2: 5 - 6");
+        System.out.println("3: 6 - 5");
+        System.out.println("4: 6 - 6");
+        @NotNull var gameSelection = in.nextInt();
+        var gameType = Game.Type.FIVE_FIVE;
+
+        switch (gameSelection){
+            case 1:
+                gameType = Game.Type.FIVE_FIVE;
+                break;
+            case 2:
+                gameType = Game.Type.FIVE_SIX;
+                break;
+            case 3:
+                gameType = Game.Type.SIX_FIVE;
+                break;
+            case 4:
+                gameType = Game.Type.SIX_SIX;
+                break;
+        }
+        try {
+            var room = Client.API.createRoom(Preferences.getToken(),gameName, timeOut, gameType);
+            System.out.println("gioco creato correttamente!");
+        } catch (RemoteException e) {
+            System.out.println("errore nella creazione della partita");
+            newGame();
+            e.printStackTrace();
+        }
 
     }
 
@@ -155,7 +195,7 @@ public class Cli {
         switch (input){
             case "*":
                 clearConsole();
-                mainmenu();
+                mainMenu();
                 break;
             default:
                 for (var room:rooms){
