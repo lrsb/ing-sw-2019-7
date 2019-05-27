@@ -7,6 +7,7 @@ import it.polimi.ingsw.client.network.ClientRmiImpl;
 import it.polimi.ingsw.client.network.ClientSocketImpl;
 import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.common.models.Room;
+import it.polimi.ingsw.common.models.User;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -115,7 +116,7 @@ public class Cli {
         }
     }
     private static void newGame(){
-        //TODO
+
     }
 
     private static List<Room> update() {
@@ -142,14 +143,39 @@ public class Cli {
         System.out.println();
         System.out.println("_____________________________________________________________________________");
         System.out.println("");
+
         for(var room: rooms ){
-            System.out.printf("%30s %30s %30s",room.getName(), room.getUsers().size() + "/5", getUsersList(room));
+
+            System.out.printf("%30s %30s %30s",room.getName(), room.getUsers().size() + "/5", getUsersString(room));
             System.out.println();
+        }
+
+        System.out.println("inserisci il nome della partita o '*' per tornare al menù principale");
+        var input = in.nextLine();
+        switch (input){
+            case "*":
+                clearConsole();
+                mainmenu();
+                break;
+            default:
+                for (var room:rooms){
+                    if(room.getName().equalsIgnoreCase(input)){
+                        try{
+                            Client.API.joinRoom(Preferences.getToken(), room.getUuid());
+                        }catch(RemoteException ex){
+                            clearConsole();
+                            System.out.println("non sono riuscito ad autenticarti, sei stato reindirizzato alla schermata di login");
+                            login();
+                        }
+                        clearConsole();
+                    }
+                }
+
         }
 
     }
 
-    private static String getUsersList(Room rooms){
+    private static String getUsersString(Room rooms){
         String playerList = "(";
         for (int i=0; i<rooms.getUsers().size();i++){
             playerList =playerList + rooms.getUsers().get(i).getNickname();
@@ -160,6 +186,7 @@ public class Cli {
         playerList = playerList + ")";
         return playerList;
     }
+
     public static void start() throws RemoteException {
         connType();
     }
@@ -167,4 +194,5 @@ public class Cli {
     public static void main(String[] args) throws RemoteException {
         start();
     }
+
 }
