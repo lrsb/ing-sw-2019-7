@@ -26,7 +26,7 @@ public class Cell implements Serializable {
      * @param spawnPoint True if this cell is a spawnpoint.
      */
     @Contract(pure = true)
-    public Cell(@NotNull Color color, @NotNull Bounds bounds, boolean spawnPoint) {
+    private Cell(@NotNull Color color, @NotNull Bounds bounds, boolean spawnPoint) {
         this.color = color;
         this.bounds = bounds;
         this.spawnPoint = spawnPoint;
@@ -77,7 +77,7 @@ public class Cell implements Serializable {
      *
      * @return the cell's bounds.
      */
-    public @NotNull Bounds getBounds() {
+    @NotNull Bounds getBounds() {
         return bounds;
     }
 
@@ -109,5 +109,58 @@ public class Cell implements Serializable {
          * Green color.
          */
         GREEN
+    }
+
+    public static class Creator {
+        private @Nullable Bounds bounds;
+        private @Nullable Color color;
+        private boolean spawnPoint = false;
+
+        //"nesw" in senso orario, _ : chiuso, | : porta,   : stessa stanza
+        public static Creator withBounds(@NotNull String boundsString) {
+            var creator = new Creator();
+            creator.bounds = new Bounds(Bounds.Type.SAME_ROOM, Bounds.Type.SAME_ROOM, Bounds.Type.SAME_ROOM, Bounds.Type.SAME_ROOM);
+            for (var direction : Bounds.Direction.values()) {
+                char index;
+                switch (direction) {
+                    case N:
+                        index = 0;
+                        break;
+                    case E:
+                        index = 1;
+                        break;
+                    case S:
+                        index = 2;
+                        break;
+                    default:
+                        index = 3;
+                }
+                switch (boundsString.charAt(index)) {
+                    case '_':
+                        creator.bounds.setType(direction, Bounds.Type.WALL);
+                        break;
+                    case '|':
+                        creator.bounds.setType(direction, Bounds.Type.DOOR);
+                        break;
+                    case ' ':
+                        creator.bounds.setType(direction, Bounds.Type.SAME_ROOM);
+                }
+            }
+            return creator;
+        }
+
+        public @NotNull Creator color(Color color) {
+            this.color = color;
+            return this;
+        }
+
+        public @NotNull Creator spawnPoint() {
+            this.spawnPoint = true;
+            return this;
+        }
+
+        public @Nullable Cell create() {
+            return bounds != null && color != null ? new Cell(color, bounds, spawnPoint) : null;
+        }
     }
 }

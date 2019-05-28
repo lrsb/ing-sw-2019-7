@@ -26,7 +26,7 @@ public class Bounds implements Serializable {
      * @param e Bound type in east direction.
      */
     @Contract(pure = true)
-    public Bounds(@NotNull Type n, @NotNull Type s, @NotNull Type w, @NotNull Type e) {
+    Bounds(@NotNull Type n, @NotNull Type s, @NotNull Type w, @NotNull Type e) {
         this.n = n;
         this.s = s;
         this.w = w;
@@ -59,7 +59,7 @@ public class Bounds implements Serializable {
      * @param direction The direction of the bound that you want to set up.
      * @param type      The type of the bound.
      */
-    public void setType(@NotNull Direction direction, @NotNull Type type) {
+    void setType(@NotNull Direction direction, @NotNull Type type) {
         switch (direction) {
             case N:
                 n = type;

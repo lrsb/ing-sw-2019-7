@@ -510,11 +510,11 @@ public abstract class Weapon {
             void basicFireImpl() {
                 if (basicTargetsPoint == null) return;
                 if (alternativeFire)
-                    game.getPlayers().stream().filter(e -> Opt.of(e.getPosition()).e(f -> f.equals(basicTargetsPoint))
-                            .get(false)).forEach(e -> e.takeHits(game, 1, 1));
-                else game.getPlayers().stream().filter(e -> Opt.of(game.getCell(e.getPosition()))
+                    game.getPlayers().parallelStream().filter(e -> Opt.of(e.getPosition()).e(f -> f.equals(basicTargetsPoint))
+                            .get(false)).forEachOrdered(e -> e.takeHits(game, 1, 1));
+                else game.getPlayers().parallelStream().filter(e -> Opt.of(game.getCell(e.getPosition()))
                         .e(f -> f.getColor().equals(Opt.of(game.getCell(basicTargetsPoint)).e(Cell::getColor).get()))
-                        .get(false)).forEach(e -> e.takeHits(game, 1, 0));
+                        .get(false)).forEachOrdered(e -> e.takeHits(game, 1, 0));
             }
         }
 
@@ -542,16 +542,14 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                return Opt.of(game.getActualPlayer().getPosition())
-                        .e(e -> e.equals(basicTargets.get(0).getPosition())).get(false) &&
+                return Opt.of(game.getActualPlayer().getPosition()).e(e -> e.equals(basicTargets.get(0).getPosition())).get(false) &&
                         !game.canMove(game.getActualPlayer().getPosition(), basicTargets.get(0).getPosition(), 1);
             }
 
             @Override
             void basicFireImpl() {
                 basicTargets.get(0).takeHits(game, 1, 0);
-                game.getPlayers().stream().filter(e -> Opt.of(e.getPosition())
-                        .e(f -> f.equals(basicTargets.get(0).getPosition())).get(false))
+                game.getPlayers().stream().filter(e -> Opt.of(e.getPosition()).e(f -> f.equals(basicTargets.get(0).getPosition())).get(false))
                         .forEach(e -> e.takeHits(game, 0, alternativeFire ? 2 : 1));
             }
         }
@@ -565,15 +563,13 @@ public abstract class Weapon {
             @Override
             boolean canBasicFire() {
                 if (!alternativeFire && !basicTargets.isEmpty() && basicTargets.size() < 3)
-                    return Stream.of(Bounds.Direction.values()).anyMatch(e ->
-                            basicTargets.stream().allMatch(f -> Opt.of(f.getPosition()).e(g -> game.getActualPlayer()
-                                    .isPointAtMaxDistanceInDirection(g, game.getCells(), 2, e)).get(false))) &&
+                    return Stream.of(Bounds.Direction.values()).parallel().anyMatch(e ->
+                            basicTargets.stream().allMatch(f -> Opt.of(f.getPosition()).e(g -> game.getActualPlayer().isPointAtMaxDistanceInDirection(g, game.getCells(), 2, e)).get(false))) &&
                             (basicTargets.size() != 2 ||
                                     (basicTargets.stream().mapToDouble(e -> Opt.of(e.getPosition()).e(Point::getX).get()).reduce(1, (e, f) -> e * f) == 2) ||
                                     (basicTargets.stream().mapToDouble(e -> Opt.of(e.getPosition()).e(Point::getY).get()).reduce(1, (e, f) -> e * f) == 2));
                 else return basicTargetsPoint != null && Stream.of(Bounds.Direction.values())
-                        .anyMatch(e -> game.getActualPlayer()
-                                .isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 2, e));
+                        .anyMatch(e -> game.getActualPlayer().isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 2, e));
             }
 
             @Override
@@ -584,16 +580,11 @@ public abstract class Weapon {
                             .isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 1, e))) {
                         Stream.of(Bounds.Direction.values()).filter(e -> game.getActualPlayer()
                                 .isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 2, e))
-                                .forEach(e -> game.getPlayersAtPosition
-                                        (new Point((int) basicTargetsPoint.getX() - e.getdX(),
-                                                (int) basicTargetsPoint.getY() - e.getdY()))
-                                        .forEach(f -> f.takeHits(game, 2, 0)));
+                                .forEach(e -> game.getPlayersAtPosition(new Point((int) basicTargetsPoint.getX() - e.getdX(),
+                                        (int) basicTargetsPoint.getY() - e.getdY())).forEach(f -> f.takeHits(game, 2, 0)));
                         game.getPlayersAtPosition(basicTargetsPoint)
                                 .forEach(e -> e.takeHits(game, 1, 0));
-                    } else {
-                        game.getPlayersAtPosition(basicTargetsPoint)
-                                .forEach(e -> e.takeHits(game, 2, 0));
-                    }
+                    } else game.getPlayersAtPosition(basicTargetsPoint).forEach(e -> e.takeHits(game, 2, 0));
                 }
             }
         }
