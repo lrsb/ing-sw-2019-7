@@ -51,6 +51,7 @@ public class Deck<T extends Serializable> implements Serializable {
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
      */
     public @NotNull T discardCard() throws EmptyDeckException {
+        if (exitedCards.isEmpty()) throw new EmptyDeckException();
         var discardedCard = exitedCards.remove(0);
         discardedCards.add(discardedCard);
         return discardedCard;
