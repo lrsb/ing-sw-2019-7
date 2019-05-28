@@ -1,7 +1,8 @@
 package it.polimi.ingsw.client.views.gui.sprite;
 
-import it.polimi.ingsw.client.views.gui.sprite.interpolators.Interpolator;
-import it.polimi.ingsw.client.views.gui.sprite.interpolators.exceptions.TimestampOutOfRangeException;
+import it.polimi.ingsw.client.views.gui.sprite.exceptions.TimestampOutOfRangeException;
+import it.polimi.ingsw.client.views.gui.sprite.fadeinterpolators.FadeInterpolator;
+import it.polimi.ingsw.client.views.gui.sprite.pointinterpolators.PointInterpolator;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,13 +21,15 @@ public class Sprite {
 
     private @NotNull BufferedImage bufferedImage;
     private @Nullable String tag;
+    private @Nullable Object associatedObject;
 
     private boolean hidden = false;
     private boolean draggable = false;
     private boolean clickable = true;
-
+    private double fade = 1;
     private @Nullable SpriteListener spriteListener;
-    private @Nullable Interpolator interpolator;
+    private @Nullable PointInterpolator pointInterpolator;
+    private @Nullable FadeInterpolator fadeInterpolator;
 
     @Contract(pure = true)
     public Sprite(int x, int y, int width, int height, @NotNull BufferedImage bufferedImage) {
@@ -71,8 +74,13 @@ public class Sprite {
         updated();
     }
 
-    public void moveTo(@NotNull Interpolator interpolator) {
-        this.interpolator = interpolator;
+    public void moveTo(@NotNull PointInterpolator pointInterpolator) {
+        this.pointInterpolator = pointInterpolator;
+        updated();
+    }
+
+    public void fade(@NotNull FadeInterpolator fadeInterpolator) {
+        this.fadeInterpolator = fadeInterpolator;
         updated();
     }
 
@@ -86,6 +94,7 @@ public class Sprite {
         updated();
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isHidden() {
         return hidden;
     }
@@ -95,7 +104,7 @@ public class Sprite {
     }
 
     public boolean isDraggable() {
-        return draggable && interpolator == null;
+        return draggable && pointInterpolator == null;
     }
 
     public void setDraggable(boolean draggable) {
@@ -110,11 +119,11 @@ public class Sprite {
         this.clickable = clickable;
     }
 
-    public @Nullable SpriteListener getSpriteListener() {
+    @Nullable SpriteListener getSpriteListener() {
         return spriteListener;
     }
 
-    public void setSpriteListener(@Nullable SpriteListener spriteListener) {
+    void setSpriteListener(@Nullable SpriteListener spriteListener) {
         this.spriteListener = spriteListener;
     }
 
@@ -122,7 +131,7 @@ public class Sprite {
         return new Point(x, y);
     }
 
-    public void setPosition(@NotNull Point position) {
+    private void setPosition(@NotNull Point position) {
         this.x = position.x;
         this.y = position.y;
     }
@@ -140,24 +149,37 @@ public class Sprite {
     }
 
     void interpolate() {
-        if (interpolator != null) {
-            if (System.currentTimeMillis() > interpolator.getEndMillis()) {
-                setPosition(interpolator.getEndPoint());
-                interpolator.onInterpolationCompleted();
-                interpolator = null;
+        if (pointInterpolator != null) {
+            if (System.currentTimeMillis() > pointInterpolator.getEndMillis()) {
+                setPosition(pointInterpolator.getEndPoint());
+                pointInterpolator.onInterpolationCompleted();
+                pointInterpolator = null;
             } else try {
-                setPosition(interpolator.interpolate(System.currentTimeMillis()));
-            } catch (TimestampOutOfRangeException timestampOutOfRangeException) {
-                timestampOutOfRangeException.printStackTrace();
-                interpolator.onInterpolationCompleted();
-                interpolator = null;
+                setPosition(pointInterpolator.interpolate(System.currentTimeMillis()));
+            } catch (TimestampOutOfRangeException e) {
+                e.printStackTrace();
+                pointInterpolator.onInterpolationCompleted();
+                pointInterpolator = null;
+            }
+            Optional.ofNullable(spriteListener).ifPresent(e -> e.onSpriteUpdated(this));
+        }
+        if (fadeInterpolator != null) {
+            if (System.currentTimeMillis() > fadeInterpolator.getEndMillis()) {
+                setFade(fadeInterpolator.getEndFade());
+                fadeInterpolator.onInterpolationCompleted();
+                fadeInterpolator = null;
+            } else try {
+                setFade(fadeInterpolator.interpolate(System.currentTimeMillis()));
+            } catch (TimestampOutOfRangeException e) {
+                e.printStackTrace();
+                fadeInterpolator.onInterpolationCompleted();
+                fadeInterpolator = null;
             }
             Optional.ofNullable(spriteListener).ifPresent(e -> e.onSpriteUpdated(this));
         }
     }
 
     private void updated() {
-        interpolate();
         Optional.ofNullable(spriteListener).ifPresent(e -> e.onSpriteUpdated(this));
     }
 
@@ -167,6 +189,25 @@ public class Sprite {
 
     public void setRotation(@NotNull Rotation rotation) {
         this.rotation = rotation;
+        updated();
+    }
+
+    public double getFade() {
+        return fade;
+    }
+
+    public void setFade(double fade) {
+        if (fade > 1 || fade < 0) return;
+        this.fade = fade;
+        updated();
+    }
+
+    public @Nullable Object getAssociatedObject() {
+        return associatedObject;
+    }
+
+    public void setAssociatedObject(@Nullable Object associatedObject) {
+        this.associatedObject = associatedObject;
     }
 
     public enum Rotation {

@@ -133,6 +133,7 @@ public class AdrenalinePacket implements Serializable {
          * Remove room updates type.
          */
         REMOVE_ROOM_UPDATES,
-        ERROR
+        REMOTE_EXCEPTION,
+        USER_REMOTE_EXCEPTION
     }
 }

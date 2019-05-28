@@ -1,6 +1,6 @@
 package it.polimi.ingsw.client.views.gui.sprite;
 
-import org.jetbrains.annotations.Contract;
+import it.polimi.ingsw.client.others.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,16 +11,14 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
-public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
+public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable {
     private static final int FRAMERATE = 60;
-    private final @NotNull ArrayList<Sprite> sprites = new ArrayList<>();
     private final @Nullable AtomicBoolean needRepaint = new AtomicBoolean(true);
+    private final @NotNull ArrayList<Sprite> sprites = new ArrayList<>();
     private @Nullable BufferedImage background;
     private @Nullable SpriteBoardListener boardListener;
     private boolean closed = false;
@@ -48,20 +46,8 @@ public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
         }).start();
     }
 
-    protected static boolean isRetina() {
-        var isRetina = false;
-        GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        try {
-            //TODO: Illegal reflective access
-            var field = graphicsDevice.getClass().getDeclaredField("scale");
-            if (field != null) {
-                field.setAccessible(true);
-                Object scale = field.get(graphicsDevice);
-                if (scale instanceof Integer && (Integer) scale == 2) isRetina = true;
-            }
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {
-        }
-        return isRetina;
+    protected @NotNull ArrayList<Sprite> getSprites() {
+        return sprites;
     }
 
     public void addSprite(@NotNull Sprite sprite) {
@@ -88,32 +74,32 @@ public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         var graphics = (Graphics2D) g;
-        var isRetina = isRetina();
+        var isRetina = Utils.isRetina();
         if (isRetina) graphics.scale(0.5, 0.5);
         if (background != null)
             graphics.drawImage(background, 0, 0, isRetina ? getWidth() * 2 : getWidth(), isRetina ? getHeight() * 2 : getHeight(), this);
-        sprites.parallelStream().map(e -> {
-            var image = e.getBufferedImage();
+        //noinspection unchecked
+        var sprites = (ArrayList<Sprite>) this.sprites.clone();
+        sprites.parallelStream().filter(e -> !e.isHidden() && e.getFade() != 0).forEachOrdered(e -> {
+            var x = isRetina ? e.getX() * 2 : e.getX();
+            var y = isRetina ? e.getY() * 2 : e.getY();
             var width = isRetina ? e.getDimension().width * 2 : e.getDimension().width;
-            var heigth = isRetina ? e.getDimension().height * 2 : e.getDimension().height;
+            var height = isRetina ? e.getDimension().height * 2 : e.getDimension().height;
+            var op = new AffineTransformOp(new AffineTransform(), AffineTransformOp.TYPE_BILINEAR);
             if (e.getRotation() != Sprite.Rotation.ZERO) {
                 var at = new AffineTransform();
-                var dst = new BufferedImage(e.getRotation() != Sprite.Rotation.PI ? image.getHeight() : image.getWidth(),
-                        e.getRotation() != Sprite.Rotation.PI ? image.getWidth() : image.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                at.rotate(e.getRotation().getDegrees(), image.getWidth() / 2, image.getHeight() / 2);
+                at.rotate(e.getRotation().getDegrees(), x + width / 2, y + height / 2);
                 if (e.getRotation() != Sprite.Rotation.PI) {
-                    at.translate((e.getRotation() == Sprite.Rotation.HALF_PI ? image.getWidth() - image.getHeight() : image.getHeight() - image.getWidth()) / 2,
-                            (e.getRotation() == Sprite.Rotation.HALF_PI ? image.getWidth() - image.getHeight() : image.getHeight() - image.getWidth()) / 2);
-                    var tempWidth = width;
-                    width = heigth;
-                    heigth = tempWidth;
+                    var translation = (width - height) / 2;
+                    if (e.getRotation() == Sprite.Rotation.THREE_HALF_PI) translation *= -1;
+                    at.translate(translation, translation);
                 }
-                var op = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-                op.filter(image, dst);
-                image = dst;
+                op = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
             }
-            return new Pepsi(isRetina ? e.getX() * 2 : e.getX(), isRetina ? e.getY() * 2 : e.getY(), width, heigth, image);
-        }).forEachOrdered(e -> graphics.drawImage(e.bufferedImage, e.x, e.y, e.width, e.height, this));
+            graphics.setTransform(op.getTransform());
+            graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) e.getFade()));
+            graphics.drawImage(e.getBufferedImage(), x, y, width, height, this);
+        });
         Toolkit.getDefaultToolkit().sync();
     }
 
@@ -145,23 +131,6 @@ public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
     public void close() {
         removeAllSprites();
         closed = true;
-    }
-
-    private static class Pepsi {
-        private int x;
-        private int y;
-        private int width;
-        private int height;
-        private @NotNull BufferedImage bufferedImage;
-
-        @Contract(pure = true)
-        private Pepsi(int x, int y, int width, int height, @NotNull BufferedImage bufferedImage) {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.bufferedImage = bufferedImage;
-        }
     }
 
     private class SpriteMouseAdapter extends MouseInputAdapter {

@@ -34,13 +34,32 @@ public class GameViewController extends BaseViewController implements GameBoardL
         $$$setupUI$$$();
         //var gameUuid = (UUID) params[0];
         setContentPane(panel);
-        /*yourBoardButton.addActionListener(e -> {
-            if (lastViewController != null) lastViewController.close();
-            lastViewController = new NavigationController(PlayerBoardViewController.class, gameBoard.getGame());
-        });*/
         playersBoardButton.addActionListener(e -> {
             if (lastViewController != null) lastViewController.close();
             lastViewController = new NavigationController(PlayersBoardsViewController.class, gameBoard.getGame());
+        });
+        exitButton.addActionListener(e -> {
+            var room = new Room("ciao", new User("user1"));
+            Collections.nCopies(4, null).parallelStream().map(f -> new User(UUID.randomUUID().toString().substring(0, 7))).collect(Collectors.toList()).forEach(room::addUser);
+            var game = GameImpl.Creator.newGame(room);
+            game.getPlayers().forEach(f -> {
+                f.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                f.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                f.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                f.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                f.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                f.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                f.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                f.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+                f.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+            });
+            new Thread(() -> {
+                try {
+                    gameBoard.setGame(game);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }).start();
         });
         /*exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             try {
@@ -92,19 +111,19 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private void createUIComponents() {
         var room = new Room("ciao", new User("user1"));
         Collections.nCopies(4, null).parallelStream().map(f -> new User(UUID.randomUUID().toString().substring(0, 7))).collect(Collectors.toList()).forEach(room::addUser);
+        var game = GameImpl.Creator.newGame(room);
+        game.getPlayers().forEach(e -> {
+            e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+            e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+            e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+            e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+            e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+            e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+            e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+            e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+            e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
+        });
         try {
-            var game = GameImpl.Creator.newGame(room);
-            game.getPlayers().forEach(e -> {
-                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
-                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
-                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
-                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
-                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
-                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
-                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
-                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
-                e.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
-            });
             gameBoard = new GameBoard(game);
             gameBoard.setBoardListener(this);
         } catch (IOException e) {

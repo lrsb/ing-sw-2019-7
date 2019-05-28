@@ -1,31 +1,28 @@
-package it.polimi.ingsw.client.views.gui.sprite.interpolators;
+package it.polimi.ingsw.client.views.gui.sprite.fadeinterpolators;
 
-import it.polimi.ingsw.client.views.gui.sprite.interpolators.exceptions.TimestampOutOfRangeException;
+import it.polimi.ingsw.client.views.gui.sprite.exceptions.TimestampOutOfRangeException;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
-
-public abstract class Interpolator {
-    protected final @NotNull Point start;
+public abstract class FadeInterpolator {
+    protected final double start;
     protected final long startMillis;
-    protected final @NotNull Point end;
+    protected final double end;
     protected final long endMillis;
 
     @Contract(pure = true)
-    public Interpolator(@NotNull Point start, long startMillis, @NotNull Point end, long endMillis) {
+    public FadeInterpolator(double start, long startMillis, double end, long endMillis) {
         this.start = start;
         this.startMillis = startMillis;
         this.end = end;
         this.endMillis = endMillis;
     }
 
-    public final @NotNull Point interpolate(long timestamp) throws TimestampOutOfRangeException {
+    public final double interpolate(long timestamp) throws TimestampOutOfRangeException {
         checkTimestamp(timestamp);
         return interpolateImpl((float) (timestamp - startMillis) / (endMillis - startMillis));
     }
 
-    public @NotNull Point getEndPoint() {
+    public double getEndFade() {
         return end;
     }
 
@@ -33,7 +30,7 @@ public abstract class Interpolator {
         return endMillis;
     }
 
-    public abstract @NotNull Point interpolateImpl(float normalizedCompletion);
+    public abstract double interpolateImpl(float normalizedCompletion);
 
     public void onInterpolationCompleted() {
     }
