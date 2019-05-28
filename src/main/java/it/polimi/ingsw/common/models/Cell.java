@@ -116,7 +116,6 @@ public class Cell implements Serializable {
         private @Nullable Color color;
         private boolean spawnPoint = false;
 
-        //"nesw" in senso orario, _ : chiuso, | : porta,   : stessa stanza
         public static Creator withBounds(@NotNull String boundsString) {
             var creator = new Creator();
             creator.bounds = new Bounds(Bounds.Type.SAME_ROOM, Bounds.Type.SAME_ROOM, Bounds.Type.SAME_ROOM, Bounds.Type.SAME_ROOM);

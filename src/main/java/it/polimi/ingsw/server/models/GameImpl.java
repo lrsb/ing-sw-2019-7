@@ -264,10 +264,9 @@ public class GameImpl extends Game implements Serializable {
         private Creator() {
         }
 
-        //TODO: impl
         @Contract("_ -> new")
         public static @NotNull GameImpl newGame(@NotNull Room room) {
-            assert(room.getUsers().size() >= MIN_PLAYERS && room.getUsers().size() <= MAX_PLAYERS);
+            assert(room.getUsers().size() >= MIN_PLAYERS && room.getUsers().size() <= MAX_PLAYERS) : "Invalid number of players";
             var cells = new Cell[MAX_X][MAX_Y];
             switch (room.getGameType().getLeft()) {
                 case "L5":
