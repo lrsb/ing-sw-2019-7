@@ -74,8 +74,8 @@ public class RoomsListViewController extends BaseViewController {
         };
         tableModel.addColumn("Nome");
         tableModel.addColumn("N. giocatori");
-        rooms.stream().map(f -> new Object[]{f.getName(), f.getUsers().size() + "/5 ("
-                + f.getUsers().stream().map(User::getNickname).collect(Collectors.joining(", ")) + ")"}).forEach(tableModel::addRow);
+        rooms.parallelStream().map(f -> new Object[]{f.getName(), f.getUsers().size() + "/5 ("
+                + f.getUsers().parallelStream().map(User::getNickname).collect(Collectors.joining(", ")) + ")"}).forEachOrdered(tableModel::addRow);
         table.setModel(tableModel);
     }
 

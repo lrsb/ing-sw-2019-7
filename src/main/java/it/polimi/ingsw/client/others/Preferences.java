@@ -29,4 +29,8 @@ public class Preferences {
     public static boolean isLoggedIn() {
         return getToken() != null;
     }
+
+    public static @NotNull Optional<String> getOptionalToken() {
+        return Optional.ofNullable(getToken());
+    }
 }
