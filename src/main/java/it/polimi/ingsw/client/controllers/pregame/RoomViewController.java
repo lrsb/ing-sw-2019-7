@@ -10,14 +10,29 @@ import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.UUID;
 
 public class RoomViewController extends BaseViewController {
     private @NotNull UUID roomUuid;
+    private @Nullable Clip clip;
+
+    {
+        try {
+            clip = AudioSystem.getClip();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
 
     public RoomViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
         super("", 600, 400, navigationController);
@@ -38,6 +53,14 @@ public class RoomViewController extends BaseViewController {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
+        if (clip != null) try {
+            var audioInputStream = AudioSystem.getAudioInputStream(getClass().getResource(getClass().getSimpleName() + "/follettina.wav"));
+            clip.open(audioInputStream);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -53,6 +76,7 @@ public class RoomViewController extends BaseViewController {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
+        if (clip != null) clip.stop();
     }
 
     {
