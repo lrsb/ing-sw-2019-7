@@ -6,8 +6,8 @@ import com.intellij.uiDesigner.core.Spacer;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.others.Utils;
-import it.polimi.ingsw.client.views.sprite.Sprite;
-import it.polimi.ingsw.client.views.sprite.SpriteBoard;
+import it.polimi.ingsw.client.views.gui.sprite.Sprite;
+import it.polimi.ingsw.client.views.gui.sprite.SpriteBoard;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

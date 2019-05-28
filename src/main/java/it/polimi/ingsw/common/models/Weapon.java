@@ -1,7 +1,7 @@
 package it.polimi.ingsw.common.models;
 
 import it.polimi.ingsw.client.others.Utils;
-import it.polimi.ingsw.client.views.sprite.Displayable;
+import it.polimi.ingsw.client.views.gui.sprite.Displayable;
 import it.polimi.ingsw.common.models.wrappers.Opt;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -376,7 +376,7 @@ public abstract class Weapon {
             boolean canBasicFire() {
                 if (firstAdditionalTargetsPoint == null) return game.getActualPlayer()
                         .canSeeNotSame(basicTargets.get(0), game.getCells());
-                var mockPlayer = new Player(new User(""));
+                var mockPlayer = new Player(new User(""), Player.BoardType.BANSHEE);
                 mockPlayer.setPosition(firstAdditionalTargetsPoint);
                 return game.canMove(game.getActualPlayer().getPosition(), firstAdditionalTargetsPoint, 2) &&
                         (mockPlayer.canSeeNotSame(basicTargets.get(0), game.getCells()) ||
@@ -441,7 +441,7 @@ public abstract class Weapon {
             @Override
             boolean canBasicFire() {
                 if (basicTargetsPoint == null) return false;
-                var mockPlayer = new Player(new User(""));
+                var mockPlayer = new Player(new User(""), Player.BoardType.BANSHEE);
                 mockPlayer.setPosition(basicTargetsPoint);
                 return (alternativeFire && game.canMove(basicTargets.get(0).getPosition(), game.getActualPlayer().getPosition(), 2)) ||
                         (!alternativeFire && game.canMove(basicTargets.get(0).getPosition(), basicTargetsPoint, 2) &&
@@ -637,7 +637,7 @@ public abstract class Weapon {
 
             @Override
             boolean canBasicFire() {
-                var mockPlayer = new Player(new User(""));
+                var mockPlayer = new Player(new User(""), Player.BoardType.BANSHEE);
                 if (firstAdditionalTargetsPoint != null) mockPlayer.setPosition(firstAdditionalTargetsPoint);
                 return basicTargets.size() == 1 &&
                         (game.getActualPlayer().canSeeNotSame(basicTargets.get(0), game.getCells()) &&
@@ -712,7 +712,7 @@ public abstract class Weapon {
         }
 
         private static class Cyberblade extends Weapon {
-            private Player mockPlayer = new Player(new User(""));
+            private Player mockPlayer = new Player(new User(""), Player.BoardType.BANSHEE);
 
             private Cyberblade(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);

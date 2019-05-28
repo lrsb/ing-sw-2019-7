@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Utils {
     public static @NotNull BufferedImage readPngImage(@NotNull Class aClass, @NotNull String name) throws IOException {
@@ -37,5 +38,14 @@ public class Utils {
         Preferences.deleteToken();
         navigationController.popToRootViewController();
         navigationController.presentViewController(true, LoginViewController.class);
+    }
+
+    public static @NotNull BufferedImage applyColorToMask(@NotNull BufferedImage mask, @NotNull Color color) {
+        int[] maskPixels = mask.getRGB(0, 0, mask.getWidth(), mask.getHeight(), null, 0, mask.getWidth());
+        var masked = new BufferedImage(mask.getWidth(), mask.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        var rgb = color.getRGB();
+        masked.setRGB(0, 0, mask.getWidth(), mask.getHeight(),
+                Arrays.stream(maskPixels).parallel().map(e -> e != 0 ? rgb : e).toArray(), 0, mask.getWidth());
+        return masked;
     }
 }

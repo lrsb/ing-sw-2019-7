@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.views.sprite;
+package it.polimi.ingsw.client.views.gui.sprite;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -16,23 +16,15 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * The type Sprite board.
- */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
     private static final int FRAMERATE = 60;
     private final @NotNull ArrayList<Sprite> sprites = new ArrayList<>();
-    private final @Nullable BufferedImage background;
     private final @Nullable AtomicBoolean needRepaint = new AtomicBoolean(true);
+    private @Nullable BufferedImage background;
     private @Nullable SpriteBoardListener boardListener;
     private boolean closed = false;
 
-    /**
-     * Instantiates a new Sprite board.
-     *
-     * @param background the background
-     */
     public SpriteBoard(@Nullable BufferedImage background) {
         this.background = background;
         var mouseListener = new SpriteMouseAdapter();
@@ -56,11 +48,6 @@ public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
         }).start();
     }
 
-    /**
-     * Is retina boolean.
-     *
-     * @return the boolean
-     */
     protected static boolean isRetina() {
         var isRetina = false;
         GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -77,23 +64,12 @@ public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
         return isRetina;
     }
 
-    /**
-     * Add sprite.
-     *
-     * @param sprite the sprite
-     */
     public void addSprite(@NotNull Sprite sprite) {
         sprites.add(sprite);
         sprite.setSpriteListener(this);
         repaint();
     }
 
-    /**
-     * Remove sprite sprite.
-     *
-     * @param sprite the sprite
-     * @return the sprite
-     */
     public @Nullable Sprite removeSprite(@NotNull Sprite sprite) {
         var removed = sprites.remove(sprite);
         if (removed) {
@@ -146,11 +122,6 @@ public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
         repaint();
     }
 
-    /**
-     * Sets board listener.
-     *
-     * @param boardListener the board listener
-     */
     public void setBoardListener(@Nullable SpriteBoardListener boardListener) {
         this.boardListener = boardListener;
     }
@@ -159,6 +130,10 @@ public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
     public void autoRemove(@NotNull Sprite sprite) {
         sprites.remove(sprite);
         repaint();
+    }
+
+    public void setBackground(@NotNull BufferedImage bufferedImage) {
+        background = bufferedImage;
     }
 
     @Override

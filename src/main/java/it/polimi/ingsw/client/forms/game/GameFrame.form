@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="c096d" class="it.polimi.ingsw.client.views.boards.GameBoard" binding="gameBoard" custom-create="true">
+      <component id="c096d" class="it.polimi.ingsw.client.views.gui.boards.GameBoard" binding="gameBoard" custom-create="true">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>

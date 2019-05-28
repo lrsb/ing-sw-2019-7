@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -215,7 +216,9 @@ public class GameImpl extends Game implements Serializable {
                     //Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
                 }
             }
-            return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream().map(Player::new).collect(Collectors.toList()));
+            var boards = new ArrayList<>(List.of(Player.BoardType.values()));
+            Collections.shuffle(boards);
+            return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream().map(e -> new Player(e, boards.remove(0))).collect(Collectors.toList()));
         }
     }
 }
