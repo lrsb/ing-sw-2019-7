@@ -7,6 +7,7 @@ import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.controllers.pregame.MainViewController;
 import it.polimi.ingsw.client.others.Preferences;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -25,17 +26,15 @@ public class LoginViewController extends BaseViewController {
         setContentPane(panel);
         loginButton.addActionListener(e -> {
             try {
-                var token = Client.API.authUser(nicknameField.getText(), String.valueOf(passwordField.getPassword()));
-                if (token == null) {
-                    passwordField.setText("");
-                    JOptionPane.showMessageDialog(null, "Nickname e/o password errate!!");
-                } else {
-                    Preferences.setToken(token);
-                    getNavigationController().presentViewController(MainViewController.class, true);
-                }
+                Preferences.setToken(Client.API.authUser(nicknameField.getText(), String.valueOf(passwordField.getPassword())));
+                getNavigationController().presentViewController(true, MainViewController.class);
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                passwordField.setText("");
+                JOptionPane.showMessageDialog(null, "Nickname e/o password errate!!");
             } catch (RemoteException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Problemi col server!!");
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
         registratiButton.addActionListener(e -> getNavigationController().presentViewController(SignupViewController.class));

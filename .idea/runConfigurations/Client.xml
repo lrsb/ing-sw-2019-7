@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Client" type="Application" factoryName="Application" singleton="true">
     <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.Client" />
-    <module name="swingproject" />
+    <module name="ing-sw-2019-7" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="it.polimi.ingsw.common.network.*" />

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.views.sprite;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -7,6 +8,8 @@ import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -100,30 +103,41 @@ public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
         return removed ? sprite : null;
     }
 
+    public void removeAllSprites() {
+        sprites.parallelStream().forEach(e -> e.setSpriteListener(null));
+        sprites.clear();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         var graphics = (Graphics2D) g;
-        if (isRetina()) graphics.scale(0.5, 0.5);
+        var isRetina = isRetina();
+        if (isRetina) graphics.scale(0.5, 0.5);
         if (background != null)
-            graphics.drawImage(background, 0, 0, isRetina() ? getWidth() * 2 : getWidth(), isRetina() ? getHeight() * 2 : getHeight(), this);
-        sprites.forEach(e -> {
+            graphics.drawImage(background, 0, 0, isRetina ? getWidth() * 2 : getWidth(), isRetina ? getHeight() * 2 : getHeight(), this);
+        sprites.parallelStream().map(e -> {
             var image = e.getBufferedImage();
-            /*if (e.getRotation() != 0) {
+            var width = isRetina ? e.getDimension().width * 2 : e.getDimension().width;
+            var heigth = isRetina ? e.getDimension().height * 2 : e.getDimension().height;
+            if (e.getRotation() != Sprite.Rotation.ZERO) {
                 var at = new AffineTransform();
-                var dst = new BufferedImage(image.getHeight(), image.getWidth(), BufferedImage.TYPE_INT_ARGB);
-                at.translate(image.getWidth() / 2, image.getHeight() / 2);
-                at.rotate(e.getRotation());
-                at.translate(- image.getHeight() / 2, - image.getWidth() * 2);
-                at.scale((double) image.getWidth() / image.getHeight(), (double) image.getHeight() / image.getWidth());
+                var dst = new BufferedImage(e.getRotation() != Sprite.Rotation.PI ? image.getHeight() : image.getWidth(),
+                        e.getRotation() != Sprite.Rotation.PI ? image.getWidth() : image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                at.rotate(e.getRotation().getDegrees(), image.getWidth() / 2, image.getHeight() / 2);
+                if (e.getRotation() != Sprite.Rotation.PI) {
+                    at.translate((e.getRotation() == Sprite.Rotation.HALF_PI ? image.getWidth() - image.getHeight() : image.getHeight() - image.getWidth()) / 2,
+                            (e.getRotation() == Sprite.Rotation.HALF_PI ? image.getWidth() - image.getHeight() : image.getHeight() - image.getWidth()) / 2);
+                    var tempWidth = width;
+                    width = heigth;
+                    heigth = tempWidth;
+                }
                 var op = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
                 op.filter(image, dst);
                 image = dst;
-            }*/
-            graphics.drawImage(image, isRetina() ? e.getX() * 2 : e.getX(), isRetina() ? e.getY() * 2 : e.getY(),
-                    isRetina() ? e.getDimension().width * 2 : e.getDimension().width,
-                    isRetina() ? e.getDimension().height * 2 : e.getDimension().height, this);
-        });
+            }
+            return new Pepsi(isRetina ? e.getX() * 2 : e.getX(), isRetina ? e.getY() * 2 : e.getY(), width, heigth, image);
+        }).forEachOrdered(e -> graphics.drawImage(e.bufferedImage, e.x, e.y, e.width, e.height, this));
         Toolkit.getDefaultToolkit().sync();
     }
 
@@ -154,9 +168,25 @@ public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
 
     @Override
     public void close() {
-        sprites.parallelStream().forEach(e -> e.setSpriteListener(null));
-        sprites.clear();
+        removeAllSprites();
         closed = true;
+    }
+
+    private static class Pepsi {
+        private int x;
+        private int y;
+        private int width;
+        private int height;
+        private @NotNull BufferedImage bufferedImage;
+
+        @Contract(pure = true)
+        private Pepsi(int x, int y, int width, int height, @NotNull BufferedImage bufferedImage) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.bufferedImage = bufferedImage;
+        }
     }
 
     private class SpriteMouseAdapter extends MouseInputAdapter {
@@ -203,6 +233,9 @@ public class SpriteBoard extends JPanel implements SpriteListener, Closeable {
         }
 
         private boolean contained(@NotNull Sprite sprite, @NotNull MouseEvent event) {
+            if (sprite.getRotation() == Sprite.Rotation.HALF_PI || sprite.getRotation() == Sprite.Rotation.THREE_HALF_PI)
+                return sprite.getX() <= event.getX() && event.getX() <= sprite.getX() + sprite.getDimension().height &&
+                        sprite.getY() <= event.getY() && event.getY() <= sprite.getY() + sprite.getDimension().width;
             return sprite.getX() <= event.getX() && event.getX() <= sprite.getX() + sprite.getDimension().width &&
                     sprite.getY() <= event.getY() && event.getY() <= sprite.getY() + sprite.getDimension().height;
         }

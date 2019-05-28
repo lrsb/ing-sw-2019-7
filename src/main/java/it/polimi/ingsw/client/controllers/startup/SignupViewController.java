@@ -7,6 +7,7 @@ import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.controllers.pregame.MainViewController;
 import it.polimi.ingsw.client.others.Preferences;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -25,17 +26,15 @@ public class SignupViewController extends BaseViewController {
         setContentPane(panel);
         registratiButton.addActionListener(e -> {
             try {
-                var token = Client.API.createUser(nicknameField.getText(), String.valueOf(passwordField.getPassword()));
-                if (token == null)
-                    JOptionPane.showMessageDialog(null, "Nickname già esistente!!");
-                else {
-                    Preferences.setToken(token);
-                    getNavigationController().popToRootViewController();
-                    getNavigationController().presentViewController(MainViewController.class, true);
-                }
+                Preferences.setToken(Client.API.createUser(nicknameField.getText(), String.valueOf(passwordField.getPassword())));
+                getNavigationController().popToRootViewController();
+                getNavigationController().presentViewController(true, MainViewController.class);
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Nickname già esistente!!");
             } catch (RemoteException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Problemi col server!!");
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
         indietroButton.addActionListener(e -> getNavigationController().popToRootViewController());

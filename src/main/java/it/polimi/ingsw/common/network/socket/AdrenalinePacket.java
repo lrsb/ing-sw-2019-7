@@ -57,10 +57,24 @@ public class AdrenalinePacket implements Serializable {
      * @param <T> the type parameter
      * @return the associated object
      */
-    public @NotNull <T> @Nullable T getAssociatedObject() {
+    public @NotNull <T> @Nullable T getAssociatedObject(Class<T> aClass) {
         try {
-            return new Gson().fromJson((String) new Gson().fromJson(jsonObject, ArrayList.class).get(1), new TypeToken<T>() {
-            }.getType());
+            return new Gson().fromJson((String) new Gson().fromJson(jsonObject, ArrayList.class).get(1), aClass);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Gets associated object.
+     *
+     * @param <T> the type parameter
+     * @return the associated object
+     */
+    public @NotNull <T> @Nullable T getAssociatedObject(TypeToken token) {
+        try {
+            return new Gson().fromJson((String) new Gson().fromJson(jsonObject, ArrayList.class).get(1), token.getType());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -118,6 +132,7 @@ public class AdrenalinePacket implements Serializable {
         /**
          * Remove room updates type.
          */
-        REMOVE_ROOM_UPDATES
+        REMOVE_ROOM_UPDATES,
+        ERROR
     }
 }

@@ -7,11 +7,12 @@ import it.polimi.ingsw.Client;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.others.Preferences;
+import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.models.User;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -27,7 +28,6 @@ public class RoomsListViewController extends BaseViewController {
     private JButton joinButton;
 
     private List<Room> rooms;
-    private @Nullable Room room;
 
     public RoomsListViewController(@NotNull NavigationController navigationController) {
         super("Elenco partite", 800, 600, navigationController);
@@ -37,35 +37,29 @@ public class RoomsListViewController extends BaseViewController {
         joinButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             if (table.getSelectedRow() == -1) JOptionPane.showMessageDialog(null, "Seleziona una partita");
             else try {
-                room = Client.API.joinRoom(f, rooms.get(table.getSelectedRow()).getUuid());
-                getNavigationController().presentViewController(RoomViewController.class, true);
+                getNavigationController().presentViewController(true, RoomViewController.class,
+                        Client.API.joinRoom(f, rooms.get(table.getSelectedRow()).getUuid()));
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
             } catch (RemoteException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Problemi col server!!");
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         }));
-    }
-
-    @Override
-    protected <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
-        if (viewController instanceof RoomViewController) {
-            ((RoomViewController) viewController).room = room;
-        }
     }
 
     private void update() {
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                var roomList = Client.API.getRooms(e);
-                if (roomList == null) {
-                    JOptionPane.showMessageDialog(null, "Problemi col server!!");
-                    return;
-                }
-                rooms = roomList;
+                rooms = Client.API.getRooms(e);
                 refreshTable();
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
             } catch (RemoteException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Problemi col server!!");
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
     }
@@ -125,4 +119,5 @@ public class RoomsListViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
+
 }

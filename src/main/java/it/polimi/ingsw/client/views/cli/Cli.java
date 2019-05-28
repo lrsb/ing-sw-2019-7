@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Cli {
-    private static@NotNull Scanner in = new Scanner(System.in);
+    private static @NotNull Scanner in = new Scanner(System.in);
 
     public final static void clearConsole() {
         try {
@@ -54,16 +54,16 @@ public class Cli {
                 break;
 
             case 2:
-                try{
+                try {
                     Client.API = new ClientRmiImpl(LocateRegistry.getRegistry(ip, Server.RMI_PORT).lookup(Server.RMI_NAME));
-                }catch (RemoteException | NotBoundException e){
+                } catch (RemoteException | NotBoundException e) {
                     System.out.println("Problema con la connessione all'host " + ip);
                     connType();
                 }
                 break;
 
             case 3:
-                try{
+                try {
                     Client.API = new ClientRestImpl(ip);
                     Client.API.getRooms("");
                 }catch (RemoteException e){

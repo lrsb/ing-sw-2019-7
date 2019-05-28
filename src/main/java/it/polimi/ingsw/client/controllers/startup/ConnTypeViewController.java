@@ -47,17 +47,17 @@ public class ConnTypeViewController extends BaseViewController {
             }
             else if (httpRadioButton.isSelected()) try {
                 Client.API = new ClientRestImpl(host);
-                Client.API.getRooms("");
             } catch (RemoteException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Problemi di connessione col server!!");
-            } else {
+            }
+            else {
                 JOptionPane.showMessageDialog(null, "Cazzo fai?!?!");
                 return;
             }
             if (Preferences.isLoggedIn())
-                getNavigationController().presentViewController(MainViewController.class, true);
-            else getNavigationController().presentViewController(LoginViewController.class, true);
+                getNavigationController().presentViewController(false, MainViewController.class);
+            else getNavigationController().presentViewController(false, LoginViewController.class);
         });
     }
 

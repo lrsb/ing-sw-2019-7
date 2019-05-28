@@ -28,6 +28,9 @@ public class GameImpl extends Game implements Serializable {
         redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        Stream.of(cells).flatMap(Stream::of).forEach(e -> {
+            if (!e.isSpawnPoint()) e.setAmmoCard(ammoDeck.exitCard());
+        });
         //Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(ammoDeck.exitCard())));
     }
 
@@ -208,7 +211,8 @@ public class GameImpl extends Game implements Serializable {
             var cells = new Cell[MAX_X][MAX_Y];
             for (var i = 0; i < cells.length; i++) {
                 for (var j = 0; j < cells[i].length; j++) {
-                    //cells[i][j] = Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
+                    cells[i][j] = new Cell(Cell.Color.GREEN, new Bounds(Bounds.Type.DOOR, Bounds.Type.DOOR, Bounds.Type.DOOR, Bounds.Type.DOOR), false);
+                    //Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
                 }
             }
             return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream().map(Player::new).collect(Collectors.toList()));

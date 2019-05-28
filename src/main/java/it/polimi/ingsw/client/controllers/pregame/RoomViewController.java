@@ -4,42 +4,53 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.controllers.game.GameViewController;
 import it.polimi.ingsw.client.others.Preferences;
+import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.common.models.Room;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
+import java.util.UUID;
 
 public class RoomViewController extends BaseViewController {
-    public Room room;
+    private @NotNull UUID roomUuid;
 
-    public RoomViewController(@NotNull NavigationController navigationController) {
+    public RoomViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
         super("", 600, 400, navigationController);
+        var room = (Room) params[0];
+        roomUuid = room.getUuid();
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                Client.API.addRoomListener(e, room -> {
-                    if (room.getUuid().equals(this.room.getUuid())) this.room = room;
+                Client.API.addRoomListener(e, room.getUuid(), f -> {
+                    //TODO: update room
+                    if (f.isGameCreated())
+                        getNavigationController().presentViewController(true, GameViewController.class, Client.API.getActiveGame(e));
                 });
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
             } catch (RemoteException ex) {
                 ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
-    }
-
-    @Override
-    protected <T extends BaseViewController> void nextViewControllerInstantiated(T viewController) {
-
     }
 
     @Override
     protected void controllerPopped() {
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                Client.API.removeRoomListener(e);
+                Client.API.removeRoomListener(e, roomUuid);
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
             } catch (RemoteException ex) {
                 ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
     }

@@ -8,7 +8,6 @@ import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -25,37 +24,37 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
-    public @Nullable String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         return remote.authUser(nickname, password);
     }
 
     @Override
-    public @Nullable String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         return remote.createUser(nickname, password);
     }
 
     @Override
-    public @Nullable Game getActiveGame(@NotNull String token) throws RemoteException {
+    public @NotNull Game getActiveGame(@NotNull String token) throws RemoteException {
         return remote.getActiveGame(token);
     }
 
     @Override
-    public @Nullable List<Room> getRooms(@NotNull String token) throws RemoteException {
+    public @NotNull List<Room> getRooms(@NotNull String token) throws RemoteException {
         return remote.getRooms(token);
     }
 
     @Override
-    public @Nullable Room joinRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+    public @NotNull Room joinRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         return remote.joinRoom(token, roomUuid);
     }
 
     @Override
-    public @Nullable Room createRoom(@NotNull String token, @NotNull String name, int timeout, @NotNull Game.Type gameType) throws RemoteException {
+    public @NotNull Room createRoom(@NotNull String token, @NotNull String name, int timeout, @NotNull Game.Type gameType) throws RemoteException {
         return remote.createRoom(token, name, timeout, gameType);
     }
 
     @Override
-    public @Nullable Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+    public @NotNull Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         return remote.startGame(token, roomUuid);
     }
 
@@ -65,22 +64,22 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
-    public void addGameListener(@NotNull String token, @NotNull GameListener gameListener) throws RemoteException {
-        remote.addGameListener(token, (GameListener) UnicastRemoteObject.exportObject(gameListener, 0));
+    public void addGameListener(@NotNull String token, @NotNull UUID gameUuid, @NotNull GameListener gameListener) throws RemoteException {
+        remote.addGameListener(token, gameUuid, (GameListener) UnicastRemoteObject.exportObject(gameListener, 0));
     }
 
     @Override
-    public void addRoomListener(@NotNull String token, @NotNull RoomListener roomListener) throws RemoteException {
-        remote.addRoomListener(token, (RoomListener) UnicastRemoteObject.exportObject(roomListener, 0));
+    public void addRoomListener(@NotNull String token, @NotNull UUID roomUuid, @NotNull RoomListener roomListener) throws RemoteException {
+        remote.addRoomListener(token, roomUuid, (RoomListener) UnicastRemoteObject.exportObject(roomListener, 0));
     }
 
     @Override
-    public void removeGameListener(@NotNull String token) throws RemoteException {
-        remote.removeGameListener(token);
+    public void removeGameListener(@NotNull String token, @NotNull UUID gameUuid) throws RemoteException {
+        remote.removeGameListener(token, gameUuid);
     }
 
     @Override
-    public void removeRoomListener(@NotNull String token) throws RemoteException {
-        remote.removeRoomListener(token);
+    public void removeRoomListener(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+        remote.removeRoomListener(token, roomUuid);
     }
 }
