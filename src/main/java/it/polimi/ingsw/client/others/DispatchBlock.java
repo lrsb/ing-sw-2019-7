@@ -2,11 +2,9 @@ package it.polimi.ingsw.client.others;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.concurrent.Callable;
-
 public class DispatchBlock {
     private int call = 0;
-    private @Nullable Callable<Void> callable;
+    private @Nullable Callable callable;
 
     public void add() {
         call++;
@@ -23,7 +21,11 @@ public class DispatchBlock {
         }
     }
 
-    public void setCallable(@Nullable Callable<Void> callable) {
+    public void setCallable(@Nullable Callable callable) {
         this.callable = callable;
+    }
+
+    public interface Callable {
+        void call();
     }
 }

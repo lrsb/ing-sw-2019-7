@@ -1,11 +1,11 @@
-package it.polimi.ingsw.client.views.gui.sprite.interpolators;
+package it.polimi.ingsw.client.views.gui.sprite.pointinterpolators;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
-public abstract class ExponentialInterpolator extends Interpolator {
-    public ExponentialInterpolator(@NotNull Point start, @NotNull Point end, long duration) {
+public abstract class ExponentialPointInterpolator extends PointInterpolator {
+    public ExponentialPointInterpolator(@NotNull Point start, @NotNull Point end, long duration) {
         super(start, System.currentTimeMillis(), end, System.currentTimeMillis() + duration);
     }
 

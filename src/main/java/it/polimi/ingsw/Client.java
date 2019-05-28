@@ -23,7 +23,7 @@ public class Client {
                     Cli.start();
                     return;
             }
-        Client.API = new ClientRestImpl("ing-sw-2019-7.herokuapp.com");
+        //Client.API = new ClientRestImpl("ing-sw-2019-7.herokuapp.com");
         new NavigationController(GameViewController.class, new Object());
     }
 }

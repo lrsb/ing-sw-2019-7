@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import it.polimi.ingsw.common.network.socket.AdrenalinePacket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocketListener;
@@ -73,12 +74,15 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                 default:
                     throw new IllegalStateException("Unexpected value: " + packet.getType());
             }
+        } catch (UserRemoteException e) {
+            e.printStackTrace();
+            socket.send(new AdrenalinePacket(AdrenalinePacket.Type.USER_REMOTE_EXCEPTION, null, e));
         } catch (RemoteException e) {
             e.printStackTrace();
-            socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ERROR, null, e));
+            socket.send(new AdrenalinePacket(AdrenalinePacket.Type.REMOTE_EXCEPTION, null, e));
         } catch (Exception e) {
             e.printStackTrace();
-            socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ERROR, null, new RemoteException(e.getMessage())));
+            socket.send(new AdrenalinePacket(AdrenalinePacket.Type.REMOTE_EXCEPTION, null, new RemoteException(e.getMessage())));
         }
     }
 

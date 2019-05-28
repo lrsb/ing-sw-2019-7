@@ -5,10 +5,10 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
-import it.polimi.ingsw.common.models.wrappers.Opt;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import it.polimi.ingsw.common.network.socket.AdrenalinePacket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocketListener;
@@ -197,8 +197,12 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                 case REMOVE_ROOM_UPDATES:
                     roomUpdateRemoved = true;
                     break;
-                case ERROR:
+                case USER_REMOTE_EXCEPTION:
+                    remoteException = packet.getAssociatedObject(UserRemoteException.class);
+                    break;
+                case REMOTE_EXCEPTION:
                     remoteException = packet.getAssociatedObject(RemoteException.class);
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -211,11 +215,14 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     }
 
     private void wait1ms() throws RemoteException {
-        if (remoteException != null) {
-            var remoteException = new RemoteException(Opt.of(this.remoteException).e(RemoteException::getMessage).get("Generic error!!"));
-            this.remoteException = null;
+        if (remoteException != null) try {
             throw remoteException;
-        } else try {
+        } catch (@SuppressWarnings("CaughtExceptionImmediatelyRethrown") RemoteException e) {
+            throw e;
+        } finally {
+            remoteException = null;
+        }
+        else try {
             Thread.onSpinWait();
             Thread.sleep(1);
         } catch (InterruptedException e) {

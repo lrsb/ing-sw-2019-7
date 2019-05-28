@@ -48,4 +48,20 @@ public class Utils {
                 Arrays.stream(maskPixels).parallel().map(e -> e != 0 ? rgb : e).toArray(), 0, mask.getWidth());
         return masked;
     }
+
+    public static boolean isRetina() {
+        var isRetina = false;
+        GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        try {
+            //TODO: Illegal reflective access
+            var field = graphicsDevice.getClass().getDeclaredField("scale");
+            if (field != null) {
+                field.setAccessible(true);
+                Object scale = field.get(graphicsDevice);
+                if (scale instanceof Integer && (Integer) scale == 2) isRetina = true;
+            }
+        } catch (NoSuchFieldException | IllegalAccessException ignored) {
+        }
+        return isRetina;
+    }
 }

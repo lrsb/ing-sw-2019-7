@@ -1,11 +1,11 @@
-package it.polimi.ingsw.client.views.gui.sprite.interpolators;
+package it.polimi.ingsw.client.views.gui.sprite.pointinterpolators;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
-public abstract class LinearInterpolator extends Interpolator {
-    public LinearInterpolator(@NotNull Point start, @NotNull Point end, long duration) {
+public abstract class LinearPointInterpolator extends PointInterpolator {
+    public LinearPointInterpolator(@NotNull Point start, @NotNull Point end, long duration) {
         super(start, System.currentTimeMillis(), end, System.currentTimeMillis() + duration);
     }
 
