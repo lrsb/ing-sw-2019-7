@@ -118,12 +118,14 @@ public abstract class Weapon {
         if (!canBasicFire()) return false;
         switch (option) {
             case 0:
-                return basicFire();
+                if (!(getClass().equals(Weapons.RocketLauncher.class) && firstAdditionalTargetsPoint != null))
+                    return basicFire();
             case 1:
                 if (canFirstAdditionalFire()) return basicFire() && firstAdditionalFire();
                 break;
             case 2:
-                if (canSecondAdditionalFire() && !getClass().equals(Weapons.Thor.class))
+                if (canSecondAdditionalFire() && !getClass().equals(Weapons.Thor.class) &&
+                        !(getClass().equals(Weapons.RocketLauncher.class) && firstAdditionalTargetsPoint != null))
                     return basicFire() && secondAdditionalFire();
                 break;
             case 3:
@@ -647,7 +649,6 @@ public abstract class Weapon {
                         (game.getActualPlayer().canSeeNotSame(basicTargets.get(0), game.getCells()) &&
                                 Opt.of(game.getActualPlayer().getPosition())
                                         .e(e -> !e.equals(basicTargets.get(0).getPosition())).get(false) ||
-                                /*TODO: evitare che riempia firstAdditionalTarget senza poi farlo*/
                                 canFirstAdditionalFire() && mockPlayer.canSeeNotSame(basicTargets.get(0), game.getCells()) &&
                                         !firstAdditionalTargetsPoint.equals(basicTargets.get(0).getPosition())) &&
                         (basicTargetsPoint == null ||
@@ -847,6 +848,7 @@ public abstract class Weapon {
                     game.getActualPlayer().setPosition(basicTargets.get(0).getPosition());
                     basicTargets.get(0).takeHits(game, 1, 2);
                 } else {
+                    if (basicTargetsPoint == null || game.getActualPlayer().getPosition() == null) return;
                     Stream.of(Bounds.Direction.values()).filter(e -> game.getActualPlayer()
                             .isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 2, e))
                             .forEach(e -> game.getActualPlayer().setPosition
@@ -885,7 +887,8 @@ public abstract class Weapon {
                 if (!alternativeFire) {
                     basicTargets.forEach(e -> e.takeHits(game, 1, 0));
                 } else {
-                    game.getPlayers().parallelStream().filter(e -> !game.getActualPlayer().equals(e.getPosition()) &&
+                    game.getPlayers().parallelStream().filter(e ->
+                            Opt.of(game.getActualPlayer().getPosition()).e(f -> !f.equals(e.getPosition())).get(false) &&
                             game.canMove(game.getActualPlayer().getPosition(), e.getPosition(), 1))
                             .forEach(e -> e.takeHits(game, 1, 0));
                 }
