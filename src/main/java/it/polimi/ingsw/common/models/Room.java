@@ -18,6 +18,7 @@ public class Room implements Serializable {
     private @NotNull ArrayList<User> users = new ArrayList<>();
     private boolean gameCreated = false;
     private int actionTimeout = 30;
+    private int skulls;
     private Game.Type gameType = Game.Type.FIVE_SIX;
 
     /**
@@ -121,5 +122,23 @@ public class Room implements Serializable {
      */
     public void setGameType(Game.Type gameType) {
         this.gameType = gameType;
+    }
+
+    /**
+     * Gets game's parameter "number of skulls"
+     *
+     * @return skulls number
+     */
+    public int getSkulls() {
+        return skulls;
+    }
+
+    /**
+     * Sets the game's parameter "number of skulls"
+     *
+     * @param skulls the number of skulls
+     */
+    public void setSkulls(int skulls) {
+        this.skulls = skulls;
     }
 }

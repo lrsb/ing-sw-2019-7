@@ -23,8 +23,8 @@ public class GameImpl extends Game implements Serializable {
 
     private @NotNull ArrayList<PowerUp> exitedPowerUps = new ArrayList<>();
 
-    private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players) {
-        super(uuid, type, cells, players);
+    private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
+        super(uuid, type, cells, players, skulls);
         for (var e : this.cells) for (var cell : e) {
             if (cell.isSpawnPoint())
                 while(getWeapons(cell.getColor()).size() < 3) addWeapon(cell.getColor(), weaponsDeck.exitCard());
@@ -319,7 +319,7 @@ public class GameImpl extends Game implements Serializable {
                     cells[2][3] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
                     break;
             }
-            return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream().map(Player::new).collect(Collectors.toList()));
+            return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream().map(Player::new).collect(Collectors.toList()), room.getSkulls());
         }
     }
 }

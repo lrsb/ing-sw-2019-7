@@ -66,7 +66,7 @@ public abstract class Game implements Displayable, Serializable {
     /**
      * The Skulls.
      */
-    protected int skulls = 5;
+    protected int skulls;
 
     /**
      * The Last turn.
@@ -85,12 +85,14 @@ public abstract class Game implements Displayable, Serializable {
      * @param type    the type
      * @param cells   the cells
      * @param players the players
+     * @param skulls  the number of skulls
      */
-    protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players) {
+    protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
         this.uuid = uuid;
         this.type = type;
         this.cells = cells;
         this.players.addAll(players);
+        this.skulls = skulls;
     }
 
     /**

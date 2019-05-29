@@ -12,8 +12,8 @@ import java.util.UUID;
 public class Action implements Serializable {
     private static final long serialVersionUID = 1;
 
-    private @Nullable Type actionType;
-    private @Nullable UUID gameUuid;
+    private @NotNull Type actionType;
+    private @NotNull UUID gameUuid;
     private @Nullable Weapon.Name weapon;
     private @Nullable Weapon.Name discardedWeapon;
     private @Nullable Point destination;
@@ -44,11 +44,11 @@ public class Action implements Serializable {
         this.gameUuid = gameUuid;
     }
 
-    public @Nullable Type getActionType() {
+    public @NotNull Type getActionType() {
         return actionType;
     }
 
-    public @Nullable UUID getGameUuid() {
+    public @NotNull UUID getGameUuid() {
         return gameUuid;
     }
 
