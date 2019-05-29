@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.views.cli;
+package it.polimi.ingsw.client.views.cli.examples;
 
 
 public enum Color {
