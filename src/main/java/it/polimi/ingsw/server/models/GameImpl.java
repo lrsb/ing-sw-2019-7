@@ -173,14 +173,23 @@ public class GameImpl extends Game implements Serializable {
 
     private void deathPointsRedistribution() {
         getActualPlayer().addPoints(getDeadPlayers().size() > 1 ? 1 : 0);
-        getDeadPlayers().forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
-                .filter(g -> g.getUuid() == f).forEachOrdered(g -> {
-                    g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 :
-                            e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
+        getDeadPlayers().forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream().filter(g -> g.getUuid() == f)
+                .forEachOrdered(g -> {
+                    g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
                     g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
                     if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) e.addMark(g);
+                    if (f == e.getDamagesTaken().get(10)) killshotsTrack.add(f);
                 })));
         getDeadPlayers().forEach(e -> {e.incrementDeaths(); if (skulls > 0) skulls--;});
+    }
+
+    private void finalPointsRedistribution() {
+        players.parallelStream().filter(e -> e.getDamagesTaken().size() > 0).forEachOrdered(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
+                .filter(g -> g.getUuid() == f).forEachOrdered(g -> {
+                    g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
+                    g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0); })));
+        //TODO: dare i punti per la killshotsTrack
+
     }
 
     private boolean reborn(@NotNull Action action) {

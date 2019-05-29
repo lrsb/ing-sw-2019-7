@@ -87,8 +87,7 @@ public class PowerUp implements Displayable, Serializable {
     }
 
     public boolean use(@NotNull Game game) {
-        if ((this.getType() == Type.TAGBACK_GRENADE && target.hasPowerUp(this) ||
-                game.getActualPlayer().hasPowerUp(this) && getType() != Type.TAGBACK_GRENADE) && canBeUsed(game)) {
+        if (game.getActualPlayer().hasPowerUp(this) && canBeUsed(game)) {
             useImpl(game);
             return true;
         }
@@ -100,13 +99,14 @@ public class PowerUp implements Displayable, Serializable {
             case TARGETING_SCOPE:
                 return game.getLastsDamaged().contains(target);
             case NEWTON:
+                assert target != null && targetPoint != null && target.getPosition() != null;
                 return game.getPlayers().contains(target) && !game.getActualPlayer().equals(target) &&
                         !target.getPosition().equals(targetPoint) && Stream.of(Bounds.Direction.values())
                         .anyMatch(e -> target.isPointAtMaxDistanceInDirection(targetPoint, game.getCells(), 2, e));
             case TAGBACK_GRENADE:
-                return game.getTagbackPlayers().contains(target);
+                return game.getTagbackPlayers().contains(game.getActualPlayer()) && game.isAResponse();
             case TELEPORTER:
-                return targetPoint != null && game.canMove(game.getActualPlayer().getPosition(), targetPoint, 11);
+                return game.getCell(targetPoint) != null;
         }
         return false;
     }
@@ -114,16 +114,18 @@ public class PowerUp implements Displayable, Serializable {
     private void useImpl(@NotNull Game game) {
         switch (getType()) {
             case TARGETING_SCOPE:
+                assert target != null : "No target selected";
                 if (target.getDamagesTaken().size() < 12)
                     target.getDamagesTaken().add(game.getActualPlayer().getUuid());
                 break;
             case NEWTON:
+                assert targetPoint != null && target != null : "No target or point delivery selected";
                 target.setPosition(targetPoint);
                 break;
             case TAGBACK_GRENADE:
-                game.getActualPlayer().addMark(target);
-                target.removePowerUp(this);
-                return;
+                assert game.getRealActualPlayer() != game.getActualPlayer() : "A player cannot use a Tagback Grenade in himself turn";
+                game.getRealActualPlayer().addMark(game.getActualPlayer());
+                break;
             case TELEPORTER:
                 game.getActualPlayer().setPosition(targetPoint);
                 break;

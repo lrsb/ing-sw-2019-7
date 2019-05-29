@@ -45,11 +45,13 @@ public class Deck<T extends Serializable> implements Serializable {
     }
 
     /**
-     * This method moves a card from the playable deck to the discarded one.
+     * This method moves a card from the exited deck to the discarded one.
      *
      * @return The discarded card.
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
      */
+
+    //TODO: controlla -> ma quando mai si userà sto metodo!!!
     public @NotNull T discardCard() throws EmptyDeckException {
         if (exitedCards.isEmpty()) throw new EmptyDeckException();
         var discardedCard = exitedCards.remove(0);
@@ -78,6 +80,7 @@ public class Deck<T extends Serializable> implements Serializable {
      * @return List of card removed from the deck.
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
      */
+    //TODO: quando mai si userà!!! forse quando si danno le due powerUp? una volta ciascuno all'inizio...poi basta.
     public @NotNull List<T> exitCards(int n) throws EmptyDeckException {
         if (playableCards.size() + discardedCards.size() < n) throw new InvalidParameterException();
         if (playableCards.size() < n) if (shuffleable) shuffleDeck();
@@ -95,6 +98,7 @@ public class Deck<T extends Serializable> implements Serializable {
      * @throws CardNotFoundException Thrown when specified card isn't in the group of the exited.
      */
     public void discardCard(@NotNull T exitedCard) throws CardNotFoundException {
+        assert !(exitedCard instanceof Weapon.Name) : "A weapon card cannot be thrown.";
         if (exitedCards.indexOf(exitedCard) > -1) {
             exitedCards.remove(exitedCard);
             discardedCards.add(exitedCard);
@@ -137,20 +141,11 @@ public class Deck<T extends Serializable> implements Serializable {
                     .map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toCollection(ArrayList::new));
             cards.addAll(Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values())
                     .filter(f -> !e.name().equals(f.name())).map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toList()));
-            cards.addAll(Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values())
+            cards.addAll(Stream.of(AmmoCard.Type.values()).filter(e -> !e.equals(AmmoCard.Type.POWER_UP)).map(e -> Stream.of(AmmoCard.Color.values())
                     .filter(f -> !e.name().equals(f.name())).map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toList()));
-            cards.addAll(List.of(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.RED),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.RED),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.YELLOW),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.RED),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.BLUE, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.RED),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE),
-                    new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.BLUE)));
+            for (int i = 0; i < 4; i++) cards.add(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.BLUE));
+            for (int i = 0; i < 4; i++) cards.add(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE));
+            for (int i = 0; i < 4; i++) cards.add(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE));
             return new Deck<>(cards, true);
         }
 

@@ -63,10 +63,14 @@ public abstract class Game implements Displayable, Serializable {
      */
     protected int seqPlay = 0;
 
+    private int actualIndexPlayer = 0;
+
     /**
      * The Skulls.
      */
     protected int skulls;
+
+    protected @NotNull ArrayList<UUID> killshotsTrack = new ArrayList<>();
 
     /**
      * The Last turn.
@@ -149,6 +153,23 @@ public abstract class Game implements Displayable, Serializable {
      * @return the actual player
      */
     public @NotNull Player getActualPlayer() {
+        return players.get(actualIndexPlayer);
+    }
+
+    public void setResponseIndexPlayer(@NotNull Player responsePlayer) {
+        assert players.indexOf(responsePlayer) != seqPlay % players.size() : "A player cannot responds to himself";
+        actualIndexPlayer = players.indexOf(responsePlayer);
+    }
+
+    public void setActualIndexPlayer() {
+        actualIndexPlayer = seqPlay % players.size();
+    }
+
+    public boolean isAResponse() {
+        return actualIndexPlayer != seqPlay % players.size();
+    }
+
+    public @NotNull Player getRealActualPlayer() {
         return players.get(seqPlay % players.size());
     }
 
@@ -191,6 +212,14 @@ public abstract class Game implements Displayable, Serializable {
         ArrayList<Player> deadPlayers = new ArrayList<>();
         getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() > 10).forEach(deadPlayers::add);
         return deadPlayers;
+    }
+
+    protected @NotNull ArrayList<UUID> getSortedKillshooter() {
+        ArrayList<UUID> sortedKillshooter = new ArrayList<>();
+        //todo
+        killshotsTrack.forEach(e -> { if (!sortedKillshooter.contains(e)) sortedKillshooter.add(e); });
+        return sortedKillshooter;
+
     }
 
     /**
