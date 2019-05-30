@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -57,7 +58,7 @@ public abstract class Game implements Displayable, Serializable {
     /**
      * The Lasts damaged.
      */
-    protected final @NotNull ArrayList<Player> lastsDamaged = new ArrayList<>();
+    protected final @NotNull ArrayList<UUID> lastsDamaged = new ArrayList<>();
     /**
      * The Seq play.
      */
@@ -70,7 +71,9 @@ public abstract class Game implements Displayable, Serializable {
      */
     protected int skulls;
 
-    protected @NotNull ArrayList<UUID> killshotsTrack = new ArrayList<>();
+    private @NotNull HashMap<UUID, Integer> hashKillshotsTrack = new HashMap<>();
+
+    private @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
 
     /**
      * The Last turn.
@@ -173,12 +176,16 @@ public abstract class Game implements Displayable, Serializable {
         return players.get(seqPlay % players.size());
     }
 
+    public void addToLastsDamaged(@NotNull Player player) {
+        if (!lastsDamaged.contains(player.getUuid())) lastsDamaged.add(player.getUuid());
+    }
+
     /**
      * Gets lasts damaged.
      *
      * @return the lasts damaged
      */
-    public @NotNull ArrayList<Player> getLastsDamaged() {
+    public @NotNull ArrayList<UUID> getLastsDamaged() {
         return lastsDamaged;
     }
 
@@ -187,10 +194,10 @@ public abstract class Game implements Displayable, Serializable {
      *
      * @return the tagback players
      */
-    public @NotNull ArrayList<Player> getTagbackPlayers() {
-        ArrayList<Player> tagbackPlayers = new ArrayList<>();
-        lastsDamaged.parallelStream().filter(e -> e.getPowerUps().parallelStream()
-                .anyMatch(f -> f.getType().equals(PowerUp.Type.TAGBACK_GRENADE))).forEach(tagbackPlayers::add);
+    public @NotNull ArrayList<UUID> getTagbackPlayers() {
+        ArrayList<UUID> tagbackPlayers = new ArrayList<>();
+        lastsDamaged.parallelStream().filter(e -> players.parallelStream().anyMatch(f -> f.getUuid().equals(e) &&
+                Stream.of(AmmoCard.Color.values()).anyMatch(g -> f.hasPowerUp(new PowerUp(g, PowerUp.Type.TAGBACK_GRENADE))))).forEach(tagbackPlayers::add);
         return tagbackPlayers;
     }
 
@@ -214,12 +221,25 @@ public abstract class Game implements Displayable, Serializable {
         return deadPlayers;
     }
 
-    protected @NotNull ArrayList<UUID> getSortedKillshooter() {
-        ArrayList<UUID> sortedKillshooter = new ArrayList<>();
-        //todo
-        killshotsTrack.forEach(e -> { if (!sortedKillshooter.contains(e)) sortedKillshooter.add(e); });
-        return sortedKillshooter;
+    protected void addToKillshotsTrack(UUID uuid) {
+        if (!hashKillshotsTrack.containsKey(uuid)) {
+            hashKillshotsTrack.put(uuid, 1);
+            arrayKillshotsTrack.add(uuid);
+        }
+        else hashKillshotsTrack.put(uuid, hashKillshotsTrack.get(uuid) + 1);
+    }
 
+    protected @NotNull ArrayList<UUID> getSortedKillshooters() {
+        for (int i = 0; i < arrayKillshotsTrack.size() - 1; i++) {
+            for (int j = i + 1; j < arrayKillshotsTrack.size(); j++) {
+                if (hashKillshotsTrack.get(arrayKillshotsTrack.get(i)) < hashKillshotsTrack.get(arrayKillshotsTrack.get(j))) {
+                    var tmp = arrayKillshotsTrack.get(i);
+                    arrayKillshotsTrack.set(i, arrayKillshotsTrack.get(j));
+                    arrayKillshotsTrack.set(j, tmp);
+                }
+            }
+        }
+        return arrayKillshotsTrack;
     }
 
     /**

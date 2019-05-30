@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -177,19 +178,59 @@ public class GameImpl extends Game implements Serializable {
                 .forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
                     g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
-                    if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) e.addMark(g);
-                    if (f == e.getDamagesTaken().get(10)) killshotsTrack.add(f);
+                    if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) {
+                        e.addMark(g);
+                        addToKillshotsTrack(f);
+                    }
+                    if (f == e.getDamagesTaken().get(10)) addToKillshotsTrack(f);
                 })));
         getDeadPlayers().forEach(e -> {e.incrementDeaths(); if (skulls > 0) skulls--;});
     }
 
-    private void finalPointsRedistribution() {
+    /**
+     * when the game ends distributes the lasts points to players
+     */
+    public void finalPointsRedistribution() {
         players.parallelStream().filter(e -> e.getDamagesTaken().size() > 0).forEachOrdered(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f).forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
                     g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0); })));
-        //TODO: dare i punti per la killshotsTrack
+        int points = 8;
+        for (int i = 0; i < getSortedKillshooters().size(); i++) {
+            for (Player player : players) {
+                if (player.getUuid().equals(getSortedKillshooters().get(i))) {
+                    player.addPoints(points > 1 ? points : 1);
+                    points -= 2;
+                }
+            }
+        }
+    }
 
+    /**
+     * It builds the ranking as an hashMap<String, Integer> where
+     * String is the nickname of a player and Integer is his position in the ranking
+     *
+     * @return the HashMap
+     */
+    public @NotNull HashMap<String, Integer> getRanking() {
+        var supportRanking = new HashMap<String, Integer>();
+        var ranking = new HashMap<String, Integer>();
+        players.forEach(e -> supportRanking.put(e.getNickname(), e.getPoints()));
+        ranking.put(players.get(0).getNickname(), 1);
+        for (int i = 1; i < players.size(); i++) {
+            int j;
+            for (j = 0; j < i && supportRanking.get(players.get(i).getNickname()) < supportRanking.get(players.get(j).getNickname()); j++);
+            if (j != i) {
+                final int I = i;
+                ranking.put(players.get(i).getNickname(), ranking.get(players.get(j).getNickname()));
+                if (supportRanking.get(players.get(i).getNickname()) > supportRanking.get(players.get(j).getNickname()))
+                    players.parallelStream().filter(e -> ranking.containsKey(e.getNickname()) && !e.getNickname().equals(players.get(I).getNickname()) &&
+                            supportRanking.get(e.getNickname()) <= supportRanking.get(players.get(I).getNickname())).forEach(e -> ranking.put(e.getNickname(), ranking.get(e.getNickname() + 1)));
+                else players.parallelStream().filter(e -> ranking.containsKey(e.getNickname()) && !e.getNickname().equals(players.get(I).getNickname()) &&
+                            supportRanking.get(e.getNickname()) < supportRanking.get(players.get(I).getNickname())).forEach(e -> ranking.put(e.getNickname(), ranking.get(e.getNickname() + 1)));
+            } else ranking.put(players.get(i).getNickname(), i + 1);
+        }
+        return ranking;
     }
 
     private boolean reborn(@NotNull Action action) {

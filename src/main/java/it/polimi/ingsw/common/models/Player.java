@@ -83,7 +83,11 @@ public class Player implements Serializable {
         points += pointsAdded;
     }
 
-    public boolean hasPowerUp(@NotNull PowerUp powerUp) {
+    public int getPoints() {
+        return points;
+    }
+
+    boolean hasPowerUp(@NotNull PowerUp powerUp) {
         return powerUps.contains(powerUp);
     }
 
@@ -110,7 +114,7 @@ public class Player implements Serializable {
                     marksTaken.remove(hitterUuid);
                     if (damagesTaken.size() < 12) {
                         damagesTaken.add(game.getActualPlayer().uuid);
-                        //game.addToLastsDamaged(getUuid());
+                        game.addToLastsDamaged(this);
                     }
                 }
             }
