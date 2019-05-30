@@ -230,6 +230,37 @@ public class GameImpl extends Game implements Serializable {
                             supportRanking.get(e.getNickname()) < supportRanking.get(players.get(I).getNickname())).forEach(e -> ranking.put(e.getNickname(), ranking.get(e.getNickname() + 1)));
             } else ranking.put(players.get(i).getNickname(), i + 1);
         }
+        for (int i = 1; i <= players.size(); i++) {
+            final int I = i;
+            ArrayList<Integer> tiedPlayers = new ArrayList<>();
+            players.parallelStream().filter(e -> ranking.get(e.getNickname()).equals(I)).mapToInt(players::indexOf).forEach(tiedPlayers::add);
+            for (int j = 0; j < tiedPlayers.size() - 1; j++) {
+                for (int k = j; k < tiedPlayers.size(); k++) {
+                    if (getSortedKillshooters().indexOf(players.get(tiedPlayers.get(j)).getUuid()) < getSortedKillshooters().indexOf(players.get(tiedPlayers.get(k)).getUuid())) {
+                        if (getSortedKillshooters().indexOf(players.get(tiedPlayers.get(j)).getUuid()) == -1 || getSortedKillshooters().indexOf(players.get(tiedPlayers.get(k)).getUuid()) == -1) {
+                            ranking.put(players.get(tiedPlayers.get(j)).getNickname(), ranking.get(players.get(tiedPlayers.get(j)).getNickname()) + 1);
+                            tiedPlayers.remove(j);
+                            j++;
+                        } else {
+                            ranking.put(players.get(tiedPlayers.get(k)).getNickname(), ranking.get(players.get(tiedPlayers.get(k)).getNickname()) + 1);
+                            tiedPlayers.remove(k);
+                            k--;
+                        }
+                    }
+                    else if (getSortedKillshooters().indexOf(players.get(tiedPlayers.get(j)).getUuid()) > getSortedKillshooters().indexOf(players.get(tiedPlayers.get(k)).getUuid())) {
+                        if (getSortedKillshooters().indexOf(players.get(tiedPlayers.get(j)).getUuid()) == -1 || getSortedKillshooters().indexOf(players.get(tiedPlayers.get(k)).getUuid()) == -1) {
+                            ranking.put(players.get(tiedPlayers.get(k)).getNickname(), ranking.get(players.get(tiedPlayers.get(k)).getNickname()) + 1);
+                            tiedPlayers.remove(k);
+                            k--;
+                        } else {
+                            ranking.put(players.get(tiedPlayers.get(j)).getNickname(), ranking.get(players.get(tiedPlayers.get(j)).getNickname()) + 1);
+                            tiedPlayers.remove(j);
+                            j++;
+                        }
+                    }
+                }
+            }
+        }
         return ranking;
     }
 
