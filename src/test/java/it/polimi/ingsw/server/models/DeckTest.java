@@ -23,14 +23,14 @@ class DeckTest {
                         AmmoCard.Color.values()[random.nextInt(AmmoCard.Color.values().length)])).collect(Collectors.toList());
         var deck = new Deck<>(list, true);
         for (int i = 0; i < list.size() + 1; i++) deck.discardCard(deck.exitCard());
-        deck.discardCard();
+        deck.discardCard(); //fai discardCard() su un exitedCards vuoto
         deck.exitCards(random.nextInt(list.size()));
         var deck1 = new Deck<>(list, false);
         deck1.exitCards(list.size()).forEach(deck1::discardCard);
         assertThrows(EmptyDeckException.class, deck1::exitCard);
         assertThrows(EmptyDeckException.class, deck1::discardCard);
         var deck2 = new Deck<>(list, false);
-        deck2.discardCard();
+        deck2.discardCard(); //stesso di sopra
         deck2.exitCards(random.nextInt(list.size()));
         assertThrows(InvalidParameterException.class, () -> deck2.exitCards(list.size() + 1));
     }
