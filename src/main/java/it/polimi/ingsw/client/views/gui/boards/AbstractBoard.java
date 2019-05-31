@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public abstract class AbstractBoard extends SpriteBoard implements SpriteBoardListener {
-    @Nullable GameBoardListener gameBoardListener;
+    private @Nullable GameBoardListener gameBoardListener;
     private @NotNull Game game;
 
     public AbstractBoard(@NotNull Game game, @Nullable BufferedImage background) {
@@ -41,5 +41,9 @@ public abstract class AbstractBoard extends SpriteBoard implements SpriteBoardLi
 
     public void setBoardListener(@Nullable GameBoardListener boardListener) {
         this.gameBoardListener = boardListener;
+    }
+
+    public @Nullable GameBoardListener getGameBoardListener() {
+        return gameBoardListener;
     }
 }

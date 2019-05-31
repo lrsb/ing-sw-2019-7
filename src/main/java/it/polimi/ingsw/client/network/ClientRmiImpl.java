@@ -54,6 +54,11 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
+    public void quitRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+        remote.quitRoom(token, roomUuid);
+    }
+
+    @Override
     public @NotNull Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         return remote.startGame(token, roomUuid);
     }

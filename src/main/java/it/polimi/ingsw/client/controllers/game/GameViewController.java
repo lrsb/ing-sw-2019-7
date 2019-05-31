@@ -7,6 +7,7 @@ import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.views.gui.boards.GameBoard;
 import it.polimi.ingsw.client.views.gui.boards.GameBoardListener;
 import it.polimi.ingsw.common.models.Action;
+import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.server.models.GameImpl;
@@ -32,6 +33,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
     public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
         super("Gioca", 1200, 900, navigationController);
         $$$setupUI$$$();
+        setResizable(true);
+        setEnableFullscreen(true);
         //var gameUuid = (UUID) params[0];
         setContentPane(panel);
         playersBoardButton.addActionListener(e -> {
@@ -53,13 +56,11 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 f.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
                 f.addDamage(game.getPlayers().get(new SecureRandom().nextInt(game.getPlayers().size())));
             });
-            new Thread(() -> {
-                try {
-                    gameBoard.setGame(game);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }).start();
+            try {
+                gameBoard.setGame(game);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         });
         /*exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             try {
@@ -110,6 +111,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
     private void createUIComponents() {
         var room = new Room("ciao", new User("user1"));
+        room.setGameType(Game.Type.SIX_SIX);
         Collections.nCopies(4, null).parallelStream().map(f -> new User(UUID.randomUUID().toString().substring(0, 7))).collect(Collectors.toList()).forEach(room::addUser);
         var game = GameImpl.Creator.newGame(room);
         game.getPlayers().forEach(e -> {

@@ -144,6 +144,19 @@ public class ClientRestImpl implements API {
     }
 
     @Override
+    public void quitRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+        try {
+            var request = HttpRequest.newBuilder().uri(URI.create(host + "/quitRoom?uuid=" + roomUuid)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
+            processResponse(client.send(request, HttpResponse.BodyHandlers.ofString()));
+        } catch (RemoteException e) {
+            throw e;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            throw new RemoteException("Unknown error!!");
+        }
+    }
+
+    @Override
     public @NotNull Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         try {
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/startGame?uuid=" + roomUuid)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();

@@ -33,6 +33,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     private volatile @Nullable List<Room> getRooms;
     private volatile @Nullable Room joinRoom;
     private volatile @Nullable Room createRoom;
+    private volatile boolean quitRoom;
     private volatile @Nullable Game startGame;
     private volatile @Nullable Boolean doAction;
     private volatile boolean gameUpdateRemoved;
@@ -99,7 +100,9 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
 
     @Override
     public void quitRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
-        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.JOIN_ROOM, token, roomUuid));//TODO
+        quitRoom = false;
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.QUIT_ROOM, token, roomUuid));
+        while (!quitRoom) wait1ms();
     }
 
     @Override
@@ -170,6 +173,9 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                     break;
                 case CREATE_ROOM:
                     createRoom = packet.getAssociatedObject(Room.class);
+                    break;
+                case QUIT_ROOM:
+                    quitRoom = true;
                     break;
                 case START_GAME:
                     startGame = packet.getAssociatedObject(Game.class);

@@ -19,6 +19,7 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
     private static final int FRAMERATE = 60;
     private final @Nullable AtomicBoolean needRepaint = new AtomicBoolean(true);
     private final @NotNull ArrayList<Sprite> sprites = new ArrayList<>();
+
     private @Nullable BufferedImage background;
     private @Nullable SpriteBoardListener boardListener;
     private boolean closed = false;
@@ -70,27 +71,70 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
         sprites.clear();
     }
 
+    private @NotNull Point transformPoint(@NotNull Point point) {
+        var backgroundDimension = getBackgroundDimension();
+        return backgroundDimension == null ? point :
+                new Point((int) (point.x * backgroundDimension.getWidth() / 1200 + Math.abs(getWidth() - backgroundDimension.width) / 2),
+                        (int) (point.y * backgroundDimension.getHeight() / 844 + Math.abs(getHeight() - backgroundDimension.height) / 2));
+    }
+
+    private @NotNull Dimension transformDimension(@NotNull Dimension dimension, boolean swapAxis) {
+        var backgroundDimension = getBackgroundDimension();
+        return backgroundDimension == null || background == null ? dimension :
+                new Dimension((int) (dimension.width * (swapAxis ? backgroundDimension.getHeight() / background.getHeight() : backgroundDimension.getWidth() / background.getWidth())),
+                        (int) (dimension.height * (swapAxis ? backgroundDimension.getWidth() / background.getWidth() : backgroundDimension.getHeight() / background.getHeight())));
+    }
+
+    private @Nullable Double getBackgroundFormFactor() {
+        return background == null ? null : (double) background.getWidth() / background.getHeight();
+    }
+
+    private @Nullable Dimension getBackgroundDimension() {
+        var formFactor = getBackgroundFormFactor();
+        if (formFactor == null) return null;
+        var frameFormFactor = (double) getWidth() / getHeight();
+        int height, width;
+        if (formFactor < frameFormFactor) {
+            width = (int) (formFactor * getHeight());
+            height = (int) (width / formFactor);
+        } else {
+            height = (int) (getWidth() / formFactor);
+            width = (int) (formFactor * height);
+        }
+        return new Dimension(width, height);
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         var graphics = (Graphics2D) g;
         var isRetina = Utils.isRetina();
         if (isRetina) graphics.scale(0.5, 0.5);
-        if (background != null)
-            graphics.drawImage(background, 0, 0, isRetina ? getWidth() * 2 : getWidth(), isRetina ? getHeight() * 2 : getHeight(), this);
+        var backgroundDimension = getBackgroundDimension();
+        if (backgroundDimension != null) {
+            var origin = transformPoint(new Point(0, 0));
+            graphics.drawImage(background, isRetina ? origin.x * 2 : origin.x, isRetina ? origin.y * 2 : origin.y,
+                    isRetina ? backgroundDimension.width * 2 : backgroundDimension.width,
+                    isRetina ? backgroundDimension.height * 2 : backgroundDimension.height, this);
+        }
         //noinspection unchecked
         var sprites = (ArrayList<Sprite>) this.sprites.clone();
         sprites.parallelStream().filter(e -> !e.isHidden() && e.getFade() != 0).forEachOrdered(e -> {
-            var x = isRetina ? e.getX() * 2 : e.getX();
-            var y = isRetina ? e.getY() * 2 : e.getY();
-            var width = isRetina ? e.getDimension().width * 2 : e.getDimension().width;
-            var height = isRetina ? e.getDimension().height * 2 : e.getDimension().height;
+            var point = transformPoint(e.getPosition());
+            var dimension = transformDimension(e.getDimension(),
+                    e.getRotation() == Sprite.Rotation.HALF_PI || e.getRotation() == Sprite.Rotation.THREE_HALF_PI);
+            if (isRetina) {
+                point.x *= 2;
+                point.y *= 2;
+                dimension.width *= 2;
+                dimension.height *= 2;
+            }
             var op = new AffineTransformOp(new AffineTransform(), AffineTransformOp.TYPE_BILINEAR);
             if (e.getRotation() != Sprite.Rotation.ZERO) {
                 var at = new AffineTransform();
-                at.rotate(e.getRotation().getDegrees(), x + width / 2, y + height / 2);
+                at.rotate(e.getRotation().getDegrees(), point.x + dimension.width / 2, point.y + dimension.height / 2);
                 if (e.getRotation() != Sprite.Rotation.PI) {
-                    var translation = (width - height) / 2;
+                    var translation = (dimension.width - dimension.height) / 2;
                     if (e.getRotation() == Sprite.Rotation.THREE_HALF_PI) translation *= -1;
                     at.translate(translation, translation);
                 }
@@ -98,7 +142,7 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
             }
             graphics.setTransform(op.getTransform());
             graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) e.getFade()));
-            graphics.drawImage(e.getBufferedImage(), x, y, width, height, this);
+            graphics.drawImage(e.getBufferedImage(), point.x, point.y, dimension.width, dimension.height, this);
         });
         Toolkit.getDefaultToolkit().sync();
     }
@@ -177,11 +221,14 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
         }
 
         private boolean contained(@NotNull Sprite sprite, @NotNull MouseEvent event) {
+            var spritePoint = transformPoint(sprite.getPosition());
+            var spriteDimension = transformDimension(sprite.getDimension(),
+                    sprite.getRotation() == Sprite.Rotation.HALF_PI || sprite.getRotation() == Sprite.Rotation.THREE_HALF_PI);
             if (sprite.getRotation() == Sprite.Rotation.HALF_PI || sprite.getRotation() == Sprite.Rotation.THREE_HALF_PI)
-                return sprite.getX() <= event.getX() && event.getX() <= sprite.getX() + sprite.getDimension().height &&
-                        sprite.getY() <= event.getY() && event.getY() <= sprite.getY() + sprite.getDimension().width;
-            return sprite.getX() <= event.getX() && event.getX() <= sprite.getX() + sprite.getDimension().width &&
-                    sprite.getY() <= event.getY() && event.getY() <= sprite.getY() + sprite.getDimension().height;
+                return spritePoint.x <= event.getX() && event.getX() <= spritePoint.x + spriteDimension.height &&
+                        spritePoint.y <= event.getY() && event.getY() <= spritePoint.y + spriteDimension.width;
+            return spritePoint.x <= event.getX() && event.getX() <= spritePoint.x + spriteDimension.width &&
+                    spritePoint.y <= event.getY() && event.getY() <= spritePoint.y + spriteDimension.height;
         }
     }
 }

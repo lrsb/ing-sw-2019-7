@@ -50,6 +50,11 @@ public class ServerRmiImpl extends UnicastRemoteObject implements API {
     }
 
     @Override
+    public void quitRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+        Server.controller.quitRoom(token, roomUuid);
+    }
+
+    @Override
     public @NotNull Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         return Server.controller.startGame(token, roomUuid);
     }

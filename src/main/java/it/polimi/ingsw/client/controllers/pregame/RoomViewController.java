@@ -54,7 +54,7 @@ public class RoomViewController extends BaseViewController {
             }
         });
         if (clip != null) try {
-            var audioInputStream = AudioSystem.getAudioInputStream(getClass().getResource(getClass().getSimpleName() + "/follettina.wav"));
+            var audioInputStream = AudioSystem.getAudioInputStream(Utils.getUrl(getClass(), "follettina", "wav"));
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();

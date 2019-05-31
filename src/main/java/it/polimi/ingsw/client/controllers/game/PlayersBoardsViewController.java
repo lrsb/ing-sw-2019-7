@@ -18,6 +18,7 @@ public class PlayersBoardsViewController extends BaseViewController {
 
     public PlayersBoardsViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
         super("Plance", 900, 270, navigationController);
+        setResizable(true);
         setContentPane(panel);
         ((Game) params[0]).getPlayers().forEach(e -> {
             try {

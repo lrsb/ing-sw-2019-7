@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.views.cli.base;
 
 import it.polimi.ingsw.client.controllers.pregame.RoomViewController;
+import it.polimi.ingsw.client.others.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +18,7 @@ public class CliMenuManager {
         @Nullable Clip clip = null;
         if (withFollettina) try {
             clip = AudioSystem.getClip();
-            var audioInputStream = AudioSystem.getAudioInputStream(RoomViewController.class.getResource(RoomViewController.class.getSimpleName() + "/follettina.wav"));
+            var audioInputStream = AudioSystem.getAudioInputStream(Utils.getUrl(RoomViewController.class, "follettina", "wav"));
             clip.open(audioInputStream);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();

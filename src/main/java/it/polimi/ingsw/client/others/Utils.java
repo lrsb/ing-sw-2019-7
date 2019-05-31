@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 
 public class Utils {
@@ -17,6 +18,10 @@ public class Utils {
 
     public static @NotNull BufferedImage readJpgImage(@NotNull Class aClass, @NotNull String name) throws IOException {
         return ImageIO.read(aClass.getResourceAsStream(aClass.getSimpleName() + "/" + name + ".jpg"));
+    }
+
+    public static @NotNull URL getUrl(@NotNull Class aClass, @NotNull String name, @NotNull String filetype) {
+        return aClass.getResource(aClass.getSimpleName() + "/" + name + "." + filetype);
     }
 
     public static @NotNull BufferedImage joinBufferedImage(@NotNull BufferedImage img1, @NotNull BufferedImage img2) {

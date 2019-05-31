@@ -69,6 +69,11 @@ public class ServerRestImpl extends NanoWSD {
                         return newJsonResponse(Server.controller.createRoom(token, session.getParameters().get("name").get(0),
                                 Integer.parseInt(session.getParameters().get("timeout").get(0)), Game.Type.valueOf(session.getParameters().get("gameType").get(0))));
                     break;
+                case "/quitRoom":
+                    if (method == Method.POST) {
+                        Server.controller.quitRoom(token, UUID.fromString(session.getParameters().get("uuid").get(0)));
+                        return newJsonResponse("ok");
+                    } else break;
                 case "/startGame":
                     if (method == Method.POST)
                         return newJsonResponse(Server.controller.startGame(token, UUID.fromString(session.getParameters().get("uuid").get(0))));

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.views.gui.boards;
 
+import it.polimi.ingsw.client.controllers.game.WeaponExpoViewController;
 import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.gui.sprite.Sprite;
 import it.polimi.ingsw.client.views.gui.sprite.fadeinterpolators.LinearFadeInterpolator;
@@ -14,12 +15,14 @@ import java.util.Optional;
 public class GameBoard extends AbstractBoard {
     public GameBoard(@NotNull Game game) throws IOException {
         super(game, Utils.joinBufferedImage(game.getBackImage(), game.getFrontImage()));
+        setBackground(new Color(55, 55, 55));
         setGame(game);
     }
 
     @Override
     public void setGame(@NotNull Game game) throws IOException {
         super.setGame(game);
+        setBackground(Utils.joinBufferedImage(game.getBackImage(), game.getFrontImage()));
         getSprites().parallelStream().forEach(e -> e.fade(new LinearFadeInterpolator(1, 0, 1000) {
             @Override
             public void onInterpolationCompleted() {
@@ -40,6 +43,7 @@ public class GameBoard extends AbstractBoard {
         if (sprite.getAssociatedObject() != null) {
             if (sprite.getAssociatedObject() instanceof Weapon.Name) {
                 System.out.println("clicked: " + sprite.getAssociatedObject());
+                new WeaponExpoViewController(null, sprite.getAssociatedObject()).setVisible(true);
             }
         }
         //Optional.ofNullable(gameBoardListener).ifPresent(e -> e.doAction(Action.Builder.create(getGame().getUuid()).buildMoveAction(new Point(0, 0))));
@@ -61,7 +65,7 @@ public class GameBoard extends AbstractBoard {
     }
 
     private void insertStaticSprites() throws IOException {
-        var weapon = new Sprite(1053, 227, 108, 177, Utils.readPngImage(Weapon.class, "back"));
+        var weapon = new Sprite(1053, 227, 128, 240, Utils.readPngImage(Weapon.class, "back"));
         weapon.setDraggable(true);
         weapon.setTag("p:1053,227");
         weapon.fade(new LinearFadeInterpolator(0, 1, 1000) {
@@ -85,14 +89,22 @@ public class GameBoard extends AbstractBoard {
 
     private void populateAmmoCard(@NotNull Game game) {
         var cells = game.getCells();
-        for (var i = 0; i < cells.length; i++)
-            for (var j = 0; j < cells[i].length; j++) {
-                int finalJ = j;
-                int finalI = i;
-                Optional.ofNullable(cells[i][j]).map(Cell::getAmmoCard).ifPresent(e -> {
+        for (var point = new Point(); point.y < cells.length; point.y++)
+            for (point.x = 0; point.x < cells[point.y].length; point.x++) {
+                Optional.ofNullable(cells[point.y][point.x]).map(Cell::getAmmoCard).ifPresent(e -> {
+                    var position = new Point(-100, -100);
+                    if (point.x == 0 && point.y == 0) position = new Point(267, 303);
+                    if (point.x == 0 && point.y == 1) position = new Point(457, 204);
+                    if (point.x == 0 && point.y == 3) position = new Point(934, 292);
+                    if (point.x == 1 && point.y == 1) position = new Point(439, 442);
+                    if (point.x == 1 && point.y == 2) position = new Point(674, 496);
+                    if (point.x == 1 && point.y == 3) position = new Point(844, 495);
+                    if (point.x == 2 && point.y == 0) position = new Point(268, 657);
+                    if (point.x == 2 && point.y == 1) position = new Point(446, 657);
+                    if (point.x == 2 && point.y == 2) position = new Point(687, 653);
                     try {
-                        var ammoSprite = new Sprite(250 + finalI * 220, 210 + finalJ * 190, 45, 45, e.getFrontImage());
-                        ammoSprite.setTag("p:" + (250 + finalI * 220) + "," + (210 + finalJ * 190));
+                        var ammoSprite = new Sprite(position.x, position.y, 45, 45, e.getFrontImage());
+                        ammoSprite.setTag("p:" + position.x + "," + position.y);
                         ammoSprite.setDraggable(true);
                         ammoSprite.fade(new LinearFadeInterpolator(0, 1, 1000) {
                         });
@@ -106,9 +118,9 @@ public class GameBoard extends AbstractBoard {
 
     private void populateWeapons(@NotNull Game game) throws IOException {
         for (var i = 0; i < 3; i++) {
-            var yellowWeapon = new Sprite(1042, 477 + i * 122, 108, 177, game.getWeapons(Cell.Color.YELLOW).get(i).getFrontImage());
+            var yellowWeapon = new Sprite(1042, 478 + i * 121, 104, 177, game.getWeapons(Cell.Color.YELLOW).get(i).getFrontImage());
             yellowWeapon.setRotation(Sprite.Rotation.THREE_HALF_PI);
-            yellowWeapon.setTag("p:1042" + "," + (477 + i * 122));
+            yellowWeapon.setTag("p:1042" + "," + (478 + i * 121));
             yellowWeapon.setDraggable(true);
             yellowWeapon.setAssociatedObject(game.getWeapons(Cell.Color.YELLOW).get(i));
             yellowWeapon.fade(new LinearFadeInterpolator(0, 1, 1000) {
@@ -117,9 +129,9 @@ public class GameBoard extends AbstractBoard {
         }
 
         for (var i = 0; i < 3; i++) {
-            var redWeapon = new Sprite(4, 306 + i * 122, 108, 177, game.getWeapons(Cell.Color.RED).get(i).getFrontImage());
+            var redWeapon = new Sprite(4, 306 + i * 121, 104, 177, game.getWeapons(Cell.Color.RED).get(i).getFrontImage());
             redWeapon.setRotation(Sprite.Rotation.HALF_PI);
-            redWeapon.setTag("p:4" + "," + (306 + i * 122));
+            redWeapon.setTag("p:4" + "," + (306 + i * 121));
             redWeapon.setDraggable(true);
             redWeapon.setAssociatedObject(game.getWeapons(Cell.Color.RED).get(i));
             redWeapon.fade(new LinearFadeInterpolator(0, 1, 1000) {
@@ -128,9 +140,9 @@ public class GameBoard extends AbstractBoard {
         }
 
         for (var i = 0; i < 3; i++) {
-            var blueWeapon = new Sprite(666 + i * 122, -17, 108, 177, game.getWeapons(Cell.Color.BLUE).get(i).getFrontImage());
+            var blueWeapon = new Sprite(666 + i * 124, -19, 108, 177, game.getWeapons(Cell.Color.BLUE).get(i).getFrontImage());
             blueWeapon.setRotation(Sprite.Rotation.PI);
-            blueWeapon.setTag("p:" + (666 + i * 122) + ",-17");
+            blueWeapon.setTag("p:" + (666 + i * 124) + ",-19");
             blueWeapon.setDraggable(true);
             blueWeapon.setAssociatedObject(game.getWeapons(Cell.Color.BLUE).get(i));
             blueWeapon.fade(new LinearFadeInterpolator(0, 1, 1000) {
