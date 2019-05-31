@@ -87,6 +87,21 @@ public class ServerController implements API {
     }
 
     @Override
+    public void quitRoom(@Nullable String token, @Nullable UUID roomUuid) throws RemoteException {
+        var user = SecureUserController.getUser(token);
+        if (roomUuid != null) try {
+            var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid.toString())).first()).e(Document::toJson).get(""), Room.class);
+            room.removeUser(user);
+            if (room.getUsers().isEmpty()) rooms.deleteOne(eq("uuid", roomUuid.toString()));
+            else rooms.replaceOne(eq("uuid", roomUuid.toString()), Document.parse(new Gson().toJson(room)));
+            informRoomUsers(room);
+        } catch (Exception ignored) {
+            throw new RemoteException("Something went wrong, sometimes it happens!!");
+        }
+        else throw new RemoteException("The UUID!!");
+    }
+
+    @Override
     public @NotNull Game startGame(@Nullable String token, @Nullable UUID roomUuid) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (roomUuid != null) try {

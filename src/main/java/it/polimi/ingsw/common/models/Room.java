@@ -72,6 +72,14 @@ public class Room implements Serializable {
     }
 
     /**
+     * Remove a user
+     *
+     * @param user the user that you want to remove
+     */
+    public void removeUser(@NotNull User user) {
+        users.remove(user);
+    }
+    /**
      * This room was converted into a {@link Game}?
      *
      * @return true if this room was converted into a {@link Game}.

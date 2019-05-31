@@ -29,7 +29,7 @@ public interface API extends Remote {
      *
      * @param nickname the nickname
      * @param password the password
-     * @return the string
+     * @return the token
      * @throws RemoteException the remote exception
      */
     @NotNull String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException;
@@ -75,6 +75,7 @@ public interface API extends Remote {
      */
     @NotNull Room createRoom(@NotNull String token, @NotNull String name, int timeout, @NotNull Game.Type gameType) throws RemoteException;
 
+    void quitRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
     /**
      * Start game game.
      *
@@ -132,4 +133,5 @@ public interface API extends Remote {
      * @throws RemoteException the remote exception
      */
     void removeRoomListener(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
+
 }

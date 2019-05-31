@@ -4,6 +4,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+
 public class Segue {
     private final @NotNull String menu;
     private final @Nullable Class<?> aClass;
@@ -18,21 +20,25 @@ public class Segue {
 
     @Contract(value = "_, _, _ -> new", pure = true)
     public static @NotNull Segue of(@NotNull String menu, @Nullable Class<?> aClass, @Nullable Object object) {
+        clearConsole();
         return new Segue(menu, aClass, object);
     }
 
     @Contract(value = "_, _ -> new", pure = true)
     public static @NotNull Segue of(@NotNull String menu, @Nullable Class<?> aClass) {
+        clearConsole();
         return new Segue(menu, aClass, null);
     }
 
     @Contract(value = "_, _ -> new", pure = true)
     public static @NotNull Segue of(@NotNull String menu, @Nullable Object object) {
+        clearConsole();
         return new Segue(menu, null, object);
     }
 
     @Contract(value = "_ -> new", pure = true)
     public static @NotNull Segue of(@NotNull String menu) {
+        clearConsole();
         return new Segue(menu, null, null);
     }
 
@@ -46,5 +52,14 @@ public class Segue {
 
     @Nullable Object getObject() {
         return object;
+    }
+
+    public static void clearConsole() {
+        try {
+            if (System.getProperty("os.name").contains("Windows"))
+                Runtime.getRuntime().exec("cls");
+            else Runtime.getRuntime().exec("clear");
+        } catch (IOException ignored) {
+        }
     }
 }

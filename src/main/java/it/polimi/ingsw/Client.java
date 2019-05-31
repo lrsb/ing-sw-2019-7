@@ -22,7 +22,7 @@ public class Client {
                     new NavigationController(LoginViewController.class);
                     return;
                 case "-c":
-                    CliMenuManager.startCli(StartupCli.class, true);
+                    CliMenuManager.startCli(StartupCli.class, false); // TODO da sistemare a true
                     return;
             }
         //Client.API = new ClientRestImpl("ing-sw-2019-7.herokuapp.com");

@@ -98,6 +98,11 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     }
 
     @Override
+    public void quitRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.JOIN_ROOM, token, roomUuid));//TODO
+    }
+
+    @Override
     public @NotNull Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         startGame = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.START_GAME, token, roomUuid));
