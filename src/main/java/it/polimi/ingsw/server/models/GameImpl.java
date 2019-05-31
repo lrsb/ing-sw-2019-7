@@ -161,17 +161,15 @@ public class GameImpl extends Game implements Serializable {
     }
 
     private void nextTurn() {
-        for (var cells : cells)
-            for (var cell : cells) {
+        final int beforeSkulls = skulls;
+        for (var cells : cells) for (var cell : cells) {
                 if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
                 if (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
                     addWeapon(cell.getColor(), weaponsDeck.exitCard());
-            }
-        deathPointsRedistribution();
-        if (skulls == 0 && seqPlay % (players.size() - 1) == 0) {
-            lastTurn = true;
-            players.forEach(Player::setEasyBoard);
         }
+        deathPointsRedistribution();
+        if (beforeSkulls > 0 && skulls == 0) players.forEach(Player::setEasyBoard);
+        if (skulls == 0 && seqPlay % (players.size() - 1) == 0) lastTurn = true;
         seqPlay++;
     }
 
@@ -212,6 +210,13 @@ public class GameImpl extends Game implements Serializable {
     /**
      * It builds the ranking as an hashMap<String, Integer> where
      * String is the nickname of a player and Integer is his position in the ranking
+     *
+     * Example if two players are tied:
+     * 1. firstPlayer
+     * 1. firstPlayer
+     * 3. thirdPlayer
+     * 4. fourthPlayer
+     * 5. fifthPlayer
      *
      * @return the HashMap
      */
