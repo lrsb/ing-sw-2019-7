@@ -168,7 +168,10 @@ public class GameImpl extends Game implements Serializable {
                     addWeapon(cell.getColor(), weaponsDeck.exitCard());
             }
         deathPointsRedistribution();
-        if (skulls == 0 && seqPlay % (players.size() - 1) == 0) lastTurn = true;
+        if (skulls == 0 && seqPlay % (players.size() - 1) == 0) {
+            lastTurn = true;
+            players.forEach(Player::setEasyBoard);
+        }
         seqPlay++;
     }
 
@@ -184,7 +187,7 @@ public class GameImpl extends Game implements Serializable {
                     }
                     if (f == e.getDamagesTaken().get(10)) addToKillshotsTrack(f);
                 })));
-        getDeadPlayers().forEach(e -> {e.incrementDeaths(); if (skulls > 0) skulls--;});
+        getDeadPlayers().forEach(e -> {e.manageDeath(); if (skulls > 0) skulls--;});
     }
 
     /**

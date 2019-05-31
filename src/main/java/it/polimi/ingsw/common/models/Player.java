@@ -26,6 +26,7 @@ public class Player implements Serializable {
     private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();
     private @NotNull HashMap<Weapon.Name, Boolean> weapons = new HashMap<>();
     private boolean isFirstMove = true;
+    private boolean easyBoard = false;
 
     public Player(@NotNull User user) {
         this.uuid = user.getUuid();
@@ -71,12 +72,18 @@ public class Player implements Serializable {
         return marksTaken;
     }
 
-    public int getMaximumPoints() {
-        return 2 * deaths >= 8 ? 1 : 8 - 2 * deaths;
+    public void setEasyBoard() {
+        if (getDamagesTaken().size() == 0) easyBoard = true;
     }
 
-    public void incrementDeaths() {
+    public int getMaximumPoints() {
+        if (easyBoard) return 2;
+        else return 2 * deaths >= 8 ? 1 : 8 - 2 * deaths;
+    }
+
+    public void manageDeath() {
         deaths++;
+        damagesTaken.clear();
     }
 
     public void addPoints(int pointsAdded) {
