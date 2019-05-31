@@ -4,6 +4,7 @@ import it.polimi.ingsw.Client;
 import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.views.cli.base.Segue;
 import it.polimi.ingsw.common.models.Game;
+import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
@@ -105,7 +106,7 @@ public class PregameCli {
                             return Segue.of("joinGame");
                         }
                         Client.API.joinRoom(Preferences.getOptionalToken().get(), rooms.get(number).getUuid());
-                        return Segue.of("lobby");
+                        return Segue.of("lobby", rooms.get(number));
                     } catch (NumberFormatException ex) {
                         System.out.println("Questo non è un numero!");
                         return Segue.of("joinGame");
@@ -126,9 +127,25 @@ public class PregameCli {
         return Segue.of("joinGame");
     }
 
-    public static @NotNull Segue lobby() {
-        //TODO
-        return Segue.of("lobby"); //TODO va sistemato
+    public static @NotNull Segue lobby(Room room) {
+        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
+        System.out.println("BENVENUTO NELLA LOBBY DELLA PARTITA" + room.getName());
+        System.out.println();//TODO PRINT INFO ROOM
+        System.out.println("scrivi * per abbandonare la lobby o attendi la partenza della partita");
+        var input = StartupCli.in.nextLine();
+        try {
+            if (input.equals("*")) Client.API.quitRoom(Preferences.getOptionalToken().get(), room.getUuid());
+            return Segue.of("lobby"); //TODO va sistemato
+
+        } catch (UserRemoteException e) {
+            System.out.println("Errore nell'autenticazione, ritorni al login");
+            return Segue.of("login", StartupCli.class);
+
+        } catch (RemoteException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return Segue.of("lobby");
     }
 
 }

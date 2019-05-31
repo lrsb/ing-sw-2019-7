@@ -71,7 +71,7 @@ public class StartupCli {
         }
     }
 
-    public static @NotNull Segue Signup() {
+    public static @NotNull Segue signup() {
         System.out.println("Inserisci il nickname col quale ti vuoi registrare");
         var nickname = in.nextLine();
         System.out.println("Inserisci la password con la quale ti vuoi registrare");
