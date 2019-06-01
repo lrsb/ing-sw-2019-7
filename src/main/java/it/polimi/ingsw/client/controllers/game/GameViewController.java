@@ -28,7 +28,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private JButton playersBoardButton;
     private JButton exitButton;
 
-    private @Nullable NavigationController lastViewController;
+    private @Nullable PlayersBoardsViewController playersBoardsViewController;
 
     public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
         super("Gioca", 1200, 900, navigationController);
@@ -38,11 +38,13 @@ public class GameViewController extends BaseViewController implements GameBoardL
         //var gameUuid = (UUID) params[0];
         setContentPane(panel);
         playersBoardButton.addActionListener(e -> {
-            if (lastViewController != null) lastViewController.close();
-            lastViewController = new NavigationController(PlayersBoardsViewController.class, gameBoard.getGame());
+            if (playersBoardsViewController != null) playersBoardsViewController.dispose();
+            playersBoardsViewController = new PlayersBoardsViewController(null, gameBoard.getGame());
+            playersBoardsViewController.setVisible(true);
         });
         exitButton.addActionListener(e -> {
             var room = new Room("ciao", new User("user1"));
+            room.setGameType(Game.Type.values()[new SecureRandom().nextInt(4)]);
             Collections.nCopies(4, null).parallelStream().map(f -> new User(UUID.randomUUID().toString().substring(0, 7))).collect(Collectors.toList()).forEach(room::addUser);
             var game = GameImpl.Creator.newGame(room);
             game.getPlayers().forEach(f -> {

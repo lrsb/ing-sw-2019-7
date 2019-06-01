@@ -41,10 +41,8 @@ public class GameBoard extends AbstractBoard {
     public void onSpriteClicked(@NotNull Sprite sprite) {
         //TODO
         if (sprite.getAssociatedObject() != null) {
-            if (sprite.getAssociatedObject() instanceof Weapon.Name) {
-                System.out.println("clicked: " + sprite.getAssociatedObject());
+            if (sprite.getAssociatedObject() instanceof Weapon.Name)
                 new WeaponExpoViewController(null, sprite.getAssociatedObject()).setVisible(true);
-            }
         }
         //Optional.ofNullable(gameBoardListener).ifPresent(e -> e.doAction(Action.Builder.create(getGame().getUuid()).buildMoveAction(new Point(0, 0))));
     }
@@ -65,23 +63,23 @@ public class GameBoard extends AbstractBoard {
     }
 
     private void insertStaticSprites() throws IOException {
-        var weapon = new Sprite(1053, 227, 128, 240, Utils.readPngImage(Weapon.class, "back"));
+        var weapon = new Sprite(1044, 227, 143, 237, Utils.readPngImage(Weapon.class, "back"));
         weapon.setDraggable(true);
-        weapon.setTag("p:1053,227");
+        weapon.setTag("p:1044,227");
         weapon.fade(new LinearFadeInterpolator(0, 1, 1000) {
         });
         addSprite(weapon);
 
-        var powerup = new Sprite(1081, 46, 81, 115, Utils.readPngImage(PowerUp.class, "back"));
+        var powerup = new Sprite(1076, 47, 105, 154, Utils.readPngImage(PowerUp.class, "back"));
         powerup.setDraggable(true);
-        powerup.setTag("p:1081,46");
+        powerup.setTag("p:1076,47");
         powerup.fade(new LinearFadeInterpolator(0, 1, 1000) {
         });
         addSprite(powerup);
 
-        var ammoCard = new Sprite(57, 725, 84, 84, Utils.readPngImage(AmmoCard.class, "back"));
+        var ammoCard = new Sprite(59, 738, 84, 84, Utils.readPngImage(AmmoCard.class, "back"));
         ammoCard.setDraggable(true);
-        ammoCard.setTag("p:57,725");
+        ammoCard.setTag("p:59,738");
         ammoCard.fade(new LinearFadeInterpolator(0, 1, 1000) {
         });
         addSprite(ammoCard);
@@ -93,17 +91,54 @@ public class GameBoard extends AbstractBoard {
             for (point.x = 0; point.x < cells[point.y].length; point.x++) {
                 Optional.ofNullable(cells[point.y][point.x]).map(Cell::getAmmoCard).ifPresent(e -> {
                     var position = new Point(-100, -100);
-                    if (point.x == 0 && point.y == 0) position = new Point(267, 303);
-                    if (point.x == 0 && point.y == 1) position = new Point(457, 204);
-                    if (point.x == 0 && point.y == 3) position = new Point(934, 292);
-                    if (point.x == 1 && point.y == 1) position = new Point(439, 442);
-                    if (point.x == 1 && point.y == 2) position = new Point(674, 496);
-                    if (point.x == 1 && point.y == 3) position = new Point(844, 495);
-                    if (point.x == 2 && point.y == 0) position = new Point(268, 657);
-                    if (point.x == 2 && point.y == 1) position = new Point(446, 657);
-                    if (point.x == 2 && point.y == 2) position = new Point(687, 653);
+                    if (point.x == 0 && point.y == 0) {
+                        if (game.getType().getLeft().equals(Game.Type.SIX_SIX.getLeft()))
+                            position = new Point(248, 305);
+                        if (game.getType().getLeft().equals(Game.Type.FIVE_FIVE.getLeft()))
+                            position = new Point(243, 213);
+                    }
+                    if (point.x == 0 && point.y == 1) {
+                        if (game.getType().getLeft().equals(Game.Type.SIX_SIX.getLeft()))
+                            position = new Point(425, 208);
+                        if (game.getType().getLeft().equals(Game.Type.FIVE_FIVE.getLeft()))
+                            position = new Point(426, 298);
+                    }
+                    if (point.x == 0 && point.y == 3 && game.getType().getRight().equals(Game.Type.SIX_SIX.getRight()))
+                        position = new Point(919, 295);
+                    if (point.x == 1 && point.y == 1) {
+                        if (game.getType().getLeft().equals(Game.Type.SIX_SIX.getLeft()))
+                            position = new Point(409, 445);
+                        if (game.getType().getLeft().equals(Game.Type.FIVE_FIVE.getLeft()))
+                            position = new Point(409, 439);
+                    }
+                    if (point.x == 1 && point.y == 2) {
+                        if (game.getType().getRight().equals(Game.Type.SIX_SIX.getRight()))
+                            position = new Point(641, 498);
+                        if (game.getType().getRight().equals(Game.Type.FIVE_FIVE.getRight()))
+                            position = new Point(644, 463);
+                    }
+                    if (point.x == 1 && point.y == 3) {
+                        if (game.getType().getRight().equals(Game.Type.SIX_SIX.getRight()))
+                            position = new Point(823, 498);
+                        if (game.getType().getRight().equals(Game.Type.FIVE_FIVE.getRight()))
+                            position = new Point(919, 462);
+                    }
+                    if (point.x == 2 && point.y == 0 && game.getType().getLeft().equals(Game.Type.SIX_SIX.getLeft()))
+                        position = new Point(249, 659);
+                    if (point.x == 2 && point.y == 1) {
+                        if (game.getType().getLeft().equals(Game.Type.SIX_SIX.getLeft()))
+                            position = new Point(415, 660);
+                        if (game.getType().getLeft().equals(Game.Type.FIVE_FIVE.getLeft()))
+                            position = new Point(415, 659);
+                    }
+                    if (point.x == 2 && point.y == 2) {
+                        if (game.getType().getRight().equals(Game.Type.SIX_SIX.getRight()))
+                            position = new Point(654, 655);
+                        if (game.getType().getRight().equals(Game.Type.FIVE_FIVE.getRight()))
+                            position = new Point(621, 661);
+                    }
                     try {
-                        var ammoSprite = new Sprite(position.x, position.y, 45, 45, e.getFrontImage());
+                        var ammoSprite = new Sprite(position.x, position.y, 55, 55, e.getFrontImage());
                         ammoSprite.setTag("p:" + position.x + "," + position.y);
                         ammoSprite.setDraggable(true);
                         ammoSprite.fade(new LinearFadeInterpolator(0, 1, 1000) {
@@ -118,9 +153,9 @@ public class GameBoard extends AbstractBoard {
 
     private void populateWeapons(@NotNull Game game) throws IOException {
         for (var i = 0; i < 3; i++) {
-            var yellowWeapon = new Sprite(1042, 478 + i * 121, 104, 177, game.getWeapons(Cell.Color.YELLOW).get(i).getFrontImage());
+            var yellowWeapon = new Sprite(1035, 480 + i * 121, 140, 210, game.getWeapons(Cell.Color.YELLOW).get(i).getFrontImage());
             yellowWeapon.setRotation(Sprite.Rotation.THREE_HALF_PI);
-            yellowWeapon.setTag("p:1042" + "," + (478 + i * 121));
+            yellowWeapon.setTag("p:1035" + "," + (480 + i * 121));
             yellowWeapon.setDraggable(true);
             yellowWeapon.setAssociatedObject(game.getWeapons(Cell.Color.YELLOW).get(i));
             yellowWeapon.fade(new LinearFadeInterpolator(0, 1, 1000) {
@@ -129,9 +164,9 @@ public class GameBoard extends AbstractBoard {
         }
 
         for (var i = 0; i < 3; i++) {
-            var redWeapon = new Sprite(4, 306 + i * 121, 104, 177, game.getWeapons(Cell.Color.RED).get(i).getFrontImage());
+            var redWeapon = new Sprite(1, 308 + i * 121, 140, 210, game.getWeapons(Cell.Color.RED).get(i).getFrontImage());
             redWeapon.setRotation(Sprite.Rotation.HALF_PI);
-            redWeapon.setTag("p:4" + "," + (306 + i * 121));
+            redWeapon.setTag("p:1" + "," + (308 + i * 121));
             redWeapon.setDraggable(true);
             redWeapon.setAssociatedObject(game.getWeapons(Cell.Color.RED).get(i));
             redWeapon.fade(new LinearFadeInterpolator(0, 1, 1000) {
@@ -140,9 +175,9 @@ public class GameBoard extends AbstractBoard {
         }
 
         for (var i = 0; i < 3; i++) {
-            var blueWeapon = new Sprite(666 + i * 124, -19, 108, 177, game.getWeapons(Cell.Color.BLUE).get(i).getFrontImage());
+            var blueWeapon = new Sprite(634 + i * 131, 0, 140, 210, game.getWeapons(Cell.Color.BLUE).get(i).getFrontImage());
             blueWeapon.setRotation(Sprite.Rotation.PI);
-            blueWeapon.setTag("p:" + (666 + i * 124) + ",-19");
+            blueWeapon.setTag("p:" + (634 + i * 131) + ",0");
             blueWeapon.setDraggable(true);
             blueWeapon.setAssociatedObject(game.getWeapons(Cell.Color.BLUE).get(i));
             blueWeapon.fade(new LinearFadeInterpolator(0, 1, 1000) {
@@ -153,8 +188,8 @@ public class GameBoard extends AbstractBoard {
 
     private void populateSkulls(@NotNull Game game) throws IOException {
         for (int i = 0; i < game.getSkulls(); i++) {
-            var skull = new Sprite(92 + 54 * i, 48, 50, 50, Utils.readPngImage(Game.class, "skull"));
-            skull.setTag("p:" + (92 + 54 * i) + ",48");
+            var skull = new Sprite((int) (86 + 50.5 * i), 51, 60, 60, Utils.readPngImage(Game.class, "skull"));
+            skull.setTag("p:" + (int) (86 + 50.5 * i) + ",51");
             skull.setDraggable(true);
             skull.fade(new LinearFadeInterpolator(0, 1, 1000) {
             });

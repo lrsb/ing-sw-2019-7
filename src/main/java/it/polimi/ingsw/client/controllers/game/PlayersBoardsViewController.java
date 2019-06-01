@@ -7,6 +7,7 @@ import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.views.gui.boards.PlayerBoard;
 import it.polimi.ingsw.common.models.Game;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,9 +17,8 @@ public class PlayersBoardsViewController extends BaseViewController {
     private JPanel panel;
     private JTabbedPane tabbedPane;
 
-    public PlayersBoardsViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
+    public PlayersBoardsViewController(@Nullable NavigationController navigationController, @NotNull Object... params) {
         super("Plance", 900, 270, navigationController);
-        setResizable(true);
         setContentPane(panel);
         ((Game) params[0]).getPlayers().forEach(e -> {
             try {
