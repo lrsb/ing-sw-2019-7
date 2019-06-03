@@ -37,11 +37,11 @@ public class CliMenuManager {
             var segue = (Segue) result;
             if (segue.getAClass() != null) {
                 if (segue.getObject() != null)
-                    invoke(segue.getAClass().getMethod(segue.getMenu(), Object.class), segue.getObject());
+                    invoke(segue.getAClass().getMethod(segue.getMenu(), segue.getObject().getClass()), segue.getObject());
                 else invoke(segue.getAClass().getMethod(segue.getMenu()), null);
             } else {
                 if (segue.getObject() != null)
-                    invoke(method.getDeclaringClass().getMethod(segue.getMenu(), Object.class), segue.getObject());
+                    invoke(method.getDeclaringClass().getMethod(segue.getMenu(), segue.getObject().getClass()), segue.getObject());
                 else invoke(method.getDeclaringClass().getMethod(segue.getMenu()), null);
             }
         } else throw new IllegalArgumentException("You must return a segue");

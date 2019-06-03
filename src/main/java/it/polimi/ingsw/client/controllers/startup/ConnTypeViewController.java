@@ -47,7 +47,7 @@ public class ConnTypeViewController extends BaseViewController {
             }
             else if (httpRadioButton.isSelected()) try {
                 Client.API = new ClientRestImpl(host);
-            } catch (RemoteException ex) {
+            } catch (InterruptedException | IOException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Problemi di connessione col server!!");
             }

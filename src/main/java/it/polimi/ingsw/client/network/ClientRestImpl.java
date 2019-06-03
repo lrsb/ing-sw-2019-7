@@ -38,15 +38,10 @@ public class ClientRestImpl implements API {
     private @Nullable WebSocketClient roomWebSocket;
 
     @Contract(pure = true)
-    public ClientRestImpl(@NotNull String hostname) throws RemoteException {
+    public ClientRestImpl(@NotNull String hostname) throws IOException, InterruptedException {
         this.hostname = hostname;
         this.host = (hostname.equals("localhost") ? "http" : "https") + "://" + hostname;
-        try {
-            client.send(HttpRequest.newBuilder().uri(URI.create(host)).build(), HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            throw new RemoteException();
-        }
+        client.send(HttpRequest.newBuilder().uri(URI.create(host)).build(), HttpResponse.BodyHandlers.ofString());
     }
 
     private static <T> @NotNull T processResponse(@NotNull HttpResponse<T> response) throws RemoteException {
