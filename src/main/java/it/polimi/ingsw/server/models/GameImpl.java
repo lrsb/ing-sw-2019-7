@@ -134,29 +134,31 @@ public class GameImpl extends Game implements Serializable {
     //GRAB_WEAPON STUFF - End
 
     private boolean fireAction(@NotNull Action action) {
+        boolean wasUnloaded = false;
         if (action.getWeapon() == null) return false;
         var weapon = action.getWeapon().build(this, action.getAlternativeFire());
+        if (!getActualPlayer().isALoadedGun(action.getWeapon())) wasUnloaded = true;
         if (action.getBasicTarget() != null) action.getBasicTarget().forEach(weapon::addBasicTarget);
         if (action.getBasicTargetPoint() != null) weapon.setBasicTargetsPoint(action.getBasicTargetPoint());
-        if (action.getBasicAlternativePayment() != null)
-            weapon.setBasicAlternativePayment(action.getBasicAlternativePayment());
+        if (action.getPowerUpPayment() != null) weapon.setAlternativePaymentToUse(action.getPowerUpPayment());
         if ((action.getOptions() & Weapon.FIRST) == 1) {
             if (action.getFirstAdditionalTarget() != null)
                 action.getFirstAdditionalTarget().forEach(weapon::addFirstAdditionalTarget);
             if (action.getFirstAdditionalTargetPoint() != null)
                 weapon.setFirstAdditionalTargetsPoint(action.getFirstAdditionalTargetPoint());
-            if (action.getFirstAdditionalPayment() != null)
-                weapon.setFirstAdditionalPayment(action.getFirstAdditionalPayment());
         }
         if ((action.getOptions() & Weapon.SECOND) == 2) {
             if (action.getSecondAdditionalTarget() != null)
                 action.getSecondAdditionalTarget().forEach(weapon::addSecondAdditionalTarget);
             if (action.getSecondAdditionalTargetPoint() != null)
                 weapon.setSecondAdditionalTargetsPoint(action.getSecondAdditionalTargetPoint());
-            if (action.getSecondAdditionalPayment() != null)
-                weapon.setSecondAdditionalPayment(action.getSecondAdditionalPayment());
         }
-        return weapon.fire(action.getOptions());
+        if (weapon.fire(action.getOptions())) {
+            weapon.getAlternativePaymentUsed().forEach(e -> powerUpsDeck.discardCard(e));
+            return true;
+        }
+        if (wasUnloaded) getActualPlayer().unloadWeapon(action.getWeapon());
+        return false;
     }
 
     private void nextTurn() {
@@ -317,7 +319,7 @@ public class GameImpl extends Game implements Serializable {
                 Point mockPosition = new Point(getActualPlayer().getPosition());
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 if (action.getWeapon() != null && getActualPlayer().hasWeapon(action.getWeapon()) &&
-                        getActualPlayer().isALoadedGun(action.getWeapon())) {
+                        (getActualPlayer().isALoadedGun(action.getWeapon()) || skulls == 0)) {
                     if (action.getDestination() != null && (getActualPlayer().getDamagesTaken().size() >= 6 &&
                             canMove(getActualPlayer().getPosition(), action.getDestination(), 1)) ||
                             (skulls == 0 && canMove(getActualPlayer().getPosition(), action.getDestination(), 1)) ||
@@ -343,9 +345,12 @@ public class GameImpl extends Game implements Serializable {
             case RELOAD:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 if (action.getWeapon() == null) return false;
-                return getActualPlayer().hasWeapon(action.getWeapon()) &&
+                if (getActualPlayer().hasWeapon(action.getWeapon()) &&
                         !getActualPlayer().isALoadedGun(action.getWeapon()) &&
-                        canPayWeaponAndPay(action.getWeapon(), action.getPowerUpPayment());
+                        canPayWeaponAndPay(action.getWeapon(), action.getPowerUpPayment())) {
+                    getActualPlayer().reloadWeapon(action.getWeapon());
+                    return true;
+                }
             case NEXT_TURN:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 nextTurn();

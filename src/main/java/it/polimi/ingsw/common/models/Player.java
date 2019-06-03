@@ -106,8 +106,12 @@ public class Player implements Serializable {
         return hasWeapon(weapon) && weapons.get(weapon);
     }
 
-    void unloadWeapon(@Nullable Weapon.Name weapon) {
+    public void unloadWeapon(@Nullable Weapon.Name weapon) {
         weapons.put(weapon, false);
+    }
+
+    public void reloadWeapon(@Nullable Weapon.Name weapon) {
+        weapons.put(weapon, true);
     }
 
     //gives damages, convert marks to damages and finally gives marks

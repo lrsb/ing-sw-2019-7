@@ -172,6 +172,10 @@ public abstract class Game implements Displayable, Serializable {
         throw new PlayerNotFoundException();
     }
 
+    public int getSkulls() {
+        return skulls;
+    }
+
     public void addToLastsDamaged(@NotNull Player player) {
         if (!lastsDamaged.contains(player.getUuid())) lastsDamaged.add(player.getUuid());
     }

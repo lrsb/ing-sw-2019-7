@@ -36,10 +36,6 @@ public class Action implements Serializable {
     private @Nullable ArrayList<UUID> secondAdditionalTarget;
     private @Nullable Point secondAdditionalTargetPoint;
 
-    private @Nullable ArrayList<PowerUp> basicAlternativePayment;
-    private @Nullable ArrayList<PowerUp> firstAdditionalPayment;
-    private @Nullable ArrayList<PowerUp> secondAdditionalPayment;
-
     private @Nullable UUID target;
 
     @Contract(pure = true)
@@ -110,18 +106,6 @@ public class Action implements Serializable {
 
     public @Nullable Point getSecondAdditionalTargetPoint() {
         return secondAdditionalTargetPoint;
-    }
-
-    public @Nullable ArrayList<PowerUp> getBasicAlternativePayment() {
-        return basicAlternativePayment;
-    }
-
-    public @Nullable ArrayList<PowerUp> getFirstAdditionalPayment() {
-        return firstAdditionalPayment;
-    }
-
-    public @Nullable ArrayList<PowerUp> getSecondAdditionalPayment() {
-        return secondAdditionalPayment;
     }
 
     public @Nullable UUID getTarget() {
@@ -196,23 +180,17 @@ public class Action implements Serializable {
          *
          * @param weapon indicates the weapon
          * @param destination indicates where he wants to move before shooting
-         * @param powerUpPayment indicates powerUps he wants to use to reload @param weapon, if he can do it
+         * @param powerUpPayment indicates powerUps he wants to pay costs
          * @param alternativeFire indicates if he wants to use the alternative mode of @param weapon
          * @param options indicates which @param weapon's effects he wants to use
          * @param basicTarget indicates targets of basic mode fire
          * @param basicTargetPoint indicates a point, meaning depends on @param weapon's basic mode fire
-         * @param basicAlternativePayment indicates powerUps player wants to discard to pay the cost of
-         *                                alternative fire
          * @param firstAdditionalTarget indicates targets of first additional mode fire
          * @param firstAdditionalTargetPoint indicates a point, meaning depends on @param weapon's first
          *                                   additional mode fire
-         * @param firstAdditionalPayment indicates powerUps player wants to discard to pay the cost of
-         *                               first additional fire
          * @param secondAdditionalTarget indicates targets of second additional mode fire
          * @param secondAdditionalTargetPoint indicates a point, meaning depends on @param weapon's second
          *                                    additional mode fire
-         * @param secondAdditionalPayment indicates powerUps player wants to discard to pay the cost of
-         *                                second additional fire
          * @return the action
          */
 
@@ -220,13 +198,10 @@ public class Action implements Serializable {
                                                @Nullable ArrayList<PowerUp> powerUpPayment, boolean alternativeFire,
                                                int options, @NotNull ArrayList<UUID> basicTarget,
                                                @Nullable Point basicTargetPoint,
-                                               @Nullable ArrayList<PowerUp> basicAlternativePayment,
                                                @NotNull ArrayList<UUID> firstAdditionalTarget,
                                                @Nullable Point firstAdditionalTargetPoint,
-                                               @Nullable ArrayList<PowerUp> firstAdditionalPayment,
                                                @NotNull ArrayList<UUID> secondAdditionalTarget,
-                                               @Nullable Point secondAdditionalTargetPoint,
-                                               @Nullable ArrayList<PowerUp> secondAdditionalPayment) {
+                                               @Nullable Point secondAdditionalTargetPoint) {
             var action = new Action(Type.FIRE, gameUuid);
             action.weapon = weapon;
             action.destination = destination;
@@ -235,13 +210,10 @@ public class Action implements Serializable {
             action.options = options;
             action.basicTarget = basicTarget;
             action.basicTargetPoint = basicTargetPoint;
-            action.basicAlternativePayment = basicAlternativePayment;
             action.firstAdditionalTarget = firstAdditionalTarget;
             action.firstAdditionalTargetPoint = firstAdditionalTargetPoint;
-            action.firstAdditionalPayment = firstAdditionalPayment;
             action.secondAdditionalTarget = secondAdditionalTarget;
             action.secondAdditionalTargetPoint = secondAdditionalTargetPoint;
-            action.secondAdditionalPayment = secondAdditionalPayment;
             return action;
         }
 

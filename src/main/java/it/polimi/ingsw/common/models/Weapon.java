@@ -38,9 +38,9 @@ public abstract class Weapon {
     @Nullable Point secondAdditionalTargetsPoint;
     @Nullable AmmoCard.Color secondAdditionalCost;
 
-    private @NotNull ArrayList<PowerUp> basicAlternativePayment = new ArrayList<>();
-    private @NotNull ArrayList<PowerUp> firstAdditionalPayment = new ArrayList<>();
-    private @NotNull ArrayList<PowerUp> secondAdditionalPayment = new ArrayList<>();
+    private @NotNull ArrayList<PowerUp> alternativePaymentToUse = new ArrayList<>();
+    private @NotNull ArrayList<PowerUp> alternativePaymentUsed = new ArrayList<>();
+    private @NotNull int[] usedCubes = {0, 0, 0};
 
     @Contract(pure = true)
     Weapon(@NotNull Game game, boolean alternativeFire) {
@@ -50,12 +50,7 @@ public abstract class Weapon {
 
     private boolean basicFire() {
         try {
-            int[] cost = new int[values().length];
-            Stream.of(values()).forEach(e -> cost[e.getIndex()] = (int) basicAlternativeCost.stream().filter(f -> e == f).count());
-            if (!(game.getActualPlayer().isALoadedGun(Weapon.Name.getName(getClass())) && canBasicFire()) ||
-                    !canFire(cost, alternativeFire ? basicAlternativePayment : new ArrayList<>())) return false;
-            game.getActualPlayer().unloadWeapon(Weapon.Name.getName(getClass()));
-            fire(cost, alternativeFire ? basicAlternativePayment : new ArrayList<>());
+            if (!canBasicFire()) return false;
             basicFireImpl();
             return true;
         } catch (Exception e) {
@@ -71,10 +66,7 @@ public abstract class Weapon {
 
     private boolean firstAdditionalFire() {
         try {
-            var cost = new int[values().length];
-            if (firstAdditionalCost != null) cost[firstAdditionalCost.getIndex()] = 1;
-            if (!canFirstAdditionalFire() || !canFire(cost, firstAdditionalPayment)) return false;
-            fire(cost, firstAdditionalPayment);
+            if (!canFirstAdditionalFire()) return false;
             firstAdditionalFireImpl();
             return true;
         } catch (Exception e) {
@@ -93,10 +85,7 @@ public abstract class Weapon {
 
     private boolean secondAdditionalFire() {
         try {
-            var cost = new int[values().length];
-            if (secondAdditionalCost != null) cost[secondAdditionalCost.getIndex()] = 1;
-            if (!canSecondAdditionalFire() || !canFire(cost, secondAdditionalPayment)) return false;
-            fire(cost, secondAdditionalPayment);
+            if (!canSecondAdditionalFire()) return false;
             secondAdditionalFireImpl();
             return true;
         } catch (Exception e) {
@@ -116,21 +105,38 @@ public abstract class Weapon {
     @Contract(pure = true)
     public final boolean fire(int option) {
         if (!canBasicFire()) return false;
+        if (!canPayCost(option)) return false;
         switch (option) {
             case 0:
                 if (!(getClass().equals(Weapons.RocketLauncher.class) && firstAdditionalTargetsPoint != null))
-                    return basicFire();
+                    if (basicFire()) {
+                        payCost();
+                        game.getActualPlayer().unloadWeapon(Weapon.Name.getName(getClass()));
+                        return true;
+                    }
             case 1:
-                if (canFirstAdditionalFire()) return basicFire() && firstAdditionalFire();
+                if (canFirstAdditionalFire()) if (basicFire() && firstAdditionalFire()) {
+                    payCost();
+                    game.getActualPlayer().unloadWeapon(Weapon.Name.getName(getClass()));
+                    return true;
+                }
                 break;
             case 2:
                 if (canSecondAdditionalFire() && !getClass().equals(Weapons.Thor.class) &&
                         !(getClass().equals(Weapons.RocketLauncher.class) && firstAdditionalTargetsPoint != null))
-                    return basicFire() && secondAdditionalFire();
+                    if (basicFire() && secondAdditionalFire()) {
+                        payCost();
+                        game.getActualPlayer().unloadWeapon(Weapon.Name.getName(getClass()));
+                        return true;
+                    }
                 break;
             case 3:
                 if (canFirstAdditionalFire() && canSecondAdditionalFire())
-                    return basicFire() && firstAdditionalFire() && secondAdditionalFire();
+                    if (basicFire() && firstAdditionalFire() && secondAdditionalFire()) {
+                        payCost();
+                        game.getActualPlayer().unloadWeapon(Weapon.Name.getName(getClass()));
+                        return true;
+                    }
                 break;
         }
         return false;
@@ -163,28 +169,52 @@ public abstract class Weapon {
         this.secondAdditionalTargetsPoint = secondAdditionalTargetsPoint;
     }
 
-    public void setBasicAlternativePayment(@NotNull ArrayList<PowerUp> basicAlternativePayment) {
-        this.basicAlternativePayment = basicAlternativePayment;
+    public void setAlternativePaymentToUse(@NotNull ArrayList<PowerUp> alternativePaymentToUse) {
+        this.alternativePaymentToUse = alternativePaymentToUse;
     }
 
-    public void setFirstAdditionalPayment(@NotNull ArrayList<PowerUp> firstAdditionalPayment) {
-        this.firstAdditionalPayment = firstAdditionalPayment;
-    }
-
-    public void setSecondAdditionalPayment(@NotNull ArrayList<PowerUp> secondAdditionalPayment) {
-        this.secondAdditionalPayment = secondAdditionalPayment;
+    public @NotNull ArrayList<PowerUp> getAlternativePaymentUsed() {
+        return alternativePaymentUsed;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean canFire(@NotNull int[] cost, @NotNull ArrayList<PowerUp> payment) {
-        payment.forEach(e -> cost[e.getAmmoColor().getIndex()]--);
-        return Stream.of(AmmoCard.Color.values()).map(e -> cost[e.getIndex()] <= game.getActualPlayer().getColoredCubes(e))
-                .reduce(true, (e, f) -> e && f);
+    private boolean canPayCost(int option) {
+        if (!game.getActualPlayer().isALoadedGun(Weapon.Name.getName(getClass())) && game.getSkulls() == 0) {
+            usedCubes[Weapon.Name.getName(getClass()).getColor().getIndex()]++;
+            Stream.of(AmmoCard.Color.values()).forEach(e -> usedCubes[e.getIndex()] += Weapon.Name.getName(getClass()).getGrabCost(e));
+            game.getActualPlayer().reloadWeapon(Weapon.Name.getName(getClass()));
+        }
+        switch(option) {
+            case 0:
+                if (alternativeFire) basicAlternativeCost.forEach(e -> usedCubes[e.getIndex()]++);
+                break;
+            case 1:
+                if (firstAdditionalCost != null) usedCubes[firstAdditionalCost.getIndex()]++;
+                break;
+            case 2:
+                if (secondAdditionalCost != null) usedCubes[secondAdditionalCost.getIndex()]++;
+                break;
+            case 3:
+                if (firstAdditionalCost != null) usedCubes[firstAdditionalCost.getIndex()]++;
+                if (secondAdditionalCost != null) usedCubes[secondAdditionalCost.getIndex()]++;
+                break;
+            default:
+                return false;
+        }
+        alternativePaymentToUse.forEach(e -> {
+            if(usedCubes[e.getAmmoColor().getIndex()] > 0 && game.getActualPlayer().hasPowerUp(e) &&
+                    !alternativePaymentUsed.contains(e)) {
+                alternativePaymentUsed.add(e);
+                alternativePaymentToUse.remove(e);
+                usedCubes[e.getAmmoColor().getIndex()]--;
+            }
+        });
+        return Stream.of(AmmoCard.Color.values()).allMatch(e -> game.getActualPlayer().getColoredCubes(e) >= usedCubes[e.getIndex()]);
     }
 
-    private void fire(@NotNull int[] cost, @NotNull ArrayList<PowerUp> payment) {
-        payment.forEach(e -> game.getActualPlayer().getPowerUps().remove(e));
-        Stream.of(AmmoCard.Color.values()).forEach(e -> game.getActualPlayer().removeColoredCubes(e, cost[e.getIndex()]));
+    private void payCost() {
+        alternativePaymentUsed.forEach(e -> game.getActualPlayer().removePowerUp(e));
+        Stream.of(AmmoCard.Color.values()).forEach(e -> game.getActualPlayer().removeColoredCubes(e, usedCubes[e.getIndex()]));
     }
 
     @Contract(value = "null -> false", pure = true)
