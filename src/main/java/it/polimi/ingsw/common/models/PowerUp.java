@@ -57,10 +57,20 @@ public class PowerUp implements Displayable, Serializable {
         return type;
     }
 
+    /**
+     *
+     * @param target if present, is the player who suffers the effect
+     */
+
     public void setTarget(@Nullable Player target) {
         this.target = target;
     }
 
+    /**
+     *
+     * @param targetPoint if present, defines a point which meaning changes
+     *                    according to the specific type of the powerUp
+     */
     public void setTargetPoint(@Nullable Point targetPoint) {
         this.targetPoint = targetPoint;
     }
@@ -76,10 +86,10 @@ public class PowerUp implements Displayable, Serializable {
     }
 
     /**
-     * Return true if two powerUp cards are equals.
+     * This method controls if two powerUps are the same one, talking about the game
      *
      * @param obj The object that you want to compare.
-     * @return True if the cards are equals, else otherwise.
+     * @return True if the cards are equals, false otherwise.
      */
     @Contract(value = "null -> false", pure = true)
     @Override
@@ -87,6 +97,12 @@ public class PowerUp implements Displayable, Serializable {
         return obj instanceof PowerUp && ammoColor == ((PowerUp) obj).ammoColor && type == ((PowerUp) obj).type;
     }
 
+    /**
+     * Use this method to verify if a player can use the powerUp he wants to use.
+     *
+     * @param game the game
+     * @return true if powerUp has been used successfully, false otherwise
+     */
     public boolean use(@NotNull Game game) {
         if (game.getActualPlayer().hasPowerUp(this) && canBeUsed(game)) {
             useImpl(game);

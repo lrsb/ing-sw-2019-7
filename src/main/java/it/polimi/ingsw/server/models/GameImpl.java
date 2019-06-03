@@ -314,9 +314,18 @@ public class GameImpl extends Game implements Serializable {
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 return grabAmmoCard(Opt.of(action.getDestination()).get(getActualPlayer().getPosition()));
             case FIRE:
+                Point mockPosition = new Point(getActualPlayer().getPosition());
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 if (action.getWeapon() != null && getActualPlayer().hasWeapon(action.getWeapon()) &&
-                        getActualPlayer().isALoadedGun(action.getWeapon())) return fireAction(action);
+                        getActualPlayer().isALoadedGun(action.getWeapon())) {
+                    if (action.getDestination() != null && (getActualPlayer().getDamagesTaken().size() >= 6 &&
+                            canMove(getActualPlayer().getPosition(), action.getDestination(), 1)) ||
+                            (skulls == 0 && canMove(getActualPlayer().getPosition(), action.getDestination(), 1)) ||
+                            (lastTurn && canMove(getActualPlayer().getPosition(), action.getDestination(), 2)))
+                        getActualPlayer().setPosition(action.getDestination());
+                    if (fireAction(action)) return true;
+                    else getActualPlayer().setPosition(mockPosition);
+                }
                 return false;
             case USE_POWER_UP:
                 if (action.getColor() == null || action.getPowerUpType() == null) return false;
