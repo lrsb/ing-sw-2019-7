@@ -105,8 +105,8 @@ public class PregameCli {
                             System.out.println("non esiste una partita assegnata a questo numero, ritenta!");
                             return Segue.of("joinGame");
                         }
-                        Client.API.joinRoom(Preferences.getOptionalToken().get(), rooms.get(number).getUuid());
-                        return Segue.of("lobby", rooms.get(number));
+                        var room = Client.API.joinRoom(Preferences.getOptionalToken().get(), rooms.get(number).getUuid());
+                        return Segue.of("lobby", room);
                     } catch (NumberFormatException ex) {
                         System.out.println("Questo non è un numero!");
                         return Segue.of("joinGame");
