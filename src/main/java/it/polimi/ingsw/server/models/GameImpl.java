@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.models;
 
 import it.polimi.ingsw.common.models.*;
+import it.polimi.ingsw.common.models.modelsExceptions.ActionDeniedException;
 import it.polimi.ingsw.common.models.wrappers.Opt;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -8,10 +9,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -167,15 +166,18 @@ public class GameImpl extends Game implements Serializable {
                 if (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
                     addWeapon(cell.getColor(), weaponsDeck.exitCard());
         }
+        addReborningPlayers();
         deathPointsRedistribution();
         if (beforeSkulls > 0 && skulls == 0) players.forEach(Player::setEasyBoard);
         if (skulls == 0 && seqPlay % (players.size() - 1) == 0) lastTurn = true;
-        seqPlay++;
+        if (responsivePlayers.isEmpty()) seqPlay++;
     }
 
     private void deathPointsRedistribution() {
-        getActualPlayer().addPoints(getDeadPlayers().size() > 1 ? 1 : 0);
-        getDeadPlayers().forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream().filter(g -> g.getUuid() == f)
+        ArrayList<Player> deadPlayers = new ArrayList<>();
+        players.parallelStream().filter(e -> getDeadPlayers().contains(e.getUuid())).forEach(deadPlayers::add);
+        getActualPlayer().addPoints(deadPlayers.size() > 1 ? 1 : 0);
+        deadPlayers.forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream().filter(g -> g.getUuid() == f)
                 .forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
                     g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
@@ -185,7 +187,7 @@ public class GameImpl extends Game implements Serializable {
                     }
                     if (f == e.getDamagesTaken().get(10)) addToKillshotsTrack(f);
                 })));
-        getDeadPlayers().forEach(e -> {e.manageDeath(); if (skulls > 0) skulls--;});
+        deadPlayers.forEach(e -> {e.manageDeath(); if (skulls > 0) skulls--;});
     }
 
     /**
@@ -208,66 +210,52 @@ public class GameImpl extends Game implements Serializable {
     }
 
     /**
-     * It builds the ranking as an hashMap<String, Integer> where
-     * String is the nickname of a player and Integer is his position in the ranking
+     * It builds the ranking as an ArrayList<ArrayList<UUID>>
      *
      * Example if two players are tied:
-     * 1. firstPlayer
-     * 1. firstPlayer
-     * 3. thirdPlayer
-     * 4. fourthPlayer
-     * 5. fifthPlayer
+     * 1. firstPlayer, otherFirstPlayer;
+     * 2. none;
+     * 3. thirdPlayer;
+     * 4. fourthPlayer;
+     * 5. fifthPlayer;
      *
      * @return the HashMap
      */
-    public @NotNull HashMap<String, Integer> getRanking() {
-        var supportRanking = new HashMap<String, Integer>();
-        var ranking = new HashMap<String, Integer>();
-        players.forEach(e -> supportRanking.put(e.getNickname(), e.getPoints()));
-        ranking.put(players.get(0).getNickname(), 1);
-        for (int i = 1; i < players.size(); i++) {
-            int j;
-            for (j = 0; j < i && supportRanking.get(players.get(i).getNickname()) < supportRanking.get(players.get(j).getNickname()); j++);
-            if (j != i) {
-                final int I = i;
-                ranking.put(players.get(i).getNickname(), ranking.get(players.get(j).getNickname()));
-                if (supportRanking.get(players.get(i).getNickname()) > supportRanking.get(players.get(j).getNickname()))
-                    players.parallelStream().filter(e -> ranking.containsKey(e.getNickname()) && !e.getNickname().equals(players.get(I).getNickname()) &&
-                            supportRanking.get(e.getNickname()) <= supportRanking.get(players.get(I).getNickname())).forEach(e -> ranking.put(e.getNickname(), ranking.get(e.getNickname() + 1)));
-                else players.parallelStream().filter(e -> ranking.containsKey(e.getNickname()) && !e.getNickname().equals(players.get(I).getNickname()) &&
-                            supportRanking.get(e.getNickname()) < supportRanking.get(players.get(I).getNickname())).forEach(e -> ranking.put(e.getNickname(), ranking.get(e.getNickname() + 1)));
-            } else ranking.put(players.get(i).getNickname(), i + 1);
-        }
-        for (int i = 1; i <= players.size(); i++) {
-            final int I = i;
-            ArrayList<Integer> tiedPlayers = new ArrayList<>();
-            players.parallelStream().filter(e -> ranking.get(e.getNickname()).equals(I)).mapToInt(players::indexOf).forEach(tiedPlayers::add);
-            for (int j = 0; j < tiedPlayers.size() - 1; j++) {
-                for (int k = j; k < tiedPlayers.size(); k++) {
-                    if (getSortedKillshooters().indexOf(players.get(tiedPlayers.get(j)).getUuid()) < getSortedKillshooters().indexOf(players.get(tiedPlayers.get(k)).getUuid())) {
-                        if (getSortedKillshooters().indexOf(players.get(tiedPlayers.get(j)).getUuid()) == -1 || getSortedKillshooters().indexOf(players.get(tiedPlayers.get(k)).getUuid()) == -1) {
-                            ranking.put(players.get(tiedPlayers.get(j)).getNickname(), ranking.get(players.get(tiedPlayers.get(j)).getNickname()) + 1);
-                            tiedPlayers.remove(j);
-                            j++;
-                        } else {
-                            ranking.put(players.get(tiedPlayers.get(k)).getNickname(), ranking.get(players.get(tiedPlayers.get(k)).getNickname()) + 1);
-                            tiedPlayers.remove(k);
-                            k--;
-                        }
-                    }
-                    else if (getSortedKillshooters().indexOf(players.get(tiedPlayers.get(j)).getUuid()) > getSortedKillshooters().indexOf(players.get(tiedPlayers.get(k)).getUuid())) {
-                        if (getSortedKillshooters().indexOf(players.get(tiedPlayers.get(j)).getUuid()) == -1 || getSortedKillshooters().indexOf(players.get(tiedPlayers.get(k)).getUuid()) == -1) {
-                            ranking.put(players.get(tiedPlayers.get(k)).getNickname(), ranking.get(players.get(tiedPlayers.get(k)).getNickname()) + 1);
-                            tiedPlayers.remove(k);
-                            k--;
-                        } else {
-                            ranking.put(players.get(tiedPlayers.get(j)).getNickname(), ranking.get(players.get(tiedPlayers.get(j)).getNickname()) + 1);
-                            tiedPlayers.remove(j);
-                            j++;
-                        }
-                    }
-                }
+    public @NotNull ArrayList<ArrayList<UUID>> getRanking() {
+        class PlayerPoint implements Comparable<PlayerPoint> {
+            private @NotNull UUID playerUuid;
+            private int points;
+            private int killshots;
+            private int firstKillshotPosition;
+
+            private PlayerPoint(@NotNull UUID playerUuid, int points) {
+                this.playerUuid = playerUuid;
+                this.points = points;
+                this.killshots = getPlayerKillshots(playerUuid);
+                this.firstKillshotPosition = arrayKillshotsTrack.indexOf(playerUuid);
             }
+
+            @Override
+            public int compareTo(@NotNull final PlayerPoint other) {
+                 if (this.points != other.points) return Integer.compare(other.points, this.points);
+                 else if (this.killshots != other.killshots) return  Integer.compare(other.killshots, this.killshots);
+                 else if (this.killshots != 0) return Integer.compare(this.firstKillshotPosition, other.firstKillshotPosition);
+                 else return 0;
+            }
+        }
+
+        ArrayList<ArrayList<UUID>> ranking = new ArrayList<>();
+        for (int i = 0; i < players.size(); i++) ranking.add(new ArrayList<>());
+        ArrayList<PlayerPoint> tmpRanking = new ArrayList<>();
+        players.forEach(e -> tmpRanking.add(new PlayerPoint(e.getUuid(), e.getPoints())));
+        Collections.sort(tmpRanking);
+        int pos = 0;
+        for (int from = 0; from < tmpRanking.size(); from++) {
+            int to = from + 1;
+            while (to < tmpRanking.size() && tmpRanking.get(from).points == tmpRanking.get(to).points &&
+                    tmpRanking.get(from).killshots == 0 && tmpRanking.get(to).killshots == 0) to++;
+            for (; from < to; from++) ranking.get(pos).add(tmpRanking.get(from).playerUuid);
+            pos += ranking.get(pos).size();
         }
         return ranking;
     }
@@ -285,18 +273,21 @@ public class GameImpl extends Game implements Serializable {
                         case RED:
                             if (powerUp.getAmmoColor().equals(AmmoCard.Color.RED)) {
                                 getActualPlayer().setPosition(new Point(x, y));
+                                responsivePlayers.remove(0);
                                 return true;
                             }
                             break;
                         case YELLOW:
                             if (powerUp.getAmmoColor().equals(AmmoCard.Color.YELLOW)) {
                                 getActualPlayer().setPosition(new Point(x, y));
+                                responsivePlayers.remove(0);
                                 return true;
                             }
                             break;
                         case BLUE:
                             if (powerUp.getAmmoColor().equals(AmmoCard.Color.BLUE)) {
                                 getActualPlayer().setPosition(new Point(x, y));
+                                responsivePlayers.remove(0);
                                 return true;
                             }
                             break;
@@ -311,38 +302,47 @@ public class GameImpl extends Game implements Serializable {
         if (getActualPlayer().getPosition() == null) return false;
         switch (Opt.of(action.getActionType()).get(Action.Type.NOTHING)) {
             case MOVE:
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 if (action.getDestination() == null) return false;
                 return moveTo(action.getDestination());
             case GRAB_WEAPON:
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 if (action.getWeapon() == null) return false;
                 return grabWeapon(Opt.of(action.getDestination()).get(getActualPlayer().getPosition()),
                         action.getWeapon(), action.getDiscardedWeapon(), action.getPowerUpPayment());
             case GRAB_AMMOCARD:
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 return grabAmmoCard(Opt.of(action.getDestination()).get(getActualPlayer().getPosition()));
             case FIRE:
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 if (action.getWeapon() != null && getActualPlayer().hasWeapon(action.getWeapon()) &&
                         getActualPlayer().isALoadedGun(action.getWeapon())) return fireAction(action);
                 return false;
             case USE_POWER_UP:
                 if (action.getColor() == null || action.getPowerUpType() == null) return false;
+                if (!action.getPowerUpType().equals(PowerUp.Type.TAGBACK_GRENADE) && !responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 var powerUp = new PowerUp(action.getColor(), action.getPowerUpType());
                 getPlayers().stream().filter(e -> e.getUuid().equals(action.getTarget())).forEach(powerUp::setTarget);
                 powerUp.setTargetPoint(action.getDestination());
                 if (powerUp.use(this)) {
                     getActualPlayer().removePowerUp(powerUp);
                     powerUpsDeck.discardCard(powerUp);
+                    if (powerUp.getType().equals(PowerUp.Type.TAGBACK_GRENADE)) responsivePlayers.remove(0);
                     return true;
                 }
                 return false;
             case RELOAD:
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 if (action.getWeapon() == null) return false;
                 return getActualPlayer().hasWeapon(action.getWeapon()) &&
                         !getActualPlayer().isALoadedGun(action.getWeapon()) &&
                         canPayWeaponAndPay(action.getWeapon(), action.getPowerUpPayment());
             case NEXT_TURN:
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 nextTurn();
                 return true;
             case REBORN:
+                if (!isAReborn()) throw new ActionDeniedException();
                 return reborn(action);
         }
         return false;

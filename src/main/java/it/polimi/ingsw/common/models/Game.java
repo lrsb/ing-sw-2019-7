@@ -2,6 +2,8 @@ package it.polimi.ingsw.common.models;
 
 import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.sprite.Displayable;
+import it.polimi.ingsw.common.models.modelsExceptions.PlayerNotFoundException;
+import it.polimi.ingsw.common.models.modelsExceptions.SelfResponseException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,10 +12,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,7 +64,7 @@ public abstract class Game implements Displayable, Serializable {
      */
     protected int seqPlay = 0;
 
-    private int actualIndexPlayer = 0;
+    protected @NotNull ArrayList<UUID> responsivePlayers = new ArrayList<>();
 
     /**
      * The Skulls.
@@ -73,13 +73,21 @@ public abstract class Game implements Displayable, Serializable {
 
     private @NotNull HashMap<UUID, Integer> hashKillshotsTrack = new HashMap<>();
 
-    private @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
+    protected  @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
 
     /**
      * The Last turn.
      */
 //aggiunto perchè non basta che skulls == 0
     protected boolean lastTurn = false;
+
+    public boolean isATagbackResponse() {
+        return getTagbackPlayers().contains(getActualPlayer().getUuid());
+    }
+
+    public boolean isAReborn() {
+        return !isATagbackResponse() && responsivePlayers.contains(getActualPlayer().getUuid());
+    }
 
     protected ArrayList<Weapon.Name> redWeapons;
     protected ArrayList<Weapon.Name> blueWeapons;
@@ -155,25 +163,13 @@ public abstract class Game implements Displayable, Serializable {
      *
      * @return the actual player
      */
-    public @NotNull Player getActualPlayer() {
-        return players.get(actualIndexPlayer);
-    }
-
-    public void setResponseIndexPlayer(@NotNull Player responsePlayer) {
-        assert players.indexOf(responsePlayer) != seqPlay % players.size() : "A player cannot responds to himself";
-        actualIndexPlayer = players.indexOf(responsePlayer);
-    }
-
-    public void setActualIndexPlayer() {
-        actualIndexPlayer = seqPlay % players.size();
-    }
-
-    public boolean isAResponse() {
-        return actualIndexPlayer != seqPlay % players.size();
-    }
-
-    public @NotNull Player getRealActualPlayer() {
-        return players.get(seqPlay % players.size());
+    public @NotNull Player getActualPlayer() throws SelfResponseException, PlayerNotFoundException {
+        if (responsivePlayers.isEmpty()) return players.get(seqPlay % players.size());
+        else if (responsivePlayers.contains(players.get(seqPlay % players.size()).getUuid())) throw new SelfResponseException();
+        else for (Player player : players) {
+                if (player.getUuid().equals(responsivePlayers.get(0))) return player;
+            }
+        throw new PlayerNotFoundException();
     }
 
     public void addToLastsDamaged(@NotNull Player player) {
@@ -201,6 +197,19 @@ public abstract class Game implements Displayable, Serializable {
         return tagbackPlayers;
     }
 
+    public @NotNull Player getTagbackedPlayer() {
+        if (getActualPlayer().equals(players.get(seqPlay % players.size()))) throw new SelfResponseException();
+        return players.get(seqPlay % players.size());
+    }
+
+    protected void addTagbackPlayers() {
+        responsivePlayers.addAll(getTagbackPlayers());
+    }
+
+    protected void addReborningPlayers() {
+        responsivePlayers.addAll(getDeadPlayers());
+    }
+
     /**
      * Is first move boolean.
      *
@@ -215,9 +224,9 @@ public abstract class Game implements Displayable, Serializable {
      *
      * @return the dead players
      */
-    protected ArrayList<Player> getDeadPlayers() {
-        ArrayList<Player> deadPlayers = new ArrayList<>();
-        getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() > 10).forEach(deadPlayers::add);
+    protected ArrayList<UUID> getDeadPlayers() {
+        ArrayList<UUID> deadPlayers = new ArrayList<>();
+        getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() >= 11).map(Player::getUuid).forEach(deadPlayers::add);
         return deadPlayers;
     }
 
@@ -240,6 +249,10 @@ public abstract class Game implements Displayable, Serializable {
             }
         }
         return arrayKillshotsTrack;
+    }
+
+    protected int getPlayerKillshots(@NotNull UUID uuid) {
+        return hashKillshotsTrack.get(uuid);
     }
 
     /**

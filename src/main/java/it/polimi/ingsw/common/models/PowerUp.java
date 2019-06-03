@@ -2,6 +2,7 @@ package it.polimi.ingsw.common.models;
 
 import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.sprite.Displayable;
+import it.polimi.ingsw.common.models.modelsExceptions.PlayerNotFoundException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -97,14 +98,15 @@ public class PowerUp implements Displayable, Serializable {
     private boolean canBeUsed(@NotNull Game game) {
         switch (getType()) {
             case TARGETING_SCOPE:
-                return game.getLastsDamaged().contains(target);
+                if (target == null) throw new PlayerNotFoundException();
+                return game.getLastsDamaged().contains(target.getUuid());
             case NEWTON:
                 assert target != null && targetPoint != null && target.getPosition() != null;
                 return game.getPlayers().contains(target) && !game.getActualPlayer().equals(target) &&
                         !target.getPosition().equals(targetPoint) && Stream.of(Bounds.Direction.values())
                         .anyMatch(e -> target.isPointAtMaxDistanceInDirection(targetPoint, game.getCells(), 2, e));
             case TAGBACK_GRENADE:
-                return game.getTagbackPlayers().contains(game.getActualPlayer()) && game.isAResponse();
+                return game.isATagbackResponse();
             case TELEPORTER:
                 return game.getCell(targetPoint) != null;
         }
@@ -114,7 +116,7 @@ public class PowerUp implements Displayable, Serializable {
     private void useImpl(@NotNull Game game) {
         switch (getType()) {
             case TARGETING_SCOPE:
-                assert target != null : "No target selected";
+                if (target == null) throw new PlayerNotFoundException();
                 if (target.getDamagesTaken().size() < 12)
                     target.getDamagesTaken().add(game.getActualPlayer().getUuid());
                 break;
@@ -123,8 +125,7 @@ public class PowerUp implements Displayable, Serializable {
                 target.setPosition(targetPoint);
                 break;
             case TAGBACK_GRENADE:
-                assert game.getRealActualPlayer() != game.getActualPlayer() : "A player cannot use a Tagback Grenade in himself turn";
-                game.getRealActualPlayer().addMark(game.getActualPlayer());
+                game.getTagbackedPlayer().addMark(game.getActualPlayer());
                 break;
             case TELEPORTER:
                 game.getActualPlayer().setPosition(targetPoint);
