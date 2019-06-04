@@ -3,8 +3,11 @@ package it.polimi.ingsw.client.controllers.pregame;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import it.polimi.ingsw.Client;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.controllers.game.GameViewController;
+import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.gui.sprite.Sprite;
 import it.polimi.ingsw.client.views.gui.sprite.SpriteBoard;
@@ -13,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 public class MainViewController extends BaseViewController {
     private JPanel panel;
@@ -28,8 +32,24 @@ public class MainViewController extends BaseViewController {
         setContentPane(panel);
         logo.addSprite(new Sprite(10, 40, 370, 70, Utils.readPngImage(getClass(), "logo")));
 
-        nuovaPartitaButton.addActionListener(e -> getNavigationController().presentViewController(NewRoomViewController.class));
-        elencoPartiteButton.addActionListener(e -> getNavigationController().presentViewController(RoomsListViewController.class));
+        Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
+            try {
+                var game = Client.API.getActiveGame(e);
+                if (getNavigationController() != null)
+                    getNavigationController().presentViewController(GameViewController.class, game);
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        nuovaPartitaButton.addActionListener(e -> {
+            if (getNavigationController() != null)
+                getNavigationController().presentViewController(NewRoomViewController.class);
+        });
+        elencoPartiteButton.addActionListener(e -> {
+            if (getNavigationController() != null)
+                getNavigationController().presentViewController(RoomsListViewController.class);
+        });
         cliButton.addActionListener(e -> {
             //TODO: passare a cli
         });

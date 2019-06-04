@@ -42,8 +42,9 @@ public class ServerController implements API {
     @Override
     public @NotNull Game getActiveGame(@Nullable String token) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (user == null) return null;
-        return null;
+        var game = new Gson().fromJson(Opt.of(games.find(eq("players.uuid", user.getUuid().toString())).first()).e(Document::toJson).get(""), Game.class);
+        if (game == null) throw new RemoteException("No active game!!");
+        return game;
     }
 
     @Override
@@ -145,7 +146,7 @@ public class ServerController implements API {
     @Override
     public boolean doAction(@Nullable String token, @Nullable Action action) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (action != null && action.getGameUuid() != null) try {
+        if (action != null) try {
             var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
             if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid()))) return false;
             var value = game.doAction(action);
