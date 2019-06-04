@@ -23,14 +23,14 @@ class DeckTest {
                         AmmoCard.Color.values()[random.nextInt(AmmoCard.Color.values().length)])).collect(Collectors.toList());
         var deck = new Deck<>(list, true);
         for (int i = 0; i < list.size() + 1; i++) deck.discardCard(deck.exitCard());
-        deck.discardCard(); //fai discardCard() su un exitedCards vuoto
+        deck.discardCard();
         deck.exitCards(random.nextInt(list.size()));
         var deck1 = new Deck<>(list, false);
         deck1.exitCards(list.size()).forEach(deck1::discardCard);
         assertThrows(EmptyDeckException.class, deck1::exitCard);
         assertThrows(EmptyDeckException.class, deck1::discardCard);
         var deck2 = new Deck<>(list, false);
-        deck2.discardCard(); //stesso di sopra
+        deck2.discardCard();
         deck2.exitCards(random.nextInt(list.size()));
         assertThrows(InvalidParameterException.class, () -> deck2.exitCards(list.size() + 1));
     }
@@ -38,6 +38,7 @@ class DeckTest {
     @Test
     void testAmmoDeck() {
         var ammoDeck = Deck.Creator.newAmmoDeck();
+        assertEquals(36, ammoDeck.remainedCards());
         ammoDeck.exitCards(ammoDeck.remainedCards()).parallelStream().forEach(e -> {
             assertDoesNotThrow(e::getFrontImage);
             assertDoesNotThrow(e::getBackImage);
@@ -54,6 +55,7 @@ class DeckTest {
     @Test
     void testPowerUpDeck() {
         var powerUpDeck = Deck.Creator.newPowerUpsDeck();
+        assertEquals(12, powerUpDeck.remainedCards());
         powerUpDeck.exitCards(powerUpDeck.remainedCards()).parallelStream().forEach(e -> {
             assertDoesNotThrow(e::getFrontImage);
             assertDoesNotThrow(e::getBackImage);
@@ -70,6 +72,7 @@ class DeckTest {
     @Test
     void testWeaponDeck() {
         var weaponsDeck = Deck.Creator.newWeaponsDeck();
+        assertEquals(21, weaponsDeck.remainedCards());
         weaponsDeck.exitCards(weaponsDeck.remainedCards()).parallelStream().forEach(e -> {
             assertDoesNotThrow(e::getFrontImage);
             assertDoesNotThrow(e::getBackImage);
