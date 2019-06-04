@@ -62,6 +62,14 @@ public class ServerController implements API {
         if (roomUuid != null) try {
             var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid.toString())).first()).e(Document::toJson).get(""), Room.class);
             if (!room.addUser(user)) throw new RemoteException("The room is full, go away!!");
+            if (room.getUsers().size() > 3) {
+                var timeout = 30;
+                try {
+                    timeout = Integer.parseInt(System.getenv().get("ROOM_TIMEOUT"));
+                } catch (Exception ignored) {
+                }
+                room.setStartTime(System.currentTimeMillis() + timeout * 1000);
+            } else room.setStartTime(-1);
             rooms.replaceOne(eq("uuid", roomUuid.toString()), Document.parse(new Gson().toJson(room)));
             informRoomUsers(room);
             return room;
@@ -78,6 +86,8 @@ public class ServerController implements API {
             var room = new Room(newRoom.getName(), user);
             room.setActionTimeout(newRoom.getActionTimeout());
             room.setGameType(newRoom.getGameType());
+            room.setSkulls(newRoom.getSkulls());
+            room.setStartTime(-1);
             rooms.insertOne(Document.parse(new Gson().toJson(room)));
             return room;
         } catch (Exception ignored) {

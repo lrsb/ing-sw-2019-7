@@ -37,7 +37,8 @@ public class RoomsListViewController extends BaseViewController {
         joinButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             if (table.getSelectedRow() == -1) JOptionPane.showMessageDialog(null, "Seleziona una partita");
             else try {
-                getNavigationController().presentViewController(true, RoomViewController.class,
+                if (getNavigationController() != null)
+                    getNavigationController().presentViewController(true, RoomViewController.class,
                         Client.API.joinRoom(f, rooms.get(table.getSelectedRow()).getUuid()));
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
