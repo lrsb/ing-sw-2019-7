@@ -50,10 +50,6 @@ public class Cell implements Serializable {
         return ammoCard;
     }
 
-    public void removeAmmoCard() {
-        ammoCard = null;
-    }
-
     /**
      * Set a new ammo card on a cell.
      *
@@ -61,6 +57,10 @@ public class Cell implements Serializable {
      */
     public void setAmmoCard(@Nullable AmmoCard ammoCard) {
         this.ammoCard = ammoCard;
+    }
+
+    public void removeAmmoCard() {
+        ammoCard = null;
     }
 
     /**

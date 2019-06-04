@@ -1,8 +1,9 @@
 package it.polimi.ingsw.client.views.gui.boards;
 
-import it.polimi.ingsw.common.models.Action;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface GameBoardListener {
-    void doAction(@NotNull Action action);
+    void spriteSelected(@Nullable Object data);
+
+    boolean spriteMoved(@Nullable Object data, int x, int y);
 }

@@ -59,8 +59,6 @@ public class WeaponExpoViewController extends BaseViewController {
     }
 
     private void createRotator(@NotNull Node front, @NotNull Node back) {
-        front.setVisible(false);
-        back.setVisible(true);
         var rotator1 = new RotateTransition(Duration.millis(5000), back);
         rotator1.setAxis(Rotate.Y_AXIS);
         rotator1.setFromAngle(90);
@@ -68,8 +66,6 @@ public class WeaponExpoViewController extends BaseViewController {
         rotator1.setInterpolator(Interpolator.LINEAR);
         rotator1.setCycleCount(1);
         rotator1.setOnFinished(e -> {
-            back.setVisible(false);
-            front.setVisible(true);
             var rotator2 = new RotateTransition(Duration.millis(5000), front);
             rotator2.setAxis(Rotate.Y_AXIS);
             rotator2.setFromAngle(-90);
@@ -78,8 +74,12 @@ public class WeaponExpoViewController extends BaseViewController {
             rotator2.setCycleCount(1);
             rotator2.setOnFinished(f -> createRotator(front, back));
             rotator2.play();
+            back.setVisible(false);
+            front.setVisible(true);
         });
         rotator1.play();
+        front.setVisible(false);
+        back.setVisible(true);
     }
 
     /**

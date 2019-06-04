@@ -22,14 +22,6 @@ public class Room implements Serializable {
     private Game.Type gameType = Game.Type.FIVE_SIX;
     private String startTime;
 
-    public long getStartTime() {
-        return Long.parseLong(startTime);
-    }
-
-    public void setStartTime(long startType) {
-        this.startTime = Long.toString(startType);
-    }
-
     /**
      * Create a new room.
      *
@@ -39,6 +31,14 @@ public class Room implements Serializable {
     public Room(@NotNull String name, @NotNull User creator) {
         this.name = name;
         this.users.add(creator);
+    }
+
+    public long getStartTime() {
+        return Long.parseLong(startTime);
+    }
+
+    public void setStartTime(long startType) {
+        this.startTime = Long.toString(startType);
     }
 
     /**
@@ -89,6 +89,7 @@ public class Room implements Serializable {
     public void removeUser(@NotNull User user) {
         users.remove(user);
     }
+
     /**
      * This room was converted into a {@link Game}?
      *

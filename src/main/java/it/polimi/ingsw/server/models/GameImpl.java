@@ -120,8 +120,8 @@ public class GameImpl extends Game implements Serializable {
         if (cell == null) return false;
         if (cell.isSpawnPoint() || cell.getAmmoCard() == null ||
                 !canMove(getActualPlayer().getPosition(), to, 1) && !(skulls == 0 &&
-                canMove(getActualPlayer().getPosition(), to, 2)) && !(lastTurn &&
-                canMove(getActualPlayer().getPosition(), to, 3))) return false;
+                        canMove(getActualPlayer().getPosition(), to, 2)) && !(lastTurn &&
+                        canMove(getActualPlayer().getPosition(), to, 3))) return false;
         getActualPlayer().setPosition(to);
         getActualPlayer().ammoCardRecharging(cell.getAmmoCard(),
                 cell.getAmmoCard().getType() == AmmoCard.Type.POWER_UP &&
@@ -163,11 +163,12 @@ public class GameImpl extends Game implements Serializable {
 
     private void nextTurn() {
         final int beforeSkulls = skulls;
-        for (var cells : cells) for (var cell : cells) {
+        for (var cells : cells)
+            for (var cell : cells) {
                 if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
                 if (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
                     addWeapon(cell.getColor(), weaponsDeck.exitCard());
-        }
+            }
         addReborningPlayers();
         deathPointsRedistribution();
         if (beforeSkulls > 0 && skulls == 0) players.forEach(Player::setEasyBoard);
@@ -189,7 +190,10 @@ public class GameImpl extends Game implements Serializable {
                     }
                     if (f == e.getDamagesTaken().get(10)) addToKillshotsTrack(f);
                 })));
-        deadPlayers.forEach(e -> {e.manageDeath(); if (skulls > 0) skulls--;});
+        deadPlayers.forEach(e -> {
+            e.manageDeath();
+            if (skulls > 0) skulls--;
+        });
     }
 
     /**
@@ -199,7 +203,8 @@ public class GameImpl extends Game implements Serializable {
         players.parallelStream().filter(e -> e.getDamagesTaken().size() > 0).forEachOrdered(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f).forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
-                    g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0); })));
+                    g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
+                })));
         int points = 8;
         for (int i = 0; i < getSortedKillshooters().size(); i++) {
             for (Player player : players) {
@@ -213,7 +218,7 @@ public class GameImpl extends Game implements Serializable {
 
     /**
      * It builds the ranking as an ArrayList<ArrayList<UUID>>
-     *
+     * <p>
      * Example if two players are tied:
      * 1. firstPlayer, otherFirstPlayer;
      * 2. none;
@@ -239,10 +244,11 @@ public class GameImpl extends Game implements Serializable {
 
             @Override
             public int compareTo(@NotNull final PlayerPoint other) {
-                 if (this.points != other.points) return Integer.compare(other.points, this.points);
-                 else if (this.killshots != other.killshots) return  Integer.compare(other.killshots, this.killshots);
-                 else if (this.killshots != 0) return Integer.compare(this.firstKillshotPosition, other.firstKillshotPosition);
-                 else return 0;
+                if (this.points != other.points) return Integer.compare(other.points, this.points);
+                else if (this.killshots != other.killshots) return Integer.compare(other.killshots, this.killshots);
+                else if (this.killshots != 0)
+                    return Integer.compare(this.firstKillshotPosition, other.firstKillshotPosition);
+                else return 0;
             }
         }
 
@@ -268,34 +274,35 @@ public class GameImpl extends Game implements Serializable {
         if (getActualPlayer().getPowerUps().contains(powerUp)) {
             powerUpsDeck.discardCard(powerUp);
             getActualPlayer().getPowerUps().remove(powerUp);
-            for (int x = 0; x < 4; x++) for (int y = 0; y < 3; y++) {
-                var cell = getCell(new Point(x, y));
-                if (cell != null && cell.isSpawnPoint()) {
-                    switch (cell.getColor()) {
-                        case RED:
-                            if (powerUp.getAmmoColor().equals(AmmoCard.Color.RED)) {
-                                getActualPlayer().setPosition(new Point(x, y));
-                                responsivePlayers.remove(0);
-                                return true;
-                            }
-                            break;
-                        case YELLOW:
-                            if (powerUp.getAmmoColor().equals(AmmoCard.Color.YELLOW)) {
-                                getActualPlayer().setPosition(new Point(x, y));
-                                responsivePlayers.remove(0);
-                                return true;
-                            }
-                            break;
-                        case BLUE:
-                            if (powerUp.getAmmoColor().equals(AmmoCard.Color.BLUE)) {
-                                getActualPlayer().setPosition(new Point(x, y));
-                                responsivePlayers.remove(0);
-                                return true;
-                            }
-                            break;
+            for (int x = 0; x < 4; x++)
+                for (int y = 0; y < 3; y++) {
+                    var cell = getCell(new Point(x, y));
+                    if (cell != null && cell.isSpawnPoint()) {
+                        switch (cell.getColor()) {
+                            case RED:
+                                if (powerUp.getAmmoColor().equals(AmmoCard.Color.RED)) {
+                                    getActualPlayer().setPosition(new Point(x, y));
+                                    responsivePlayers.remove(0);
+                                    return true;
+                                }
+                                break;
+                            case YELLOW:
+                                if (powerUp.getAmmoColor().equals(AmmoCard.Color.YELLOW)) {
+                                    getActualPlayer().setPosition(new Point(x, y));
+                                    responsivePlayers.remove(0);
+                                    return true;
+                                }
+                                break;
+                            case BLUE:
+                                if (powerUp.getAmmoColor().equals(AmmoCard.Color.BLUE)) {
+                                    getActualPlayer().setPosition(new Point(x, y));
+                                    responsivePlayers.remove(0);
+                                    return true;
+                                }
+                                break;
+                        }
                     }
                 }
-            }
         }
         return false;
     }
@@ -331,7 +338,8 @@ public class GameImpl extends Game implements Serializable {
                 return false;
             case USE_POWER_UP:
                 if (action.getColor() == null || action.getPowerUpType() == null) return false;
-                if (!action.getPowerUpType().equals(PowerUp.Type.TAGBACK_GRENADE) && !responsivePlayers.isEmpty()) throw new ActionDeniedException();
+                if (!action.getPowerUpType().equals(PowerUp.Type.TAGBACK_GRENADE) && !responsivePlayers.isEmpty())
+                    throw new ActionDeniedException();
                 var powerUp = new PowerUp(action.getColor(), action.getPowerUpType());
                 getPlayers().stream().filter(e -> e.getUuid().equals(action.getTarget())).forEach(powerUp::setTarget);
                 powerUp.setTargetPoint(action.getDestination());

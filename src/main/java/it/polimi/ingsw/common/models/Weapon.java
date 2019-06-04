@@ -184,7 +184,7 @@ public abstract class Weapon {
             Stream.of(AmmoCard.Color.values()).forEach(e -> usedCubes[e.getIndex()] += Weapon.Name.getName(getClass()).getGrabCost(e));
             game.getActualPlayer().reloadWeapon(Weapon.Name.getName(getClass()));
         }
-        switch(option) {
+        switch (option) {
             case 0:
                 if (alternativeFire) basicAlternativeCost.forEach(e -> usedCubes[e.getIndex()]++);
                 break;
@@ -202,7 +202,7 @@ public abstract class Weapon {
                 return false;
         }
         alternativePaymentToUse.forEach(e -> {
-            if(usedCubes[e.getAmmoColor().getIndex()] > 0 && game.getActualPlayer().hasPowerUp(e) &&
+            if (usedCubes[e.getAmmoColor().getIndex()] > 0 && game.getActualPlayer().hasPowerUp(e) &&
                     !alternativePaymentUsed.contains(e)) {
                 alternativePaymentUsed.add(e);
                 alternativePaymentToUse.remove(e);
@@ -728,8 +728,8 @@ public abstract class Weapon {
                         var firstY = Opt.of(basicTargets.get(0).getPosition()).e(Point::getY).get(-1.0);
                         var secondX = Opt.of(basicTargets.get(1).getPosition()).e(Point::getX).get(-1.0);
                         var secondY = Opt.of(basicTargets.get(1).getPosition()).e(Point::getY).get(-1.0);
-                        return (actualX == firstX && actualX == secondX && (actualY-firstY)*(actualY-secondY) >= 0 ||
-                                actualY == firstY && actualY == secondY && (actualX-firstX)*(actualX-secondX) >= 0);
+                        return (actualX == firstX && actualX == secondX && (actualY - firstY) * (actualY - secondY) >= 0 ||
+                                actualY == firstY && actualY == secondY && (actualX - firstX) * (actualX - secondX) >= 0);
                 }
                 return false;
             }
@@ -756,7 +756,7 @@ public abstract class Weapon {
                     mockPlayer.setPosition(basicTargetsPoint);
                 return basicTargets.size() == 1 && Opt.of(mockPlayer.getPosition()).e(e ->
                         e.equals(basicTargets.get(0).getPosition())).get(false) && (basicTargetsPoint == null ||
-                                game.canMove(game.getActualPlayer().getPosition(), basicTargetsPoint, 1));
+                        game.canMove(game.getActualPlayer().getPosition(), basicTargetsPoint, 1));
             }
 
             @Override
@@ -910,7 +910,7 @@ public abstract class Weapon {
                 } else {
                     game.getPlayers().parallelStream().filter(e ->
                             Opt.of(game.getActualPlayer().getPosition()).e(f -> !f.equals(e.getPosition())).get(false) &&
-                            game.canMove(game.getActualPlayer().getPosition(), e.getPosition(), 1))
+                                    game.canMove(game.getActualPlayer().getPosition(), e.getPosition(), 1))
                             .forEach(e -> e.takeHits(game, 1, 0));
                 }
             }

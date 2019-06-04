@@ -58,7 +58,6 @@ public class PowerUp implements Displayable, Serializable {
     }
 
     /**
-     *
      * @param target if present, is the player who suffers the effect
      */
 
@@ -67,7 +66,6 @@ public class PowerUp implements Displayable, Serializable {
     }
 
     /**
-     *
      * @param targetPoint if present, defines a point which meaning changes
      *                    according to the specific type of the powerUp
      */

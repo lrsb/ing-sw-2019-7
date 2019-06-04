@@ -74,14 +74,6 @@ public class Game implements Displayable, Serializable {
     protected @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
 
     protected boolean isCompleted = false;
-
-    public boolean isCompleted() {
-        return isCompleted;
-    }
-
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
-    }
     /**
      * The Last turn.
      */
@@ -104,6 +96,14 @@ public class Game implements Displayable, Serializable {
         this.cells = cells;
         this.players.addAll(players);
         this.skulls = skulls;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
     }
 
     public boolean isATagbackResponse() {

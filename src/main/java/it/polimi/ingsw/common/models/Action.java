@@ -144,11 +144,11 @@ public class Action implements Serializable {
         /**
          * Call this method to construct an Action in order to grab a weapon
          *
-         * @param destination if present, defines a position where player want to grab the weapon,
-         *                    if not present he has to be on a spawnpoint
-         * @param weapon the weapon he wants to grab
-         * @param discardedWeapon if the player has already 3 weapons this indicates the weapon
-         *                        he wants to drop in order to grab @param weapon
+         * @param destination        if present, defines a position where player want to grab the weapon,
+         *                           if not present he has to be on a spawnpoint
+         * @param weapon             the weapon he wants to grab
+         * @param discardedWeapon    if the player has already 3 weapons this indicates the weapon
+         *                           he wants to drop in order to grab @param weapon
          * @param alternativePayment powerUps that player wants to discard in order to pay
          *                           the cost to grab the @param weapon
          * @return the Action to grab a weapon
@@ -178,17 +178,17 @@ public class Action implements Serializable {
         /**
          * Call this method to construct an Action in order to fire an enemy
          *
-         * @param weapon indicates the weapon
-         * @param destination indicates where he wants to move before shooting
-         * @param powerUpPayment indicates powerUps he wants to pay costs
-         * @param alternativeFire indicates if he wants to use the alternative mode of @param weapon
-         * @param options indicates which @param weapon's effects he wants to use
-         * @param basicTarget indicates targets of basic mode fire
-         * @param basicTargetPoint indicates a point, meaning depends on @param weapon's basic mode fire
-         * @param firstAdditionalTarget indicates targets of first additional mode fire
-         * @param firstAdditionalTargetPoint indicates a point, meaning depends on @param weapon's first
-         *                                   additional mode fire
-         * @param secondAdditionalTarget indicates targets of second additional mode fire
+         * @param weapon                      indicates the weapon
+         * @param destination                 indicates where he wants to move before shooting
+         * @param powerUpPayment              indicates powerUps he wants to pay costs
+         * @param alternativeFire             indicates if he wants to use the alternative mode of @param weapon
+         * @param options                     indicates which @param weapon's effects he wants to use
+         * @param basicTarget                 indicates targets of basic mode fire
+         * @param basicTargetPoint            indicates a point, meaning depends on @param weapon's basic mode fire
+         * @param firstAdditionalTarget       indicates targets of first additional mode fire
+         * @param firstAdditionalTargetPoint  indicates a point, meaning depends on @param weapon's first
+         *                                    additional mode fire
+         * @param secondAdditionalTarget      indicates targets of second additional mode fire
          * @param secondAdditionalTargetPoint indicates a point, meaning depends on @param weapon's second
          *                                    additional mode fire
          * @return the action

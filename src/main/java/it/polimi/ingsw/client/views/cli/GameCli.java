@@ -133,4 +133,4 @@ public class GameCli {
         //TODO proseguire
         cell.getAmmoCard().getType()
         return cellCli;
-}
+    }

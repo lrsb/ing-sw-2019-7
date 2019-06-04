@@ -42,6 +42,15 @@ public class Segue {
         return new Segue(menu, null, null);
     }
 
+    public static void clearConsole() {
+        try {
+            if (System.getProperty("os.name").contains("Windows"))
+                Runtime.getRuntime().exec("cls");
+            else Runtime.getRuntime().exec("clear");
+        } catch (IOException ignored) {
+        }
+    }
+
     @NotNull String getMenu() {
         return menu;
     }
@@ -52,14 +61,5 @@ public class Segue {
 
     @Nullable Object getObject() {
         return object;
-    }
-
-    public static void clearConsole() {
-        try {
-            if (System.getProperty("os.name").contains("Windows"))
-                Runtime.getRuntime().exec("cls");
-            else Runtime.getRuntime().exec("clear");
-        } catch (IOException ignored) {
-        }
     }
 }

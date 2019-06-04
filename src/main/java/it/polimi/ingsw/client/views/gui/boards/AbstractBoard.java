@@ -16,7 +16,7 @@ public abstract class AbstractBoard extends SpriteBoard implements SpriteBoardLi
     private @Nullable GameBoardListener gameBoardListener;
     private @NotNull Game game;
 
-    public AbstractBoard(@NotNull Game game, @Nullable BufferedImage background) {
+    protected AbstractBoard(@NotNull Game game, @Nullable BufferedImage background) {
         super(background);
         this.game = game;
         setBoardListener(this);

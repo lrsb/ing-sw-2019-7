@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.views.gui.boards;
 
-import it.polimi.ingsw.client.controllers.game.WeaponExpoViewController;
 import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.gui.sprite.Sprite;
 import it.polimi.ingsw.client.views.gui.sprite.fadeinterpolators.LinearFadeInterpolator;
@@ -15,7 +14,6 @@ import java.util.Optional;
 public class GameBoard extends AbstractBoard {
     public GameBoard(@NotNull Game game) throws IOException {
         super(game, Utils.joinBufferedImage(game.getBackImage(), game.getFrontImage()));
-        setBackground(new Color(55, 55, 55));
         setGame(game);
     }
 
@@ -34,32 +32,33 @@ public class GameBoard extends AbstractBoard {
         populateAmmoCard(game);
         populateWeapons(game);
         populateSkulls(game);
-        //TODO
+
+        var weapon = new Sprite(50, 50, 80, 80, Utils.readPngImage(Weapon.class, "back"));
+        weapon.setDraggable(true);
+        addSprite(weapon);
+        //TODO: giocatori
     }
 
     @Override
     public void onSpriteClicked(@NotNull Sprite sprite) {
-        //TODO
-        if (sprite.getAssociatedObject() != null) {
-            if (sprite.getAssociatedObject() instanceof Weapon.Name)
-                new WeaponExpoViewController(null, sprite.getAssociatedObject()).setVisible(true);
-        }
+        if (getGameBoardListener() != null) getGameBoardListener().spriteSelected(sprite.getAssociatedObject());
+
         //Optional.ofNullable(gameBoardListener).ifPresent(e -> e.doAction(Action.Builder.create(getGame().getUuid()).buildMoveAction(new Point(0, 0))));
     }
 
     @Override
     public void onSpriteDragged(@NotNull Sprite sprite) {
-        super.onSpriteDragged(sprite);
-        if ((sprite.getTag() == null || !sprite.getTag().startsWith("p")) &&
-                sprite.getX() > 205 && sprite.getX() + sprite.getDimension().getWidth() / 2 < 994 &&
-                sprite.getY() > 175 && sprite.getY() + sprite.getDimension().getHeight() / 2 < 744)
-            spriteMovedTo(sprite, new Point((int) ((sprite.getX() + sprite.getDimension().getWidth() / 2 - 205) / 220),
-                    (int) ((sprite.getY() + sprite.getDimension().getWidth() / 2 - 175) / 190)));
-    }
-
-    private void spriteMovedTo(@NotNull Sprite sprite, @NotNull Point point) {
-        sprite.moveTo(new LinearPointInterpolator(sprite.getPosition(), new Point((int) (250 + point.getX() * 220), (int) (210 + point.getY() * 190)), 250) {
-        });
+        if (sprite.getX() > 205 && sprite.getX() + sprite.getDimension().getWidth() / 2 < 994 &&
+                sprite.getY() > 175 && sprite.getY() + sprite.getDimension().getHeight() / 2 < 744) {
+            if (getGameBoardListener() != null) {
+                var x = (int) ((sprite.getX() + sprite.getDimension().getWidth() / 2 - 205) / 220);
+                var y = (int) ((sprite.getY() + sprite.getDimension().getWidth() / 2 - 175) / 190);
+                if (getGameBoardListener().spriteMoved(sprite.getAssociatedObject(), x, y))
+                    sprite.moveTo(new LinearPointInterpolator(sprite.getPosition(), new Point(250 + x * 220, 210 + y * 190), 250) {
+                    });
+                else super.onSpriteDragged(sprite);
+            } else super.onSpriteDragged(sprite);
+        } else super.onSpriteDragged(sprite);
     }
 
     private void insertStaticSprites() throws IOException {

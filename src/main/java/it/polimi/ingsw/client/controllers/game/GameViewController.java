@@ -9,8 +9,8 @@ import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.gui.boards.GameBoard;
 import it.polimi.ingsw.client.views.gui.boards.GameBoardListener;
-import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
+import it.polimi.ingsw.common.models.Weapon;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,12 +19,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Objects;
+import java.util.UUID;
 
 public class GameViewController extends BaseViewController implements GameBoardListener {
+    private static final @NotNull Color BACKGROUND_COLOR = Objects.requireNonNull(Utils.hexToColor("3B3B40"));
+    private static final @NotNull Color PURPLE_ACCENT = Objects.requireNonNull(Utils.hexToColor("98155E"));
+    private static final @NotNull Color WHITE_ACCENT = Objects.requireNonNull(Utils.hexToColor("F9F7FB"));
+    private static final @NotNull Color YELLOW_ACCENT = Objects.requireNonNull(Utils.hexToColor("F1E380"));
+    private static final @NotNull Color RED_ACCENT = Objects.requireNonNull(Utils.hexToColor("BD151A"));
+
     private JPanel panel;
     private GameBoard gameBoard;
     private JButton playersBoardButton;
     private JButton exitButton;
+    private JPanel buttonPanel;
 
     private Game game;
 
@@ -37,6 +46,15 @@ public class GameViewController extends BaseViewController implements GameBoardL
         setContentPane(panel);
         setResizable(true);
         setEnableFullscreen(true);
+
+        panel.setBackground(BACKGROUND_COLOR);
+        gameBoard.setBackground(BACKGROUND_COLOR);
+        buttonPanel.setBackground(BACKGROUND_COLOR);
+        playersBoardButton.setBackground(BACKGROUND_COLOR);
+        playersBoardButton.setForeground(BACKGROUND_COLOR);
+        exitButton.setBackground(BACKGROUND_COLOR);
+        exitButton.setForeground(BACKGROUND_COLOR);
+
         playersBoardButton.addActionListener(e -> {
             if (playersBoardsViewController != null) playersBoardsViewController.dispose();
             playersBoardsViewController = new PlayersBoardsViewController(null, gameBoard.getGame());
@@ -76,7 +94,18 @@ public class GameViewController extends BaseViewController implements GameBoardL
     }
 
     @Override
-    public void doAction(@NotNull Action action) {
+    public void spriteSelected(@Nullable Object data) {
+        if (data instanceof Weapon.Name) new WeaponExpoViewController(null, data).setVisible(true);
+    }
+
+    @Override
+    public boolean spriteMoved(@Nullable Object data, int x, int y) {
+        if (data == null) return false;
+        if (data instanceof UUID) {
+            //TODO: movimento giocatore;
+        }
+        return false;
+        /*
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
                 Client.API.doAction(e, action);
@@ -88,6 +117,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
+         */
     }
 
     private void createUIComponents() {
@@ -111,15 +141,15 @@ public class GameViewController extends BaseViewController implements GameBoardL
         panel = new JPanel();
         panel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(gameBoard, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel.add(buttonPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 40), new Dimension(-1, 40), new Dimension(-1, 40), 0, false));
         playersBoardButton = new JButton();
         playersBoardButton.setText("Visualizza plance");
-        panel1.add(playersBoardButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPanel.add(playersBoardButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         exitButton = new JButton();
         exitButton.setText("Esci");
-        panel1.add(exitButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPanel.add(exitButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
