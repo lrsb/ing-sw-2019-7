@@ -20,6 +20,15 @@ public class Room implements Serializable {
     private int actionTimeout = 30;
     private int skulls;
     private Game.Type gameType = Game.Type.FIVE_SIX;
+    private long startTime; // ora di avvio, se -1 non ho abbastanza giocatori per iniziare la partita
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startType) {
+        this.startTime = startType;
+    }
 
     /**
      * Create a new room.

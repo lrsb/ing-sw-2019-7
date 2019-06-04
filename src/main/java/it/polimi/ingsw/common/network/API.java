@@ -68,12 +68,10 @@ public interface API extends Remote {
      *
      * @param token    the token
      * @param name     the name
-     * @param timeout  the timeout
-     * @param gameType the game type
      * @return the room
      * @throws RemoteException the remote exception
      */
-    @NotNull Room createRoom(@NotNull String token, @NotNull String name, int timeout, @NotNull Game.Type gameType) throws RemoteException;
+    @NotNull Room createRoom(@NotNull String token, @NotNull Room room) throws RemoteException;
 
     void quitRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
     /**

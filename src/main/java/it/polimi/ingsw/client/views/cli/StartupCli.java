@@ -23,9 +23,13 @@ public class StartupCli {
         System.out.println("1: SOCKET");
         System.out.println("2: RMI");
         System.out.println("3: HTTP");
-        var input = Integer.parseInt(in.nextLine());
-        if (input > 3) {
-            System.out.println("Scelta non valida dio bastone!");
+        var input = 0;
+        try {
+            input = Integer.parseInt(in.nextLine());
+        } catch (NumberFormatException e) {
+        }
+        if (input > 3 || input < 1) {
+            System.out.println("Scelta non valida dio bastone!"); //TODO rimuovere bestemmia
             return Segue.of("connType");
         }
         System.out.println("Done! Qual è il nome del tuo hostname?");

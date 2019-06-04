@@ -10,6 +10,7 @@ import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
+import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +48,7 @@ public class NewRoomViewController extends BaseViewController {
                 } else if (sixfive.isSelected()) {
                     gameType = Game.Type.SIX_FIVE;
                 }
-                room = Client.API.createRoom(f, roomNameField.getText(), (int) timeoutSpinner.getValue(), gameType);
+                room = Client.API.createRoom(f, new Room(roomNameField.getText(), new User("pippo")));
                 getNavigationController().presentViewController(true, RoomViewController.class, room);
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();

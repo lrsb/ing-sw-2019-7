@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.network;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
@@ -89,11 +88,9 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     }
 
     @Override
-    public @NotNull Room createRoom(@NotNull String token, @NotNull String name, int timeout, @NotNull Game.Type gameType) throws RemoteException {
+    public @NotNull Room createRoom(@NotNull String token, @NotNull Room room) throws RemoteException {
         createRoom = null;
-        var gson = new Gson();
-        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_ROOM, token,
-                Arrays.asList(gson.toJson(name), gson.toJson(timeout), gson.toJson(gameType))));
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_ROOM, token, room));
         while (createRoom == null) wait1ms();
         return createRoom;
     }

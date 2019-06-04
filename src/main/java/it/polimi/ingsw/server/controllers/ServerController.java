@@ -72,12 +72,12 @@ public class ServerController implements API {
     }
 
     @Override
-    public @NotNull Room createRoom(@Nullable String token, @Nullable String name, int timeout, @Nullable Game.Type gameType) throws RemoteException {
+    public @NotNull Room createRoom(@Nullable String token, @Nullable Room newRoom) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (name != null && gameType != null) try {
-            var room = new Room(name, user);
-            room.setActionTimeout(timeout);
-            room.setGameType(gameType);
+        if (newRoom != null) try {
+            var room = new Room(newRoom.getName(), user);
+            room.setActionTimeout(newRoom.getActionTimeout());
+            room.setGameType(newRoom.getGameType());
             rooms.insertOne(Document.parse(new Gson().toJson(room)));
             return room;
         } catch (Exception ignored) {

@@ -1,10 +1,9 @@
 package it.polimi.ingsw.server.network;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Action;
-import it.polimi.ingsw.common.models.Game;
+import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import it.polimi.ingsw.common.network.socket.AdrenalinePacket;
 import it.polimi.ingsw.common.network.socket.AdrenalineSocket;
@@ -12,7 +11,6 @@ import it.polimi.ingsw.common.network.socket.AdrenalineSocketListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -49,9 +47,7 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.JOIN_ROOM, null, Server.controller.joinRoom(token, packet.getAssociatedObject(UUID.class))));
                     break;
                 case CREATE_ROOM:
-                    var object = new Gson().fromJson(packet.getAssociatedObject(String.class), ArrayList.class);
-                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_ROOM, null, Server.controller.createRoom(token,
-                            (String) object.get(0), (int) object.get(1), (Game.Type) object.get(2))));
+                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_ROOM, null, Server.controller.createRoom(token, packet.getAssociatedObject(Room.class))));
                     break;
                 case QUIT_ROOM:
                     Server.controller.quitRoom(token, packet.getAssociatedObject(UUID.class));

@@ -35,7 +35,7 @@ class NetworkTest {
         assertDoesNotThrow(() -> client.getActiveGame(""));
         assertEquals(client.getRooms("").get(0).getName(), "ok");
         assertEquals(client.joinRoom("", TEST_UUID).getName(), "ok");
-        assertEquals(client.createRoom("", "", 30, Game.Type.FIVE_SIX).getName(), "ok");
+        assertEquals(client.createRoom("", new Room("", new User(""))).getName(), "ok");
         assertDoesNotThrow(() -> client.startGame("", TEST_UUID));
         assertTrue(client.doAction("", Action.Builder.create(UUID.randomUUID()).buildMoveAction(new Point(0, 0))));
         client.addGameListener("", TEST_UUID, e -> fail());
@@ -82,7 +82,7 @@ class NetworkTest {
 
         @NotNull
         @Override
-        public Room createRoom(@NotNull String token, @NotNull String name, int timeout, Game.@NotNull Type gameType) {
+        public Room createRoom(@NotNull String token, @NotNull Room room) {
             return new Room("ok", new User("ok"));
         }
 
