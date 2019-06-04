@@ -42,8 +42,8 @@ public class RoomViewController extends BaseViewController {
             try {
                 Client.API.addRoomListener(e, room.getUuid(), f -> {
                     //TODO: update room
-                    if (f.isGameCreated())
-                        getNavigationController().presentViewController(true, GameViewController.class, Client.API.getActiveGame(e));
+                    if (f.isGameCreated() && getNavigationController() != null)
+                        getNavigationController().presentViewController(true, GameViewController.class, f);
                 });
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();

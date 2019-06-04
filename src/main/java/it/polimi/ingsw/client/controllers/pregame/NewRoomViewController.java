@@ -28,12 +28,15 @@ public class NewRoomViewController extends BaseViewController {
     private JTextField roomNameField;
     private JButton goButton;
     private JButton backButton;
+    private JSpinner skullsSpinner;
 
     private Room room;
 
     public NewRoomViewController(@NotNull NavigationController navigationController) {
         super("Nuova stanza", 600, 400, navigationController);
         setContentPane(panel);
+        timeoutSpinner.setModel(new SpinnerNumberModel(60, 60, 120, 1));
+        skullsSpinner.setModel(new SpinnerNumberModel(5, 5, 8, 5));
         goButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             if (roomNameField.getText().isEmpty()) JOptionPane.showMessageDialog(null, "Inserisci un nome!!");
             else try {
@@ -48,8 +51,13 @@ public class NewRoomViewController extends BaseViewController {
                 } else if (sixfive.isSelected()) {
                     gameType = Game.Type.SIX_FIVE;
                 }
-                room = Client.API.createRoom(f, new Room(roomNameField.getText(), new User("pippo")));
-                getNavigationController().presentViewController(true, RoomViewController.class, room);
+                var mockRoom = new Room(roomNameField.getText(), new User(""));
+                mockRoom.setActionTimeout((int) timeoutSpinner.getValue());
+                mockRoom.setGameType(gameType);
+                mockRoom.setSkulls((int) skullsSpinner.getValue());
+                room = Client.API.createRoom(f, mockRoom);
+                if (getNavigationController() != null)
+                    getNavigationController().presentViewController(true, RoomViewController.class, room);
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
                 Utils.jumpBackToLogin(getNavigationController());
@@ -58,7 +66,9 @@ public class NewRoomViewController extends BaseViewController {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         }));
-        backButton.addActionListener(e -> getNavigationController().popViewController());
+        backButton.addActionListener(e -> {
+            if (getNavigationController() != null) getNavigationController().popViewController();
+        });
     }
 
     {
@@ -88,12 +98,12 @@ public class NewRoomViewController extends BaseViewController {
         panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel.add(panel2, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel.add(panel2, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel2.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
-        label2.setText("Timeout mossa");
+        label2.setText("Timeout mossa (in sec)");
         panel3.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         timeoutSpinner = new JSpinner();
         panel3.add(timeoutSpinner, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -102,6 +112,11 @@ public class NewRoomViewController extends BaseViewController {
         final JLabel label3 = new JLabel();
         label3.setText("Nome della partita");
         panel3.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label4 = new JLabel();
+        label4.setText("Scheletri massimi");
+        panel3.add(label4, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        skullsSpinner = new JSpinner();
+        panel3.add(skullsSpinner, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel2.add(panel4, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -118,9 +133,9 @@ public class NewRoomViewController extends BaseViewController {
         sixfive = new JRadioButton();
         sixfive.setText("6-5");
         panel4.add(sixfive, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label4 = new JLabel();
-        label4.setText("Campo da gioco");
-        panel4.add(label4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label5 = new JLabel();
+        label5.setText("Campo da gioco");
+        panel4.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         goButton = new JButton();
         goButton.setText("Crea partita");
         panel.add(goButton, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

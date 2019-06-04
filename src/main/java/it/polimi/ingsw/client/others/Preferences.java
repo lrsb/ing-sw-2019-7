@@ -17,8 +17,8 @@ public class Preferences {
         preferences.put("token", token);
     }
 
-    public static @NotNull Optional<String> getTokenOrJumpBack(@NotNull NavigationController navigationController) {
-        if (!isLoggedIn()) Utils.jumpBackToLogin(navigationController);
+    public static @NotNull Optional<String> getTokenOrJumpBack(@Nullable NavigationController navigationController) {
+        if (navigationController != null && !isLoggedIn()) Utils.jumpBackToLogin(navigationController);
         return Optional.ofNullable(getToken());
     }
 
