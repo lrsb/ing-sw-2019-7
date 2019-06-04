@@ -35,30 +35,33 @@ public class ConnTypeViewController extends BaseViewController {
             var host = hostTextField.getText();
             if (rmiRadioButton.isSelected()) try {
                 Client.API = new ClientRmiImpl(LocateRegistry.getRegistry(host, Server.RMI_PORT).lookup(Server.RMI_NAME));
+                next();
             } catch (RemoteException | NotBoundException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Problemi di connessione col server!!");
             }
             else if (socketRadioButton.isSelected()) try {
                 Client.API = new ClientSocketImpl(host);
+                next();
             } catch (IOException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Problemi di connessione col server!!");
             }
             else if (httpRadioButton.isSelected()) try {
                 Client.API = new ClientRestImpl(host);
+                next();
             } catch (InterruptedException | IOException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Problemi di connessione col server!!");
             }
-            else {
-                JOptionPane.showMessageDialog(null, "Cazzo fai?!?!");
-                return;
-            }
-            if (Preferences.isLoggedIn())
-                getNavigationController().presentViewController(false, MainViewController.class);
-            else getNavigationController().presentViewController(false, LoginViewController.class);
+            else JOptionPane.showMessageDialog(null, "Cazzo fai?!?!");
         });
+    }
+
+    private void next() {
+        if (getNavigationController() != null) if (Preferences.isLoggedIn())
+            getNavigationController().presentViewController(false, MainViewController.class);
+        else getNavigationController().presentViewController(false, LoginViewController.class);
     }
 
     {

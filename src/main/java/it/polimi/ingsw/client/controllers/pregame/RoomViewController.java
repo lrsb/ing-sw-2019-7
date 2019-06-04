@@ -34,6 +34,7 @@ public class RoomViewController extends BaseViewController {
     private JLabel startLabel;
     private JLabel timeoutLabel;
     private JButton startButton;
+    private JButton exitButton;
 
     private @NotNull UUID roomUuid;
     private @Nullable Clip clip;
@@ -58,7 +59,7 @@ public class RoomViewController extends BaseViewController {
                 Client.API.addRoomListener(e, room.getUuid(), f -> {
                     update(f);
                     if (f.isGameCreated() && getNavigationController() != null)
-                        getNavigationController().presentViewController(true, GameViewController.class, f);
+                        getNavigationController().presentViewController(true, GameViewController.class, Client.API.getActiveGame(e));
                 });
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
@@ -68,19 +69,30 @@ public class RoomViewController extends BaseViewController {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
-        startButton.addActionListener(e -> {
-            Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
-                try {
-                    Client.API.startGame(f, roomUuid);
-                } catch (UserRemoteException ex) {
-                    ex.printStackTrace();
-                    Utils.jumpBackToLogin(getNavigationController());
-                } catch (RemoteException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
-            });
-        });
+        startButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
+            try {
+                Client.API.startGame(f, roomUuid);
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+        }));
+        exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
+            try {
+                Client.API.removeRoomListener(f, room.getUuid());
+                Client.API.quitRoom(f, room.getUuid());
+                navigationController.popViewController();
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+        }));
         if (clip != null) try {
             var audioInputStream = AudioSystem.getAudioInputStream(Utils.getUrl(getClass(), "follettina", "wav"));
             clip.open(audioInputStream);
@@ -94,10 +106,10 @@ public class RoomViewController extends BaseViewController {
 
     private void update(@NotNull Room room) {
         if (timer != null) timer.stop();
-        timer = new Timer(1000, e -> {
-            if (room.getActionTimeout() - System.currentTimeMillis() <= 0) startLabel.setText("");
+        if (room.getStartTime() != -1) timer = new Timer(1000, e -> {
+            if (room.getStartTime() - System.currentTimeMillis() <= 0) startLabel.setText("");
             else
-                startLabel.setText("Partenza tra: " + (room.getActionTimeout() - System.currentTimeMillis()) / 1000 + " sec");
+                startLabel.setText("Partenza tra: " + (room.getStartTime() - System.currentTimeMillis()) / 1000 + " sec");
         });
         timer.start();
         roomNameLabel.setText(room.getName());
@@ -165,17 +177,20 @@ public class RoomViewController extends BaseViewController {
         usersList = new JList();
         panel.add(usersList, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(panel3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         startLabel = new JLabel();
         Font startLabelFont = this.$$$getFont$$$(null, -1, 20, startLabel.getFont());
         if (startLabelFont != null) startLabel.setFont(startLabelFont);
         startLabel.setHorizontalAlignment(0);
         startLabel.setText("Label");
-        panel3.add(startLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel3.add(startLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         startButton = new JButton();
         startButton.setText("Inizia");
-        panel3.add(startButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(startButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        exitButton = new JButton();
+        exitButton.setText("Esci");
+        panel3.add(exitButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

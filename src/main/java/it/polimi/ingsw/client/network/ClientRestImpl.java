@@ -151,10 +151,10 @@ public class ClientRestImpl implements API {
     }
 
     @Override
-    public @NotNull Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+    public void startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
         try {
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/startGame?uuid=" + roomUuid)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
-            return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), Game.class);
+            processResponse(client.send(request, HttpResponse.BodyHandlers.ofString()));
         } catch (RemoteException e) {
             throw e;
         } catch (IOException | InterruptedException e) {

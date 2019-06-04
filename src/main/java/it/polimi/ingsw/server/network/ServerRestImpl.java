@@ -78,8 +78,10 @@ public class ServerRestImpl extends NanoWSD {
                         return newJsonResponse("ok");
                     } else break;
                 case "/startGame":
-                    if (method == Method.POST)
-                        return newJsonResponse(Server.controller.startGame(token, UUID.fromString(session.getParameters().get("uuid").get(0))));
+                    if (method == Method.POST) {
+                        Server.controller.startGame(token, UUID.fromString(session.getParameters().get("uuid").get(0)));
+                        return newJsonResponse("ok");
+                    }
                     break;
                 case "/quitGame":
                     if (method == Method.POST) {
@@ -102,7 +104,7 @@ public class ServerRestImpl extends NanoWSD {
         } catch (RemoteException e) {
             return newFixedLengthResponse(Response.Status.NOT_ACCEPTABLE, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         } catch (Exception e) {
-            return newFixedLengthResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "Error in request!");
+            return newFixedLengthResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "Something wrong happened!");
         }
         return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
     }

@@ -59,8 +59,8 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
-    public @NotNull Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
-        return remote.startGame(token, roomUuid);
+    public void startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException {
+        remote.startGame(token, roomUuid);
     }
 
     @Override

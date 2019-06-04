@@ -36,7 +36,7 @@ public class NewRoomViewController extends BaseViewController {
         super("Nuova stanza", 600, 400, navigationController);
         setContentPane(panel);
         timeoutSpinner.setModel(new SpinnerNumberModel(60, 60, 120, 1));
-        skullsSpinner.setModel(new SpinnerNumberModel(5, 5, 8, 5));
+        skullsSpinner.setModel(new SpinnerNumberModel(5, 5, 8, 1));
         goButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             if (roomNameField.getText().isEmpty()) JOptionPane.showMessageDialog(null, "Inserisci un nome!!");
             else try {

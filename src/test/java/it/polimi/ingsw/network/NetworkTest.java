@@ -86,10 +86,8 @@ class NetworkTest {
             return new Room("ok", new User("ok"));
         }
 
-        @NotNull
         @Override
-        public Game startGame(@NotNull String token, @NotNull UUID roomUuid) {
-            return null;
+        public void startGame(@NotNull String token, @NotNull UUID roomUuid) {
         }
 
         @Override

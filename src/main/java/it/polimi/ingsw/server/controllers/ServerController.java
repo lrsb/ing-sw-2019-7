@@ -64,7 +64,7 @@ public class ServerController implements API {
         if (roomUuid != null) try {
             var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid.toString())).first()).e(Document::toJson).get(""), Room.class);
             if (!room.addUser(user)) throw new RemoteException("The room is full, go away!!");
-            if (room.getUsers().size() > 3) {
+            if (room.getUsers().size() >= 3) {
                 var timeout = 30;
                 try {
                     timeout = Integer.parseInt(System.getenv().get("ROOM_TIMEOUT"));
@@ -76,7 +76,7 @@ public class ServerController implements API {
                     @Override
                     public void run() {
                         try {
-                            startGame(token, roomUuid);
+                            startGame(room.getUuid());
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
@@ -87,6 +87,8 @@ public class ServerController implements API {
             rooms.replaceOne(eq("uuid", roomUuid.toString()), Document.parse(new Gson().toJson(room)));
             informRoomUsers(room);
             return room;
+        } catch (RemoteException e) {
+            throw e;
         } catch (Exception ignored) {
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
@@ -126,24 +128,30 @@ public class ServerController implements API {
     }
 
     @Override
-    public @NotNull Game startGame(@Nullable String token, @Nullable UUID roomUuid) throws RemoteException {
+    public void startGame(@Nullable String token, @Nullable UUID roomUuid) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (roomUuid != null) try {
             var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid.toString())).first()).e(Document::toJson).get(""), Room.class);
             if (!room.getUsers().get(0).getUuid().equals(user.getUuid()))
                 throw new RemoteException("You can't do this!");
-            if (room.getUsers().size() < 3)
-                throw new RemoteException("Too few players!");
-            var game = GameImpl.Creator.newGame(room);
-            games.insertOne(Document.parse(new Gson().toJson(game)));
-            room.setGameCreated();
-            informRoomUsers(room);
-            rooms.deleteOne(eq("uuid", roomUuid.toString()));
-            return new Gson().fromJson(new Gson().toJson(game), Game.class);
+            startGame(room.getUuid());
+        } catch (RemoteException e) {
+            throw e;
         } catch (Exception ignored) {
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
         else throw new RemoteException("The UUID!!");
+    }
+
+    private void startGame(@NotNull UUID roomUuid) throws RemoteException {
+        var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid.toString())).first()).e(Document::toJson).get(""), Room.class);
+        if (room.getUsers().size() < 3)
+            throw new RemoteException("Too few players!");
+        var game = GameImpl.Creator.newGame(room);
+        games.insertOne(Document.parse(new Gson().toJson(game)));
+        room.setGameCreated();
+        informRoomUsers(room);
+        rooms.deleteOne(eq("uuid", roomUuid.toString()));
     }
 
     @Override

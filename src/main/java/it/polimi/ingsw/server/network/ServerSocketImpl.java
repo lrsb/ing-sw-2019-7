@@ -55,7 +55,8 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.QUIT_ROOM, null, null));
                     break;
                 case START_GAME:
-                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.START_GAME, null, Server.controller.startGame(token, packet.getAssociatedObject(UUID.class))));
+                    Server.controller.startGame(token, packet.getAssociatedObject(UUID.class));
+                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.START_GAME, null, null));
                     break;
                 case QUIT_GAME:
                     Server.controller.quitGame(token, packet.getAssociatedObject(UUID.class));

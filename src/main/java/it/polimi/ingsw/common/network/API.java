@@ -26,7 +26,7 @@ public interface API extends Remote {
 
     void quitRoom(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
 
-    @NotNull Game startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
+    void startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
 
     void quitGame(@NotNull String token, @NotNull UUID gameUuid) throws RemoteException;
 
