@@ -1,13 +1,17 @@
 package it.polimi.ingsw.server.models;
 
 import it.polimi.ingsw.common.models.*;
+import it.polimi.ingsw.common.models.modelsExceptions.ActionDeniedException;
+import it.polimi.ingsw.common.models.wrappers.Opt;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,16 +26,13 @@ public class GameImpl extends Game implements Serializable {
 
     private @NotNull ArrayList<PowerUp> exitedPowerUps = new ArrayList<>();
 
-    private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players) {
-        super(uuid, type, cells, players);
-        //TODO: come evitare le celle che non fanno parte della mappa
+    private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
+        super(uuid, type, cells, players, skulls);
         redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         //TODO
-        Stream.of(cells).flatMap(Stream::of).forEach(e -> {
-            if (!e.isSpawnPoint()) e.setAmmoCard(ammoDeck.exitCard());
-        });
+        Stream.of(cells).flatMap(Stream::of).filter(e -> !e.isSpawnPoint()).forEach(e -> e.setAmmoCard(ammoDeck.exitCard()));
         //Arrays.stream(cells).forEach(e -> Arrays.stream(e).filter(f -> !f.isSpawnPoint()).forEach(g -> g.setAmmoCard(ammoDeck.exitCard())));
     }
 
@@ -426,7 +427,10 @@ public class GameImpl extends Game implements Serializable {
                     cells[2][3] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
                     break;
             }
-            return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream().map(Player::new).collect(Collectors.toList()), room.getSkulls());
+            var random = new SecureRandom();
+            return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream()
+                    .map(e -> new Player(e, Player.BoardType.values()[random.nextInt(Player.BoardType.values().length)]))
+                    .collect(Collectors.toList()), room.getSkulls());
         }
     }
 }

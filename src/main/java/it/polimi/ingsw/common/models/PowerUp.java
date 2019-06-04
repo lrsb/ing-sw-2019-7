@@ -1,7 +1,8 @@
 package it.polimi.ingsw.common.models;
 
 import it.polimi.ingsw.client.others.Utils;
-import it.polimi.ingsw.client.views.sprite.Displayable;
+import it.polimi.ingsw.client.views.gui.sprite.Displayable;
+import it.polimi.ingsw.common.models.modelsExceptions.PlayerNotFoundException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -1,7 +1,9 @@
 package it.polimi.ingsw.common.models;
 
 import it.polimi.ingsw.client.others.Utils;
-import it.polimi.ingsw.client.views.sprite.Displayable;
+import it.polimi.ingsw.client.views.gui.sprite.Displayable;
+import it.polimi.ingsw.common.models.modelsExceptions.PlayerNotFoundException;
+import it.polimi.ingsw.common.models.modelsExceptions.SelfResponseException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -263,7 +266,8 @@ public abstract class Game implements Displayable, Serializable {
      * @param color the color
      * @return the weapons
      */
-    protected @NotNull ArrayList<Weapon.Name> getWeapons(@NotNull Cell.Color color) {
+    @NotNull
+    public ArrayList<Weapon.Name> getWeapons(@NotNull Cell.Color color) {
         switch (color) {
             case BLUE:
                 return blueWeapons;
