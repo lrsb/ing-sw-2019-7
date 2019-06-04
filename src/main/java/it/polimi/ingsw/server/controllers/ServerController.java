@@ -14,10 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -29,6 +26,7 @@ public class ServerController implements API {
     private static final @NotNull MongoCollection<Document> games = Server.mongoDatabase.getCollection("games");
     private final @NotNull HashMap<UUID, HashMap<UUID, GameListener>> gameListeners = new HashMap<>();
     private final @NotNull HashMap<UUID, HashMap<UUID, RoomListener>> roomListeners = new HashMap<>();
+    private final @NotNull HashMap<UUID, Timer> roomTimers = new HashMap<>();
 
     @Override
     public @NotNull String authUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
@@ -69,6 +67,18 @@ public class ServerController implements API {
                 } catch (Exception ignored) {
                 }
                 room.setStartTime(System.currentTimeMillis() + timeout * 1000);
+                var timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            startGame(token, roomUuid);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, timeout * 1000);
+                Optional.ofNullable(roomTimers.put(room.getUuid(), timer)).ifPresent(Timer::cancel);
             } else room.setStartTime(-1);
             rooms.replaceOne(eq("uuid", roomUuid.toString()), Document.parse(new Gson().toJson(room)));
             informRoomUsers(room);
