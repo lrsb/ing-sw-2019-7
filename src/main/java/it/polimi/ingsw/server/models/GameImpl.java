@@ -355,6 +355,7 @@ public class GameImpl extends Game implements Serializable {
                     getActualPlayer().reloadWeapon(action.getWeapon());
                     return true;
                 }
+                return false;
             case NEXT_TURN:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 nextTurn();
@@ -379,13 +380,13 @@ public class GameImpl extends Game implements Serializable {
             switch (room.getGameType().getLeft()) {
                 case "L5":
                     cells[0][0] = Cell.Creator.withBounds("_ |_").color(Cell.Color.BLUE).create();
-                    cells[1][0] = Cell.Creator.withBounds("| __").color(Cell.Color.RED).spawnPoint().create();
-                    cells[2][0] = null;
-                    cells[0][1] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.BLUE).create();
+                    cells[0][1] = Cell.Creator.withBounds("| __").color(Cell.Color.RED).spawnPoint().create();
+                    cells[0][2] = null;
+                    cells[1][0] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.BLUE).create();
                     switch (room.getGameType().getRight()) {
                         case "R5":
                             cells[1][1] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.RED).create();
-                            cells[2][1] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
+                            cells[1][2] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
                             break;
                         case "R6":
                             cells[1][1] = Cell.Creator.withBounds("___ ").color(Cell.Color.RED).create();
@@ -394,13 +395,13 @@ public class GameImpl extends Game implements Serializable {
                     break;
                 case "L6":
                     cells[0][0] = Cell.Creator.withBounds("_| _").color(Cell.Color.BLUE).create();
-                    cells[1][0] = Cell.Creator.withBounds(" _|_").color(Cell.Color.RED).spawnPoint().create();
-                    cells[2][0] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
-                    cells[0][1] = Cell.Creator.withBounds("_ ||").color(Cell.Color.BLUE).create();
+                    cells[0][1] = Cell.Creator.withBounds(" _|_").color(Cell.Color.RED).spawnPoint().create();
+                    cells[0][2] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
+                    cells[1][0] = Cell.Creator.withBounds("_ ||").color(Cell.Color.BLUE).create();
                     switch (room.getGameType().getRight()) {
                         case "R5":
                             cells[1][1] = Cell.Creator.withBounds("| |_").color(Cell.Color.PURPLE).create();
-                            cells[2][1] = Cell.Creator.withBounds("| _ ").color(Cell.Color.WHITE).create();
+                            cells[1][2] = Cell.Creator.withBounds("| _ ").color(Cell.Color.WHITE).create();
                             break;
                         case "R6":
                             cells[1][1] = Cell.Creator.withBounds("|_|_").color(Cell.Color.PURPLE).create();
@@ -410,21 +411,21 @@ public class GameImpl extends Game implements Serializable {
             }
             switch (room.getGameType().getRight()) {
                 case "R5":
-                    cells[0][2] = Cell.Creator.withBounds("__| ").color(Cell.Color.BLUE).spawnPoint().create();
-                    cells[1][2] = Cell.Creator.withBounds("||_ ").color(Cell.Color.PURPLE).create();
+                    cells[2][0] = Cell.Creator.withBounds("__| ").color(Cell.Color.BLUE).spawnPoint().create();
+                    cells[2][1] = Cell.Creator.withBounds("||_ ").color(Cell.Color.PURPLE).create();
                     cells[2][2] = Cell.Creator.withBounds("_|_ ").color(Cell.Color.WHITE).create();
-                    cells[0][3] = null;
-                    cells[1][3] = Cell.Creator.withBounds("__ |").color(Cell.Color.YELLOW).create();
-                    cells[2][3] = Cell.Creator.withBounds(" __|").color(Cell.Color.YELLOW).spawnPoint().create();
+                    cells[3][0] = null;
+                    cells[3][1] = Cell.Creator.withBounds("__ |").color(Cell.Color.YELLOW).create();
+                    cells[3][2] = Cell.Creator.withBounds(" __|").color(Cell.Color.YELLOW).spawnPoint().create();
                     break;
                 case "R6":
-                    cells[2][1] = Cell.Creator.withBounds("||__").color(Cell.Color.WHITE).create();
-                    cells[0][2] = Cell.Creator.withBounds("_|| ").color(Cell.Color.BLUE).spawnPoint().create();
-                    cells[1][2] = Cell.Creator.withBounds("|  _").color(Cell.Color.YELLOW).create();
+                    cells[1][2] = Cell.Creator.withBounds("||__").color(Cell.Color.WHITE).create();
+                    cells[2][0] = Cell.Creator.withBounds("_|| ").color(Cell.Color.BLUE).spawnPoint().create();
+                    cells[2][1] = Cell.Creator.withBounds("|  _").color(Cell.Color.YELLOW).create();
                     cells[2][2] = Cell.Creator.withBounds("  _|").color(Cell.Color.YELLOW).create();
-                    cells[0][3] = Cell.Creator.withBounds("__||").color(Cell.Color.GREEN).create();
-                    cells[1][3] = Cell.Creator.withBounds("|_  ").color(Cell.Color.YELLOW).create();
-                    cells[2][3] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
+                    cells[3][0] = Cell.Creator.withBounds("__||").color(Cell.Color.GREEN).create();
+                    cells[3][1] = Cell.Creator.withBounds("|_  ").color(Cell.Color.YELLOW).create();
+                    cells[3][2] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
                     break;
             }
             var random = new SecureRandom();
