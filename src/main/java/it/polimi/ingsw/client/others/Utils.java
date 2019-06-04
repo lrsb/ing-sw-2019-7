@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.others;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.controllers.startup.LoginViewController;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -39,10 +40,12 @@ public class Utils {
         return newImage;
     }
 
-    public static void jumpBackToLogin(@NotNull NavigationController navigationController) {
+    public static void jumpBackToLogin(@Nullable NavigationController navigationController) {
         Preferences.deleteToken();
-        navigationController.popToRootViewController();
-        navigationController.presentViewController(true, LoginViewController.class);
+        if (navigationController != null) {
+            navigationController.popToRootViewController();
+            navigationController.presentViewController(true, LoginViewController.class);
+        }
     }
 
     public static @NotNull BufferedImage applyColorToMask(@NotNull BufferedImage mask, @NotNull Color color) {

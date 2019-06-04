@@ -18,7 +18,7 @@ public class Room implements Serializable {
     private @NotNull ArrayList<User> users = new ArrayList<>();
     private boolean gameCreated = false;
     private int actionTimeout = 30;
-    private int skulls;
+    private int skulls = 5;
     private Game.Type gameType = Game.Type.FIVE_SIX;
     private long startTime; // ora di avvio, se -1 non ho abbastanza giocatori per iniziare la partita
 
@@ -121,7 +121,7 @@ public class Room implements Serializable {
      * @param actionTimeout the action timeout
      */
     public void setActionTimeout(int actionTimeout) {
-        this.actionTimeout = actionTimeout;
+        if (actionTimeout >= 60 && actionTimeout <= 120) this.actionTimeout = actionTimeout;
     }
 
     /**
@@ -157,6 +157,6 @@ public class Room implements Serializable {
      * @param skulls the number of skulls
      */
     public void setSkulls(int skulls) {
-        this.skulls = skulls;
+        if (skulls >= 5 && skulls <= 8) this.skulls = skulls;
     }
 }

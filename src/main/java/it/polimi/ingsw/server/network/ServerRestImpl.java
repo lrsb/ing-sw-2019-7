@@ -10,8 +10,8 @@ import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -65,8 +65,11 @@ public class ServerRestImpl extends NanoWSD {
                         return newJsonResponse(Server.controller.joinRoom(token, UUID.fromString(session.getParameters().get("uuid").get(0))));
                     break;
                 case "/createRoom":
-                    if (method == Method.POST)
-                        return newJsonResponse(Server.controller.createRoom(token, new Gson().fromJson(new InputStreamReader(session.getInputStream()), Room.class)));
+                    if (method == Method.POST) {
+                        var map = new HashMap<String, String>();
+                        session.parseBody(map);
+                        return newJsonResponse(Server.controller.createRoom(token, new Gson().fromJson(map.get("postData"), Room.class)));
+                    }
                     break;
                 case "/quitRoom":
                     if (method == Method.POST) {
@@ -78,8 +81,12 @@ public class ServerRestImpl extends NanoWSD {
                         return newJsonResponse(Server.controller.startGame(token, UUID.fromString(session.getParameters().get("uuid").get(0))));
                     break;
                 case "/doAction":
-                    if (method == Method.POST)
-                        return newJsonResponse(Server.controller.doAction(token, new Gson().fromJson(new InputStreamReader(session.getInputStream()), Action.class)));
+                    if (method == Method.POST) {
+                        var map = new HashMap<String, String>();
+                        session.parseBody(map);
+                        return newJsonResponse(Server.controller.doAction(token, new Gson().fromJson(map.get("postData"), Action.class)));
+                    }
+
                     break;
                 default:
                     return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
@@ -88,6 +95,8 @@ public class ServerRestImpl extends NanoWSD {
             return newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         } catch (RemoteException e) {
             return newFixedLengthResponse(Response.Status.NOT_ACCEPTABLE, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
+        } catch (Exception e) {
+            return newFixedLengthResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "Error in request!");
         }
         return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
     }

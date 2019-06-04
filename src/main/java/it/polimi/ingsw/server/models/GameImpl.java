@@ -10,10 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.Serializable;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,9 +29,7 @@ public class GameImpl extends Game implements Serializable {
         redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
-        Stream.of(cells).flatMap(Stream::of).forEach(e -> {
-            if (e != null && !e.isSpawnPoint()) e.setAmmoCard(ammoDeck.exitCard());
-        });
+        Stream.of(cells).flatMap(Stream::of).filter(Objects::nonNull).filter(e -> !e.isSpawnPoint()).forEach(e -> e.setAmmoCard(ammoDeck.exitCard()));
     }
 
     public List<PowerUp> getFirstMoveColors() {
