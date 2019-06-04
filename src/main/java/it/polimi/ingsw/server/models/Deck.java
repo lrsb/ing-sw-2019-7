@@ -135,11 +135,11 @@ public class Deck<T extends Serializable> implements Serializable {
         public static @NotNull Deck<AmmoCard> newAmmoDeck() {
             var cards = Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).filter(f -> !e.name().equals(f.name()))
                     .map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toCollection(ArrayList::new));
-            cards.addAll(Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values())
-                    .filter(f -> !e.name().equals(f.name())).map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toList()));
+            cards.addAll(Stream.of(AmmoCard.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).filter(f -> !e.name().equals(f.name()))
+                    .map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toList()));
             cards.addAll(Stream.of(AmmoCard.Type.values()).filter(e -> !e.equals(AmmoCard.Type.POWER_UP)).map(e -> Stream.of(AmmoCard.Color.values())
                     .filter(f -> !e.name().equals(f.name())).map(f -> new AmmoCard(e, f, f))).flatMap(e -> e).collect(Collectors.toList()));
-           for (int i = 0; i < 4; i++) cards.add(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.BLUE));
+            for (int i = 0; i < 4; i++) cards.add(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.RED, AmmoCard.Color.BLUE));
             for (int i = 0; i < 4; i++) cards.add(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE));
             for (int i = 0; i < 4; i++) cards.add(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE));
             Collections.shuffle(cards);

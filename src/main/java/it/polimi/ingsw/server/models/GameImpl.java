@@ -31,7 +31,9 @@ public class GameImpl extends Game implements Serializable {
         redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
-        Stream.of(cells).flatMap(Stream::of).filter(e -> !e.isSpawnPoint()).forEach(e -> e.setAmmoCard(ammoDeck.exitCard()));
+        Stream.of(cells).flatMap(Stream::of).forEach(e -> {
+            if (e != null && !e.isSpawnPoint()) e.setAmmoCard(ammoDeck.exitCard());
+        });
     }
 
     public List<PowerUp> getFirstMoveColors() {
