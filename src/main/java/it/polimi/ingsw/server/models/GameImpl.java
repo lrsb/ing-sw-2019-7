@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,6 +28,7 @@ public class GameImpl extends Game implements Serializable {
         redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
+        //TODO
         Stream.of(cells).flatMap(Stream::of).forEach(e -> {
             if (!e.isSpawnPoint()) e.setAmmoCard(ammoDeck.exitCard());
         });
@@ -46,10 +46,11 @@ public class GameImpl extends Game implements Serializable {
         powerUpsDeck.discardCard(cardToThrow);
         var cardToKeep = exitedPowerUps.remove(0);
         getActualPlayer().setPlayed();
+        getActualPlayer().addPowerUp(cardToKeep);
         assert exitedPowerUps.isEmpty() && getActualPlayer().getPowerUps().size() == 1;
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[i].length; j++) {
-                if (cells[i][j].isSpawnPoint() && cells[i][j].getColor().name().equals(cardToKeep.getAmmoColor().name())) {
+                if (cells[i][j].isSpawnPoint() && cells[i][j].getColor().name().equals(cardToThrow.getAmmoColor().name())) {
                     getActualPlayer().setPosition(new Point(i, j));
                     nextTurn();
                     return;
@@ -72,31 +73,25 @@ public class GameImpl extends Game implements Serializable {
     }
 
     //RUN AROUND - End
-    //GRAB STUFF - Start
+    //GRAB_WEAPON STUFF - Start
 
-    private boolean grabIn(@NotNull Point point, @Nullable Weapon.Name weapon, @Nullable Weapon.Name discardedWeaponName, @Nullable ArrayList<PowerUp> powerUpPayment) {
-        if (!canMove(getActualPlayer().getPosition(), point, getActualPlayer().getDamagesTaken().size() >= 3 ? 2 : 1))
-            return false;
-        if (Stream.of(Cell.Color.values()).anyMatch(e -> getCell(point).getColor() == e &&
-                getCell(point).isSpawnPoint() && getWeapons(getCell(point).getColor()).contains(weapon))) {
-            if (getActualPlayer().getWeaponsSize() == 3 &&
-                    (discardedWeaponName == null || !getActualPlayer().hasWeapon(discardedWeaponName))) return false;
-            if (canPayWeaponAndPay(weapon, powerUpPayment)) {
-                getWeapons(getCell(point).getColor()).remove(weapon);
-                getActualPlayer().setPosition(point);
-                getActualPlayer().addWeapon(weapon);
-                if (getActualPlayer().getWeaponsSize() == 4) {
-                    getActualPlayer().removeWeapon(discardedWeaponName);
-                    getWeapons(getCell(point).getColor()).add(discardedWeaponName);
-                }
-                return true;
+    private boolean grabWeapon(@NotNull Point to, @NotNull Weapon.Name weapon, @Nullable Weapon.Name discardedWeaponName, @Nullable ArrayList<PowerUp> powerUpPayment) {
+        var cell = getCell(to);
+        if (cell == null) return false;
+        if (!canMove(getActualPlayer().getPosition(), to, 1) && !(skulls == 0 &&
+                canMove(getActualPlayer().getPosition(), to, 2)) && !(lastTurn &&
+                canMove(getActualPlayer().getPosition(), to, 3)) ||
+                !cell.isSpawnPoint() || !getWeapons(cell.getColor()).contains(weapon) ||
+                getActualPlayer().getWeaponsSize() > 2 && (discardedWeaponName == null ||
+                        !getActualPlayer().hasWeapon(discardedWeaponName))) return false;
+        if (canPayWeaponAndPay(weapon, powerUpPayment)) {
+            getActualPlayer().setPosition(to);
+            getActualPlayer().addWeapon(weapon);
+            removeWeapon(cell.getColor(), weapon);
+            if (getActualPlayer().getWeaponsSize() > 3 && discardedWeaponName != null) {
+                getActualPlayer().removeWeapon(discardedWeaponName);
+                addWeapon(cell.getColor(), discardedWeaponName);
             }
-        } else if (getCell(point).getAmmoCard() != null) {
-            getActualPlayer().setPosition(point);
-            getActualPlayer().ammoCardRecharging(getCell(point).getAmmoCard(),
-                    getCell(point).getAmmoCard().getType() == AmmoCard.Type.POWER_UP &&
-                            getActualPlayer().getPowerUps().size() < 3 ? powerUpsDeck.exitCard() : null);
-            ammoDeck.discardCard(getCell(point).getAmmoCard());
             return true;
         }
         return false;
@@ -123,79 +118,249 @@ public class GameImpl extends Game implements Serializable {
         return false;
     }
 
-    //GRAB STUFF - End
+    private boolean grabAmmoCard(@NotNull Point to) {
+        var cell = getCell(to);
+        if (cell == null) return false;
+        if (cell.isSpawnPoint() || cell.getAmmoCard() == null ||
+                !canMove(getActualPlayer().getPosition(), to, 1) && !(skulls == 0 &&
+                canMove(getActualPlayer().getPosition(), to, 2)) && !(lastTurn &&
+                canMove(getActualPlayer().getPosition(), to, 3))) return false;
+        getActualPlayer().setPosition(to);
+        getActualPlayer().ammoCardRecharging(cell.getAmmoCard(),
+                cell.getAmmoCard().getType() == AmmoCard.Type.POWER_UP &&
+                        getActualPlayer().getPowerUps().size() > 2 ? powerUpsDeck.exitCard() : null);
+        ammoDeck.discardCard(cell.getAmmoCard());
+        cell.removeAmmoCard();
+        return true;
+    }
+
+    //GRAB_WEAPON STUFF - End
 
     private boolean fireAction(@NotNull Action action) {
+        boolean wasUnloaded = false;
+        if (action.getWeapon() == null) return false;
         var weapon = action.getWeapon().build(this, action.getAlternativeFire());
-        action.getBasicTarget().stream().forEachOrdered(e -> weapon.addBasicTarget(e));
-        weapon.setBasicTargetsPoint(action.getBasicTargetPoint());
-        weapon.setBasicAlternativePayment(action.getBasicAlternativePayment());
+        if (!getActualPlayer().isALoadedGun(action.getWeapon())) wasUnloaded = true;
+        if (action.getBasicTarget() != null) action.getBasicTarget().forEach(weapon::addBasicTarget);
+        if (action.getBasicTargetPoint() != null) weapon.setBasicTargetsPoint(action.getBasicTargetPoint());
+        if (action.getPowerUpPayment() != null) weapon.setAlternativePaymentToUse(action.getPowerUpPayment());
         if ((action.getOptions() & Weapon.FIRST) == 1) {
-            action.getFirstAdditionalTarget().stream().forEachOrdered(e -> weapon.addFirstAdditionalTarget(e));
-            weapon.setFirstAdditionalTargetsPoint(action.getFirstAdditionalTargetPoint());
-            weapon.setFirstAdditionalPayment(action.getFirstAdditionalPayment());
+            if (action.getFirstAdditionalTarget() != null)
+                action.getFirstAdditionalTarget().forEach(weapon::addFirstAdditionalTarget);
+            if (action.getFirstAdditionalTargetPoint() != null)
+                weapon.setFirstAdditionalTargetsPoint(action.getFirstAdditionalTargetPoint());
         }
         if ((action.getOptions() & Weapon.SECOND) == 2) {
-            action.getSecondAdditionalTarget().stream().forEachOrdered(e -> weapon.addSecondAdditionalTarget(e));
-            weapon.setSecondAdditionalTargetsPoint(action.getSecondAdditionalTargetPoint());
-            weapon.setSecondAdditionalPayment(action.getSecondAdditionalPayment());
+            if (action.getSecondAdditionalTarget() != null)
+                action.getSecondAdditionalTarget().forEach(weapon::addSecondAdditionalTarget);
+            if (action.getSecondAdditionalTargetPoint() != null)
+                weapon.setSecondAdditionalTargetsPoint(action.getSecondAdditionalTargetPoint());
         }
-        return weapon.fire(action.getOptions());
+        if (weapon.fire(action.getOptions())) {
+            weapon.getAlternativePaymentUsed().forEach(e -> powerUpsDeck.discardCard(e));
+            return true;
+        }
+        if (wasUnloaded) getActualPlayer().unloadWeapon(action.getWeapon());
+        return false;
     }
 
     private void nextTurn() {
-        for (var cells : cells)
-            for (var cell : cells) {
+        final int beforeSkulls = skulls;
+        for (var cells : cells) for (var cell : cells) {
                 if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
                 if (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
-                    getWeapons(cell.getColor()).add(weaponsDeck.exitCard());
-            }
+                    addWeapon(cell.getColor(), weaponsDeck.exitCard());
+        }
+        addReborningPlayers();
         deathPointsRedistribution();
-        reborn();
-        seqPlay++;
+        if (beforeSkulls > 0 && skulls == 0) players.forEach(Player::setEasyBoard);
+        if (skulls == 0 && seqPlay % (players.size() - 1) == 0) lastTurn = true;
+        if (responsivePlayers.isEmpty()) seqPlay++;
     }
 
-    protected void deathPointsRedistribution() {
-        getActualPlayer().addPoints(getDeadPlayers().size() > 1 ? 1 : 0);
-        getDeadPlayers().forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
-                .filter(g -> g.getUuid() == f)
-                .forEach(g -> {
-                    g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 :
-                            e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
+    private void deathPointsRedistribution() {
+        ArrayList<Player> deadPlayers = new ArrayList<>();
+        players.parallelStream().filter(e -> getDeadPlayers().contains(e.getUuid())).forEach(deadPlayers::add);
+        getActualPlayer().addPoints(deadPlayers.size() > 1 ? 1 : 0);
+        deadPlayers.forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream().filter(g -> g.getUuid() == f)
+                .forEachOrdered(g -> {
+                    g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
                     g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
-                    if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) e.addMark(g);
+                    if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) {
+                        e.addMark(g);
+                        addToKillshotsTrack(f);
+                    }
+                    if (f == e.getDamagesTaken().get(10)) addToKillshotsTrack(f);
                 })));
-        getDeadPlayers().forEach(Player::incrementDeaths);
+        deadPlayers.forEach(e -> {e.manageDeath(); if (skulls > 0) skulls--;});
     }
 
-    protected void reborn() {
-        /*TODO: foreach in getDeadPlayer draw a PowerUpCard and discard a PowerUp,
-           player respawn on the spawnpoint of the color of the discarded PowerUp*/
+    /**
+     * when the game ends distributes the lasts points to players
+     */
+    public void finalPointsRedistribution() {
+        players.parallelStream().filter(e -> e.getDamagesTaken().size() > 0).forEachOrdered(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
+                .filter(g -> g.getUuid() == f).forEachOrdered(g -> {
+                    g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
+                    g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0); })));
+        int points = 8;
+        for (int i = 0; i < getSortedKillshooters().size(); i++) {
+            for (Player player : players) {
+                if (player.getUuid().equals(getSortedKillshooters().get(i))) {
+                    player.addPoints(points > 1 ? points : 1);
+                    points -= 2;
+                }
+            }
+        }
+    }
+
+    /**
+     * It builds the ranking as an ArrayList<ArrayList<UUID>>
+     *
+     * Example if two players are tied:
+     * 1. firstPlayer, otherFirstPlayer;
+     * 2. none;
+     * 3. thirdPlayer;
+     * 4. fourthPlayer;
+     * 5. fifthPlayer;
+     *
+     * @return the HashMap
+     */
+    public @NotNull ArrayList<ArrayList<UUID>> getRanking() {
+        class PlayerPoint implements Comparable<PlayerPoint> {
+            private @NotNull UUID playerUuid;
+            private int points;
+            private int killshots;
+            private int firstKillshotPosition;
+
+            private PlayerPoint(@NotNull UUID playerUuid, int points) {
+                this.playerUuid = playerUuid;
+                this.points = points;
+                this.killshots = getPlayerKillshots(playerUuid);
+                this.firstKillshotPosition = arrayKillshotsTrack.indexOf(playerUuid);
+            }
+
+            @Override
+            public int compareTo(@NotNull final PlayerPoint other) {
+                 if (this.points != other.points) return Integer.compare(other.points, this.points);
+                 else if (this.killshots != other.killshots) return  Integer.compare(other.killshots, this.killshots);
+                 else if (this.killshots != 0) return Integer.compare(this.firstKillshotPosition, other.firstKillshotPosition);
+                 else return 0;
+            }
+        }
+
+        ArrayList<ArrayList<UUID>> ranking = new ArrayList<>();
+        for (int i = 0; i < players.size(); i++) ranking.add(new ArrayList<>());
+        ArrayList<PlayerPoint> tmpRanking = new ArrayList<>();
+        players.forEach(e -> tmpRanking.add(new PlayerPoint(e.getUuid(), e.getPoints())));
+        Collections.sort(tmpRanking);
+        int pos = 0;
+        for (int from = 0; from < tmpRanking.size(); from++) {
+            int to = from + 1;
+            while (to < tmpRanking.size() && tmpRanking.get(from).points == tmpRanking.get(to).points &&
+                    tmpRanking.get(from).killshots == 0 && tmpRanking.get(to).killshots == 0) to++;
+            for (; from < to; from++) ranking.get(pos).add(tmpRanking.get(from).playerUuid);
+            pos += ranking.get(pos).size();
+        }
+        return ranking;
+    }
+
+    private boolean reborn(@NotNull Action action) {
+        if (action.getColor() == null || action.getPowerUpType() == null) return false;
+        var powerUp = new PowerUp(action.getColor(), action.getPowerUpType());
+        if (getActualPlayer().getPowerUps().contains(powerUp)) {
+            powerUpsDeck.discardCard(powerUp);
+            getActualPlayer().getPowerUps().remove(powerUp);
+            for (int x = 0; x < 4; x++) for (int y = 0; y < 3; y++) {
+                var cell = getCell(new Point(x, y));
+                if (cell != null && cell.isSpawnPoint()) {
+                    switch (cell.getColor()) {
+                        case RED:
+                            if (powerUp.getAmmoColor().equals(AmmoCard.Color.RED)) {
+                                getActualPlayer().setPosition(new Point(x, y));
+                                responsivePlayers.remove(0);
+                                return true;
+                            }
+                            break;
+                        case YELLOW:
+                            if (powerUp.getAmmoColor().equals(AmmoCard.Color.YELLOW)) {
+                                getActualPlayer().setPosition(new Point(x, y));
+                                responsivePlayers.remove(0);
+                                return true;
+                            }
+                            break;
+                        case BLUE:
+                            if (powerUp.getAmmoColor().equals(AmmoCard.Color.BLUE)) {
+                                getActualPlayer().setPosition(new Point(x, y));
+                                responsivePlayers.remove(0);
+                                return true;
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public boolean doAction(@NotNull Action action) {
-        switch (action.getActionType()) {
+        if (getActualPlayer().getPosition() == null) return false;
+        switch (Opt.of(action.getActionType()).get(Action.Type.NOTHING)) {
             case MOVE:
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 if (action.getDestination() == null) return false;
                 return moveTo(action.getDestination());
             case GRAB_WEAPON:
-                return grabIn(action.getDestination(), action.getWeapon(), action.getDiscardedWeapon(), action.getPowerUpPayment());
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
+                if (action.getWeapon() == null) return false;
+                return grabWeapon(Opt.of(action.getDestination()).get(getActualPlayer().getPosition()),
+                        action.getWeapon(), action.getDiscardedWeapon(), action.getPowerUpPayment());
+            case GRAB_AMMOCARD:
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
+                return grabAmmoCard(Opt.of(action.getDestination()).get(getActualPlayer().getPosition()));
             case FIRE:
+                Point mockPosition = new Point(getActualPlayer().getPosition());
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 if (action.getWeapon() != null && getActualPlayer().hasWeapon(action.getWeapon()) &&
-                        getActualPlayer().isALoadedGun(action.getWeapon())) return fireAction(action);
+                        (getActualPlayer().isALoadedGun(action.getWeapon()) || skulls == 0)) {
+                    if (action.getDestination() != null && (getActualPlayer().getDamagesTaken().size() >= 6 &&
+                            canMove(getActualPlayer().getPosition(), action.getDestination(), 1)) ||
+                            (skulls == 0 && canMove(getActualPlayer().getPosition(), action.getDestination(), 1)) ||
+                            (lastTurn && canMove(getActualPlayer().getPosition(), action.getDestination(), 2)))
+                        getActualPlayer().setPosition(action.getDestination());
+                    if (fireAction(action)) return true;
+                    else getActualPlayer().setPosition(mockPosition);
+                }
                 return false;
             case USE_POWER_UP:
-                //TODO: creare PowerUp e customizzare
-                return action.getPowerUpType() != null && Stream.of(AmmoCard.Color.values())
-                        .anyMatch(e -> new PowerUp(e, action.getPowerUpType()).use(this));
+                if (action.getColor() == null || action.getPowerUpType() == null) return false;
+                if (!action.getPowerUpType().equals(PowerUp.Type.TAGBACK_GRENADE) && !responsivePlayers.isEmpty()) throw new ActionDeniedException();
+                var powerUp = new PowerUp(action.getColor(), action.getPowerUpType());
+                getPlayers().stream().filter(e -> e.getUuid().equals(action.getTarget())).forEach(powerUp::setTarget);
+                powerUp.setTargetPoint(action.getDestination());
+                if (powerUp.use(this)) {
+                    getActualPlayer().removePowerUp(powerUp);
+                    powerUpsDeck.discardCard(powerUp);
+                    if (powerUp.getType().equals(PowerUp.Type.TAGBACK_GRENADE)) responsivePlayers.remove(0);
+                    return true;
+                }
+                return false;
             case RELOAD:
-                return getActualPlayer().hasWeapon(action.getWeapon()) &&
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
+                if (action.getWeapon() == null) return false;
+                if (getActualPlayer().hasWeapon(action.getWeapon()) &&
                         !getActualPlayer().isALoadedGun(action.getWeapon()) &&
-                        canPayWeaponAndPay(action.getWeapon(), action.getPowerUpPayment());
+                        canPayWeaponAndPay(action.getWeapon(), action.getPowerUpPayment())) {
+                    getActualPlayer().reloadWeapon(action.getWeapon());
+                    return true;
+                }
             case NEXT_TURN:
-                //TODO: controllare se ha fatto le due mosse o da fare se scaduto il tempo
+                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 nextTurn();
                 return true;
+            case REBORN:
+                if (!isAReborn()) throw new ActionDeniedException();
+                return reborn(action);
         }
         return false;
     }
@@ -208,17 +373,60 @@ public class GameImpl extends Game implements Serializable {
         //TODO: impl
         @Contract("_ -> new")
         public static @NotNull GameImpl newGame(@NotNull Room room) {
-            //assert users.size() >= MIN_PLAYERS && users.size() < MAX_PLAYERS;
+            //assert(room.getUsers().size() >= MIN_PLAYERS && room.getUsers().size() <= MAX_PLAYERS) : "Invalid number of players";
             var cells = new Cell[MAX_X][MAX_Y];
-            for (var i = 0; i < cells.length; i++) {
-                for (var j = 0; j < cells[i].length; j++) {
-                    cells[i][j] = new Cell(Cell.Color.GREEN, new Bounds(Bounds.Type.DOOR, Bounds.Type.DOOR, Bounds.Type.DOOR, Bounds.Type.DOOR), false);
-                    //Cell.Creator.withBounds("----").color(Cell.Color.GREEN).spawnPoint(true).create();
-                }
+            switch (room.getGameType().getLeft()) {
+                case "L5":
+                    cells[0][0] = Cell.Creator.withBounds("_ |_").color(Cell.Color.BLUE).create();
+                    cells[1][0] = Cell.Creator.withBounds("| __").color(Cell.Color.RED).spawnPoint().create();
+                    cells[2][0] = null;
+                    cells[0][1] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.BLUE).create();
+                    switch (room.getGameType().getRight()) {
+                        case "R5":
+                            cells[1][1] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.RED).create();
+                            cells[2][1] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
+                            break;
+                        case "R6":
+                            cells[1][1] = Cell.Creator.withBounds("___ ").color(Cell.Color.RED).create();
+                            break;
+                    }
+                    break;
+                case "L6":
+                    cells[0][0] = Cell.Creator.withBounds("_| _").color(Cell.Color.BLUE).create();
+                    cells[1][0] = Cell.Creator.withBounds(" _|_").color(Cell.Color.RED).spawnPoint().create();
+                    cells[2][0] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
+                    cells[0][1] = Cell.Creator.withBounds("_ ||").color(Cell.Color.BLUE).create();
+                    switch (room.getGameType().getRight()) {
+                        case "R5":
+                            cells[1][1] = Cell.Creator.withBounds("| |_").color(Cell.Color.PURPLE).create();
+                            cells[2][1] = Cell.Creator.withBounds("| _ ").color(Cell.Color.WHITE).create();
+                            break;
+                        case "R6":
+                            cells[1][1] = Cell.Creator.withBounds("|_|_").color(Cell.Color.PURPLE).create();
+                            break;
+                    }
+                    break;
             }
-            var boards = new ArrayList<>(List.of(Player.BoardType.values()));
-            Collections.shuffle(boards);
-            return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream().map(e -> new Player(e, boards.remove(0))).collect(Collectors.toList()));
+            switch (room.getGameType().getRight()) {
+                case "R5":
+                    cells[0][2] = Cell.Creator.withBounds("__| ").color(Cell.Color.BLUE).spawnPoint().create();
+                    cells[1][2] = Cell.Creator.withBounds("||_ ").color(Cell.Color.PURPLE).create();
+                    cells[2][2] = Cell.Creator.withBounds("_|_ ").color(Cell.Color.WHITE).create();
+                    cells[0][3] = null;
+                    cells[1][3] = Cell.Creator.withBounds("__ |").color(Cell.Color.YELLOW).create();
+                    cells[2][3] = Cell.Creator.withBounds(" __|").color(Cell.Color.YELLOW).spawnPoint().create();
+                    break;
+                case "R6":
+                    cells[2][1] = Cell.Creator.withBounds("||__").color(Cell.Color.WHITE).create();
+                    cells[0][2] = Cell.Creator.withBounds("_|| ").color(Cell.Color.BLUE).spawnPoint().create();
+                    cells[1][2] = Cell.Creator.withBounds("|  _").color(Cell.Color.YELLOW).create();
+                    cells[2][2] = Cell.Creator.withBounds("  _|").color(Cell.Color.YELLOW).create();
+                    cells[0][3] = Cell.Creator.withBounds("__||").color(Cell.Color.GREEN).create();
+                    cells[1][3] = Cell.Creator.withBounds("|_  ").color(Cell.Color.YELLOW).create();
+                    cells[2][3] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
+                    break;
+            }
+            return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream().map(Player::new).collect(Collectors.toList()), room.getSkulls());
         }
     }
 }

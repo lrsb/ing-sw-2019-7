@@ -1,7 +1,7 @@
 package it.polimi.ingsw.common.models;
 
 import it.polimi.ingsw.client.others.Utils;
-import it.polimi.ingsw.client.views.gui.sprite.Displayable;
+import it.polimi.ingsw.client.views.sprite.Displayable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,11 +56,21 @@ public class PowerUp implements Displayable, Serializable {
         return type;
     }
 
-    public void setTarget(@NotNull Player target) {
+    /**
+     *
+     * @param target if present, is the player who suffers the effect
+     */
+
+    public void setTarget(@Nullable Player target) {
         this.target = target;
     }
 
-    public void setTargetPoint(@NotNull Point targetPoint) {
+    /**
+     *
+     * @param targetPoint if present, defines a point which meaning changes
+     *                    according to the specific type of the powerUp
+     */
+    public void setTargetPoint(@Nullable Point targetPoint) {
         this.targetPoint = targetPoint;
     }
 
@@ -75,10 +85,10 @@ public class PowerUp implements Displayable, Serializable {
     }
 
     /**
-     * Return true if two powerUp cards are equals.
+     * This method controls if two powerUps are the same one, talking about the game
      *
      * @param obj The object that you want to compare.
-     * @return True if the cards are equals, else otherwise.
+     * @return True if the cards are equals, false otherwise.
      */
     @Contract(value = "null -> false", pure = true)
     @Override
@@ -86,9 +96,14 @@ public class PowerUp implements Displayable, Serializable {
         return obj instanceof PowerUp && ammoColor == ((PowerUp) obj).ammoColor && type == ((PowerUp) obj).type;
     }
 
+    /**
+     * Use this method to verify if a player can use the powerUp he wants to use.
+     *
+     * @param game the game
+     * @return true if powerUp has been used successfully, false otherwise
+     */
     public boolean use(@NotNull Game game) {
-        if ((this.getType() == Type.TAGBACK_GRENADE && target.hasPowerUp(this) ||
-                game.getActualPlayer().hasPowerUp(this) && getType() != Type.TAGBACK_GRENADE) && canBeUsed(game)) {
+        if (game.getActualPlayer().hasPowerUp(this) && canBeUsed(game)) {
             useImpl(game);
             return true;
         }
@@ -98,15 +113,17 @@ public class PowerUp implements Displayable, Serializable {
     private boolean canBeUsed(@NotNull Game game) {
         switch (getType()) {
             case TARGETING_SCOPE:
-                return game.getLastsDamaged().contains(target);
+                if (target == null) throw new PlayerNotFoundException();
+                return game.getLastsDamaged().contains(target.getUuid());
             case NEWTON:
+                assert target != null && targetPoint != null && target.getPosition() != null;
                 return game.getPlayers().contains(target) && !game.getActualPlayer().equals(target) &&
                         !target.getPosition().equals(targetPoint) && Stream.of(Bounds.Direction.values())
                         .anyMatch(e -> target.isPointAtMaxDistanceInDirection(targetPoint, game.getCells(), 2, e));
             case TAGBACK_GRENADE:
-                return game.getTagbackPlayers().contains(target);
+                return game.isATagbackResponse();
             case TELEPORTER:
-                return targetPoint != null && game.canMove(game.getActualPlayer().getPosition(), targetPoint, 11);
+                return game.getCell(targetPoint) != null;
         }
         return false;
     }
@@ -114,21 +131,21 @@ public class PowerUp implements Displayable, Serializable {
     private void useImpl(@NotNull Game game) {
         switch (getType()) {
             case TARGETING_SCOPE:
+                if (target == null) throw new PlayerNotFoundException();
                 if (target.getDamagesTaken().size() < 12)
                     target.getDamagesTaken().add(game.getActualPlayer().getUuid());
                 break;
             case NEWTON:
+                assert targetPoint != null && target != null : "No target or point delivery selected";
                 target.setPosition(targetPoint);
                 break;
             case TAGBACK_GRENADE:
-                game.getActualPlayer().addMark(target);
-                target.removePowerUp(this);
-                return;
+                game.getTagbackedPlayer().addMark(game.getActualPlayer());
+                break;
             case TELEPORTER:
                 game.getActualPlayer().setPosition(targetPoint);
                 break;
         }
-        game.getActualPlayer().removePowerUp(this);
     }
 
     /**

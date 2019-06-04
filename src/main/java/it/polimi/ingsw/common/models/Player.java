@@ -31,6 +31,7 @@ public class Player implements Displayable, Serializable {
     private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();
     private @NotNull HashMap<Weapon.Name, Boolean> weapons = new HashMap<>();
     private boolean isFirstMove = true;
+    private boolean easyBoard = false;
 
     public Player(@NotNull User user, @NotNull BoardType boardType) {
         this.uuid = user.getUuid();
@@ -81,19 +82,29 @@ public class Player implements Displayable, Serializable {
         return marksTaken;
     }
 
-    public int getMaximumPoints() {
-        return 2 * deaths >= 8 ? 1 : 8 - 2 * deaths;
+    public void setEasyBoard() {
+        if (getDamagesTaken().size() == 0) easyBoard = true;
     }
 
-    public void incrementDeaths() {
+    public int getMaximumPoints() {
+        if (easyBoard) return 2;
+        else return 2 * deaths >= 8 ? 1 : 8 - 2 * deaths;
+    }
+
+    public void manageDeath() {
         deaths++;
+        damagesTaken.clear();
     }
 
     public void addPoints(int pointsAdded) {
         points += pointsAdded;
     }
 
-    public boolean hasPowerUp(@NotNull PowerUp powerUp) {
+    public int getPoints() {
+        return points;
+    }
+
+    boolean hasPowerUp(@NotNull PowerUp powerUp) {
         return powerUps.contains(powerUp);
     }
 
@@ -109,8 +120,12 @@ public class Player implements Displayable, Serializable {
         weapons.put(weapon, false);
     }
 
+    public void reloadWeapon(@Nullable Weapon.Name weapon) {
+        weapons.put(weapon, true);
+    }
+
     //gives damages, convert marks to damages and finally gives marks
-    public void takeHits(@NotNull Game game, int damages, int marks) {
+    void takeHits(@NotNull Game game, int damages, int marks) {
         for (int i = 0; i < damages; i++) {
             if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().uuid);
         }
@@ -120,7 +135,7 @@ public class Player implements Displayable, Serializable {
                     marksTaken.remove(hitterUuid);
                     if (damagesTaken.size() < 12) {
                         damagesTaken.add(game.getActualPlayer().uuid);
-                        if (!game.lastsDamaged.contains(this)) game.lastsDamaged.add(this);
+                        game.addToLastsDamaged(this);
                     }
                 }
             }
@@ -151,7 +166,6 @@ public class Player implements Displayable, Serializable {
         return isFirstMove;
     }
 
-
     private void addCube(@NotNull AmmoCard.Color color) {
         if (cubes[color.getIndex()] < 3) cubes[color.getIndex()]++;
     }
@@ -166,7 +180,6 @@ public class Player implements Displayable, Serializable {
 
     public void removePowerUp(@NotNull PowerUp powerUp) {
         powerUps.remove(powerUp);
-        //TODO spostare powerUps nelle carte scartate
     }
 
     public void addPowerUp(@NotNull PowerUp powerUp) {
@@ -188,7 +201,7 @@ public class Player implements Displayable, Serializable {
     public void ammoCardRecharging(@NotNull AmmoCard ammoCard, @Nullable PowerUp powerUp) {
         switch (ammoCard.getType()) {
             case POWER_UP:
-                addPowerUp(powerUp);
+                if (powerUp != null) addPowerUp(powerUp);
                 break;
             case RED:
                 addCube(AmmoCard.Color.RED);
@@ -227,6 +240,7 @@ public class Player implements Displayable, Serializable {
     }
 
     public boolean isPointAtMaxDistanceInDirection(@NotNull Point point, @NotNull Cell[][] cells, int maxDistance, @NotNull Bounds.Direction direction) {
+        if (position == null) return false;
         int countDistance = 0, x = position.x, y = position.y;
         while (countDistance < maxDistance) {
             if (cells[x][y].getBounds().getType(direction) == Bounds.Type.WALL) return false;
@@ -239,6 +253,7 @@ public class Player implements Displayable, Serializable {
     }
 
     public boolean canSeeCell(@NotNull Point point, @NotNull Cell[][] cells) {
+        if (position == null) return false;
         if (cells[position.x][position.y].getColor() == cells[point.x][point.y].getColor()) return true;
         for (var direction : Bounds.Direction.values())
             if (cells[position.x][position.y].getBounds().getType(direction) == Bounds.Type.DOOR &&
