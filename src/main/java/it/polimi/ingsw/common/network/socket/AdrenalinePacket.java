@@ -58,6 +58,7 @@ public class AdrenalinePacket implements Serializable {
         CREATE_ROOM,
         QUIT_ROOM,
         START_GAME,
+        QUIT_GAME,
         DO_ACTION,
         GAME_UPDATE,
         ROOM_UPDATE,

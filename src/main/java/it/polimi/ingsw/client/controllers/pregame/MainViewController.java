@@ -32,16 +32,6 @@ public class MainViewController extends BaseViewController {
         setContentPane(panel);
         logo.addSprite(new Sprite(10, 40, 370, 70, Utils.readPngImage(getClass(), "logo")));
 
-        Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
-            try {
-                var game = Client.API.getActiveGame(e);
-                if (getNavigationController() != null)
-                    getNavigationController().presentViewController(GameViewController.class, game);
-            } catch (RemoteException ex) {
-                ex.printStackTrace();
-            }
-        });
-
         nuovaPartitaButton.addActionListener(e -> {
             if (getNavigationController() != null)
                 getNavigationController().presentViewController(NewRoomViewController.class);
@@ -54,6 +44,20 @@ public class MainViewController extends BaseViewController {
             //TODO: passare a cli
         });
         esciButton.addActionListener(e -> Utils.jumpBackToLogin(getNavigationController()));
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        super.setVisible(b);
+        if (b) Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
+            try {
+                var game = Client.API.getActiveGame(e);
+                if (getNavigationController() != null)
+                    getNavigationController().presentViewController(GameViewController.class, game);
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     @Override

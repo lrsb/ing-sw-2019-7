@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.network;
 
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Action;
@@ -56,11 +57,16 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                 case START_GAME:
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.START_GAME, null, Server.controller.startGame(token, packet.getAssociatedObject(UUID.class))));
                     break;
+                case QUIT_GAME:
+                    Server.controller.quitGame(token, packet.getAssociatedObject(UUID.class));
+                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.QUIT_GAME, null, null));
+                    break;
                 case DO_ACTION:
                     Server.controller.doAction(token, packet.getAssociatedObject(Action.class));
                     break;
                 case GAME_UPDATE:
-                    Server.controller.addGameListener(token, packet.getAssociatedObject(UUID.class), e -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, e)));
+                    Server.controller.addGameListener(token, packet.getAssociatedObject(UUID.class), (e, message) ->
+                            socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, List.of(new Gson().toJson(e), new Gson().toJson(message)))));
                     break;
                 case ROOM_UPDATE:
                     Server.controller.addRoomListener(token, packet.getAssociatedObject(UUID.class), e -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, null, e)));

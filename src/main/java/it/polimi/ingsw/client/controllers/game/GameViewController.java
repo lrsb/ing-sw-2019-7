@@ -32,22 +32,21 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
     public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
         super("Gioca", 1200, 900, navigationController);
+        game = (Game) params[0];
         $$$setupUI$$$();
+        setContentPane(panel);
         setResizable(true);
         setEnableFullscreen(true);
-        game = (Game) params[0];
-        setContentPane(panel);
         playersBoardButton.addActionListener(e -> {
             if (playersBoardsViewController != null) playersBoardsViewController.dispose();
             playersBoardsViewController = new PlayersBoardsViewController(null, gameBoard.getGame());
             playersBoardsViewController.setVisible(true);
         });
-        exitButton.addActionListener(e -> {
-
-        });
         exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             try {
                 Client.API.removeGameListener(f, game.getUuid());
+                Client.API.quitGame(f, game.getUuid());
+                navigationController.popViewController();
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
                 Utils.jumpBackToLogin(getNavigationController());
@@ -55,11 +54,11 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
-            navigationController.popViewController();
         }));
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                Client.API.addGameListener(e, game.getUuid(), f -> {
+                Client.API.addGameListener(e, game.getUuid(), (f, message) -> {
+                    if (message != null) JOptionPane.showMessageDialog(null, message);
                     try {
                         gameBoard.setGame(f);
                     } catch (IOException ex) {

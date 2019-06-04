@@ -74,6 +74,12 @@ public class Sprite {
         updated();
     }
 
+    public void moveTo(@NotNull Point point) {
+        this.x = point.x;
+        this.y = point.y;
+        updated();
+    }
+
     public void moveTo(@NotNull PointInterpolator pointInterpolator) {
         this.pointInterpolator = pointInterpolator;
         updated();

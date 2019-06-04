@@ -72,6 +72,16 @@ public class Game implements Displayable, Serializable {
      */
     protected int skulls;
     protected @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
+
+    protected boolean isCompleted = false;
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
+    }
     /**
      * The Last turn.
      */

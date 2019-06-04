@@ -164,6 +164,19 @@ public class ClientRestImpl implements API {
     }
 
     @Override
+    public void quitGame(@NotNull String token, @NotNull UUID gameUuid) throws RemoteException {
+        try {
+            var request = HttpRequest.newBuilder().uri(URI.create(host + "/quitGame?uuid=" + gameUuid)).POST(HttpRequest.BodyPublishers.noBody()).header("auth-token", token).build();
+            processResponse(client.send(request, HttpResponse.BodyHandlers.ofString()));
+        } catch (RemoteException e) {
+            throw e;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            throw new RemoteException("Unknown error!!");
+        }
+    }
+
+    @Override
     public boolean doAction(@NotNull String token, @NotNull Action action) throws RemoteException {
         try {
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/doAction")).POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(action))).header("auth-token", token).build();
@@ -190,7 +203,9 @@ public class ClientRestImpl implements API {
                 @Override
                 public void onMessage(String s) {
                     try {
-                        gameListener.onGameUpdate(new Gson().fromJson(s, Game.class));
+                        List<String> data = new Gson().fromJson(s, new TypeToken<List<String>>() {
+                        }.getType());
+                        gameListener.onGameUpdate(new Gson().fromJson(data.get(0), Game.class), new Gson().fromJson(data.get(1), String.class));
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }

@@ -78,6 +78,13 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
                         (int) (point.y * backgroundDimension.getHeight() / 844 + Math.abs(getHeight() - backgroundDimension.height) / 2));
     }
 
+    private @NotNull Point reverseTransformPoint(@NotNull Point point) {
+        var backgroundDimension = getBackgroundDimension();
+        return backgroundDimension == null ? point :
+                new Point((int) ((point.x - Math.abs(getWidth() - backgroundDimension.width) / 2) * 1200 / backgroundDimension.getWidth()),
+                        (int) ((point.y - Math.abs(getHeight() - backgroundDimension.height) / 2) * 844 / backgroundDimension.getHeight()));
+    }
+
     private @NotNull Dimension transformDimension(@NotNull Dimension dimension, boolean swapAxis) {
         var backgroundDimension = getBackgroundDimension();
         return backgroundDimension == null || background == null ? dimension :
@@ -199,7 +206,8 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
                     repaint();
                 }
                 draggingSprite = g;
-                relativePoint = new Point(event.getX() - g.getX(), event.getY() - g.getY());
+                var reversedPoint = reverseTransformPoint(event.getPoint());
+                relativePoint = new Point(reversedPoint.x - g.getX(), reversedPoint.y - g.getY());
             });
         }
 
@@ -207,7 +215,10 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
         public void mouseDragged(MouseEvent event) {
             Optional.ofNullable(draggingSprite).ifPresent(e -> {
                 dragged = true;
-                if (relativePoint != null) e.moveTo(event.getX() - relativePoint.x, event.getY() - relativePoint.y);
+                if (relativePoint != null) {
+                    var reversedPoint = reverseTransformPoint(new Point(event.getX(), event.getY()));
+                    e.moveTo(reversedPoint.x - relativePoint.x, reversedPoint.y - relativePoint.y);
+                }
             });
         }
 

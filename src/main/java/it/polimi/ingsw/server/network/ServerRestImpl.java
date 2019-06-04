@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -80,6 +81,11 @@ public class ServerRestImpl extends NanoWSD {
                     if (method == Method.POST)
                         return newJsonResponse(Server.controller.startGame(token, UUID.fromString(session.getParameters().get("uuid").get(0))));
                     break;
+                case "/quitGame":
+                    if (method == Method.POST) {
+                        Server.controller.quitGame(token, UUID.fromString(session.getParameters().get("uuid").get(0)));
+                        return newJsonResponse("ok");
+                    } else break;
                 case "/doAction":
                     if (method == Method.POST) {
                         var map = new HashMap<String, String>();
@@ -112,9 +118,9 @@ public class ServerRestImpl extends NanoWSD {
                 switch (getHandshakeRequest().getUri()) {
                     case "/gameUpdate":
                         Server.controller.addGameListener(getHandshakeRequest().getHeaders().get("auth-token"),
-                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)), game -> {
+                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)), (game, message) -> {
                                     try {
-                                        sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(game)));
+                                        sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(List.of(new Gson().toJson(game), new Gson().toJson(message)))));
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.network;
 
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
@@ -34,6 +35,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     private volatile @Nullable Room createRoom;
     private volatile boolean quitRoom;
     private volatile @Nullable Game startGame;
+    private volatile boolean quitGame;
     private volatile @Nullable Boolean doAction;
     private volatile boolean gameUpdateRemoved;
     private volatile boolean roomUpdateRemoved;
@@ -111,6 +113,13 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     }
 
     @Override
+    public void quitGame(@NotNull String token, @NotNull UUID gameUuid) throws RemoteException {
+        quitGame = false;
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.QUIT_GAME, token, gameUuid));
+        while (!quitGame) wait1ms();
+    }
+
+    @Override
     public boolean doAction(@NotNull String token, @NotNull Action action) throws RemoteException {
         doAction = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.DO_ACTION, token, action));
@@ -177,14 +186,18 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                 case START_GAME:
                     startGame = packet.getAssociatedObject(Game.class);
                     break;
+                case QUIT_GAME:
+                    quitGame = true;
+                    break;
                 case DO_ACTION:
                     doAction = packet.getAssociatedObject(boolean.class);
                     break;
                 case GAME_UPDATE:
-                    Game game = packet.getAssociatedObject(Game.class);
-                    if (game != null) Optional.ofNullable(gameListener).ifPresent(f -> {
+                    List<String> data = packet.getAssociatedObject(new TypeToken<List<String>>() {
+                    });
+                    if (data != null) Optional.ofNullable(gameListener).ifPresent(f -> {
                         try {
-                            f.onGameUpdate(game);
+                            f.onGameUpdate(new Gson().fromJson(data.get(0), Game.class), new Gson().fromJson(data.get(1), String.class));
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
