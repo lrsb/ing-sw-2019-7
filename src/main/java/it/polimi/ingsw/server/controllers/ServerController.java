@@ -38,13 +38,16 @@ public class ServerController implements API {
         return SecureUserController.createUser(nickname, password);
     }
 
-    //TODO: impl
     @Override
     public @NotNull Game getActiveGame(@Nullable String token) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        var game = new Gson().fromJson(Opt.of(games.find(eq("players.uuid", user.getUuid().toString())).first()).e(Document::toJson).get(""), Game.class);
-        if (game == null) throw new RemoteException("No active game!!");
-        return game;
+        try {
+            var game = new Gson().fromJson(Opt.of(games.find(eq("players.uuid", user.getUuid().toString())).first()).e(Document::toJson).get(""), Game.class);
+            if (game == null) throw new RemoteException("No active game!!");
+            return game;
+        } catch (Exception ignored) {
+            throw new RemoteException("No active game!!");
+        }
     }
 
     @Override

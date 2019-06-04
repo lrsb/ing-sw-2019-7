@@ -134,5 +134,4 @@ public class MainViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
-
 }

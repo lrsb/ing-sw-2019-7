@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 /**
  * The type Game.
  */
-public abstract class Game implements Displayable, Serializable {
+public class Game implements Displayable, Serializable {
     /**
      * The constant MAX_PLAYERS.
      */
@@ -71,16 +71,30 @@ public abstract class Game implements Displayable, Serializable {
      * The Skulls.
      */
     protected int skulls;
-
-    private @NotNull HashMap<UUID, Integer> hashKillshotsTrack = new HashMap<>();
-
-    protected  @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
-
+    protected @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
     /**
      * The Last turn.
      */
 //aggiunto perchè non basta che skulls == 0
     protected boolean lastTurn = false;
+    protected ArrayList<Weapon.Name> redWeapons;
+    protected ArrayList<Weapon.Name> blueWeapons;
+    protected ArrayList<Weapon.Name> yellowWeapons;
+    private @NotNull HashMap<UUID, Integer> hashKillshotsTrack = new HashMap<>();
+
+    public Game() {
+        uuid = UUID.randomUUID();
+        cells = new Cell[MAX_X][MAX_Y];
+        type = Type.FIVE_FIVE;
+    }
+
+    protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
+        this.uuid = uuid;
+        this.type = type;
+        this.cells = cells;
+        this.players.addAll(players);
+        this.skulls = skulls;
+    }
 
     public boolean isATagbackResponse() {
         return getTagbackPlayers().contains(getActualPlayer().getUuid());
@@ -88,27 +102,6 @@ public abstract class Game implements Displayable, Serializable {
 
     public boolean isAReborn() {
         return !isATagbackResponse() && responsivePlayers.contains(getActualPlayer().getUuid());
-    }
-
-    protected ArrayList<Weapon.Name> redWeapons;
-    protected ArrayList<Weapon.Name> blueWeapons;
-    protected ArrayList<Weapon.Name> yellowWeapons;
-
-    /**
-     * Instantiates a new Game.
-     *
-     * @param uuid    the uuid
-     * @param type    the type
-     * @param cells   the cells
-     * @param players the players
-     * @param skulls  the number of skulls
-     */
-    protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
-        this.uuid = uuid;
-        this.type = type;
-        this.cells = cells;
-        this.players.addAll(players);
-        this.skulls = skulls;
     }
 
     /**
@@ -166,7 +159,8 @@ public abstract class Game implements Displayable, Serializable {
      */
     public @NotNull Player getActualPlayer() {
         if (responsivePlayers.isEmpty()) return players.get(seqPlay % players.size());
-        else if (responsivePlayers.contains(players.get(seqPlay % players.size()).getUuid())) throw new SelfResponseException();
+        else if (responsivePlayers.contains(players.get(seqPlay % players.size()).getUuid()))
+            throw new SelfResponseException();
         else for (Player player : players) {
                 if (player.getUuid().equals(responsivePlayers.get(0))) return player;
             }
@@ -239,8 +233,7 @@ public abstract class Game implements Displayable, Serializable {
         if (!hashKillshotsTrack.containsKey(uuid)) {
             hashKillshotsTrack.put(uuid, 1);
             arrayKillshotsTrack.add(uuid);
-        }
-        else hashKillshotsTrack.put(uuid, hashKillshotsTrack.get(uuid) + 1);
+        } else hashKillshotsTrack.put(uuid, hashKillshotsTrack.get(uuid) + 1);
     }
 
     protected @NotNull ArrayList<UUID> getSortedKillshooters() {
