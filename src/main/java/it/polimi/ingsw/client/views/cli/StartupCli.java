@@ -57,7 +57,7 @@ public class StartupCli {
     public static @NotNull Segue login() {
         System.out.println("Inserisci il tuo nickname o * per registrarti");
         var nickname = in.nextLine();
-        System.out.println("Inserisci la tua passowrd");
+        System.out.println("Inserisci la tua password");
         var psw = in.nextLine();
         if (nickname.equals("*")) return Segue.of("sigup");
         else {

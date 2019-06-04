@@ -41,12 +41,21 @@ public class PregameCli {
     public static @NotNull Segue newGame() {
         System.out.println("NUOVA PARTITA");
         System.out.println(" ");
-        System.out.println("Inserisci il nome della partita");
-        var gameName = StartupCli.in.nextLine();
-        System.out.println("Inserisci il tempo di timeout");
-        var timeOut = Integer.parseInt(StartupCli.in.nextLine());
-        System.out.println("Inserisci il numero di teschi");
-        var skulls = Integer.parseInt(StartupCli.in.nextLine());
+        String gameName;
+        int timeout;
+        int skulls;
+        do {
+            System.out.println("Inserisci il nome della partita");
+            gameName = StartupCli.in.nextLine();
+        } while (gameName.isEmpty());
+        do {
+            System.out.println("Inserisci il tempo di timeout, deve essere maggiore di 60 secondi e minore di 120");
+            timeout = Integer.parseInt(StartupCli.in.nextLine());
+        } while (timeout < 60 || timeout > 120);
+        do {
+            System.out.println("Inserisci il numero di teschi");
+            skulls = Integer.parseInt(StartupCli.in.nextLine());
+        } while (skulls < 5 || skulls > 8);
         System.out.println("Scegli il tipo di campo che vuoi avere:");
         System.out.println("1: 5 - 5");
         System.out.println("2: 5 - 6");
@@ -72,7 +81,7 @@ public class PregameCli {
         if (Preferences.getToken() != null) try {
             var fakeroom = new Room(gameName, new User("pippo"));
             fakeroom.setGameType(gameType);
-            fakeroom.setActionTimeout(timeOut);
+            fakeroom.setActionTimeout(timeout);
             fakeroom.setSkulls(skulls);
             var room = Client.API.createRoom(Preferences.getToken(), fakeroom);
             System.out.println("gioco creato correttamente!");
@@ -103,7 +112,7 @@ public class PregameCli {
                             "(" + e.getUsers().parallelStream().map(User::getNickname).collect(Collectors.joining(", ")) + ")"))
                     .collect(Collectors.joining("\n")));
 
-            System.out.println("inserisci il nome della partita o '*' per tornare al menù principale");
+            System.out.println("inserisci l'id della partita o '*' per tornare al menù principale");
             var input = StartupCli.in.nextLine();
 
             if (input.equals("*")) {
@@ -142,21 +151,33 @@ public class PregameCli {
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
         System.out.println("LOBBY");
         System.out.println();
-        System.out.println("Nome: " + room.getName());
-        System.out.println("Skulls: " + room.getSkulls());
+        System.out.println("Nome della partita: " + room.getName());
+        System.out.println("Numero di teschi: " + room.getSkulls());
         System.out.println("tipo di mappa: " + room.getGameType().toString());
+        System.out.println("Timeout turno: " + room.getActionTimeout());
+        System.out.println("Giocatori nella partita: " + room.getUsers().parallelStream().map(User::getNickname).collect(Collectors.joining(", ")));
         if (room.getStartTime() - System.currentTimeMillis() > 0)
             System.out.println("secondi all' avvio:  " + (room.getStartTime() - System.currentTimeMillis()) / 1000);
+        if (System.currentTimeMillis() == -1)
+            System.out.println("numero di giocatori insufficienti per creare la partita");
         System.out.println("scrivi * per abbandonare la lobby o attendi la partenza della partita");
-        while (!StartupCli.in.hasNextLine() && room.getStartTime() - System.currentTimeMillis() > 0) {
+        if (room.getStartTime() - System.currentTimeMillis() > 0) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            return Segue.of("lobby", room);
         }
-        if (room.getStartTime() - System.currentTimeMillis() <= 0) {
-            //TODO: parti gioco
+        if ((room.getStartTime() - System.currentTimeMillis()) <= 0) {
+            try {
+                var game = Client.API.startGame(Preferences.getOptionalToken().get(), room.getUuid());
+                return Segue.of("board", GameCli.class, game);
+            } catch (UserRemoteException e) {
+                return Segue.of("login", StartupCli.class);
+            } catch (RemoteException e) {
+                System.out.println(e.getMessage());
+            }
         }
         if (StartupCli.in.nextLine().equals("*")) {
             try {
@@ -168,8 +189,7 @@ public class PregameCli {
                 System.out.println(e.getMessage());
             }
             return Segue.of("joinGame");
-        }
-        return Segue.of("lobby");
+        } else return Segue.of("lobby", room);
     }
 
 }

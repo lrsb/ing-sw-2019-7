@@ -77,7 +77,8 @@ public class Cell implements Serializable {
      *
      * @return the cell's bounds.
      */
-    @NotNull Bounds getBounds() {
+    @NotNull
+    public Bounds getBounds() {
         return bounds;
     }
 
