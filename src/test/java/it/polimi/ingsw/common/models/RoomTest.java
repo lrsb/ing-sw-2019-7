@@ -1,6 +1,6 @@
 package it.polimi.ingsw.common.models;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.RepeatedTest;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class RoomTest {
-    @Test
+    @RepeatedTest(value = 100)
     void testCreateRoom() {
         Random rand = new Random();
         String gameName = "NomePartita";
