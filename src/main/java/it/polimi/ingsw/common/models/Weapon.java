@@ -182,7 +182,6 @@ public abstract class Weapon {
         if (!game.getActualPlayer().isALoadedGun(Weapon.Name.getName(getClass())) && game.getSkulls() == 0) {
             usedCubes[Weapon.Name.getName(getClass()).getColor().getIndex()]++;
             Stream.of(AmmoCard.Color.values()).forEach(e -> usedCubes[e.getIndex()] += Weapon.Name.getName(getClass()).getGrabCost(e));
-            game.getActualPlayer().reloadWeapon(Weapon.Name.getName(getClass()));
         }
         switch (option) {
             case 0:

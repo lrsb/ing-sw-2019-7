@@ -159,5 +159,7 @@ public class Room implements Serializable {
      */
     public void setSkulls(int skulls) {
         if (skulls >= 5 && skulls <= 8) this.skulls = skulls;
+        else if (skulls > 8) this.skulls = 8;
+        else this.skulls = 5;
     }
 }

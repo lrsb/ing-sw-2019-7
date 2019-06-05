@@ -134,10 +134,8 @@ public class GameImpl extends Game implements Serializable {
     //GRAB_WEAPON STUFF - End
 
     private boolean fireAction(@NotNull Action action) {
-        boolean wasUnloaded = false;
         if (action.getWeapon() == null) return false;
         var weapon = action.getWeapon().build(this, action.getAlternativeFire());
-        if (!getActualPlayer().isALoadedGun(action.getWeapon())) wasUnloaded = true;
         if (action.getBasicTarget() != null) action.getBasicTarget().forEach(weapon::addBasicTarget);
         if (action.getBasicTargetPoint() != null) weapon.setBasicTargetsPoint(action.getBasicTargetPoint());
         if (action.getPowerUpPayment() != null) weapon.setAlternativePaymentToUse(action.getPowerUpPayment());
@@ -157,7 +155,6 @@ public class GameImpl extends Game implements Serializable {
             weapon.getAlternativePaymentUsed().forEach(e -> powerUpsDeck.discardCard(e));
             return true;
         }
-        if (wasUnloaded) getActualPlayer().unloadWeapon(action.getWeapon());
         return false;
     }
 
