@@ -22,7 +22,7 @@ class RoomTest {
         possibleUserPlayer.add(new User("Tia"));
         possibleUserPlayer.add(new User("Cugola"));
         possibleUserPlayer.add(new User("Albertazzi"));
-        int nPlayers = rand.nextInt(3) + 2;
+        int nPlayers = rand.nextInt(2) + 3;
         Room room = new Room(gameName, creator);
         room.setGameType(Game.Type.values()[rand.nextInt(Game.Type.values().length)]);
         room.setSkulls(rand.nextInt());
@@ -37,6 +37,6 @@ class RoomTest {
         assertNotEquals(null, room.getGameType(), "Lack of map");
         assert(room.getSkulls() >= 5 && room.getSkulls() <= 8) : "Wrong number of skulls";
         assert(room.isGameCreated()) : "Game not created";
-        assert(room.getUsers().parallelStream().allMatch(possibleUserPlayer::contains)) : "Someone sneaked";
+        assert(room.getUsers().parallelStream().allMatch(e -> possibleUserPlayer.contains(e) || e.equals(creator)));
     }
 }
