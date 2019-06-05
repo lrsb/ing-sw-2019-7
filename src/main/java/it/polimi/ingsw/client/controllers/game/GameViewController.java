@@ -23,7 +23,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class GameViewController extends BaseViewController implements GameBoardListener {
-    private static final @NotNull Color BACKGROUND_COLOR = Objects.requireNonNull(Utils.hexToColor("3B3B40"));
+    private static final @NotNull Color BACKGROUND_COLOR = Objects.requireNonNull(Utils.hexToColor("1F1E1A"));
     private static final @NotNull Color PURPLE_ACCENT = Objects.requireNonNull(Utils.hexToColor("98155E"));
     private static final @NotNull Color WHITE_ACCENT = Objects.requireNonNull(Utils.hexToColor("F9F7FB"));
     private static final @NotNull Color YELLOW_ACCENT = Objects.requireNonNull(Utils.hexToColor("F1E380"));
@@ -34,18 +34,21 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private JButton playersBoardButton;
     private JButton exitButton;
     private JPanel buttonPanel;
+    private JLabel actualPlayerLabel;
 
     private Game game;
 
     private @Nullable PlayersBoardsViewController playersBoardsViewController;
 
-    public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
+    public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) throws IOException {
         super("Gioca", 1200, 900, navigationController);
         game = (Game) params[0];
         $$$setupUI$$$();
         setContentPane(panel);
         setResizable(true);
         setEnableFullscreen(true);
+
+        updateBoards(game);
 
         panel.setBackground(BACKGROUND_COLOR);
         gameBoard.setBackground(BACKGROUND_COLOR);
@@ -78,7 +81,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 Client.API.addGameListener(e, game.getUuid(), (f, message) -> {
                     if (message != null) JOptionPane.showMessageDialog(null, message);
                     try {
-                        gameBoard.setGame(f);
+                        updateBoards(f);
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -91,6 +94,12 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
+    }
+
+    private void updateBoards(@NotNull Game game) throws IOException {
+        this.game = game;
+        if (gameBoard != null) gameBoard.setGame(game);
+        //actualPlayerLabel.setText("E il turno di: " + game.getActualPlayer().getNickname());
     }
 
     @Override
@@ -142,14 +151,17 @@ public class GameViewController extends BaseViewController implements GameBoardL
         panel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(gameBoard, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        buttonPanel.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(buttonPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 40), new Dimension(-1, 40), new Dimension(-1, 40), 0, false));
         playersBoardButton = new JButton();
         playersBoardButton.setText("Visualizza plance");
-        buttonPanel.add(playersBoardButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPanel.add(playersBoardButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         exitButton = new JButton();
         exitButton.setText("Esci");
-        buttonPanel.add(exitButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPanel.add(exitButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label1 = new JLabel();
+        label1.setText("Label");
+        buttonPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

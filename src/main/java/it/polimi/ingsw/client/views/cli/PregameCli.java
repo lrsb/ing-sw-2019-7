@@ -171,8 +171,8 @@ public class PregameCli {
         }
         if ((room.getStartTime() - System.currentTimeMillis()) <= 0) {
             try {
-                var game = Client.API.startGame(Preferences.getOptionalToken().get(), room.getUuid());
-                return Segue.of("board", GameCli.class, game);
+                //TODO: utilizzare listener
+                Client.API.startGame(Preferences.getOptionalToken().get(), room.getUuid());
             } catch (UserRemoteException e) {
                 return Segue.of("login", StartupCli.class);
             } catch (RemoteException e) {

@@ -42,7 +42,7 @@ public class Client {
 
     private static void test() {
         var room = new Room("ciao", new User("ciao"));
-        room.setGameType(Game.Type.FIVE_FIVE);
+        room.setGameType(Game.Type.SIX_FIVE);
         var game = GameImpl.Creator.newGame(room);
         API = new API() {
             @Override
