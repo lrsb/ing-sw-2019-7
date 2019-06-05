@@ -20,6 +20,7 @@ public class GameCli {
             }
         }
         //TODO return
+        return Segue.of("");
     }
 
     private static Character[][] BuildCell(Cell cell) {
@@ -131,6 +132,7 @@ public class GameCli {
             }
         }
         //TODO proseguire
-        cell.getAmmoCard().getType()
+        cell.getAmmoCard().getType();
         return cellCli;
     }
+}

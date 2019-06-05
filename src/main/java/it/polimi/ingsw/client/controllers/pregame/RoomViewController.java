@@ -88,16 +88,9 @@ public class RoomViewController extends BaseViewController {
             }
         }));
         exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
-            try {
-                Client.API.removeRoomListener(f, room.getUuid());
-                Client.API.quitRoom(f, room.getUuid());
-                navigationController.popViewController();
-            } catch (UserRemoteException ex) {
-                ex.printStackTrace();
-                Utils.jumpBackToLogin(getNavigationController());
-            } catch (RemoteException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, ex.getMessage());
+            if (getNavigationController() != null) {
+                quit();
+                getNavigationController().popViewController();
             }
         }));
         if (clip != null) try {
@@ -113,7 +106,7 @@ public class RoomViewController extends BaseViewController {
 
     private void update(@NotNull Room room) {
         if (timer != null) timer.stop();
-        if (room.getStartTime() != -1) timer = new Timer(1000, e -> {
+        timer = new Timer(1000, e -> {
             if (room.getStartTime() - System.currentTimeMillis() <= 0) startLabel.setText("");
             else
                 startLabel.setText("Partenza tra: " + (room.getStartTime() - System.currentTimeMillis()) / 1000 + " sec");
@@ -128,11 +121,11 @@ public class RoomViewController extends BaseViewController {
         usersList.setModel(listModel);
     }
 
-    @Override
-    protected void controllerPopped() {
+    private void quit() {
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
                 Client.API.removeRoomListener(e, roomUuid);
+                Client.API.quitRoom(e, roomUuid);
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
                 Utils.jumpBackToLogin(getNavigationController());
@@ -142,6 +135,11 @@ public class RoomViewController extends BaseViewController {
             }
         });
         if (clip != null) clip.stop();
+    }
+
+    @Override
+    protected void controllerPopped() {
+        quit();
     }
 
     /**
