@@ -40,6 +40,8 @@ public class RoomViewController extends BaseViewController {
     private @Nullable Clip clip;
     private Timer timer;
 
+    private boolean game = false;
+
     {
         try {
             clip = AudioSystem.getClip();
@@ -55,6 +57,39 @@ public class RoomViewController extends BaseViewController {
         $$$setupUI$$$();
     }
 
+    private void update(@NotNull Room room) {
+        if (timer != null) timer.stop();
+        timer = new Timer(1000, e -> {
+            if (room.getStartTime() - System.currentTimeMillis() <= 0) startLabel.setText("");
+            else
+                startLabel.setText("Partenza tra: " + (room.getStartTime() - System.currentTimeMillis()) / 1000 + " sec");
+        });
+        timer.start();
+        roomNameLabel.setText(room.getName());
+        skullsLabel.setText("Teschi: " + room.getSkulls());
+        gameTypeLabel.setText("Tipo di gioco: " + room.getGameType());
+        timeoutLabel.setText("Timeout: " + room.getActionTimeout());
+        var listModel = new DefaultListModel<String>();
+        listModel.addAll(room.getUsers().parallelStream().map(User::getNickname).collect(Collectors.toList()));
+        usersList.setModel(listModel);
+    }
+
+    private void quit() {
+        Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
+            try {
+                Client.API.removeRoomListener(e, roomUuid);
+                Client.API.quitRoom(e, roomUuid);
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+        });
+        if (clip != null) clip.stop();
+    }
+
     public RoomViewController(@NotNull NavigationController navigationController, @NotNull Object... params) {
         super("", 600, 400, navigationController);
         setContentPane(panel);
@@ -65,8 +100,10 @@ public class RoomViewController extends BaseViewController {
             try {
                 Client.API.addRoomListener(e, room.getUuid(), f -> {
                     update(f);
-                    if (f.isGameCreated() && getNavigationController() != null)
+                    if (f.isGameCreated() && getNavigationController() != null) {
+                        game = true;
                         getNavigationController().presentViewController(true, GameViewController.class, Client.API.getActiveGame(e));
+                    }
                 });
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
@@ -104,42 +141,9 @@ public class RoomViewController extends BaseViewController {
         update(room);
     }
 
-    private void update(@NotNull Room room) {
-        if (timer != null) timer.stop();
-        timer = new Timer(1000, e -> {
-            if (room.getStartTime() - System.currentTimeMillis() <= 0) startLabel.setText("");
-            else
-                startLabel.setText("Partenza tra: " + (room.getStartTime() - System.currentTimeMillis()) / 1000 + " sec");
-        });
-        timer.start();
-        roomNameLabel.setText(room.getName());
-        skullsLabel.setText("Teschi: " + room.getSkulls());
-        gameTypeLabel.setText("Tipo di gioco: " + room.getGameType());
-        timeoutLabel.setText("Timeout: " + room.getActionTimeout());
-        var listModel = new DefaultListModel<String>();
-        listModel.addAll(room.getUsers().parallelStream().map(User::getNickname).collect(Collectors.toList()));
-        usersList.setModel(listModel);
-    }
-
-    private void quit() {
-        Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
-            try {
-                Client.API.removeRoomListener(e, roomUuid);
-                Client.API.quitRoom(e, roomUuid);
-            } catch (UserRemoteException ex) {
-                ex.printStackTrace();
-                Utils.jumpBackToLogin(getNavigationController());
-            } catch (RemoteException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, ex.getMessage());
-            }
-        });
-        if (clip != null) clip.stop();
-    }
-
     @Override
     protected void controllerPopped() {
-        quit();
+        if (!game) quit();
     }
 
     /**

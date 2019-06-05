@@ -33,7 +33,9 @@ public abstract class AbstractBoard extends SpriteBoard implements SpriteBoardLi
     @Override
     public void onSpriteDragged(@NotNull Sprite sprite) {
         if (sprite.getTag() != null) if (sprite.getTag().startsWith("p:")) {
-            var ints = sprite.getTag().substring(2).split(",");
+            var tag = sprite.getTag();
+            if (tag.contains(";")) tag = tag.split(";")[0];
+            var ints = tag.substring(2).split(",");
             sprite.moveTo(new LinearPointInterpolator(sprite.getPosition(), new Point(Integer.parseInt(ints[0]), Integer.parseInt(ints[1])), 250) {
             });
         }

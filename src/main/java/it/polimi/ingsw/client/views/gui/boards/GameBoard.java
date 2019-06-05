@@ -23,7 +23,7 @@ public class GameBoard extends AbstractBoard {
     @Override
     public void setGame(@NotNull Game game) throws IOException {
         super.setGame(game);
-        getSprites().parallelStream().filter(e -> e.getTag() == null || !e.getTag().contains("static")).forEach(e -> e.fade(new LinearFadeInterpolator(1, 0, 1000) {
+        getSprites().parallelStream().filter(e -> !(e.getAssociatedObject() instanceof Player) || e.getTag() == null || !e.getTag().contains("static")).forEach(e -> e.fade(new LinearFadeInterpolator(1, 0, 1000) {
             @Override
             public void onInterpolationCompleted() {
                 e.remove();
@@ -38,7 +38,6 @@ public class GameBoard extends AbstractBoard {
         var weapon = new Sprite(50, 50, 80, 80, Utils.readPngImage(Weapon.class, "back"));
         weapon.setDraggable(true);
         addSprite(weapon);
-        //TODO: giocatori
     }
 
     @Override
@@ -201,7 +200,7 @@ public class GameBoard extends AbstractBoard {
     private void populatePlayers(@NotNull Game game) {
         var random = new SecureRandom();
         addAllSprite(game.getPlayers().parallelStream().filter(e -> e.getPosition() != null).map(e -> {
-            var optSprite = getSprites().parallelStream().filter(f -> f.getTag() != null && f.getTag().contains(e.getUuid().toString())).findAny();
+            var optSprite = getSprites().parallelStream().filter(f -> f.getAssociatedObject() instanceof Player && f.getAssociatedObject().equals(e)).findAny();
             var x = 250 + e.getPosition().x * 220;
             var y = 210 + e.getPosition().y * 190;
             if (optSprite.isPresent()) {
@@ -210,11 +209,23 @@ public class GameBoard extends AbstractBoard {
                 return optSprite.get();
             }
             try {
-                return new Sprite(x, y, 80, 80, Utils.readPngImage(Game.class, "skull"));
+                var sprite = new Sprite(x, y, 80, 80, Utils.readPngImage(Game.class, "skull"));
+                sprite.setTag("p:" + x + "," + y);
+                sprite.setDraggable(true);
+                sprite.setAssociatedObject(e);
+                return sprite;
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
             return null;
         }).collect(Collectors.toList()));
+        game.getPlayers().parallelStream().filter(e -> e.getPosition() == null).map(e -> getSprites().parallelStream()
+                .filter(f -> f.getTag() != null && f.getTag().contains(e.getUuid().toString())).findAny())
+                .filter(Optional::isPresent).map(Optional::get).forEach(e -> e.fade(new LinearFadeInterpolator(1, 0, 1000) {
+            @Override
+            public void onInterpolationCompleted() {
+                e.remove();
+            }
+        }));
     }
 }
