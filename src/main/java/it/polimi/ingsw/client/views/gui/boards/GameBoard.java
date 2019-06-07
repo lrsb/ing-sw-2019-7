@@ -6,6 +6,7 @@ import it.polimi.ingsw.client.views.gui.sprite.fadeinterpolators.LinearFadeInter
 import it.polimi.ingsw.client.views.gui.sprite.pointinterpolators.LinearPointInterpolator;
 import it.polimi.ingsw.common.models.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.IOException;
@@ -41,22 +42,28 @@ public class GameBoard extends AbstractBoard {
         addSprite(weapon);
     }
 
+    private static @Nullable Point convertSpriteToPosition(@NotNull Sprite sprite) {
+        if (sprite.getX() > 205 && sprite.getX() + sprite.getDimension().getWidth() / 2 < 994 &&
+                sprite.getY() > 175 && sprite.getY() + sprite.getDimension().getHeight() / 2 < 744) {
+            var x = (int) ((sprite.getX() + sprite.getDimension().getWidth() / 2 - 205) / 220);
+            var y = (int) ((sprite.getY() + sprite.getDimension().getWidth() / 2 - 175) / 190);
+            return new Point(x, y);
+        } else return null;
+    }
+
     @Override
     public void onSpriteClicked(@NotNull Sprite sprite) {
-        if (getGameBoardListener() != null) getGameBoardListener().spriteSelected(sprite.getAssociatedObject());
-
-        //Optional.ofNullable(gameBoardListener).ifPresent(e -> e.doAction(Action.Builder.create(getGame().getUuid()).buildMoveAction(new Point(0, 0))));
+        if (getGameBoardListener() != null)
+            getGameBoardListener().spriteSelected(sprite.getAssociatedObject(), convertSpriteToPosition(sprite));
     }
 
     @Override
     public void onSpriteDragged(@NotNull Sprite sprite) {
-        if (sprite.getX() > 205 && sprite.getX() + sprite.getDimension().getWidth() / 2 < 994 &&
-                sprite.getY() > 175 && sprite.getY() + sprite.getDimension().getHeight() / 2 < 744) {
+        var position = convertSpriteToPosition(sprite);
+        if (position != null) {
             if (getGameBoardListener() != null) {
-                var x = (int) ((sprite.getX() + sprite.getDimension().getWidth() / 2 - 205) / 220);
-                var y = (int) ((sprite.getY() + sprite.getDimension().getWidth() / 2 - 175) / 190);
-                if (getGameBoardListener().spriteMoved(sprite.getAssociatedObject(), x, y))
-                    sprite.moveTo(new LinearPointInterpolator(sprite.getPosition(), new Point(250 + x * 220, 210 + y * 190), 250) {
+                if (getGameBoardListener().spriteMoved(sprite.getAssociatedObject(), position))
+                    sprite.moveTo(new LinearPointInterpolator(sprite.getPosition(), new Point(250 + position.x * 220, 210 + position.y * 190), 250) {
                     });
                 else super.onSpriteDragged(sprite);
             } else super.onSpriteDragged(sprite);
@@ -142,6 +149,7 @@ public class GameBoard extends AbstractBoard {
                         var ammoSprite = new Sprite(position.x, position.y, 55, 55, e.getFrontImage());
                         ammoSprite.setTag("p:" + position.x + "," + position.y);
                         ammoSprite.setDraggable(true);
+                        ammoSprite.setAssociatedObject(e);
                         ammoSprite.fade(new LinearFadeInterpolator(0, 1, 1000) {
                         });
                         addSprite(ammoSprite);

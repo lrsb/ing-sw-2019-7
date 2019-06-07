@@ -11,9 +11,9 @@ import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.client.views.gui.boards.GameBoard;
 import it.polimi.ingsw.client.views.gui.boards.GameBoardListener;
 import it.polimi.ingsw.common.models.Action;
+import it.polimi.ingsw.common.models.AmmoCard;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Weapon;
-import it.polimi.ingsw.common.models.wrappers.Opt;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,12 +50,12 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private JLabel actionDescriptionLabel;
     private JPanel cancelPanel;
 
+    private @Nullable PlayersBoardsViewController playersBoardsViewController;
+
     private Game game;
     private boolean yourTurn;
-    private @Nullable Action.Builder action;
     private @Nullable Action.Type type;
 
-    private @Nullable PlayersBoardsViewController playersBoardsViewController;
 
     public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) throws IOException {
         super("Gioca", 1100, 700, navigationController);
@@ -80,26 +80,6 @@ public class GameViewController extends BaseViewController implements GameBoardL
         actionDescriptionLabel.setForeground(WHITE_ACCENT);
         actualPlayerLabel.setForeground(WHITE_ACCENT);
 
-        playersBoardButton.addActionListener(e -> {
-            if (playersBoardsViewController != null) playersBoardsViewController.dispose();
-            playersBoardsViewController = new PlayersBoardsViewController(null, gameBoard.getGame());
-            playersBoardsViewController.setVisible(true);
-        });
-        exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
-            if (JOptionPane.showConfirmDialog(null, "Vuoi uscire dal gioco?", "Esci", YES_NO_OPTION) == YES_OPTION) {
-                try {
-                    Client.API.removeGameListener(f, game.getUuid());
-                    Client.API.quitGame(f, game.getUuid());
-                    navigationController.popViewController();
-                } catch (UserRemoteException ex) {
-                    ex.printStackTrace();
-                    Utils.jumpBackToLogin(getNavigationController());
-                } catch (RemoteException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
-            }
-        }));
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
                 Client.API.addGameListener(e, game.getUuid(), (f, message) -> {
@@ -119,37 +99,75 @@ public class GameViewController extends BaseViewController implements GameBoardL
             }
         });
 
+        playersBoardButton.addActionListener(e -> {
+            if (playersBoardsViewController != null) playersBoardsViewController.dispose();
+            playersBoardsViewController = new PlayersBoardsViewController(null, gameBoard.getGame());
+            playersBoardsViewController.setVisible(true);
+        });
+        exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
+            if (JOptionPane.showConfirmDialog(null, "Vuoi uscire dal gioco?", "Esci", YES_NO_OPTION) == YES_OPTION) {
+                try {
+                    Client.API.quitGame(f, game.getUuid());
+                    navigationController.popViewController();
+                } catch (UserRemoteException ex) {
+                    ex.printStackTrace();
+                    Utils.jumpBackToLogin(getNavigationController());
+                } catch (RemoteException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                }
+            }
+        }));
+
         moveButton.addActionListener(e -> {
             if (yourTurn) {
-                action = Action.Builder.create(game.getUuid());
                 type = Action.Type.MOVE;
                 reloadActionPanel();
             }
         });
         shootButton.addActionListener(e -> {
             if (yourTurn) {
-                action = Action.Builder.create(game.getUuid());
                 type = Action.Type.FIRE;
                 reloadActionPanel();
             }
         });
         grabButton.addActionListener(e -> {
             if (yourTurn) {
-                action = Action.Builder.create(game.getUuid());
                 type = game.getCell(game.getActualPlayer().getPosition()).isSpawnPoint() ? Action.Type.GRAB_WEAPON : Action.Type.GRAB_AMMOCARD;
                 reloadActionPanel();
             }
         });
+
         cancelButton.addActionListener(e -> {
-            action = null;
             type = null;
             reloadActionPanel();
         });
     }
 
+    private void updateBoards(@NotNull Game game) throws IOException {
+        this.game = game;
+        if (gameBoard != null) gameBoard.setGame(game);
+        yourTurn = Preferences.getUuid().equals(game.getActualPlayer().getUuid());
+        reloadActionPanel();
+        actualPlayerLabel.setText(yourTurn ? "TE" : game.getActualPlayer().getNickname());
+
+        if (game.isFirstMove()) {
+            //game.getPowerUps()
+            //Action.Builder.create(game.getUuid()).buildFirstMove();
+        } else if (game.isAReborn()) {
+
+        } else if (game.isATagbackResponse()) {
+
+        } else if (game.isCompleted()) {
+
+        } else {
+            //TODO: mossa normale
+        }
+    }
+
     private void reloadActionPanel() {
         if (yourTurn) {
-            if (action != null && type != null) {
+            if (type != null) {
                 switch (type) {
                     case NOTHING:
                         break;
@@ -177,6 +195,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 cancelPanel.setVisible(true);
             } else {
                 actionPanel.setVisible(true);
+                grabButton.setVisible(game.getCell(game.getActualPlayer().getPosition()) != null);
                 cancelPanel.setVisible(false);
             }
         } else {
@@ -185,60 +204,63 @@ public class GameViewController extends BaseViewController implements GameBoardL
         }
     }
 
-    private void updateBoards(@NotNull Game game) throws IOException {
-        this.game = game;
-        if (gameBoard != null) gameBoard.setGame(game);
-        yourTurn = Preferences.getUuid().equals(game.getActualPlayer().getUuid());
-        reloadActionPanel();
-        actualPlayerLabel.setText(yourTurn ? "TE" : game.getActualPlayer().getNickname());
+    @Override
+    public void spriteSelected(@Nullable Object data, @Nullable Point point) {
+        @Nullable Action todo = null;
 
-        if (game.isFirstMove()) {
-            //game.getPowerUps()
-            //Action.Builder.create(game.getUuid()).buildFirstMove();
-        } else if (game.isAReborn()) {
-
-        } else if (game.isATagbackResponse()) {
-
-        } else if (game.isCompleted()) {
-
-        } else {
-            //TODO: mossa normale
-
+        if (data instanceof Weapon) {
+            if (type == Action.Type.GRAB_WEAPON) {
+                //todo = Action.Builder.create(game.getUuid()).buildWeaponGrabAction()
+            } else new WeaponExpoViewController(null, data).setVisible(true);
         }
+        if (data instanceof AmmoCard && type == Action.Type.GRAB_AMMOCARD) {
+            todo = Action.Builder.create(game.getUuid()).buildAmmoCardGrabAction(point);
+        }
+
+        doAction(todo);
     }
 
     @Override
-    public void spriteSelected(@Nullable Object data) {
-        if (data instanceof Weapon) new WeaponExpoViewController(null, data).setVisible(true);
-
-
-    }
-
-    @Override
-    public boolean spriteMoved(@Nullable Object data, int x, int y) {
+    public boolean spriteMoved(@Nullable Object data, @Nullable Point point) {
         if (data == null) return false;
         @Nullable Action todo = null;
 
         if (data instanceof UUID && type == Action.Type.MOVE) if (Preferences.getUuid().equals(data)) {
-            if (game.canMove(game.getActualPlayer().getPosition(), new Point(x, y), 2))
-                todo = Opt.of(action).e(e -> e.buildMoveAction(new Point(x, y))).get();
+            if (game.canMove(game.getActualPlayer().getPosition(), point, 2))
+                todo = Action.Builder.create(game.getUuid()).buildMoveAction(point);
             else JOptionPane.showMessageDialog(null, "Non ti puoi muovere lì");
         } else JOptionPane.showMessageDialog(null, "Muovi il tuo giocatore");
 
+        return doAction(todo);
+    }
 
+    private boolean doAction(@Nullable Action action) {
         var token = Preferences.getTokenOrJumpBack(getNavigationController());
-        if (todo == null || token.isEmpty()) return false;
-        try {
-            return Client.API.doAction(token.get(), todo);
+        if (action != null && token.isPresent()) try {
+            return Client.API.doAction(token.get(), action);
         } catch (UserRemoteException ex) {
             ex.printStackTrace();
             Utils.jumpBackToLogin(getNavigationController());
-            return false;
         } catch (RemoteException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, ex.getMessage());
-            return false;
         }
+        return false;
+    }
+
+    @Override
+    protected void controllerPopped() {
+        Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
+            try {
+                Client.API.removeGameListener(e, game.getUuid());
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                Utils.jumpBackToLogin(getNavigationController());
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+        });
     }
 
     private void createUIComponents() {
@@ -333,5 +355,4 @@ public class GameViewController extends BaseViewController implements GameBoardL
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
-
 }
