@@ -14,6 +14,12 @@ import java.util.stream.Collectors;
 
 public class PregameCli {
     public static @NotNull Segue mainMenu() {
+        if (Preferences.getToken() != null) try {
+            return Segue.of("buildBoard", GameCli.class, Client.API.getActiveGame(Preferences.getToken()));
+        } catch (UserRemoteException e) {
+            return Segue.of("login", StartupCli.class);
+        } catch (RemoteException ignored) {
+        }
         System.out.println("Adrenalina");
         System.out.println(" ");
         System.out.println("1: nuova partita");

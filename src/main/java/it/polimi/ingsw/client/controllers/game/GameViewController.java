@@ -57,6 +57,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         playersBoardButton.setForeground(BACKGROUND_COLOR);
         exitButton.setBackground(BACKGROUND_COLOR);
         exitButton.setForeground(BACKGROUND_COLOR);
+        actualPlayerLabel.setForeground(WHITE_ACCENT);
 
         playersBoardButton.addActionListener(e -> {
             if (playersBoardsViewController != null) playersBoardsViewController.dispose();
@@ -99,7 +100,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private void updateBoards(@NotNull Game game) throws IOException {
         this.game = game;
         if (gameBoard != null) gameBoard.setGame(game);
-        //actualPlayerLabel.setText("E il turno di: " + game.getActualPlayer().getNickname());
+        actualPlayerLabel.setText("E il turno di: " + game.getActualPlayer().getNickname());
     }
 
     @Override

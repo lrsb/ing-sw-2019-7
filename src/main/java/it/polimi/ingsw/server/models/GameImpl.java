@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server.models;
 
 import it.polimi.ingsw.common.models.*;
-import it.polimi.ingsw.common.models.modelsExceptions.ActionDeniedException;
+import it.polimi.ingsw.common.models.exceptions.ActionDeniedException;
 import it.polimi.ingsw.common.models.wrappers.Opt;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -263,6 +263,10 @@ public class GameImpl extends Game implements Serializable {
             pos += ranking.get(pos).size();
         }
         return ranking;
+    }
+
+    public void setCompleted(boolean isCompleted) {
+        this.isCompleted = isCompleted;
     }
 
     private boolean reborn(@NotNull Action action) {

@@ -60,11 +60,6 @@ public class MainViewController extends BaseViewController {
         });
     }
 
-    @Override
-    protected void controllerPopped() {
-        logo = null;
-    }
-
     private void createUIComponents() {
         logo = new SpriteBoard(null);
     }

@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
+import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
@@ -54,12 +55,12 @@ public class ClientRestImpl implements API {
 
     @SuppressWarnings("Duplicates")
     @Override
-    public @NotNull String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull User.Auth authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         try {
             nickname = URLEncoder.encode(nickname, StandardCharsets.UTF_8);
             password = URLEncoder.encode(password, StandardCharsets.UTF_8);
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/authUser?nickname=" + nickname + "&password=" + password)).POST(HttpRequest.BodyPublishers.noBody()).build();
-            return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), String.class);
+            return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), User.Auth.class);
         } catch (RemoteException e) {
             throw e;
         } catch (IOException | InterruptedException e) {
@@ -70,12 +71,12 @@ public class ClientRestImpl implements API {
 
     @SuppressWarnings("Duplicates")
     @Override
-    public @NotNull String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull User.Auth createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         try {
             nickname = URLEncoder.encode(nickname, StandardCharsets.UTF_8);
             password = URLEncoder.encode(password, StandardCharsets.UTF_8);
             var request = HttpRequest.newBuilder().uri(URI.create(host + "/createUser?nickname=" + nickname + "&password=" + password)).POST(HttpRequest.BodyPublishers.noBody()).build();
-            return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), String.class);
+            return new Gson().fromJson(processResponse(client.send(request, HttpResponse.BodyHandlers.ofString())), User.Auth.class);
         } catch (RemoteException e) {
             throw e;
         } catch (IOException | InterruptedException e) {

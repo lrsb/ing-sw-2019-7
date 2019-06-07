@@ -47,12 +47,12 @@ public class Client {
         var game = GameImpl.Creator.newGame(room);
         API = new API() {
             @Override
-            public @NotNull String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+            public @NotNull User.Auth authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
                 return null;
             }
 
             @Override
-            public @NotNull String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+            public @NotNull User.Auth createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
                 return null;
             }
 

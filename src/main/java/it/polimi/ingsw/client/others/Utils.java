@@ -51,11 +51,11 @@ public class Utils {
     }
 
     public static @NotNull BufferedImage applyColorToMask(@NotNull BufferedImage mask, @NotNull Color color) {
-        int[] maskPixels = mask.getRGB(0, 0, mask.getWidth(), mask.getHeight(), null, 0, mask.getWidth());
+        var maskPixels = mask.getRGB(0, 0, mask.getWidth(), mask.getHeight(), null, 0, mask.getWidth());
         var masked = new BufferedImage(mask.getWidth(), mask.getHeight(), BufferedImage.TYPE_INT_ARGB);
         var rgb = color.getRGB();
         masked.setRGB(0, 0, mask.getWidth(), mask.getHeight(),
-                Arrays.stream(maskPixels).parallel().map(e -> e != 0 ? rgb : e).toArray(), 0, mask.getWidth());
+                Arrays.stream(maskPixels).parallel().map(e -> (e & 0xFF000000) | rgb).toArray(), 0, mask.getWidth());
         return masked;
     }
 

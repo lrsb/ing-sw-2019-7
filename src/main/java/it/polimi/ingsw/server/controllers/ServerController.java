@@ -29,12 +29,12 @@ public class ServerController implements API {
     private final @NotNull HashMap<UUID, Timer> roomTimers = new HashMap<>();
 
     @Override
-    public @NotNull String authUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
+    public @NotNull User.Auth authUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
         return SecureUserController.authUser(nickname, password);
     }
 
     @Override
-    public @NotNull String createUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
+    public @NotNull User.Auth createUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
         return SecureUserController.createUser(nickname, password);
     }
 

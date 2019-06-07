@@ -4,6 +4,7 @@ import it.polimi.ingsw.Server;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
+import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
@@ -20,12 +21,12 @@ public class ServerRmiImpl extends UnicastRemoteObject implements API {
     }
 
     @Override
-    public @NotNull String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull User.Auth authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         return Server.controller.authUser(nickname, password);
     }
 
     @Override
-    public @NotNull String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull User.Auth createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         return Server.controller.createUser(nickname, password);
     }
 

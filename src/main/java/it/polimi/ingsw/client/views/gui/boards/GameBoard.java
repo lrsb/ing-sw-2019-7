@@ -23,7 +23,8 @@ public class GameBoard extends AbstractBoard {
     @Override
     public void setGame(@NotNull Game game) throws IOException {
         super.setGame(game);
-        getSprites().parallelStream().filter(e -> !(e.getAssociatedObject() instanceof Player) || e.getTag() == null || !e.getTag().contains("static")).forEach(e -> e.fade(new LinearFadeInterpolator(1, 0, 1000) {
+        getSprites().parallelStream().filter(e -> (e.getAssociatedObject() != null && !(e.getAssociatedObject() instanceof Player)) ||
+                (e.getTag() == null || !e.getTag().contains("static"))).forEach(e -> e.fade(new LinearFadeInterpolator(1, 0, 1000) {
             @Override
             public void onInterpolationCompleted() {
                 e.remove();

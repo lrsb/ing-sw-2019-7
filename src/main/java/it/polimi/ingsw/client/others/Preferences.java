@@ -1,10 +1,12 @@
 package it.polimi.ingsw.client.others;
 
 import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.common.models.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class Preferences {
     private static final @NotNull java.util.prefs.Preferences preferences = java.util.prefs.Preferences.userRoot().node(Preferences.class.getName());
@@ -13,8 +15,13 @@ public class Preferences {
         return preferences.get("token", null);
     }
 
-    public static void setToken(@NotNull String token) {
-        preferences.put("token", token);
+    public static @NotNull UUID getUuid() {
+        return UUID.fromString(preferences.get("uuid", null));
+    }
+
+    public static void setToken(@NotNull User.Auth token) {
+        preferences.put("uuid", token.getUuid().toString());
+        preferences.put("token", token.getToken());
     }
 
     public static @NotNull Optional<String> getTokenOrJumpBack(@Nullable NavigationController navigationController) {

@@ -12,7 +12,6 @@ import java.util.UUID;
 /**
  * This class defines actions that a player can do during a game.
  */
-
 public class Action implements Serializable {
     private static final long serialVersionUID = 1;
 
