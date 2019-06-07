@@ -168,8 +168,8 @@ public class Deck<T extends Serializable> implements Serializable {
          * @return the deck
          */
         @Contract(" -> new")
-        public static @NotNull Deck<Weapon.Name> newWeaponsDeck() {
-            var cards = new ArrayList<>(List.of(Weapon.Name.values()));
+        public static @NotNull Deck<Weapon> newWeaponsDeck() {
+            var cards = new ArrayList<>(List.of(Weapon.values()));
             return new Deck<>(cards, false);
         }
     }

@@ -29,7 +29,7 @@ public class Player implements Displayable, Serializable {
     private int points = 0;
     private @NotNull int[] cubes = {3, 3, 3};
     private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();
-    private @NotNull HashMap<Weapon.Name, Boolean> weapons = new HashMap<>();
+    private @NotNull HashMap<Weapon, Boolean> weapons = new HashMap<>();
     private boolean isFirstMove = true;
     private boolean easyBoard = false;
 
@@ -104,28 +104,28 @@ public class Player implements Displayable, Serializable {
         return points;
     }
 
-    boolean hasPowerUp(@NotNull PowerUp powerUp) {
+    public boolean hasPowerUp(@NotNull PowerUp powerUp) {
         return powerUps.contains(powerUp);
     }
 
-    public boolean hasWeapon(@Nullable Weapon.Name weapon) {
+    public boolean hasWeapon(@Nullable Weapon weapon) {
         return weapons.get(weapon) != null;
     }
 
-    public boolean isALoadedGun(@Nullable Weapon.Name weapon) {
+    public boolean isALoadedGun(@Nullable Weapon weapon) {
         return hasWeapon(weapon) && weapons.get(weapon);
     }
 
-    public void unloadWeapon(@Nullable Weapon.Name weapon) {
+    public void unloadWeapon(@Nullable Weapon weapon) {
         weapons.put(weapon, false);
     }
 
-    public void reloadWeapon(@Nullable Weapon.Name weapon) {
+    public void reloadWeapon(@Nullable Weapon weapon) {
         weapons.put(weapon, true);
     }
 
     //gives damages, convert marks to damages and finally gives marks
-    void takeHits(@NotNull Game game, int damages, int marks) {
+    public void takeHits(@NotNull Game game, int damages, int marks) {
         for (int i = 0; i < damages; i++) {
             if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().uuid);
         }
@@ -186,11 +186,11 @@ public class Player implements Displayable, Serializable {
         powerUps.add(powerUp);
     }
 
-    public void addWeapon(Weapon.Name weapon) {
+    public void addWeapon(Weapon weapon) {
         weapons.put(weapon, true);
     }
 
-    public void removeWeapon(Weapon.Name weapon) {
+    public void removeWeapon(Weapon weapon) {
         weapons.remove(weapon);
     }
 

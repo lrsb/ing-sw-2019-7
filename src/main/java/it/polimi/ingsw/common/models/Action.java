@@ -17,8 +17,8 @@ public class Action implements Serializable {
 
     private @NotNull Type actionType;
     private @NotNull UUID gameUuid;
-    private @Nullable Weapon.Name weapon;
-    private @Nullable Weapon.Name discardedWeapon;
+    private @Nullable Weapon weapon;
+    private @Nullable Weapon discardedWeapon;
     private @Nullable Point destination;
     private @Nullable PowerUp.Type powerUpType;
     private @Nullable AmmoCard.Color color;
@@ -51,11 +51,11 @@ public class Action implements Serializable {
         return gameUuid;
     }
 
-    public @Nullable Weapon.Name getWeapon() {
+    public @Nullable Weapon getWeapon() {
         return weapon;
     }
 
-    public @Nullable Weapon.Name getDiscardedWeapon() {
+    public @Nullable Weapon getDiscardedWeapon() {
         return discardedWeapon;
     }
 
@@ -152,7 +152,7 @@ public class Action implements Serializable {
          *                           the cost to grab the @param weapon
          * @return the Action to grab a weapon
          */
-        public @NotNull Action buildWeaponGrabAction(@Nullable Point destination, @NotNull Weapon.Name weapon, @Nullable Weapon.Name discardedWeapon, @Nullable ArrayList<PowerUp> alternativePayment) {
+        public @NotNull Action buildWeaponGrabAction(@Nullable Point destination, @NotNull Weapon weapon, @Nullable Weapon discardedWeapon, @Nullable ArrayList<PowerUp> alternativePayment) {
             var action = new Action(Type.GRAB_WEAPON, gameUuid);
             action.destination = destination;
             action.weapon = weapon;
@@ -193,7 +193,7 @@ public class Action implements Serializable {
          * @return the action
          */
 
-        public @NotNull Action buildFireAction(@NotNull Weapon.Name weapon, @NotNull Point destination,
+        public @NotNull Action buildFireAction(@NotNull Weapon weapon, @NotNull Point destination,
                                                @Nullable ArrayList<PowerUp> powerUpPayment, boolean alternativeFire,
                                                int options, @NotNull ArrayList<UUID> basicTarget,
                                                @Nullable Point basicTargetPoint,
@@ -226,7 +226,7 @@ public class Action implements Serializable {
             return action;
         }
 
-        public @NotNull Action buildReload(@NotNull Weapon.Name weapon, @Nullable ArrayList<PowerUp> powerUpPayment) {
+        public @NotNull Action buildReload(@NotNull Weapon weapon, @Nullable ArrayList<PowerUp> powerUpPayment) {
             var action = new Action(Type.RELOAD, gameUuid);
             action.weapon = weapon;
             action.powerUpPayment = powerUpPayment;

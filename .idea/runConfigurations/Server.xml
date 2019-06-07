@@ -1,5 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Server" type="Application" factoryName="Application">
+    <envs>
+      <env name="ROOM_TIMEOUT" value="30" />
+    </envs>
     <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.Server" />
     <module name="ing-sw-2019-7" />
     <option name="PROGRAM_PARAMETERS" value="-h -s -r" />

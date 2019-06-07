@@ -128,7 +128,7 @@ public class Bounds implements Serializable {
          * @return The movement on X axis.
          */
         @Contract(pure = true)
-        int getdX() {
+        public int getdX() {
             return dx;
         }
 
@@ -138,7 +138,7 @@ public class Bounds implements Serializable {
          * @return The movement on Y axis.
          */
         @Contract(pure = true)
-        int getdY() {
+        public int getdY() {
             return dy;
         }
     }

@@ -40,9 +40,9 @@ public class Game implements Displayable, Serializable {
     protected boolean isCompleted = false;
     //aggiunto perchè non basta che skulls == 0
     protected boolean lastTurn = false;
-    protected ArrayList<Weapon.Name> redWeapons;
-    protected ArrayList<Weapon.Name> blueWeapons;
-    protected ArrayList<Weapon.Name> yellowWeapons;
+    protected ArrayList<Weapon> redWeapons;
+    protected ArrayList<Weapon> blueWeapons;
+    protected ArrayList<Weapon> yellowWeapons;
     private @NotNull HashMap<UUID, Integer> hashKillshotsTrack = new HashMap<>();
 
     public Game() {
@@ -174,7 +174,7 @@ public class Game implements Displayable, Serializable {
     }
 
     @NotNull
-    public ArrayList<Weapon.Name> getWeapons(@NotNull Cell.Color color) {
+    public ArrayList<Weapon> getWeapons(@NotNull Cell.Color color) {
         switch (color) {
             case BLUE:
                 return blueWeapons;
@@ -187,7 +187,7 @@ public class Game implements Displayable, Serializable {
         }
     }
 
-    protected void addWeapon(@NotNull Cell.Color color, @NotNull Weapon.Name weapon) {
+    protected void addWeapon(@NotNull Cell.Color color, @NotNull Weapon weapon) {
         switch (color) {
             case BLUE:
                 if (blueWeapons.size() < 3) blueWeapons.add(weapon);
@@ -198,7 +198,7 @@ public class Game implements Displayable, Serializable {
         }
     }
 
-    protected void removeWeapon(@NotNull Cell.Color color, @NotNull Weapon.Name weapon) {
+    protected void removeWeapon(@NotNull Cell.Color color, @NotNull Weapon weapon) {
         switch (color) {
             case BLUE:
                 blueWeapons.remove(weapon);

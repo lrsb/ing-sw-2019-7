@@ -15,13 +15,13 @@ public class Preferences {
         return preferences.get("token", null);
     }
 
-    public static @NotNull UUID getUuid() {
-        return UUID.fromString(preferences.get("uuid", null));
-    }
-
     public static void setToken(@NotNull User.Auth token) {
         preferences.put("uuid", token.getUuid().toString());
         preferences.put("token", token.getToken());
+    }
+
+    public static @NotNull UUID getUuid() {
+        return UUID.fromString(preferences.get("uuid", null));
     }
 
     public static @NotNull Optional<String> getTokenOrJumpBack(@Nullable NavigationController navigationController) {
