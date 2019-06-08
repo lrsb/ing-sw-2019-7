@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Serializable;
 
 /**
- * Cell class, each cell is the atom of the board, some cells are spawnpoint, the otherone are just normal cells which
+ * Cell class, each cell is the atom of the board, some cells are spawnpoint, the others are just normal cells which
  * have an ammo card on it, more cells compose a room and more rooms compose the game board.
  */
 public class Cell implements Serializable {
@@ -33,18 +33,18 @@ public class Cell implements Serializable {
     }
 
     /**
-     * Indicate if a certain cell is a spawnpoint.
+     * Indicates if a certain cell is a spawnpoint.
      *
-     * @return True if the cell is a spawnpoint.
+     * @return True if the cell is a spawnpoint, false otherwise.
      */
     public boolean isSpawnPoint() {
         return spawnPoint;
     }
 
     /**
-     * Indicate if a certain cell has an ammo card on it.
+     * Pick the ammo card in the cell
      *
-     * @return True if there is an ammo card.
+     * @return the ammo card if there is one, null otherwise
      */
     public @Nullable AmmoCard getAmmoCard() {
         return ammoCard;

@@ -132,7 +132,7 @@ public class PowerUp implements Displayable, Serializable {
             case TARGETING_SCOPE:
                 if (target == null) throw new PlayerNotFoundException();
                 if (target.getDamagesTaken().size() < 12)
-                    target.getDamagesTaken().add(game.getActualPlayer().getUuid());
+                    target.addDamage(game.getActualPlayer());
                 break;
             case NEWTON:
                 assert targetPoint != null && target != null : "No target or point delivery selected";

@@ -19,6 +19,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * This class contains the information that a player needs to know the state of the game
+ */
 public class Game implements Displayable, Serializable {
     public static final int MAX_PLAYERS = 5;
     public static final int MIN_PLAYERS = 3;
@@ -35,10 +38,9 @@ public class Game implements Displayable, Serializable {
     protected @NotNull ArrayList<UUID> responsivePlayers = new ArrayList<>();
 
     protected int skulls;
-    protected int maxSkulls;
+    protected int maxSkulls; //cos'è?
     protected @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
     protected boolean isCompleted = false;
-    //aggiunto perchè non basta che skulls == 0
     protected boolean lastTurn = false;
     protected ArrayList<Weapon> redWeapons;
     protected ArrayList<Weapon> blueWeapons;
@@ -67,10 +69,18 @@ public class Game implements Displayable, Serializable {
         return isCompleted;
     }
 
+    /**
+     * This method says if the action being processing is referred to a player that has to response
+     *
+     * @return true if the action being processing must be a possible response with a tagback grenade
+     */
     public boolean isATagbackResponse() {
         return getTagbackPlayers().contains(getActualPlayer().getUuid());
     }
 
+    /**
+     * @return true if the action that is being processing must be referred to a player that has to respawn
+     */
     public boolean isAReborn() {
         return !isATagbackResponse() && responsivePlayers.contains(getActualPlayer().getUuid());
     }
@@ -97,6 +107,9 @@ public class Game implements Displayable, Serializable {
         return players;
     }
 
+    /**
+     * @return the player that must do the action that is being processing
+     */
     public @NotNull Player getActualPlayer() {
         if (responsivePlayers.isEmpty()) return players.get(seqPlay % players.size());
         else if (responsivePlayers.contains(players.get(seqPlay % players.size()).getUuid()))
@@ -111,6 +124,11 @@ public class Game implements Displayable, Serializable {
         return skulls;
     }
 
+    /**
+     * Add the player to a list when this takes a damage and the list doesn't already contains the player
+     *
+     * @param player the player just hit
+     */
     public void addToLastsDamaged(@NotNull Player player) {
         if (!lastsDamaged.contains(player.getUuid())) lastsDamaged.add(player.getUuid());
     }
@@ -119,6 +137,9 @@ public class Game implements Displayable, Serializable {
         return lastsDamaged;
     }
 
+    /**
+     * @return an ArrayList with UUID of the players hit with a tagback grenade
+     */
     public @NotNull ArrayList<UUID> getTagbackPlayers() {
         ArrayList<UUID> tagbackPlayers = new ArrayList<>();
         lastsDamaged.parallelStream().filter(e -> players.parallelStream().anyMatch(f -> f.getUuid().equals(e) &&
@@ -126,7 +147,7 @@ public class Game implements Displayable, Serializable {
         return tagbackPlayers;
     }
 
-    public @NotNull Player getTagbackedPlayer() {
+    @NotNull Player getTagbackedPlayer() {
         if (getActualPlayer().equals(players.get(seqPlay % players.size()))) throw new SelfResponseException();
         return players.get(seqPlay % players.size());
     }
@@ -139,6 +160,10 @@ public class Game implements Displayable, Serializable {
         responsivePlayers.addAll(getDeadPlayers());
     }
 
+    /**
+     * @return true if is the first turn of the current player
+     */
+    //non basterebbe dire che seqPlay < players.size()
     public boolean isFirstMove() {
         return getActualPlayer().isFirstMove();
     }
@@ -173,8 +198,13 @@ public class Game implements Displayable, Serializable {
         return hashKillshotsTrack.get(uuid);
     }
 
-    @NotNull
-    public ArrayList<Weapon> getWeapons(@NotNull Cell.Color color) {
+    /**
+     * Takes names of the weapons in a certain spawnpoint cell
+     *
+     * @param color the color of a spawnpoint cell
+     * @return ArrayList of weapon names of the spawnpoint cell with color "color"
+     */
+    public @NotNull ArrayList<Weapon> getWeapons(@NotNull Cell.Color color) {
         switch (color) {
             case BLUE:
                 return blueWeapons;
@@ -191,8 +221,10 @@ public class Game implements Displayable, Serializable {
         switch (color) {
             case BLUE:
                 if (blueWeapons.size() < 3) blueWeapons.add(weapon);
+                break;
             case RED:
                 if (redWeapons.size() < 3) redWeapons.add(weapon);
+                break;
             case YELLOW:
                 if (yellowWeapons.size() < 3) yellowWeapons.add(weapon);
         }
@@ -202,13 +234,24 @@ public class Game implements Displayable, Serializable {
         switch (color) {
             case BLUE:
                 blueWeapons.remove(weapon);
+                break;
             case RED:
                 redWeapons.remove(weapon);
+                break;
             case YELLOW:
                 yellowWeapons.remove(weapon);
         }
     }
 
+    /**
+     * Determines if a player can move from "from" to "to" with "maxStep" steps
+     *
+     * @param from start point
+     * @param to end point
+     * @param maxStep usable steps
+     *
+     * @return true if "to" is attainable from "from" point with at most "maxStep" steps, false otherwise
+     */
     @Contract(pure = true)
     public boolean canMove(@Nullable Point from, @Nullable Point to, int maxStep) {
         return from != null && to != null && canMoveImpl(from, to, 0, maxStep);
@@ -238,6 +281,9 @@ public class Game implements Displayable, Serializable {
         return Utils.readJpgImage(Game.class, getType().getRight());
     }
 
+    /**
+     * Defines the different maps that players can choose as battlefield
+     */
     public enum Type {
         FIVE_FIVE("L5", "R5"),
         FIVE_SIX("L5", "R6"),

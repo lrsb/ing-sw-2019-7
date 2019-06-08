@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * This class is composed of three deck that contains the playable, exited ( on the game board or in players' hand)
+ * This class is composed of three decks that contains the playable, exited ( on the game board or in players' hand)
  * and discarded (already used and need to be reshuffled) cards.
  *
- * @param <T> Indicate the type of cards in the deck.
+ * @param <T> Indicates the type of cards in the deck.
  */
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class Deck<T extends Serializable> implements Serializable {
@@ -33,7 +33,7 @@ public class Deck<T extends Serializable> implements Serializable {
     private final boolean shuffleable;
 
     /**
-     * Create a new Deck.
+     * Creates a new Deck.
      *
      * @param cards       The cards included in the deck.
      * @param shuffleable true if the deck is shuffleable when finished.

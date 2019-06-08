@@ -333,7 +333,10 @@ public class GameImpl extends Game implements Serializable {
                             (skulls == 0 && canMove(getActualPlayer().getPosition(), action.getDestination(), 1)) ||
                             (lastTurn && canMove(getActualPlayer().getPosition(), action.getDestination(), 2)))
                         getActualPlayer().setPosition(action.getDestination());
-                    if (fireAction(action)) return true;
+                    if (fireAction(action)) {
+                        addTagbackPlayers();
+                        return true;
+                    }
                     else getActualPlayer().setPosition(mockPosition);
                 }
                 return false;
