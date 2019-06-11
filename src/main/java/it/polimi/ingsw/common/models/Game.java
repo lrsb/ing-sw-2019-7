@@ -25,8 +25,8 @@ import java.util.stream.Stream;
 public class Game implements Displayable, Serializable {
     public static final int MAX_PLAYERS = 5;
     public static final int MIN_PLAYERS = 3;
-    protected static final int MAX_X = 4;
-    protected static final int MAX_Y = 3;
+    public static final int MAX_X = 4;
+    public static final int MAX_Y = 3;
     private static final long serialVersionUID = 1;
     protected final @NotNull UUID uuid;
     protected final @NotNull Cell[][] cells;
