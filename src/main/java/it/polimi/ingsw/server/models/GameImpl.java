@@ -197,7 +197,7 @@ public class GameImpl extends Game implements Serializable {
      * when the game ends distributes the lasts points to players
      */
     void finalPointsRedistribution() {
-        players.parallelStream().filter(e -> e.getDamagesTaken().size() > 0).forEachOrdered(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
+        players.parallelStream().filter(e -> !e.getDamagesTaken().isEmpty()).forEachOrdered(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f).forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
                     g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);

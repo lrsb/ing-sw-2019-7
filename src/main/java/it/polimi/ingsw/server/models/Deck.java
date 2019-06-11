@@ -159,6 +159,8 @@ public class Deck<T extends Serializable> implements Serializable {
         public static @NotNull Deck<PowerUp> newPowerUpsDeck() {
             var cards = Stream.of(PowerUp.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).map(f -> new PowerUp(f, e)))
                     .flatMap(e -> e).collect(Collectors.toCollection(ArrayList::new));
+            cards.addAll(Stream.of(PowerUp.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).map(f -> new PowerUp(f, e)))
+                    .flatMap(e -> e).collect(Collectors.toCollection(ArrayList::new)));
             return new Deck<>(cards, true);
         }
 

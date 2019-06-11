@@ -55,7 +55,7 @@ class DeckTest {
     @Test
     void testPowerUpDeck() {
         var powerUpDeck = Deck.Creator.newPowerUpsDeck();
-        assertEquals(12, powerUpDeck.remainedCards());
+        assertEquals(24, powerUpDeck.remainedCards());
         powerUpDeck.exitCards(powerUpDeck.remainedCards()).parallelStream().forEach(e -> {
             assertDoesNotThrow(e::getFrontImage);
             assertDoesNotThrow(e::getBackImage);
