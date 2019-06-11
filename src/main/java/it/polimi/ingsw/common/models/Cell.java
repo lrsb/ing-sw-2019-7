@@ -89,27 +89,40 @@ public class Cell implements Serializable {
         /**
          * White color.
          */
-        WHITE,
+        WHITE("\u001B[37m"),
         /**
          * Blue color.
          */
-        BLUE,
+        BLUE("\u001B[36m"),
         /**
          * Red color.
          */
-        RED,
+        RED("\u001B[31m"),
         /**
          * Purple color.
          */
-        PURPLE,
+        PURPLE("\u001B[35m"),
         /**
          * Yellow color.
          */
-        YELLOW,
+        YELLOW("\u001B[33m"),
         /**
          * Green color.
          */
-        GREEN
+        GREEN("\u001B[32m");
+
+
+        private @NotNull String escape;
+
+        @Contract(pure = true)
+        Color(@NotNull String escape) {
+            this.escape = escape;
+        }
+
+        @Contract(pure = true)
+        public @NotNull String escape() {
+            return escape;
+        }
     }
 
     public static class Creator {

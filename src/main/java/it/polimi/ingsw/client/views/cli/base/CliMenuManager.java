@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class CliMenuManager {
-    public static <T> void startCli(@NotNull Class<T> aClass, boolean withFollettina) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static <T> void startCli(@NotNull Class<T> aClass, boolean withFollettina) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
         @Nullable Clip clip = null;
         if (withFollettina) try {
             clip = AudioSystem.getClip();
@@ -29,7 +29,9 @@ public class CliMenuManager {
         if (clip != null) clip.stop();
     }
 
-    private static void invoke(@NotNull Method method, @Nullable Object object) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private static void invoke(@NotNull Method method, @Nullable Object object) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
         @NotNull Object result;
         if (object == null) result = method.invoke(null);
         else result = method.invoke(null, object);

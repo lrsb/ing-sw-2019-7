@@ -9,6 +9,7 @@ import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,8 @@ public class PregameCli {
         }
     }
 
+    private static Room room;
+
     public static @NotNull Segue newGame() {
         System.out.println("NUOVA PARTITA");
         System.out.println(" ");
@@ -53,31 +56,36 @@ public class PregameCli {
             timeout = Integer.parseInt(StartupCli.in.nextLine());
         } while (timeout < 60 || timeout > 120);
         do {
-            System.out.println("Inserisci il numero di teschi");
+            System.out.println("Inserisci il numero di teschi, deve essere compreso fra 5 e 8 inclusi");
             skulls = Integer.parseInt(StartupCli.in.nextLine());
         } while (skulls < 5 || skulls > 8);
-        System.out.println("Scegli il tipo di campo che vuoi avere:");
-        System.out.println("1: 5 - 5");
-        System.out.println("2: 5 - 6");
-        System.out.println("3: 6 - 5");
-        System.out.println("4: 6 - 6");
-        var gameSelection = StartupCli.in.nextInt();
-        var gameType = Game.Type.FIVE_FIVE;
 
-        switch (gameSelection) {
-            case 1:
-                gameType = Game.Type.FIVE_FIVE;
-                break;
-            case 2:
-                gameType = Game.Type.FIVE_SIX;
-                break;
-            case 3:
-                gameType = Game.Type.SIX_FIVE;
-                break;
-            case 4:
-                gameType = Game.Type.SIX_SIX;
-                break;
-        }
+        var gameSelection = 0;
+        var gameType = Game.Type.FIVE_FIVE;
+        do {
+            System.out.println("Scegli il tipo di campo che vuoi avere:");
+            System.out.println("1: 5 - 5");
+            System.out.println("2: 5 - 6");
+            System.out.println("3: 6 - 5");
+            System.out.println("4: 6 - 6");
+
+            gameSelection = Integer.parseInt(StartupCli.in.nextLine());
+            switch (gameSelection) {
+                case 1:
+                    gameType = Game.Type.FIVE_FIVE;
+                    break;
+                case 2:
+                    gameType = Game.Type.FIVE_SIX;
+                    break;
+                case 3:
+                    gameType = Game.Type.SIX_FIVE;
+                    break;
+                case 4:
+                    gameType = Game.Type.SIX_SIX;
+                    break;
+            }
+        } while (gameSelection < 1 || gameSelection > 4);
+
         if (Preferences.getToken() != null) try {
             var fakeroom = new Room(gameName, new User("pippo"));
             fakeroom.setGameType(gameType);
@@ -85,7 +93,7 @@ public class PregameCli {
             fakeroom.setSkulls(skulls);
             var room = Client.API.createRoom(Preferences.getToken(), fakeroom);
             System.out.println("gioco creato correttamente!");
-            return Segue.of("lobby", room);
+            return Segue.of("preLobby", room);
         } catch (RemoteException e) {
             System.out.println("errore nella creazione della partita!");
             e.printStackTrace();
@@ -126,7 +134,7 @@ public class PregameCli {
                             return Segue.of("joinGame");
                         }
                         var room = Client.API.joinRoom(Preferences.getOptionalToken().get(), rooms.get(number).getUuid());
-                        return Segue.of("lobby", room);
+                        return Segue.of("preLobby", room);
                     } catch (NumberFormatException ex) {
                         System.out.println("Questo non è un numero!");
                         return Segue.of("joinGame");
@@ -147,7 +155,35 @@ public class PregameCli {
         return Segue.of("joinGame");
     }
 
-    public static @NotNull Segue lobby(Room room) {
+    public static @NotNull Segue preLobby(@NotNull Room room) {
+        PregameCli.room = room;
+        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
+        try {
+            Client.API.addRoomListener(Preferences.getOptionalToken().get(), room.getUuid(), f -> PregameCli.room = f);
+        } catch (UserRemoteException ex) {
+            ex.printStackTrace();
+            return Segue.of("login", StartupCli.class);
+        } catch (RemoteException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return Segue.of("lobby");
+    }
+
+    public static @NotNull Segue postLobby() {
+        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
+        try {
+            Client.API.removeRoomListener(Preferences.getOptionalToken().get(), room.getUuid());
+            return Segue.of("game", GameCli.class, Client.API.getActiveGame(Preferences.getOptionalToken().get()));
+        } catch (UserRemoteException ex) {
+            ex.printStackTrace();
+            return Segue.of("login", StartupCli.class);
+        } catch (RemoteException ex) {
+            System.out.println(ex.getMessage());
+            return Segue.of("joinRoom");
+        }
+    }
+
+    public static @NotNull Segue lobby() throws InterruptedException, IOException {
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
         System.out.println("LOBBY");
         System.out.println();
@@ -161,35 +197,22 @@ public class PregameCli {
         if (System.currentTimeMillis() == -1)
             System.out.println("numero di giocatori insufficienti per creare la partita");
         System.out.println("scrivi * per abbandonare la lobby o attendi la partenza della partita");
-        if (room.getStartTime() - System.currentTimeMillis() > 0) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return Segue.of("lobby", room);
-        }
-        if ((room.getStartTime() - System.currentTimeMillis()) <= 0) {
-            try {
-                var game = Client.API.startGame(Preferences.getOptionalToken().get(), room.getUuid());
-                return Segue.of("board", GameCli.class, game);
-            } catch (UserRemoteException e) {
-                return Segue.of("login", StartupCli.class);
-            } catch (RemoteException e) {
-                System.out.println(e.getMessage());
+        if (System.in.available() > 0) {
+            if (StartupCli.in.nextLine().equals("*")) {
+                try {
+                    Client.API.quitRoom(Preferences.getOptionalToken().get(), room.getUuid());
+                } catch (UserRemoteException e) {
+                    System.out.println("Errore nell'autenticazione, ritorni al login");
+                    return Segue.of("login", StartupCli.class);
+                } catch (RemoteException e) {
+                    System.out.println(e.getMessage());
+                }
+                return Segue.of("joinGame");
             }
         }
-        if (StartupCli.in.nextLine().equals("*")) {
-            try {
-                Client.API.quitRoom(Preferences.getOptionalToken().get(), room.getUuid());
-            } catch (UserRemoteException e) {
-                System.out.println("Errore nell'autenticazione, ritorni al login");
-                return Segue.of("login", StartupCli.class);
-            } catch (RemoteException e) {
-                System.out.println(e.getMessage());
-            }
-            return Segue.of("joinGame");
-        } else return Segue.of("lobby", room);
+        if (room.isGameCreated()) return Segue.of("postLobby");
+        Thread.sleep(1000);
+        return Segue.of("lobby");
     }
 
 }

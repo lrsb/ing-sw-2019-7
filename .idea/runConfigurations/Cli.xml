@@ -5,7 +5,7 @@
     <option name="PROGRAM_PARAMETERS" value="-c" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="it.polimi.ingsw.client.views.cli.examples.*" />
+        <option name="PATTERN" value="it.polimi.ingsw.client.views.cli.base.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

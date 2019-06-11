@@ -1,5 +1,7 @@
 package it.polimi.ingsw.client.views.cli.examples;
 
+import it.polimi.ingsw.client.views.cli.base.Color;
+
 /**
  * Hello world!
  */

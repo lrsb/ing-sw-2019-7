@@ -1,5 +1,7 @@
 package it.polimi.ingsw.client.views.cli.examples;
 
+import it.polimi.ingsw.client.views.cli.base.Color;
+
 import java.util.Random;
 
 public class Dice {
@@ -32,7 +34,7 @@ public class Dice {
     @Override
     public String toString() {
         String escape = this.color.escape();
-        return escape + "[" + face + "]" + Color.RESET;
+        return escape + "[" + face + "]";
     }
 
     void dump() {

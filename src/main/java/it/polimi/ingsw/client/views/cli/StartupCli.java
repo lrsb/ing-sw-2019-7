@@ -8,6 +8,7 @@ import it.polimi.ingsw.client.network.ClientSocketImpl;
 import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.views.cli.base.Segue;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.rmi.RemoteException;
@@ -64,7 +65,6 @@ public class StartupCli {
             try {
                 Preferences.setToken(Client.API.authUser(nickname, psw));
                 return Segue.of("mainMenu", PregameCli.class);
-
             } catch (UserRemoteException e) {
                 System.out.println("Nickname e/o password errate!!");
                 return Segue.of("login");
@@ -91,12 +91,9 @@ public class StartupCli {
         return Segue.of("signup");
     }
 
-    public static @NotNull Segue start() {
+    @Contract(pure = true)
+    public static @NotNull Segue start() throws RemoteException {
         return Segue.of("connType");
+        //return Segue.of("buildBoard", GameCli.class, Client.API.getActiveGame(""));
     }
-
-    public static @NotNull Segue main(String[] args) {
-        return Segue.of("start");
-    }
-
 }

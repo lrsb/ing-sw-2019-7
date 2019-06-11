@@ -1,5 +1,7 @@
 package it.polimi.ingsw.client.views.cli.examples;
 
+import it.polimi.ingsw.client.views.cli.base.Color;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -25,11 +27,9 @@ public class BattleField {
         try {
             final String os = System.getProperty("os.name");
 
-            if (os.contains("Windows")) {
+            if (System.getProperty("os.name").contains("Windows"))
                 Runtime.getRuntime().exec("cls");
-            } else {
-                Runtime.getRuntime().exec("clear");
-            }
+            else Runtime.getRuntime().exec("clear");
         } catch (final Exception e) {
             //  Handle any exceptions.
         }

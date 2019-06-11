@@ -34,11 +34,11 @@ public class Game implements Displayable, Serializable {
     /**
      * The constant MAX_X.
      */
-    protected static final int MAX_X = 4;
+    public static final int MAX_X = 4;
     /**
      * The constant MAX_Y.
      */
-    protected static final int MAX_Y = 3;
+    public static final int MAX_Y = 3;
     private static final long serialVersionUID = 1;
     /**
      * The Uuid.

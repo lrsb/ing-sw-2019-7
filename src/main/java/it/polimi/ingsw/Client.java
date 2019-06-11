@@ -26,6 +26,7 @@ public class Client {
     public static API API;
 
     public static void main(String[] args) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InterruptedException {
+        test();
         if (args != null) for (var arg : args)
             switch (arg) {
                 case "-h":
@@ -36,14 +37,11 @@ public class Client {
                     CliMenuManager.startCli(StartupCli.class, false); // TODO da sistemare a true
                     return;
             }
-        test();
+        new NavigationController(GameViewController.class, Client.API.getActiveGame(""));
         //new NavigationController(ConnTypeViewController.class);
     }
 
     private static void test() {
-        var room = new Room("ciao", new User("ciao"));
-        room.setGameType(Game.Type.FIVE_FIVE);
-        var game = GameImpl.Creator.newGame(room);
         API = new API() {
             @Override
             public @NotNull String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
@@ -57,7 +55,9 @@ public class Client {
 
             @Override
             public @NotNull Game getActiveGame(@NotNull String token) throws RemoteException {
-                return null;
+                var room = new Room("ciao", new User("ciao"));
+                room.setGameType(Game.Type.FIVE_FIVE);
+                return GameImpl.Creator.newGame(room);
             }
 
             @Override
@@ -115,6 +115,5 @@ public class Client {
 
             }
         };
-        new NavigationController(GameViewController.class, game);
     }
 }
