@@ -30,8 +30,8 @@ class NetworkTest {
         var server = new TestServerRmiImpl();
         LocateRegistry.createRegistry(Server.RMI_PORT).rebind(Server.RMI_NAME, server);
         var client = new ClientRmiImpl(LocateRegistry.getRegistry(HOST, Server.RMI_PORT).lookup(Server.RMI_NAME));
-        assertEquals(client.authUser("", ""), "ok");
-        assertEquals(client.createUser("", ""), "ok");
+        assertEquals(client.authUser("", "").getToken(), "ok");
+        assertEquals(client.createUser("", "").getToken(), "ok");
         assertDoesNotThrow(() -> client.getActiveGame(""));
         assertEquals(client.getRooms("").get(0).getName(), "ok");
         assertEquals(client.joinRoom("", TEST_UUID).getName(), "ok");
@@ -50,16 +50,15 @@ class NetworkTest {
             super();
         }
 
-        @NotNull
         @Override
-        public String authUser(@NotNull String nickname, @NotNull String password) {
-            return "ok";
+        public @NotNull User.Auth authUser(@NotNull String nickname, @NotNull String password) {
+            return new User.Auth(new User(""), "ok");
         }
 
         @NotNull
         @Override
-        public String createUser(@NotNull String nickname, @NotNull String password) {
-            return "ok";
+        public User.Auth createUser(@NotNull String nickname, @NotNull String password) {
+            return new User.Auth(new User(""), "ok");
         }
 
         @NotNull

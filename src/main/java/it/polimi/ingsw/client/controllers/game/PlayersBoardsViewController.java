@@ -4,6 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.views.gui.boards.PlayerBoard;
 import it.polimi.ingsw.common.models.Game;
 import org.jetbrains.annotations.NotNull;
@@ -20,9 +21,10 @@ public class PlayersBoardsViewController extends BaseViewController {
     public PlayersBoardsViewController(@Nullable NavigationController navigationController, @NotNull Object... params) {
         super("Plance", 900, 270, navigationController);
         setContentPane(panel);
-        ((Game) params[0]).getPlayers().forEach(e -> {
+        //noinspection ComparatorMethodParameterNotUsed
+        ((Game) params[0]).getPlayers().parallelStream().sorted((e, f) -> e.getUuid().equals(Preferences.getUuid()) ? 1 : 0).forEachOrdered(e -> {
             try {
-                tabbedPane.addTab(e.getNickname(), new PlayerBoard(((Game) params[0]), e));
+                tabbedPane.addTab(e.getUuid().equals(Preferences.getUuid()) ? "La tua plancia" : e.getNickname(), new PlayerBoard(((Game) params[0]), e));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

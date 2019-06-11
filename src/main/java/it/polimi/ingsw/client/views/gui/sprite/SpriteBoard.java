@@ -57,6 +57,11 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
         repaint();
     }
 
+    public void addAllSprite(@NotNull java.util.List<Sprite> sprites) {
+        this.sprites.addAll(sprites);
+        sprites.forEach(e -> e.setSpriteListener(this));
+    }
+
     public @Nullable Sprite removeSprite(@NotNull Sprite sprite) {
         var removed = sprites.remove(sprite);
         if (removed) {
@@ -136,17 +141,17 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
                 dimension.width *= 2;
                 dimension.height *= 2;
             }
-            var op = new AffineTransformOp(new AffineTransform(), AffineTransformOp.TYPE_BILINEAR);
+            var at = new AffineTransform();
             if (e.getRotation() != Sprite.Rotation.ZERO) {
-                var at = new AffineTransform();
                 at.rotate(e.getRotation().getDegrees(), point.x + dimension.width / 2, point.y + dimension.height / 2);
                 if (e.getRotation() != Sprite.Rotation.PI) {
                     var translation = (dimension.width - dimension.height) / 2;
                     if (e.getRotation() == Sprite.Rotation.THREE_HALF_PI) translation *= -1;
                     at.translate(translation, translation);
                 }
-                op = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+
             }
+            var op = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
             graphics.setTransform(op.getTransform());
             graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) e.getFade()));
             graphics.drawImage(e.getBufferedImage(), point.x, point.y, dimension.width, dimension.height, this);

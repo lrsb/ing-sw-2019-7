@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * This class contains all the informations about an ammo card.
+ * This class contains all the information about an ammo card.
  * Each card is composed of three elements, one on top, and two on bottom, one left and one right.
  * The top element can be an ammo ( with color ) or a power up.
  * The two bottom elements are ammo, they can be of the same or different ( just in case of power up on top ) color.
@@ -25,9 +25,9 @@ public class AmmoCard implements Displayable, Serializable {
     /**
      * AmmoCard constructor.
      *
-     * @param type  Indicate the type of top element, it can be a power up or a color.
-     * @param left  Indicate the color of the bottom-left element.
-     * @param right Indicate the color of the bottom-right element.
+     * @param type  Indicates the type of top element, it can be a power up or a color.
+     * @param left  Indicates the color of the bottom-left element.
+     * @param right Indicates the color of the bottom-right element.
      */
     @Contract(pure = true)
     public AmmoCard(@NotNull Type type, @NotNull Color left, @NotNull Color right) {

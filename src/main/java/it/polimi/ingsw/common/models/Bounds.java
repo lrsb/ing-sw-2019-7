@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 
 /**
- * Each cell have 4 bounds, they can be a door, a wall or nothing, that means that the two cells are in the same room.
+ * Each cell has 4 bounds, each bound can be a door, a wall or nothing, that means that the two cells are in the same room.
  */
 @SuppressWarnings({"SpellCheckingInspection"})
 public class Bounds implements Serializable {
@@ -34,9 +34,9 @@ public class Bounds implements Serializable {
     }
 
     /**
-     * Get the bounds type.
+     * Get the bound's type.
      *
-     * @param direction The bounds direction.
+     * @param direction The bound's direction.
      * @return Type of indicated bound.
      */
     public @NotNull Type getType(@NotNull Direction direction) {
@@ -128,7 +128,7 @@ public class Bounds implements Serializable {
          * @return The movement on X axis.
          */
         @Contract(pure = true)
-        int getdX() {
+        public int getdX() {
             return dx;
         }
 
@@ -138,7 +138,7 @@ public class Bounds implements Serializable {
          * @return The movement on Y axis.
          */
         @Contract(pure = true)
-        int getdY() {
+        public int getdY() {
             return dy;
         }
     }

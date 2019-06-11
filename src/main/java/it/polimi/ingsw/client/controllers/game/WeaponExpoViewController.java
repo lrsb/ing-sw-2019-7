@@ -30,14 +30,14 @@ public class WeaponExpoViewController extends BaseViewController {
     private JFXPanel jfxPanel;
 
     public WeaponExpoViewController(@Nullable NavigationController navigationController, @NotNull Object... params) {
-        super(((Weapon.Name) params[0]).name(), 500, 500, navigationController);
+        super(((Weapon) params[0]).name(), 500, 500, navigationController);
         $$$setupUI$$$();
         setContentPane(panel);
         Platform.setImplicitExit(false);
         Platform.runLater(() -> {
             try {
-                var front = new ImageView(SwingFXUtils.toFXImage(((Weapon.Name) params[0]).getFrontImage(), null));
-                var back = new ImageView(SwingFXUtils.toFXImage(((Weapon.Name) params[0]).getBackImage(), null));
+                var front = new ImageView(SwingFXUtils.toFXImage(((Weapon) params[0]).getFrontImage(), null));
+                var back = new ImageView(SwingFXUtils.toFXImage(((Weapon) params[0]).getBackImage(), null));
                 var stackPane = new StackPane();
                 stackPane.getChildren().addAll(front, back);
                 var scene = new Scene(stackPane, 500, 500, true, SceneAntialiasing.BALANCED);

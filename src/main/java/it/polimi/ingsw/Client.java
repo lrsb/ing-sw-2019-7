@@ -2,6 +2,7 @@ package it.polimi.ingsw;
 
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.controllers.game.GameViewController;
+import it.polimi.ingsw.client.controllers.startup.ConnTypeViewController;
 import it.polimi.ingsw.client.controllers.startup.LoginViewController;
 import it.polimi.ingsw.client.network.ClientRestImpl;
 import it.polimi.ingsw.client.views.cli.StartupCli;
@@ -26,7 +27,6 @@ public class Client {
     public static API API;
 
     public static void main(String[] args) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InterruptedException {
-        test();
         if (args != null) for (var arg : args)
             switch (arg) {
                 case "-h":
@@ -37,27 +37,28 @@ public class Client {
                     CliMenuManager.startCli(StartupCli.class, false); // TODO da sistemare a true
                     return;
             }
-        new NavigationController(GameViewController.class, Client.API.getActiveGame(""));
-        //new NavigationController(ConnTypeViewController.class);
+        //test();
+        new NavigationController(ConnTypeViewController.class);
     }
 
     private static void test() {
+        var room = new Room("ciao", new User("ciao"));
+        room.setGameType(Game.Type.SIX_FIVE);
+        var game = GameImpl.Creator.newGame(room);
         API = new API() {
             @Override
-            public @NotNull String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+            public @NotNull User.Auth authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
                 return null;
             }
 
             @Override
-            public @NotNull String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+            public @NotNull User.Auth createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
                 return null;
             }
 
             @Override
             public @NotNull Game getActiveGame(@NotNull String token) throws RemoteException {
-                var room = new Room("ciao", new User("ciao"));
-                room.setGameType(Game.Type.FIVE_FIVE);
-                return GameImpl.Creator.newGame(room);
+                return null;
             }
 
             @Override
@@ -115,5 +116,6 @@ public class Client {
 
             }
         };
+        new NavigationController(GameViewController.class, game);
     }
 }

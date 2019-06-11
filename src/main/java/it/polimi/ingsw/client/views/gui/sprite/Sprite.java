@@ -216,6 +216,12 @@ public class Sprite {
         this.associatedObject = associatedObject;
     }
 
+    @Contract(value = "null -> false", pure = true)
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Sprite && ((Sprite) obj).getTag() != null && getTag() != null && ((Sprite) obj).getTag().equals(getTag());
+    }
+
     public enum Rotation {
         ZERO(0), HALF_PI(Math.PI / 2), PI(Math.PI), THREE_HALF_PI(3 * Math.PI / 2);
 

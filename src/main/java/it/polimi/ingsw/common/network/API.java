@@ -3,6 +3,7 @@ package it.polimi.ingsw.common.network;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
+import it.polimi.ingsw.common.models.User;
 import org.jetbrains.annotations.NotNull;
 
 import java.rmi.Remote;
@@ -11,9 +12,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface API extends Remote {
-    @NotNull String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException;
+    @NotNull User.Auth authUser(@NotNull String nickname, @NotNull String password) throws RemoteException;
 
-    @NotNull String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException;
+    @NotNull User.Auth createUser(@NotNull String nickname, @NotNull String password) throws RemoteException;
 
     @NotNull Game getActiveGame(@NotNull String token) throws RemoteException;
 

@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
+import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
@@ -27,8 +28,8 @@ import java.util.UUID;
 public class ClientSocketImpl implements API, AdrenalineSocketListener {
     private final @NotNull AdrenalineSocket adrenalineSocket;
 
-    private volatile @Nullable String authUser;
-    private volatile @Nullable String createUser;
+    private volatile @Nullable User.Auth authUser;
+    private volatile @Nullable User.Auth createUser;
     private volatile @Nullable Game activeGame;
     private volatile @Nullable List<Room> getRooms;
     private volatile @Nullable Room joinRoom;
@@ -50,7 +51,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     }
 
     @Override
-    public @NotNull String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull User.Auth authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         authUser = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.AUTH_USER, null, Arrays.asList(nickname, password)));
         while (authUser == null) wait1ms();
@@ -58,7 +59,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     }
 
     @Override
-    public @NotNull String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull User.Auth createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         createUser = null;
         adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.CREATE_USER, null, Arrays.asList(nickname, password)));
         while (createUser == null) wait1ms();
@@ -161,10 +162,10 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
         try {
             if (packet.getType() != null) switch (packet.getType()) {
                 case AUTH_USER:
-                    authUser = packet.getAssociatedObject(String.class);
+                    authUser = packet.getAssociatedObject(User.Auth.class);
                     break;
                 case CREATE_USER:
-                    createUser = packet.getAssociatedObject(String.class);
+                    createUser = packet.getAssociatedObject(User.Auth.class);
                     break;
                 case GET_ACTIVE_GAME:
                     activeGame = packet.getAssociatedObject(Game.class);

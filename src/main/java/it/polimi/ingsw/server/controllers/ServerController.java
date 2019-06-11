@@ -29,12 +29,12 @@ public class ServerController implements API {
     private final @NotNull HashMap<UUID, Timer> roomTimers = new HashMap<>();
 
     @Override
-    public @NotNull String authUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
+    public @NotNull User.Auth authUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
         return SecureUserController.authUser(nickname, password);
     }
 
     @Override
-    public @NotNull String createUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
+    public @NotNull User.Auth createUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
         return SecureUserController.createUser(nickname, password);
     }
 
@@ -42,12 +42,16 @@ public class ServerController implements API {
     public @NotNull Game getActiveGame(@Nullable String token) throws RemoteException {
         var user = SecureUserController.getUser(token);
         try {
-            var game = new Gson().fromJson(Opt.of(games.find(eq("players.uuid", user.getUuid().toString())).first()).e(Document::toJson).get(""), Game.class);
+            var game = findGame(user.getUuid());
             if (game == null) throw new RemoteException("No active game!!");
             return game;
         } catch (Exception ignored) {
             throw new RemoteException("No active game!!");
         }
+    }
+
+    private @Nullable Game findGame(@NotNull UUID userUuid) {
+        return new Gson().fromJson(Opt.of(games.find(eq("players.uuid", userUuid.toString())).first()).e(Document::toJson).get(""), Game.class);
     }
 
     @Override
@@ -62,6 +66,7 @@ public class ServerController implements API {
     public @NotNull Room joinRoom(@Nullable String token, @Nullable UUID roomUuid) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (roomUuid != null) try {
+            if (findGame(user.getUuid()) != null) throw new RemoteException("Exit your active game first!!");
             var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid.toString())).first()).e(Document::toJson).get(""), Room.class);
             if (!room.addUser(user)) throw new RemoteException("The room is full, go away!!");
             if (room.getUsers().size() >= 3) {
@@ -99,6 +104,7 @@ public class ServerController implements API {
     public @NotNull Room createRoom(@Nullable String token, @Nullable Room newRoom) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (newRoom != null) try {
+            if (findGame(user.getUuid()) != null) throw new RemoteException("Exit your active game first!!");
             var room = new Room(newRoom.getName(), user);
             room.setActionTimeout(newRoom.getActionTimeout());
             room.setGameType(newRoom.getGameType());

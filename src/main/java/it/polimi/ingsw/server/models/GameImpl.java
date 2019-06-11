@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server.models;
 
 import it.polimi.ingsw.common.models.*;
-import it.polimi.ingsw.common.models.modelsExceptions.ActionDeniedException;
+import it.polimi.ingsw.common.models.exceptions.ActionDeniedException;
 import it.polimi.ingsw.common.models.wrappers.Opt;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +20,7 @@ public class GameImpl extends Game implements Serializable {
 
     private @NotNull Deck<AmmoCard> ammoDeck = Deck.Creator.newAmmoDeck();
     private @NotNull Deck<PowerUp> powerUpsDeck = Deck.Creator.newPowerUpsDeck();
-    private @NotNull Deck<Weapon.Name> weaponsDeck = Deck.Creator.newWeaponsDeck();
+    private @NotNull Deck<Weapon> weaponsDeck = Deck.Creator.newWeaponsDeck();
 
     private @NotNull ArrayList<PowerUp> exitedPowerUps = new ArrayList<>();
 
@@ -32,12 +32,12 @@ public class GameImpl extends Game implements Serializable {
         Stream.of(cells).flatMap(Stream::of).filter(Objects::nonNull).filter(e -> !e.isSpawnPoint()).forEach(e -> e.setAmmoCard(ammoDeck.exitCard()));
     }
 
-    public List<PowerUp> getFirstMoveColors() {
+    List<PowerUp> getFirstMoveColors() {
         exitedPowerUps.addAll(powerUpsDeck.exitCards(2));
         return exitedPowerUps;
     }
 
-    public void completeFirstMove(PowerUp cardToThrow) {
+    void completeFirstMove(PowerUp cardToThrow) {
         //assert exitedPowerUps.contains(cardToThrow);
         exitedPowerUps.remove(cardToThrow);
         powerUpsDeck.discardCard(cardToThrow);
@@ -72,7 +72,7 @@ public class GameImpl extends Game implements Serializable {
     //RUN AROUND - End
     //GRAB_WEAPON STUFF - Start
 
-    private boolean grabWeapon(@NotNull Point to, @NotNull Weapon.Name weapon, @Nullable Weapon.Name discardedWeaponName, @Nullable ArrayList<PowerUp> powerUpPayment) {
+    private boolean grabWeapon(@NotNull Point to, @NotNull Weapon weapon, @Nullable Weapon discardedWeaponName, @Nullable ArrayList<PowerUp> powerUpPayment) {
         var cell = getCell(to);
         if (cell == null) return false;
         if (!canMove(getActualPlayer().getPosition(), to, 1) && !(skulls == 0 &&
@@ -94,7 +94,7 @@ public class GameImpl extends Game implements Serializable {
         return false;
     }
 
-    private boolean canPayWeaponAndPay(@NotNull Weapon.Name weapon, @Nullable ArrayList<PowerUp> powerUpPayment) {
+    private boolean canPayWeaponAndPay(@NotNull Weapon weapon, @Nullable ArrayList<PowerUp> powerUpPayment) {
         int[] cost = new int[AmmoCard.Color.values().length];
         Stream.of(AmmoCard.Color.values()).forEach(e -> cost[e.getIndex()] = weapon.getGrabCost(e));
         if (getActualPlayer().hasWeapon(weapon)) cost[weapon.getColor().getIndex()]++;
@@ -135,17 +135,17 @@ public class GameImpl extends Game implements Serializable {
 
     private boolean fireAction(@NotNull Action action) {
         if (action.getWeapon() == null) return false;
-        var weapon = action.getWeapon().build(this, action.getAlternativeFire());
+        var weapon = WeaponImpl.Loader.build(action.getWeapon(), this, action.getAlternativeFire());
         if (action.getBasicTarget() != null) action.getBasicTarget().forEach(weapon::addBasicTarget);
         if (action.getBasicTargetPoint() != null) weapon.setBasicTargetsPoint(action.getBasicTargetPoint());
         if (action.getPowerUpPayment() != null) weapon.setAlternativePaymentToUse(action.getPowerUpPayment());
-        if ((action.getOptions() & Weapon.FIRST) == 1) {
+        if ((action.getOptions() & WeaponImpl.FIRST) == 1) {
             if (action.getFirstAdditionalTarget() != null)
                 action.getFirstAdditionalTarget().forEach(weapon::addFirstAdditionalTarget);
             if (action.getFirstAdditionalTargetPoint() != null)
                 weapon.setFirstAdditionalTargetsPoint(action.getFirstAdditionalTargetPoint());
         }
-        if ((action.getOptions() & Weapon.SECOND) == 2) {
+        if ((action.getOptions() & WeaponImpl.SECOND) == 2) {
             if (action.getSecondAdditionalTarget() != null)
                 action.getSecondAdditionalTarget().forEach(weapon::addSecondAdditionalTarget);
             if (action.getSecondAdditionalTargetPoint() != null)
@@ -196,7 +196,7 @@ public class GameImpl extends Game implements Serializable {
     /**
      * when the game ends distributes the lasts points to players
      */
-    public void finalPointsRedistribution() {
+    void finalPointsRedistribution() {
         players.parallelStream().filter(e -> e.getDamagesTaken().size() > 0).forEachOrdered(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f).forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
@@ -225,7 +225,7 @@ public class GameImpl extends Game implements Serializable {
      *
      * @return the HashMap
      */
-    public @NotNull ArrayList<ArrayList<UUID>> getRanking() {
+    @NotNull ArrayList<ArrayList<UUID>> getRanking() {
         class PlayerPoint implements Comparable<PlayerPoint> {
             private @NotNull UUID playerUuid;
             private int points;
@@ -263,6 +263,10 @@ public class GameImpl extends Game implements Serializable {
             pos += ranking.get(pos).size();
         }
         return ranking;
+    }
+
+    public void setCompleted(boolean isCompleted) {
+        this.isCompleted = isCompleted;
     }
 
     private boolean reborn(@NotNull Action action) {
@@ -329,7 +333,10 @@ public class GameImpl extends Game implements Serializable {
                             (skulls == 0 && canMove(getActualPlayer().getPosition(), action.getDestination(), 1)) ||
                             (lastTurn && canMove(getActualPlayer().getPosition(), action.getDestination(), 2)))
                         getActualPlayer().setPosition(action.getDestination());
-                    if (fireAction(action)) return true;
+                    if (fireAction(action)) {
+                        addTagbackPlayers();
+                        return true;
+                    }
                     else getActualPlayer().setPosition(mockPosition);
                 }
                 return false;

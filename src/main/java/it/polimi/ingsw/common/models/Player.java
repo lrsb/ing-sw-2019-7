@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+/**
+ * In this class all the information about the state of a player, like name, position, items owned etc...
+ */
 public class Player implements Displayable, Serializable {
     private static final long serialVersionUID = 1;
 
@@ -29,7 +32,7 @@ public class Player implements Displayable, Serializable {
     private int points = 0;
     private @NotNull int[] cubes = {3, 3, 3};
     private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();
-    private @NotNull HashMap<Weapon.Name, Boolean> weapons = new HashMap<>();
+    private @NotNull HashMap<Weapon, Boolean> weapons = new HashMap<>();
     private boolean isFirstMove = true;
     private boolean easyBoard = false;
 
@@ -55,6 +58,10 @@ public class Player implements Displayable, Serializable {
         return damagesTaken;
     }
 
+    /**
+     * @return the players that hit this player ordered from the player who deserves the higher reward to the one
+     *              who deserves the lower
+     */
     public @NotNull ArrayList<UUID> getSortedHitters() {
         ArrayList<UUID> sortedHitters = new ArrayList<>();
         for (var uuid : damagesTaken) if (!sortedHitters.contains(uuid)) sortedHitters.add(uuid);
@@ -82,10 +89,16 @@ public class Player implements Displayable, Serializable {
         return marksTaken;
     }
 
+    /**
+     * set the board of a player to the one with lower rewards
+     */
     public void setEasyBoard() {
-        if (getDamagesTaken().size() == 0) easyBoard = true;
+        if (getDamagesTaken().isEmpty()) easyBoard = true;
     }
 
+    /**
+     * @return the number of points that deserves the player who did the best scoring to this player
+     */
     public int getMaximumPoints() {
         if (easyBoard) return 2;
         else return 2 * deaths >= 8 ? 1 : 8 - 2 * deaths;
@@ -104,28 +117,34 @@ public class Player implements Displayable, Serializable {
         return points;
     }
 
-    boolean hasPowerUp(@NotNull PowerUp powerUp) {
+    public boolean hasPowerUp(@NotNull PowerUp powerUp) {
         return powerUps.contains(powerUp);
     }
 
-    public boolean hasWeapon(@Nullable Weapon.Name weapon) {
+    public boolean hasWeapon(@Nullable Weapon weapon) {
         return weapons.get(weapon) != null;
     }
 
-    public boolean isALoadedGun(@Nullable Weapon.Name weapon) {
+    public boolean isALoadedGun(@Nullable Weapon weapon) {
         return hasWeapon(weapon) && weapons.get(weapon);
     }
 
-    public void unloadWeapon(@Nullable Weapon.Name weapon) {
+    public void unloadWeapon(@Nullable Weapon weapon) {
         weapons.put(weapon, false);
     }
 
-    public void reloadWeapon(@Nullable Weapon.Name weapon) {
+    public void reloadWeapon(@Nullable Weapon weapon) {
         weapons.put(weapon, true);
     }
 
-    //gives damages, convert marks to damages and finally gives marks
-    void takeHits(@NotNull Game game, int damages, int marks) {
+    /**
+     * Manage the hit suffered from the player, adding the player who did the damage to an appropriated list
+     *
+     * @param game the game
+     * @param damages number of damages, determined by the weapon used
+     * @param marks number of marks, determined by the weapon used
+     */
+    public void takeHits(@NotNull Game game, int damages, int marks) {
         for (int i = 0; i < damages; i++) {
             if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().uuid);
         }
@@ -186,11 +205,11 @@ public class Player implements Displayable, Serializable {
         powerUps.add(powerUp);
     }
 
-    public void addWeapon(Weapon.Name weapon) {
+    public void addWeapon(Weapon weapon) {
         weapons.put(weapon, true);
     }
 
-    public void removeWeapon(Weapon.Name weapon) {
+    public void removeWeapon(Weapon weapon) {
         weapons.remove(weapon);
     }
 
@@ -229,6 +248,14 @@ public class Player implements Displayable, Serializable {
         this.position = position;
     }
 
+    /**
+     * Says if this player can see a selected player from his own position
+     *
+     * @param player another player
+     * @param cells the map
+     *
+     * @return true if this player can see @param player, false otherwise
+     */
     @Contract(pure = true)
     public boolean canSeeNotSame(@NotNull Player player, @NotNull Cell[][] cells) {
         if (equals(player) || position == null || player.position == null) return false;
@@ -239,6 +266,16 @@ public class Player implements Displayable, Serializable {
                         cells[player.position.x][player.position.y].getColor());
     }
 
+    /**
+     * Determines if a point of the map is at a certain distance from this player in a certain direction
+     *
+     * @param point the point
+     * @param cells the map
+     * @param maxDistance the distance
+     * @param direction the direction
+     * @return true if the point is attainable from the position of this player with at most "maxDistance" steps,
+     *             in "direction" direction, false otherwise
+     */
     public boolean isPointAtMaxDistanceInDirection(@NotNull Point point, @NotNull Cell[][] cells, int maxDistance, @NotNull Bounds.Direction direction) {
         if (position == null) return false;
         int countDistance = 0, x = position.x, y = position.y;
@@ -252,6 +289,14 @@ public class Player implements Displayable, Serializable {
         return false;
     }
 
+    /**
+     * Determines if this player can see a cell from his own position
+     *
+     * @param point a point on the board
+     * @param cells the map
+     *
+     * @return true if player can see "point", false otherwise
+     */
     public boolean canSeeCell(@NotNull Point point, @NotNull Cell[][] cells) {
         if (position == null) return false;
         if (cells[position.x][position.y].getColor() == cells[point.x][point.y].getColor()) return true;

@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,10 +18,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * This class is composed of three deck that contains the playable, exited ( on the game board or in players' hand)
+ * This class is composed of three decks that contains the playable, exited ( on the game board or in players' hand)
  * and discarded (already used and need to be reshuffled) cards.
  *
- * @param <T> Indicate the type of cards in the deck.
+ * @param <T> Indicates the type of cards in the deck.
  */
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess"})
 public class Deck<T extends Serializable> implements Serializable {
@@ -32,7 +33,7 @@ public class Deck<T extends Serializable> implements Serializable {
     private final boolean shuffleable;
 
     /**
-     * Create a new Deck.
+     * Creates a new Deck.
      *
      * @param cards       The cards included in the deck.
      * @param shuffleable true if the deck is shuffleable when finished.
@@ -42,6 +43,7 @@ public class Deck<T extends Serializable> implements Serializable {
         if (cards.isEmpty()) throw new EmptyDeckException();
         this.playableCards.addAll(cards);
         this.shuffleable = shuffleable;
+        Collections.shuffle(playableCards, new SecureRandom());
     }
 
     /**
@@ -115,7 +117,7 @@ public class Deck<T extends Serializable> implements Serializable {
         if (!shuffleable) throw new EmptyDeckException();
         playableCards.addAll(discardedCards);
         discardedCards.clear();
-        Collections.shuffle(playableCards);
+        Collections.shuffle(playableCards, new SecureRandom());
     }
 
     /**
@@ -145,7 +147,6 @@ public class Deck<T extends Serializable> implements Serializable {
                 cards.add(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE));
             for (int i = 0; i < 4; i++)
                 cards.add(new AmmoCard(AmmoCard.Type.POWER_UP, AmmoCard.Color.YELLOW, AmmoCard.Color.BLUE));
-            Collections.shuffle(cards);
             return new Deck<>(cards, true);
         }
 
@@ -158,7 +159,6 @@ public class Deck<T extends Serializable> implements Serializable {
         public static @NotNull Deck<PowerUp> newPowerUpsDeck() {
             var cards = Stream.of(PowerUp.Type.values()).map(e -> Stream.of(AmmoCard.Color.values()).map(f -> new PowerUp(f, e)))
                     .flatMap(e -> e).collect(Collectors.toCollection(ArrayList::new));
-            Collections.shuffle(cards);
             return new Deck<>(cards, true);
         }
 
@@ -168,9 +168,8 @@ public class Deck<T extends Serializable> implements Serializable {
          * @return the deck
          */
         @Contract(" -> new")
-        public static @NotNull Deck<Weapon.Name> newWeaponsDeck() {
-            var cards = new ArrayList<>(List.of(Weapon.Name.values()));
-            Collections.shuffle(cards);
+        public static @NotNull Deck<Weapon> newWeaponsDeck() {
+            var cards = new ArrayList<>(List.of(Weapon.values()));
             return new Deck<>(cards, false);
         }
     }

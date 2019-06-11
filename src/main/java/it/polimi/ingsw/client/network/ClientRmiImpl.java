@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.network;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
+import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.API;
 import it.polimi.ingsw.common.network.GameListener;
 import it.polimi.ingsw.common.network.RoomListener;
@@ -24,12 +25,12 @@ public class ClientRmiImpl implements API {
     }
 
     @Override
-    public @NotNull String authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull User.Auth authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         return remote.authUser(nickname, password);
     }
 
     @Override
-    public @NotNull String createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
+    public @NotNull User.Auth createUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
         return remote.createUser(nickname, password);
     }
 

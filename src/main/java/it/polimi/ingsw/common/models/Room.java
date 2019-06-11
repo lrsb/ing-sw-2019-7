@@ -25,7 +25,7 @@ public class Room implements Serializable {
     /**
      * Create a new room.
      *
-     * @param name    The name of the room.
+     * @param name    The room's name.
      * @param creator The {@link User} that created this room.
      */
     public Room(@NotNull String name, @NotNull User creator) {
@@ -72,7 +72,7 @@ public class Room implements Serializable {
      * Add a {@link User} to this room.
      *
      * @param user The {@link User} to add.
-     * @return true if there was enough space for the user, otherwise false.
+     * @return true if there is enough space for the user, otherwise false.
      */
     public boolean addUser(@NotNull User user) {
         if (users.contains(user)) return true;
