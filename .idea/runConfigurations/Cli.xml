@@ -1,8 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Cli" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.Client" />
-    <module name="ing-sw-2019-7" />
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
+    <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.client.Client" />
+    <module name="client" />
     <option name="PROGRAM_PARAMETERS" value="-c" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="it.polimi.ingsw.client.views.cli.base.*" />

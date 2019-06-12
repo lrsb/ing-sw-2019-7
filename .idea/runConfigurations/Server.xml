@@ -3,10 +3,12 @@
     <envs>
       <env name="ROOM_TIMEOUT" value="30" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.Server" />
-    <module name="ing-sw-2019-7" />
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
+    <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.server.Server" />
+    <module name="server" />
     <option name="PROGRAM_PARAMETERS" value="-h -s -r" />
     <option name="VM_PARAMETERS" value="-Dserver.port=80" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="it.polimi.ingsw.common.network.*" />
