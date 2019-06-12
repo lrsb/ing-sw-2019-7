@@ -8,9 +8,9 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-class RoomTest {
-    @RepeatedTest(value = 100)
-    void testCreateRoom() {
+public class RoomTest {
+
+     public static Room testCreateRoom() {
         Random rand = new Random();
         String gameName = "NomePartita";
         User creator = new User("God");
@@ -38,5 +38,11 @@ class RoomTest {
         assert(room.getSkulls() >= 5 && room.getSkulls() <= 8) : "Wrong number of skulls";
         assert(room.isGameCreated()) : "Game not created";
         assert(room.getUsers().parallelStream().allMatch(e -> possibleUserPlayer.contains(e) || e.equals(creator)));
+        return room;
+    }
+
+    @RepeatedTest(value = 100)
+    void callRoom() {
+        Room roomTest = testCreateRoom();
     }
 }

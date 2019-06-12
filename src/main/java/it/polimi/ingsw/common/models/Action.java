@@ -163,8 +163,7 @@ public class Action implements Serializable {
             action.destination = destination;
             action.weapon = weapon;
             action.discardedWeapon = discardedWeapon;
-            action.powerUpPayment = new ArrayList<>();
-            if (alternativePayment != null) action.powerUpPayment.addAll(alternativePayment);
+            if (alternativePayment != null) action.powerUpPayment = new ArrayList<>(alternativePayment);
             return action;
         }
 
@@ -212,14 +211,14 @@ public class Action implements Serializable {
             var action = new Action(Type.FIRE, gameUuid);
             action.weapon = weapon;
             action.destination = destination;
-            action.powerUpPayment = powerUpPayment;
+            if (powerUpPayment != null) action.powerUpPayment = new ArrayList<>(powerUpPayment);
             action.alternativeFire = alternativeFire;
             action.options = options;
-            action.basicTarget = basicTarget;
+            action.basicTarget = new ArrayList<>(basicTarget);
             action.basicTargetPoint = basicTargetPoint;
-            action.firstAdditionalTarget = firstAdditionalTarget;
+            action.firstAdditionalTarget = new ArrayList<>(firstAdditionalTarget);
             action.firstAdditionalTargetPoint = firstAdditionalTargetPoint;
-            action.secondAdditionalTarget = secondAdditionalTarget;
+            action.secondAdditionalTarget = new ArrayList<>(secondAdditionalTarget);
             action.secondAdditionalTargetPoint = secondAdditionalTargetPoint;
             return action;
         }
@@ -255,7 +254,7 @@ public class Action implements Serializable {
         public @NotNull Action buildReload(@NotNull Weapon weapon, @Nullable ArrayList<PowerUp> powerUpPayment) {
             var action = new Action(Type.RELOAD, gameUuid);
             action.weapon = weapon;
-            action.powerUpPayment = powerUpPayment;
+            if (powerUpPayment != null) action.powerUpPayment = new ArrayList<>(powerUpPayment);
             return action;
         }
 
