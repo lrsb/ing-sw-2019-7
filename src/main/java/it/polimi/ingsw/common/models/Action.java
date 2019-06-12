@@ -163,7 +163,8 @@ public class Action implements Serializable {
             action.destination = destination;
             action.weapon = weapon;
             action.discardedWeapon = discardedWeapon;
-            action.powerUpPayment = alternativePayment;
+            action.powerUpPayment = new ArrayList<>();
+            if (alternativePayment != null) action.powerUpPayment.addAll(alternativePayment);
             return action;
         }
 

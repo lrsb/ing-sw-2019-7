@@ -198,7 +198,7 @@ abstract class WeaponImpl {
         }
         alternativePaymentToUse.forEach(e -> {
             if (usedCubes[e.getAmmoColor().getIndex()] > 0 && game.getActualPlayer().hasPowerUp(e) &&
-                    !alternativePaymentUsed.contains(e)) {
+                    game.getActualPlayer().getPowerUps().stream().filter(e::equals).count() > alternativePaymentToUse.stream().filter(e::equals).count()) {
                 alternativePaymentUsed.add(e);
                 alternativePaymentToUse.remove(e);
                 usedCubes[e.getAmmoColor().getIndex()]--;

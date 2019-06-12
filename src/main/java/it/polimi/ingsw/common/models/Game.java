@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,9 +49,10 @@ public class Game implements Displayable, Serializable {
     private @NotNull HashMap<UUID, Integer> hashKillshotsTrack = new HashMap<>();
 
     public Game() {
+        Random rand = new Random();
         uuid = UUID.randomUUID();
         cells = new Cell[MAX_X][MAX_Y];
-        type = Type.FIVE_FIVE;
+        type = Type.values()[rand.nextInt(Type.values().length)];
     }
 
     protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int maxSkulls) {
@@ -103,8 +105,8 @@ public class Game implements Displayable, Serializable {
         return type;
     }
 
-    public @NotNull ArrayList<Player> getPlayers() {
-        return players;
+    public @NotNull List<Player> getPlayers() {
+        return new ArrayList<>(players);
     }
 
     /**
@@ -133,14 +135,14 @@ public class Game implements Displayable, Serializable {
         if (!lastsDamaged.contains(player.getUuid())) lastsDamaged.add(player.getUuid());
     }
 
-    public @NotNull ArrayList<UUID> getLastsDamaged() {
+    public @NotNull List<UUID> getLastsDamaged() {
         return lastsDamaged;
     }
 
     /**
      * @return an ArrayList with UUID of the players hit with a tagback grenade
      */
-    public @NotNull ArrayList<UUID> getTagbackPlayers() {
+    public @NotNull List<UUID> getTagbackPlayers() {
         ArrayList<UUID> tagbackPlayers = new ArrayList<>();
         lastsDamaged.parallelStream().filter(e -> players.parallelStream().anyMatch(f -> f.getUuid().equals(e) &&
                 Stream.of(AmmoCard.Color.values()).anyMatch(g -> f.hasPowerUp(new PowerUp(g, PowerUp.Type.TAGBACK_GRENADE))))).forEach(tagbackPlayers::add);
@@ -204,7 +206,7 @@ public class Game implements Displayable, Serializable {
      * @param color the color of a spawnpoint cell
      * @return ArrayList of weapon names of the spawnpoint cell with color "color"
      */
-    public @NotNull ArrayList<Weapon> getWeapons(@NotNull Cell.Color color) {
+    public @NotNull List<Weapon> getWeapons(@NotNull Cell.Color color) {
         switch (color) {
             case BLUE:
                 return blueWeapons;
