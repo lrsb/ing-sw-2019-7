@@ -31,7 +31,11 @@ public class GameCli {
 
     private static TypeCell[][] buildCell(@Nullable Cell cell) {
         var cellCli = new TypeCell[9][9];
-
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                cellCli[i][j] = new TypeCell();
+            }
+        }
         if (cell == null) { // falso
             for (int i = 0; i < 9; i++) {
                 for (int j = 0; j < 9; j++) {
@@ -53,7 +57,6 @@ public class GameCli {
                 case DOOR: {
                     for (int i = 1; i < 8; i++) {
                         cellCli[i][0].setAll('=', cell.getColor());
-
                     }
                     cellCli[0][3].setAll('╡', cell.getColor());
                     cellCli[0][4].setAll(' ', cell.getColor());
