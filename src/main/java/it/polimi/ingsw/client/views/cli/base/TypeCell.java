@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.views.cli.base;
 
 import it.polimi.ingsw.common.models.Cell;
+import org.jetbrains.annotations.NotNull;
 
 public class TypeCell {
     private Character character;
@@ -18,12 +19,12 @@ public class TypeCell {
         return character;
     }
 
-    public void setCharacter(Character character) {
+    public void setCharacter(@NotNull Character character) {
         this.character = character;
         this.color = Cell.Color.WHITE;
     }
 
-    public void setAll(Character character, Cell.Color color) {
+    public void setAll(@NotNull Character character, @NotNull Cell.Color color) {
         this.color = color;
         this.character = character;
     }
