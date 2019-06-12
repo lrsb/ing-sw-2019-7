@@ -19,8 +19,8 @@ RUN curl -s -L https://bitbucket.org/meszarv/webswing/downloads/webswing-2.6.1.z
 	mv webswing-* webswing
 
 COPY webswing.config webswing/webswing.config
-COPY target/ing-sw-2019-7-1.0.jar webswing/demo/ing-sw/ing-sw-2019-7-1.0.jar
-COPY target/lib/ webswing/demo/ing-sw/lib/
+COPY client/target/client-1.0.jar webswing/demo/ing-sw/ing-sw-2019-7-1.0.jar
+COPY client/target/lib/ webswing/demo/ing-sw/lib/
 
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
 
