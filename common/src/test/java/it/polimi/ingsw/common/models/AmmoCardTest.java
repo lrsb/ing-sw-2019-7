@@ -44,6 +44,8 @@ class AmmoCardTest {
                                     assertEquals(ammoCard, new AmmoCard(type1, left1, right1));
                                 else assertNotEquals(ammoCard, new AmmoCard(type1, left1, right1));
                     assertNotEquals(ammoCard, new Object());
+                    var ammoCardCopy = new AmmoCard(ammoCard);
+                    assertEquals(ammoCard, ammoCardCopy);
                 }
             }
     }
