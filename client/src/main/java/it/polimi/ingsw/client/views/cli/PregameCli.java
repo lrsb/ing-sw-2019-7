@@ -14,6 +14,8 @@ import java.rmi.RemoteException;
 import java.util.stream.Collectors;
 
 public class PregameCli {
+    private static Room room;
+
     public static @NotNull Segue mainMenu() {
         System.out.println("Adrenalina");
         System.out.println(" ");
@@ -38,8 +40,6 @@ public class PregameCli {
                 return Segue.of("mainMenu");
         }
     }
-
-    private static Room room;
 
     public static @NotNull Segue newGame() {
         System.out.println("NUOVA PARTITA");

@@ -61,7 +61,7 @@ public class Player implements Displayable, Serializable {
 
     /**
      * @return the players that hit this player ordered from the player who deserves the higher reward to the one
-     *              who deserves the lower
+     * who deserves the lower
      */
     public @NotNull List<UUID> getSortedHitters() {
         return damagesTaken.parallelStream().distinct().sorted((e, f) -> {
@@ -130,9 +130,9 @@ public class Player implements Displayable, Serializable {
     /**
      * Manage the hit suffered from the player, adding the player who did the damage to an appropriated list
      *
-     * @param game the game
+     * @param game    the game
      * @param damages number of damages, determined by the weapon used
-     * @param marks number of marks, determined by the weapon used
+     * @param marks   number of marks, determined by the weapon used
      */
     public void takeHits(@NotNull Game game, int damages, int marks) {
         for (int i = 0; i < damages; i++) {
@@ -242,8 +242,7 @@ public class Player implements Displayable, Serializable {
      * Says if this player can see a selected player from his own position
      *
      * @param player another player
-     * @param cells the map
-     *
+     * @param cells  the map
      * @return true if this player can see @param player, false otherwise
      */
     @Contract(pure = true)
@@ -259,12 +258,12 @@ public class Player implements Displayable, Serializable {
     /**
      * Determines if a point of the map is at a certain distance from this player in a certain direction
      *
-     * @param point the point
-     * @param cells the map
+     * @param point       the point
+     * @param cells       the map
      * @param maxDistance the distance
-     * @param direction the direction
+     * @param direction   the direction
      * @return true if the point is attainable from the position of this player with at most "maxDistance" steps,
-     *             in "direction" direction, false otherwise
+     * in "direction" direction, false otherwise
      */
     public boolean isPointAtMaxDistanceInDirection(@NotNull Point point, @NotNull Cell[][] cells, int maxDistance, @NotNull Bounds.Direction direction) {
         if (position == null) return false;
@@ -284,7 +283,6 @@ public class Player implements Displayable, Serializable {
      *
      * @param point a point on the board
      * @param cells the map
-     *
      * @return true if player can see "point", false otherwise
      */
     public boolean canSeeCell(@NotNull Point point, @NotNull Cell[][] cells) {

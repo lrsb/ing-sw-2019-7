@@ -17,12 +17,11 @@ class ActionTest {
         int genericSize;
         Random rand = new Random();
         Action.Type actionTypeTest = Action.Type.values()[rand.nextInt(Action.Type.values().length)];
-        Game gameTest = new Game();
         Weapon weaponTest = Weapon.values()[rand.nextInt(Weapon.values().length)];
         Weapon discardedWeaponTest;
         do {
             discardedWeaponTest = Weapon.values()[rand.nextInt(Weapon.values().length)];
-        } while(weaponTest.name().equals(discardedWeaponTest.name()));
+        } while (weaponTest.name().equals(discardedWeaponTest.name()));
         Point destinationTest = new Point(rand.nextInt(5), rand.nextInt(4));
         PowerUp.Type powerUpTypeTest = PowerUp.Type.values()[rand.nextInt(PowerUp.Type.values().length)];
         AmmoCard.Color colorTest = AmmoCard.Color.values()[rand.nextInt(AmmoCard.Color.values().length)];
@@ -46,7 +45,7 @@ class ActionTest {
         for (int i = 0; i < genericSize; i++) firstAdditionalTargetTest.add(UUID.randomUUID());
         Point secondAdditionalTargetPointTest = new Point(rand.nextInt(5), rand.nextInt(4));
         UUID targetTest = UUID.randomUUID();
-        Action.Builder builderTest = Action.Builder.create(gameTest.uuid);
+        Action.Builder builderTest = Action.Builder.create(UUID.randomUUID());
         Action actionTest;
         switch (actionTypeTest) {
             case MOVE:

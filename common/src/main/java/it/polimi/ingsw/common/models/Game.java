@@ -242,10 +242,9 @@ public class Game implements Displayable, Serializable {
     /**
      * Determines if a player can move from "from" to "to" with "maxStep" steps
      *
-     * @param from start point
-     * @param to end point
+     * @param from    start point
+     * @param to      end point
      * @param maxStep usable steps
-     *
      * @return true if "to" is attainable from "from" point with at most "maxStep" steps, false otherwise
      */
     @Contract(pure = true)
