@@ -30,10 +30,15 @@ class RoomTest {
             var userPlayer = possibleUserPlayer.get(rand.nextInt(possibleUserPlayer.size()));
             if (room.addUser(userPlayer) && rand.nextBoolean())
                room.removeUser(possibleUserPlayer.get(rand.nextInt(possibleUserPlayer.size())));
-
         }
-        room.setStartTime(-40);
+        User fake = new User("");
+        boolean bool = room.addUser(fake);
+        assertTrue(room.getUsers().size() == 5 && !bool || room.getUsers().size() <= 5 && bool);
+        room.removeUser(fake);
+        room.setStartTime(rand.nextInt(100) - 25);
         assertTrue(room.getStartTime() >= 0);
+        room.setActionTimeout(rand.nextInt(200));
+        assertTrue(room.getActionTimeout() >= 60 && room.getActionTimeout() <= 120 || room.getActionTimeout() == 30);
         room.setGameCreated();
         assertEquals(nPlayers, room.getUsers().size(), "Not the number of players expected");
         assertNotEquals(null, room.getName(), "Lack of game's name");
