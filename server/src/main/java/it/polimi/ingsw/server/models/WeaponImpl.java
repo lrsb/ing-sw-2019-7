@@ -166,8 +166,9 @@ abstract class WeaponImpl {
         this.secondAdditionalTargetsPoint = secondAdditionalTargetsPoint;
     }
 
-    void setAlternativePaymentToUse(@NotNull ArrayList<PowerUp> alternativePaymentToUse) {
-        this.alternativePaymentToUse = alternativePaymentToUse;
+    void setAlternativePaymentToUse(@NotNull List<PowerUp> alternativePaymentToUse) {
+        this.alternativePaymentToUse.clear();
+        this.alternativePaymentToUse.addAll(alternativePaymentToUse);
     }
 
     @NotNull ArrayList<PowerUp> getAlternativePaymentUsed() {
@@ -675,19 +676,16 @@ abstract class WeaponImpl {
                 if (!(Opt.of(basicTargets.get(0).getPosition()).e(e -> e.getX() == actualX).get(false) ||
                         Opt.of(basicTargets.get(0).getPosition()).e(e -> e.getY() == actualY).get(false)))
                     return false;
-                switch (basicTargets.size()) {
-                    case 1:
-                        return true;
-                    case 2:
-                        if (!alternativeFire) return false;
-                        var firstX = Opt.of(basicTargets.get(0).getPosition()).e(Point::getX).get(-1.0);
-                        var firstY = Opt.of(basicTargets.get(0).getPosition()).e(Point::getY).get(-1.0);
-                        var secondX = Opt.of(basicTargets.get(1).getPosition()).e(Point::getX).get(-1.0);
-                        var secondY = Opt.of(basicTargets.get(1).getPosition()).e(Point::getY).get(-1.0);
-                        return (actualX == firstX && actualX == secondX && (actualY - firstY) * (actualY - secondY) >= 0 ||
-                                actualY == firstY && actualY == secondY && (actualX - firstX) * (actualX - secondX) >= 0);
+                if  (basicTargets.size() == 2) {
+                    if (!alternativeFire) return false;
+                    var firstX = Opt.of(basicTargets.get(0).getPosition()).e(e -> e.x).get(-1);
+                    var firstY = Opt.of(basicTargets.get(0).getPosition()).e(e -> e.y).get(-1);
+                    var secondX = Opt.of(basicTargets.get(1).getPosition()).e(e -> e.x).get(-1);
+                    var secondY = Opt.of(basicTargets.get(1).getPosition()).e(e -> e.y).get(-1);
+                    return (actualX == firstX && actualX == secondX && (actualY - firstY) * (actualY - secondY) >= 0 ||
+                            actualY == firstY && actualY == secondY && (actualX - firstX) * (actualX - secondX) >= 0);
                 }
-                return false;
+                return basicTargets.size() == 1;
             }
 
             @Override

@@ -2,15 +2,16 @@ package it.polimi.ingsw.common.models;
 
 import org.junit.jupiter.api.RepeatedTest;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class RoomTest {
-     public static Room testCreateRoom() {
-        Random rand = new Random();
+class RoomTest {
+
+    @RepeatedTest(value = 100)
+     void testCreateRoom() {
+        SecureRandom rand = new SecureRandom();
         String gameName = "NomePartita";
         User creator = new User("God");
         ArrayList<User> possibleUserPlayer = new ArrayList<>();
@@ -26,9 +27,13 @@ public class RoomTest {
         room.setGameType(Game.Type.values()[rand.nextInt(Game.Type.values().length)]);
         room.setSkulls(rand.nextInt());
         while (room.getUsers().size() < nPlayers) {
-            var userPlayer = possibleUserPlayer.get(rand.nextInt(possibleUserPlayer.size() - 1));
-            if (!room.getUsers().contains(userPlayer)) room.addUser(userPlayer);
+            var userPlayer = possibleUserPlayer.get(rand.nextInt(possibleUserPlayer.size()));
+            if (room.addUser(userPlayer) && rand.nextBoolean())
+               room.removeUser(possibleUserPlayer.get(rand.nextInt(possibleUserPlayer.size())));
+
         }
+        room.setStartTime(-40);
+        assertTrue(room.getStartTime() >= 0);
         room.setGameCreated();
         assertEquals(nPlayers, room.getUsers().size(), "Not the number of players expected");
         assertNotEquals(null, room.getName(), "Lack of game's name");
@@ -37,11 +42,5 @@ public class RoomTest {
         assert(room.getSkulls() >= 5 && room.getSkulls() <= 8) : "Wrong number of skulls";
         assert(room.isGameCreated()) : "Game not created";
         assert(room.getUsers().parallelStream().allMatch(e -> possibleUserPlayer.contains(e) || e.equals(creator)));
-        return room;
-    }
-
-    @RepeatedTest(value = 100)
-    void callRoom() {
-        Room roomTest = testCreateRoom();
     }
 }

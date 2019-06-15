@@ -38,7 +38,6 @@ public class GameImpl extends Game implements Serializable {
     }
 
     void completeFirstMove(PowerUp cardToThrow) {
-        //assert exitedPowerUps.contains(cardToThrow);
         exitedPowerUps.remove(cardToThrow);
         powerUpsDeck.discardCard(cardToThrow);
         var cardToKeep = exitedPowerUps.remove(0);
@@ -72,7 +71,7 @@ public class GameImpl extends Game implements Serializable {
     //RUN AROUND - End
     //GRAB_WEAPON STUFF - Start
 
-    private boolean grabWeapon(@NotNull Point to, @NotNull Weapon weapon, @Nullable Weapon discardedWeaponName, @Nullable ArrayList<PowerUp> powerUpPayment) {
+    private boolean grabWeapon(@NotNull Point to, @NotNull Weapon weapon, @Nullable Weapon discardedWeaponName, @Nullable List<PowerUp> powerUpPayment) {
         var cell = getCell(to);
         if (cell == null) return false;
         if (!canMove(getActualPlayer().getPosition(), to, 1) && !(skulls == 0 &&
@@ -94,7 +93,7 @@ public class GameImpl extends Game implements Serializable {
         return false;
     }
 
-    private boolean canPayWeaponAndPay(@NotNull Weapon weapon, @Nullable ArrayList<PowerUp> powerUpPayment) {
+    private boolean canPayWeaponAndPay(@NotNull Weapon weapon, @Nullable List<PowerUp> powerUpPayment) {
         int[] cost = new int[AmmoCard.Color.values().length];
         Stream.of(AmmoCard.Color.values()).forEach(e -> cost[e.getIndex()] = weapon.getGrabCost(e));
         if (getActualPlayer().hasWeapon(weapon)) cost[weapon.getColor().getIndex()]++;

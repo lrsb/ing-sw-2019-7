@@ -7,7 +7,6 @@ import it.polimi.ingsw.common.others.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.client.others.Utils.applyColorToMask;
@@ -16,7 +15,7 @@ public class PlayerBoard extends AbstractBoard {
     private @NotNull Player player;
 
     public PlayerBoard(@NotNull Game game, @NotNull Player player) throws IOException {
-        super(game, new SecureRandom().nextBoolean() ? player.getBackImage() : player.getFrontImage());
+        super(game, player.getBackImage());
         this.player = player;
         setGame(game);
     }
@@ -27,7 +26,7 @@ public class PlayerBoard extends AbstractBoard {
         var mask = Utils.readPngImage(Player.class, "mark");
         //noinspection OptionalGetWithoutIsPresent
         var damages = player.getDamagesTaken().stream().map(e -> game.getPlayers().parallelStream()
-                .filter(f -> e.equals(f.getUuid())).findFirst().get()).map(Player::getBoardType).collect(Collectors.toList());
+                .filter(f -> e.equals(f.getUuid())).findAny().get()).map(Player::getBoardType).collect(Collectors.toList());
         for (int i = 0; i < damages.size(); i++) {
             var x = 87 + i * 47 + (i > 1 ? 8 : 0) + (i > 4 ? 8 : 0) + (i > 9 ? 8 : 0);
             var damage = new Sprite(x, 83, 28, 40, applyColorToMask(mask, damages.get(i).getColor()));

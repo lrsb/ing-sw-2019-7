@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -71,7 +72,7 @@ public class Action implements Serializable {
         return color;
     }
 
-    public @Nullable ArrayList<PowerUp> getPowerUpPayment() {
+    public @Nullable List<PowerUp> getPowerUpPayment() {
         return powerUpPayment;
     }
 
@@ -83,7 +84,7 @@ public class Action implements Serializable {
         return options;
     }
 
-    public @Nullable ArrayList<UUID> getBasicTarget() {
+    public @Nullable List<UUID> getBasicTarget() {
         return basicTarget;
     }
 
@@ -204,7 +205,7 @@ public class Action implements Serializable {
                                                @Nullable ArrayList<PowerUp> powerUpPayment, boolean alternativeFire,
                                                int options, @NotNull ArrayList<UUID> basicTarget,
                                                @Nullable Point basicTargetPoint,
-                                               @NotNull ArrayList<UUID> firstAdditionalTarget,
+                                               @NotNull java.util.List<UUID> firstAdditionalTarget,
                                                @Nullable Point firstAdditionalTargetPoint,
                                                @NotNull ArrayList<UUID> secondAdditionalTarget,
                                                @Nullable Point secondAdditionalTargetPoint) {

@@ -3,6 +3,7 @@ package it.polimi.ingsw.common.models;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,8 +19,8 @@ public class Room implements Serializable {
     private @NotNull ArrayList<User> users = new ArrayList<>();
     private boolean gameCreated = false;
     private int actionTimeout = 30;
-    private int skulls = 5;
-    private Game.Type gameType = Game.Type.FIVE_SIX;
+    private int skulls;
+    private Game.Type gameType;
     private String startTime;
 
     /**
@@ -29,8 +30,11 @@ public class Room implements Serializable {
      * @param creator The {@link User} that created this room.
      */
     public Room(@NotNull String name, @NotNull User creator) {
+        SecureRandom rand = new SecureRandom();
         this.name = name;
         this.users.add(creator);
+        this.skulls = rand.nextInt(5) + 3;
+        this.gameType = Game.Type.values()[rand.nextInt(Game.Type.values().length)];
     }
 
     public long getStartTime() {
@@ -38,7 +42,8 @@ public class Room implements Serializable {
     }
 
     public void setStartTime(long startType) {
-        this.startTime = Long.toString(startType);
+        if (startType >= 0) this.startTime = Long.toString(startType);
+        else this.startTime = Long.toString(1);
     }
 
     /**

@@ -11,7 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class ActionTest {
-    Action testCreateAction(Room roomTest) {
+
+    @RepeatedTest(value = 100)
+    void testCreateAction() {
         int genericSize;
         Random rand = new Random();
         Action.Type actionTypeTest = Action.Type.values()[rand.nextInt(Action.Type.values().length)];
@@ -138,14 +140,6 @@ class ActionTest {
             case NEXT_TURN:
                 actionTest = builderTest.buildNextTurn();
                 break;
-            default:
-                return null;
         }
-        return actionTest;
-    }
-
-    @RepeatedTest(value = 100)
-    void allTest() {
-        Action action = testCreateAction(RoomTest.testCreateRoom());
     }
 }

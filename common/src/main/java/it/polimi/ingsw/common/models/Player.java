@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -54,7 +55,7 @@ public class Player implements Displayable, Serializable {
         return nickname;
     }
 
-    public @NotNull ArrayList<UUID> getDamagesTaken() {
+    public @NotNull List<UUID> getDamagesTaken() {
         return damagesTaken;
     }
 
@@ -62,30 +63,15 @@ public class Player implements Displayable, Serializable {
      * @return the players that hit this player ordered from the player who deserves the higher reward to the one
      *              who deserves the lower
      */
-    public @NotNull ArrayList<UUID> getSortedHitters() {
-        ArrayList<UUID> sortedHitters = new ArrayList<>();
-        for (var uuid : damagesTaken) if (!sortedHitters.contains(uuid)) sortedHitters.add(uuid);
-        if (!sortedHitters.isEmpty()) {
-            for (int i = 0; i < sortedHitters.size() - 1; i++) {
-                int finalI = i;
-                int iHits = (int) damagesTaken.parallelStream().filter(e -> e == sortedHitters.get(finalI)).count();
-                for (int j = i + 1; j < sortedHitters.size(); j++) {
-                    int finalJ = j;
-                    int jHits = (int) damagesTaken.parallelStream().filter(e -> e == sortedHitters.get(finalJ)).count();
-                    if (jHits > iHits || jHits == iHits &&
-                            damagesTaken.indexOf(sortedHitters.get(j)) < damagesTaken.indexOf(sortedHitters.get(i))) {
-                        UUID tmp = sortedHitters.get(i);
-                        sortedHitters.set(i, sortedHitters.get(j));
-                        sortedHitters.set(j, tmp);
-                        iHits = jHits;
-                    }
-                }
-            }
-        }
-        return sortedHitters;
+    public @NotNull List<UUID> getSortedHitters() {
+        return damagesTaken.parallelStream().distinct().sorted((e, f) -> {
+            var diff = damagesTaken.parallelStream().filter(e::equals).count() -
+                    damagesTaken.parallelStream().filter(f::equals).count();
+            return diff == 0 ? damagesTaken.indexOf(e) - damagesTaken.indexOf(f) : (int) diff;
+        }).collect(Collectors.toList());
     }
 
-    public @NotNull ArrayList<UUID> getMarksTaken() {
+    public @NotNull List<UUID> getMarksTaken() {
         return marksTaken;
     }
 
@@ -94,6 +80,10 @@ public class Player implements Displayable, Serializable {
      */
     public void setEasyBoard() {
         if (getDamagesTaken().isEmpty()) easyBoard = true;
+    }
+
+    public boolean isEasyBoard() {
+        return easyBoard;
     }
 
     /**
@@ -315,12 +305,12 @@ public class Player implements Displayable, Serializable {
 
     @Override
     public @NotNull BufferedImage getFrontImage() throws IOException {
-        return Utils.readJpgImage(Player.class, boardType.name().substring(0, 3));
+        return Utils.readJpgImage(Player.class, boardType.name().substring(0, 3) + (isEasyBoard() ? "F" : ""));
     }
 
     @Override
     public @NotNull BufferedImage getBackImage() throws IOException {
-        return Utils.readJpgImage(Player.class, boardType.name().substring(0, 3) + "F");
+        return Utils.readJpgImage(Player.class, boardType.name().substring(0, 3) + (isEasyBoard() ? "F" : ""));
     }
 
     public enum BoardType {

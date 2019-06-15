@@ -39,7 +39,6 @@ public class Game implements Displayable, Serializable {
     protected @NotNull ArrayList<UUID> responsivePlayers = new ArrayList<>();
 
     protected int skulls;
-    protected int maxSkulls; //cos'è?
     protected @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
     protected boolean isCompleted = false;
     protected boolean lastTurn = false;
@@ -54,16 +53,12 @@ public class Game implements Displayable, Serializable {
         type = Type.values()[new SecureRandom().nextInt(Type.values().length)];
     }
 
-    protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int maxSkulls) {
+    protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
         this.uuid = uuid;
         this.type = type;
         this.cells = cells;
         this.players.addAll(players);
-        this.maxSkulls = maxSkulls;
-    }
-
-    public int getMaxSkulls() {
-        return maxSkulls;
+        this.skulls = skulls;
     }
 
     public boolean isCompleted() {
