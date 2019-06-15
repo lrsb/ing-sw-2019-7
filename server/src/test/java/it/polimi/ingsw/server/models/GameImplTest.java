@@ -19,7 +19,7 @@ class GameImplTest {
         var room = new Room("", new User(""));
         Collections.nCopies(5, null).parallelStream().map(f -> new User(UUID.randomUUID().toString())).collect(Collectors.toList()).forEach(room::addUser);
         GameImpl gameImplTest = GameImpl.Creator.newGame(room);
-        assert (gameImplTest.getPlayers().size() >= 3 && gameImplTest.getPlayers().size() <=5) : "Wrong number of players";
+        assert (gameImplTest.getPlayers().size() >= 3 && gameImplTest.getPlayers().size() <= 5) : "Wrong number of players";
         for (Player player : gameImplTest.getPlayers()) {
             for (AmmoCard.Color color : AmmoCard.Color.values()) {
                 assertEquals(3, player.getColoredCubes(color));

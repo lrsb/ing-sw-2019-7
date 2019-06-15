@@ -23,6 +23,15 @@ public class GameBoard extends AbstractBoard {
         setGame(game);
     }
 
+    private static @Nullable Point convertSpriteToPosition(@NotNull Sprite sprite) {
+        if (sprite.getX() > 205 && sprite.getX() + sprite.getDimension().getWidth() / 2 < 994 &&
+                sprite.getY() > 175 && sprite.getY() + sprite.getDimension().getHeight() / 2 < 744) {
+            var x = (int) ((sprite.getX() + sprite.getDimension().getWidth() / 2 - 205) / 220);
+            var y = (int) ((sprite.getY() + sprite.getDimension().getWidth() / 2 - 175) / 190);
+            return new Point(x, y);
+        } else return null;
+    }
+
     @Override
     public void setGame(@NotNull Game game) throws IOException {
         super.setGame(game);
@@ -42,15 +51,6 @@ public class GameBoard extends AbstractBoard {
         var weapon = new Sprite(50, 50, 80, 80, Utils.readPngImage(Weapon.class, "back"));
         weapon.setDraggable(true);
         addSprite(weapon);
-    }
-
-    private static @Nullable Point convertSpriteToPosition(@NotNull Sprite sprite) {
-        if (sprite.getX() > 205 && sprite.getX() + sprite.getDimension().getWidth() / 2 < 994 &&
-                sprite.getY() > 175 && sprite.getY() + sprite.getDimension().getHeight() / 2 < 744) {
-            var x = (int) ((sprite.getX() + sprite.getDimension().getWidth() / 2 - 205) / 220);
-            var y = (int) ((sprite.getY() + sprite.getDimension().getWidth() / 2 - 175) / 190);
-            return new Point(x, y);
-        } else return null;
     }
 
     @Override

@@ -137,7 +137,6 @@ public class Action implements Serializable {
          * Call this method to construct a Move Action
          *
          * @param destination is the point where player wants to be at the end of the Action
-         *
          * @return the constructed action to move
          */
         public @NotNull Action buildMoveAction(@NotNull Point destination) {
@@ -156,7 +155,6 @@ public class Action implements Serializable {
          *                           he wants to drop in order to grab @param weapon
          * @param alternativePayment powerUps that player wants to discard in order to pay
          *                           the cost to grab the @param weapon
-         *
          * @return the constructed action to grab a weapon
          */
         public @NotNull Action buildWeaponGrabAction(@Nullable Point destination, @NotNull Weapon weapon, @Nullable Weapon discardedWeapon, @Nullable ArrayList<PowerUp> alternativePayment) {
@@ -173,7 +171,6 @@ public class Action implements Serializable {
          *
          * @param destination if present indicates in which square player wants to grab the ammocard,
          *                    if not present the player wants to grab the ammocard in his actual position
-         *
          * @return the constructed action to grab an ammo card
          */
         public @NotNull Action buildAmmoCardGrabAction(@Nullable Point destination) {
@@ -228,10 +225,9 @@ public class Action implements Serializable {
          * Call this method to construct an Action in order to use a Power Up's effect
          *
          * @param powerUpType the type of power up a player wants to use
-         * @param color the color of the power up a plater wants to use
+         * @param color       the color of the power up a plater wants to use
          * @param destination fit this param with a point of the map if the specific power up needs it
-         * @param target fit this param with a player if the specific power up needs it
-         *
+         * @param target      fit this param with a player if the specific power up needs it
          * @return the constructed action to use a power up
          */
         public @NotNull Action buildUsePowerUp(@NotNull PowerUp.Type powerUpType, @NotNull AmmoCard.Color color, @Nullable Point destination,
@@ -247,9 +243,8 @@ public class Action implements Serializable {
         /**
          * Call this method to construct an Action in order to reload a weapon
          *
-         * @param weapon fit this param with the name of the weapon player wants to reload
+         * @param weapon         fit this param with the name of the weapon player wants to reload
          * @param powerUpPayment the power ups player wants to use as payment instead of using cubes
-         *
          * @return the constructed action to reload a weapon
          */
         public @NotNull Action buildReload(@NotNull Weapon weapon, @Nullable ArrayList<PowerUp> powerUpPayment) {
@@ -272,8 +267,7 @@ public class Action implements Serializable {
          * Call this method to allow a player to respawn when he dies
          *
          * @param powerUpType the type of the power up he wants to discard
-         * @param color the color of the power up he wants to discard
-         *
+         * @param color       the color of the power up he wants to discard
          * @return the constructed action to respawn
          */
         public @NotNull Action buildReborn(@NotNull PowerUp.Type powerUpType, @NotNull AmmoCard.Color color) {

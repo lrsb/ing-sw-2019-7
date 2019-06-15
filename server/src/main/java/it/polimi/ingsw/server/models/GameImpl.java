@@ -335,8 +335,7 @@ public class GameImpl extends Game implements Serializable {
                     if (fireAction(action)) {
                         addTagbackPlayers();
                         return true;
-                    }
-                    else getActualPlayer().setPosition(mockPosition);
+                    } else getActualPlayer().setPosition(mockPosition);
                 }
                 return false;
             case USE_POWER_UP:

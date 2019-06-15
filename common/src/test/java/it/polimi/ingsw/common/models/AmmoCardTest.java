@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class AmmoCardTest {
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     void testAllAmmoCard() {
         for (var type : AmmoCard.Type.values())

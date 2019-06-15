@@ -676,7 +676,7 @@ abstract class WeaponImpl {
                 if (!(Opt.of(basicTargets.get(0).getPosition()).e(e -> e.getX() == actualX).get(false) ||
                         Opt.of(basicTargets.get(0).getPosition()).e(e -> e.getY() == actualY).get(false)))
                     return false;
-                if  (basicTargets.size() == 2) {
+                if (basicTargets.size() == 2) {
                     if (!alternativeFire) return false;
                     var firstX = Opt.of(basicTargets.get(0).getPosition()).e(e -> e.x).get(-1);
                     var firstY = Opt.of(basicTargets.get(0).getPosition()).e(e -> e.y).get(-1);
