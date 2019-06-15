@@ -63,6 +63,7 @@ public class Bounds implements Serializable {
         switch (direction) {
             case N:
                 n = type;
+                break;
             case S:
                 s = type;
                 break;
@@ -71,6 +72,7 @@ public class Bounds implements Serializable {
                 break;
             case E:
                 e = type;
+                break;
         }
     }
 
