@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 public class GameImpl extends Game implements Serializable {
     private static final long serialVersionUID = 1;
 
+    private @NotNull HashMap<UUID, Integer> hashKillshotsTrack = new HashMap<>();
+
     private @NotNull Deck<AmmoCard> ammoDeck = Deck.Creator.newAmmoDeck();
     private @NotNull Deck<PowerUp> powerUpsDeck = Deck.Creator.newPowerUpsDeck();
     private @NotNull Deck<Weapon> weaponsDeck = Deck.Creator.newWeaponsDeck();
@@ -300,6 +302,8 @@ public class GameImpl extends Game implements Serializable {
                                     return true;
                                 }
                                 break;
+                            default:
+                                break;
                         }
                     }
                 }
@@ -369,8 +373,88 @@ public class GameImpl extends Game implements Serializable {
             case REBORN:
                 if (!isAReborn()) throw new ActionDeniedException();
                 return reborn(action);
+            default:
+                break;
         }
         return false;
+    }
+
+    private void addTagbackPlayers() {
+        responsivePlayers.addAll(getTagbackPlayers());
+    }
+
+    private void addReborningPlayers() {
+        responsivePlayers.addAll(getDeadPlayers());
+    }
+
+    /**
+     * @return true if is the first turn of the current player
+     */
+    //non basterebbe dire che seqPlay < players.size()
+    public boolean isFirstMove() {
+        return getActualPlayer().isFirstMove();
+    }
+
+    private ArrayList<UUID> getDeadPlayers() {
+        ArrayList<UUID> deadPlayers = new ArrayList<>();
+        getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() >= 11).map(Player::getUuid).forEach(deadPlayers::add);
+        return deadPlayers;
+    }
+
+    private void addToKillshotsTrack(UUID uuid) {
+        if (!hashKillshotsTrack.containsKey(uuid)) {
+            hashKillshotsTrack.put(uuid, 1);
+            arrayKillshotsTrack.add(uuid);
+        } else hashKillshotsTrack.put(uuid, hashKillshotsTrack.get(uuid) + 1);
+    }
+
+    private @NotNull ArrayList<UUID> getSortedKillshooters() {
+        for (int i = 0; i < arrayKillshotsTrack.size() - 1; i++) {
+            for (int j = i + 1; j < arrayKillshotsTrack.size(); j++) {
+                if (hashKillshotsTrack.get(arrayKillshotsTrack.get(i)) < hashKillshotsTrack.get(arrayKillshotsTrack.get(j))) {
+                    var tmp = arrayKillshotsTrack.get(i);
+                    arrayKillshotsTrack.set(i, arrayKillshotsTrack.get(j));
+                    arrayKillshotsTrack.set(j, tmp);
+                }
+            }
+        }
+        return arrayKillshotsTrack;
+    }
+
+    private int getPlayerKillshots(@NotNull UUID uuid) {
+        return hashKillshotsTrack.get(uuid);
+    }
+
+
+    private void addWeapon(@NotNull Cell.Color color, @NotNull Weapon weapon) {
+        switch (color) {
+            case BLUE:
+                if (blueWeapons.size() < 3) blueWeapons.add(weapon);
+                break;
+            case RED:
+                if (redWeapons.size() < 3) redWeapons.add(weapon);
+                break;
+            case YELLOW:
+                if (yellowWeapons.size() < 3) yellowWeapons.add(weapon);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void removeWeapon(@NotNull Cell.Color color, @NotNull Weapon weapon) {
+        switch (color) {
+            case BLUE:
+                blueWeapons.remove(weapon);
+                break;
+            case RED:
+                redWeapons.remove(weapon);
+                break;
+            case YELLOW:
+                yellowWeapons.remove(weapon);
+            default:
+                break;
+        }
     }
 
     public static class Creator {

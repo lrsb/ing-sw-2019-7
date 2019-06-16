@@ -6,7 +6,7 @@ import java.security.SecureRandom;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class BoundsTest {
+class BoundsTest {
 
     @RepeatedTest(value = 100)
     void testBounds() {

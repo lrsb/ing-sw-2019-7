@@ -47,10 +47,9 @@ public class Bounds implements Serializable {
                 return s;
             case W:
                 return w;
-            case E:
+            default:
                 return e;
         }
-        return null;
     }
 
     /**

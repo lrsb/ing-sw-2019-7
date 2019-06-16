@@ -6,7 +6,7 @@ import java.security.SecureRandom;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CellTest {
+class CellTest {
 
     @RepeatedTest(value = 100)
     void testCell() {
@@ -28,5 +28,6 @@ public class CellTest {
         assertNull(cell1.getAmmoCard());
         assertFalse(cell1.isSpawnPoint());
         assertTrue(cell.isSpawnPoint());
+        assertNotNull(cell.getColor().escape());
     }
 }

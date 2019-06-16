@@ -111,6 +111,7 @@ abstract class WeaponImpl {
                         game.getActualPlayer().unloadWeapon(WeaponImpl.Loader.getName(getClass()));
                         return true;
                     }
+                break;
             case 1:
                 if (canFirstAdditionalFire()) if (basicFire() && firstAdditionalFire()) {
                     payCost();

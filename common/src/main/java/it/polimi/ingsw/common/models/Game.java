@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,19 +32,18 @@ public class Game implements Displayable, Serializable {
     protected final @NotNull Cell[][] cells;
     protected final @NotNull Type type;
     protected final @NotNull ArrayList<Player> players = new ArrayList<>();
-    protected final @NotNull ArrayList<UUID> lastsDamaged = new ArrayList<>();
     protected int seqPlay = 0;
 
+    private final @NotNull ArrayList<UUID> lastsDamaged = new ArrayList<>();
     protected @NotNull ArrayList<UUID> responsivePlayers = new ArrayList<>();
 
     protected int skulls;
     protected @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
     protected boolean isCompleted = false;
     protected boolean lastTurn = false;
-    protected ArrayList<Weapon> redWeapons;
-    protected ArrayList<Weapon> blueWeapons;
-    protected ArrayList<Weapon> yellowWeapons;
-    private @NotNull HashMap<UUID, Integer> hashKillshotsTrack = new HashMap<>();
+    protected ArrayList<Weapon> redWeapons = new ArrayList<>();
+    protected ArrayList<Weapon> blueWeapons = new ArrayList<>();
+    protected ArrayList<Weapon> yellowWeapons = new ArrayList<>();
 
     public Game() {
         uuid = UUID.randomUUID();
@@ -59,26 +57,6 @@ public class Game implements Displayable, Serializable {
         this.cells = cells;
         this.players.addAll(players);
         this.skulls = skulls;
-    }
-
-    public boolean isCompleted() {
-        return isCompleted;
-    }
-
-    /**
-     * This method says if the action being processing is referred to a player that has to response
-     *
-     * @return true if the action being processing must be a possible response with a tagback grenade
-     */
-    public boolean isATagbackResponse() {
-        return getTagbackPlayers().contains(getActualPlayer().getUuid());
-    }
-
-    /**
-     * @return true if the action that is being processing must be referred to a player that has to respawn
-     */
-    public boolean isAReborn() {
-        return !isATagbackResponse() && responsivePlayers.contains(getActualPlayer().getUuid());
     }
 
     public @NotNull UUID getUuid() {
@@ -116,82 +94,59 @@ public class Game implements Displayable, Serializable {
         throw new PlayerNotFoundException();
     }
 
-    public int getSkulls() {
-        return skulls;
-    }
 
     /**
      * Add the player to a list when this takes a damage and the list doesn't already contains the player
      *
      * @param player the player just hit
      */
-    public void addToLastsDamaged(@NotNull Player player) {
+    void addToLastsDamaged(@NotNull Player player) {
         if (!lastsDamaged.contains(player.getUuid())) lastsDamaged.add(player.getUuid());
     }
 
-    public @NotNull List<UUID> getLastsDamaged() {
+    @NotNull List<UUID> getLastsDamaged() {
         return lastsDamaged;
     }
 
-    /**
-     * @return an ArrayList with UUID of the players hit with a tagback grenade
-     */
-    public @NotNull List<UUID> getTagbackPlayers() {
-        ArrayList<UUID> tagbackPlayers = new ArrayList<>();
-        lastsDamaged.parallelStream().filter(e -> players.parallelStream().anyMatch(f -> f.getUuid().equals(e) &&
-                Stream.of(AmmoCard.Color.values()).anyMatch(g -> f.hasPowerUp(new PowerUp(g, PowerUp.Type.TAGBACK_GRENADE))))).forEach(tagbackPlayers::add);
-        return tagbackPlayers;
-    }
 
     @NotNull Player getTagbackedPlayer() {
         if (getActualPlayer().equals(players.get(seqPlay % players.size()))) throw new SelfResponseException();
         return players.get(seqPlay % players.size());
     }
 
-    protected void addTagbackPlayers() {
-        responsivePlayers.addAll(getTagbackPlayers());
-    }
-
-    protected void addReborningPlayers() {
-        responsivePlayers.addAll(getDeadPlayers());
+    public boolean isCompleted() {
+        return isCompleted;
     }
 
     /**
-     * @return true if is the first turn of the current player
+     * @return an ArrayList with UUID of the players hit with a tagback grenade
      */
-    //non basterebbe dire che seqPlay < players.size()
-    public boolean isFirstMove() {
-        return getActualPlayer().isFirstMove();
+    protected @NotNull List<UUID> getTagbackPlayers() {
+        ArrayList<UUID> tagbackPlayers = new ArrayList<>();
+        getLastsDamaged().parallelStream().filter(e -> players.parallelStream().anyMatch(f -> f.getUuid().equals(e) &&
+                Stream.of(AmmoCard.Color.values()).anyMatch(g -> f.hasPowerUp(new PowerUp(g, PowerUp.Type.TAGBACK_GRENADE))))).forEach(tagbackPlayers::add);
+        return tagbackPlayers;
     }
 
-    protected ArrayList<UUID> getDeadPlayers() {
-        ArrayList<UUID> deadPlayers = new ArrayList<>();
-        getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() >= 11).map(Player::getUuid).forEach(deadPlayers::add);
-        return deadPlayers;
+    /**
+     * This method says if the action being processing is referred to a player that has to response
+     *
+     * @return true if the action being processing must be a possible response with a tagback grenade
+     */
+    public boolean isATagbackResponse() {
+        return getTagbackPlayers().contains(getActualPlayer().getUuid());
     }
 
-    protected void addToKillshotsTrack(UUID uuid) {
-        if (!hashKillshotsTrack.containsKey(uuid)) {
-            hashKillshotsTrack.put(uuid, 1);
-            arrayKillshotsTrack.add(uuid);
-        } else hashKillshotsTrack.put(uuid, hashKillshotsTrack.get(uuid) + 1);
+    /**
+     * @return true if the action that is being processing must be referred to a player that has to respawn
+     */
+    public boolean isAReborn() {
+        return !isATagbackResponse() && responsivePlayers.contains(getActualPlayer().getUuid());
     }
 
-    protected @NotNull ArrayList<UUID> getSortedKillshooters() {
-        for (int i = 0; i < arrayKillshotsTrack.size() - 1; i++) {
-            for (int j = i + 1; j < arrayKillshotsTrack.size(); j++) {
-                if (hashKillshotsTrack.get(arrayKillshotsTrack.get(i)) < hashKillshotsTrack.get(arrayKillshotsTrack.get(j))) {
-                    var tmp = arrayKillshotsTrack.get(i);
-                    arrayKillshotsTrack.set(i, arrayKillshotsTrack.get(j));
-                    arrayKillshotsTrack.set(j, tmp);
-                }
-            }
-        }
-        return arrayKillshotsTrack;
-    }
 
-    protected int getPlayerKillshots(@NotNull UUID uuid) {
-        return hashKillshotsTrack.get(uuid);
+    public int getSkulls() {
+        return skulls;
     }
 
     /**
@@ -213,31 +168,6 @@ public class Game implements Displayable, Serializable {
         }
     }
 
-    protected void addWeapon(@NotNull Cell.Color color, @NotNull Weapon weapon) {
-        switch (color) {
-            case BLUE:
-                if (blueWeapons.size() < 3) blueWeapons.add(weapon);
-                break;
-            case RED:
-                if (redWeapons.size() < 3) redWeapons.add(weapon);
-                break;
-            case YELLOW:
-                if (yellowWeapons.size() < 3) yellowWeapons.add(weapon);
-        }
-    }
-
-    protected void removeWeapon(@NotNull Cell.Color color, @NotNull Weapon weapon) {
-        switch (color) {
-            case BLUE:
-                blueWeapons.remove(weapon);
-                break;
-            case RED:
-                redWeapons.remove(weapon);
-                break;
-            case YELLOW:
-                yellowWeapons.remove(weapon);
-        }
-    }
 
     /**
      * Determines if a player can move from "from" to "to" with "maxStep" steps
@@ -261,6 +191,7 @@ public class Game implements Displayable, Serializable {
         return Stream.of(Bounds.Direction.values()).anyMatch(e -> cells[from.x][from.y].getBounds().getType(e) != Bounds.Type.WALL &&
                 canMoveImpl(new Point(from.x + e.getdX(), to.y + e.getdY()), to, step + 1, maxStep));
     }
+
 
     public @NotNull List<Player> getPlayersAtPosition(@NotNull Point point) {
         return players.parallelStream().filter(e -> e.getPosition() != null).filter(e -> e.getPosition().equals(point)).collect(Collectors.toList());

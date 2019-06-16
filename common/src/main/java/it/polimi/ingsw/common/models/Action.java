@@ -92,7 +92,7 @@ public class Action implements Serializable {
         return basicTargetPoint;
     }
 
-    public @Nullable ArrayList<UUID> getFirstAdditionalTarget() {
+    public @Nullable List<UUID> getFirstAdditionalTarget() {
         return firstAdditionalTarget;
     }
 
@@ -100,7 +100,7 @@ public class Action implements Serializable {
         return firstAdditionalTargetPoint;
     }
 
-    public @Nullable ArrayList<UUID> getSecondAdditionalTarget() {
+    public @Nullable List<UUID> getSecondAdditionalTarget() {
         return secondAdditionalTarget;
     }
 

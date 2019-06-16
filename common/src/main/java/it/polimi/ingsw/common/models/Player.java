@@ -158,7 +158,7 @@ public class Player implements Displayable, Serializable {
         }
     }
 
-    public void addDamage(@NotNull Player hitter) {
+    void addDamage(@NotNull Player hitter) {
         if (damagesTaken.size() < 12) damagesTaken.add(hitter.getUuid());
     }
 

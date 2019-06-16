@@ -157,6 +157,9 @@ public class Cell implements Serializable {
                         break;
                     case ' ':
                         creator.bounds.setType(direction, Bounds.Type.SAME_ROOM);
+                        break;
+                    default:
+                        break;
                 }
             }
             return creator;
