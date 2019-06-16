@@ -387,14 +387,6 @@ public class GameImpl extends Game implements Serializable {
         responsivePlayers.addAll(getDeadPlayers());
     }
 
-    /**
-     * @return true if is the first turn of the current player
-     */
-    //non basterebbe dire che seqPlay < players.size()
-    public boolean isFirstMove() {
-        return getActualPlayer().isFirstMove();
-    }
-
     private ArrayList<UUID> getDeadPlayers() {
         ArrayList<UUID> deadPlayers = new ArrayList<>();
         getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() >= 11).map(Player::getUuid).forEach(deadPlayers::add);
