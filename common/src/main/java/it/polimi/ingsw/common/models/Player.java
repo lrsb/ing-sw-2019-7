@@ -90,7 +90,7 @@ public class Player implements Displayable, Serializable {
      * @return the number of points that deserves the player who did the best scoring to this player
      */
     public int getMaximumPoints() {
-        if (easyBoard) return 2;
+        if (isEasyBoard()) return 2;
         else return 2 * deaths >= 8 ? 1 : 8 - 2 * deaths;
     }
 
@@ -184,7 +184,8 @@ public class Player implements Displayable, Serializable {
     }
 
     public void removeColoredCubes(@NotNull AmmoCard.Color color, int number) {
-        cubes[color.getIndex()] -= number;
+        if (number <= cubes[color.getIndex()]) cubes[color.getIndex()] -= number;
+        else cubes[color.getIndex()] = 0;
     }
 
     public void removePowerUp(@NotNull PowerUp powerUp) {

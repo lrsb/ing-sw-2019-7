@@ -444,6 +444,7 @@ public class GameImpl extends Game implements Serializable {
                 break;
             case YELLOW:
                 yellowWeapons.remove(weapon);
+                break;
             default:
                 break;
         }
