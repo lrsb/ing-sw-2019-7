@@ -92,7 +92,7 @@ class GameTest {
             if (point.getX() >= cells.length) assertNull(gameTest.getCell(point));
             else {
                 if (point.getY() >= cells[(int) point.getX()].length) assertNull(gameTest.getCell(point));
-                else if (!(point.getX() == 3 && point.getY() == 0) && !(point.getX() == 0 && point.getY() == 2)) {
+                else if (!(point.getX() == 0 && point.getY() == 3) && !(point.getX() == 2 && point.getY() == 0)) {
                     assertNotNull(gameTest.getCell(point));
                     assertTrue(gameTest.getPlayersAtPosition(point).isEmpty());
                 }

@@ -21,20 +21,20 @@ class BoundsTest {
             assertNotNull(bounds.getType(dir));
             switch (dir) {
                 case N:
+                    assertEquals(-1, dir.getdX());
+                    assertEquals(0, dir.getdY());
+                    break;
+                case E:
                     assertEquals(0, dir.getdX());
                     assertEquals(1, dir.getdY());
                     break;
-                case E:
+                case S:
                     assertEquals(1, dir.getdX());
                     assertEquals(0, dir.getdY());
                     break;
-                case S:
+                case W:
                     assertEquals(0, dir.getdX());
                     assertEquals(-1, dir.getdY());
-                    break;
-                case W:
-                    assertEquals(-1, dir.getdX());
-                    assertEquals(0, dir.getdY());
                     break;
             }
         }
