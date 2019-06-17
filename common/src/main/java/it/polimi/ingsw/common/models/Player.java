@@ -287,7 +287,7 @@ public class Player implements Displayable, Serializable {
      * @return true if player can see "point", false otherwise
      */
     public boolean canSeeCell(@NotNull Point point, @NotNull Cell[][] cells) {
-        if (position == null) return false;
+        if (position == null || cells[point.x][point.y] == null) return false;
         if (cells[position.x][position.y].getColor().equals(cells[point.x][point.y].getColor())) return true;
         for (var direction : Bounds.Direction.values())
             if (cells[position.x][position.y].getBounds().getType(direction).equals(Bounds.Type.DOOR) &&
