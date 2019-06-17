@@ -654,6 +654,591 @@ class PlayerTest {
     }
 
     @Test
+    void couldSeeSIX_FIVE(){
+        Game game = createGame(Game.Type.SIX_FIVE);
+        ArrayList<Point> seeable = new ArrayList<>();
+        ArrayList<Point> unseeable = new ArrayList<>();
+        ArrayList<Point> nullable = new ArrayList<>();
+        nullable.add(new Point(0, 3));
+        game.getPlayers().get(0).setPosition(new Point(0, 0));
+        for (Point point : nullable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertThrows(NullPointerException.class, () -> game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.add(new Point(0, 0));
+        seeable.add(new Point(0, 1));
+        seeable.add(new Point(0, 2));
+        seeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        unseeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        unseeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(0, 1));
+        seeable.add(new Point(0, 0));
+        seeable.add(new Point(0, 1));
+        seeable.add(new Point(0, 2));
+        seeable.add(new Point(1, 0));
+        seeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        unseeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(0, 2));
+        unseeable.add(new Point(0, 0));
+        seeable.add(new Point(0, 1));
+        seeable.add(new Point(0, 2));
+        unseeable.add(new Point(1, 0));
+        seeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        unseeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(1, 0));
+        seeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        seeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        unseeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        seeable.add(new Point(2, 0));
+        seeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(1, 1));
+        unseeable.add(new Point(0, 0));
+        seeable.add(new Point(0, 1));
+        seeable.add(new Point(0, 2));
+        unseeable.add(new Point(1, 0));
+        seeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        seeable.add(new Point(2, 0));
+        seeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(1, 2));
+        unseeable.add(new Point(0, 0));
+        seeable.add(new Point(0, 1));
+        seeable.add(new Point(0, 2));
+        unseeable.add(new Point(1, 0));
+        seeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        seeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        unseeable.add(new Point(2, 2));
+        seeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(1, 3));
+        unseeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        unseeable.add(new Point(1, 0));
+        seeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        seeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        unseeable.add(new Point(2, 2));
+        seeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(2, 0));
+        seeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        seeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        unseeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        seeable.add(new Point(2, 0));
+        seeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(2, 1));
+        unseeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        unseeable.add(new Point(1, 0));
+        seeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        seeable.add(new Point(2, 0));
+        seeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(2, 2));
+        unseeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        unseeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        unseeable.add(new Point(1, 2));
+        seeable.add(new Point(1, 3));
+        seeable.add(new Point(2, 0));
+        seeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        seeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(2, 3));
+        unseeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        unseeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        unseeable.add(new Point(1, 2));
+        seeable.add(new Point(1, 3));
+        seeable.add(new Point(2, 0));
+        seeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        seeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+    }
+
+    @Test
+    void couldSeeSIX_SIX(){
+        Game game = createGame(Game.Type.SIX_SIX);
+        ArrayList<Point> seeable = new ArrayList<>();
+        ArrayList<Point> unseeable = new ArrayList<>();
+        ArrayList<Point> nullable = new ArrayList<>();
+        game.getPlayers().get(0).setPosition(new Point(0, 0));
+        seeable.add(new Point(0, 0));
+        seeable.add(new Point(0, 1));
+        seeable.add(new Point(0, 2));
+        unseeable.add(new Point(0, 3));
+        seeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        unseeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        unseeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(0, 1));
+        seeable.add(new Point(0, 0));
+        seeable.add(new Point(0, 1));
+        seeable.add(new Point(0, 2));
+        unseeable.add(new Point(0, 3));
+        seeable.add(new Point(1, 0));
+        seeable.add(new Point(1, 1));
+        unseeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        unseeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(0, 2));
+        unseeable.add(new Point(0, 0));
+        seeable.add(new Point(0, 1));
+        seeable.add(new Point(0, 2));
+        seeable.add(new Point(0, 3));
+        unseeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        seeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        seeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(0, 3));
+        unseeable.add(new Point(0, 0));
+        seeable.add(new Point(0, 1));
+        seeable.add(new Point(0, 2));
+        seeable.add(new Point(0, 3));
+        unseeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        seeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        seeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(1, 0));
+        seeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        unseeable.add(new Point(0, 3));
+        seeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        unseeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        seeable.add(new Point(2, 0));
+        seeable.add(new Point(2, 1));
+        unseeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(1, 1));
+        unseeable.add(new Point(0, 0));
+        seeable.add(new Point(0, 1));
+        seeable.add(new Point(0, 2));
+        unseeable.add(new Point(0, 3));
+        unseeable.add(new Point(1, 0));
+        seeable.add(new Point(1, 1));
+        unseeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        seeable.add(new Point(2, 0));
+        seeable.add(new Point(2, 1));
+        unseeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(1, 2));
+        unseeable.add(new Point(0, 0));
+        seeable.add(new Point(0, 1));
+        seeable.add(new Point(0, 2));
+        unseeable.add(new Point(0, 3));
+        unseeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        seeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        seeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(1, 3));
+        unseeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        seeable.add(new Point(0, 3));
+        unseeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        seeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        seeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(2, 0));
+        seeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        unseeable.add(new Point(0, 3));
+        seeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        unseeable.add(new Point(1, 2));
+        unseeable.add(new Point(1, 3));
+        seeable.add(new Point(2, 0));
+        seeable.add(new Point(2, 1));
+        unseeable.add(new Point(2, 2));
+        unseeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(2, 1));
+        unseeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        unseeable.add(new Point(0, 3));
+        unseeable.add(new Point(1, 0));
+        seeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        seeable.add(new Point(1, 3));
+        seeable.add(new Point(2, 0));
+        seeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        seeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(2, 2));
+        unseeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        unseeable.add(new Point(0, 3));
+        unseeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        seeable.add(new Point(1, 3));
+        seeable.add(new Point(2, 0));
+        seeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        seeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+        game.getPlayers().get(0).setPosition(new Point(2, 3));
+        unseeable.add(new Point(0, 0));
+        unseeable.add(new Point(0, 1));
+        unseeable.add(new Point(0, 2));
+        unseeable.add(new Point(0, 3));
+        unseeable.add(new Point(1, 0));
+        unseeable.add(new Point(1, 1));
+        seeable.add(new Point(1, 2));
+        seeable.add(new Point(1, 3));
+        unseeable.add(new Point(2, 0));
+        unseeable.add(new Point(2, 1));
+        seeable.add(new Point(2, 2));
+        seeable.add(new Point(2, 3));
+        assertTrue(seeable.parallelStream().allMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        assertTrue(unseeable.parallelStream().noneMatch(e -> game.getActualPlayer().canSeeCell(e, game.getCells())));
+        for (Point point : seeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertTrue(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        for (Point point : unseeable) {
+            game.getPlayers().get(1).setPosition(point);
+            assertFalse(game.getActualPlayer().canSeeNotSame(game.getPlayers().get(1), game.getCells()));
+        }
+        seeable.clear();
+        unseeable.clear();
+    }
+
+    @Test
     ArrayList<Player> createPlayers() {
         ArrayList<Player> players = new ArrayList<>();
         ArrayList<String> nickNames = new ArrayList<>();
