@@ -19,56 +19,57 @@ class GameTest {
     @RepeatedTest(value = 100)
     void testGame() {
         Game.Type type = Game.Type.values()[new SecureRandom().nextInt(Game.Type.values().length)];
-        var cells = new Cell[MAX_X][MAX_Y];
+        var cells = new Cell[MAX_Y][MAX_X];
         switch (type.getLeft()) {
             case "L5":
                 cells[0][0] = Cell.Creator.withBounds("_ |_").color(Cell.Color.BLUE).create();
-                cells[0][1] = Cell.Creator.withBounds("| __").color(Cell.Color.RED).spawnPoint().create();
-                cells[0][2] = null;
-                cells[1][0] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.BLUE).create();
+                cells[1][0] = Cell.Creator.withBounds("| __").color(Cell.Color.RED).spawnPoint().create();
+                cells[2][0] = null;
+                cells[0][1] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.BLUE).create();
                 switch (type.getRight()) {
                     case "R5":
                         cells[1][1] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.RED).create();
-                        cells[1][2] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
+                        cells[2][1] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
                         break;
                     case "R6":
-                        cells[1][1] = Cell.Creator.withBounds("___ ").color(Cell.Color.RED).create();
+                        cells[1][1] = Cell.Creator.withBounds("__| ").color(Cell.Color.RED).create();
+                        cells[2][1] = Cell.Creator.withBounds("||__").color(Cell.Color.WHITE).create();
                         break;
                 }
                 break;
             case "L6":
-                cells[0][0] = Cell.Creator.withBounds("_| _").color(Cell.Color.BLUE).create();
-                cells[0][1] = Cell.Creator.withBounds(" _|_").color(Cell.Color.RED).spawnPoint().create();
-                cells[0][2] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
-                cells[1][0] = Cell.Creator.withBounds("_ ||").color(Cell.Color.BLUE).create();
+                cells[0][0] = Cell.Creator.withBounds("_| _").color(Cell.Color.RED).create();
+                cells[1][0] = Cell.Creator.withBounds(" _|_").color(Cell.Color.RED).spawnPoint().create();
+                cells[2][0] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
+                cells[0][1] = Cell.Creator.withBounds("_ ||").color(Cell.Color.BLUE).create();
                 switch (type.getRight()) {
                     case "R5":
                         cells[1][1] = Cell.Creator.withBounds("| |_").color(Cell.Color.PURPLE).create();
-                        cells[1][2] = Cell.Creator.withBounds("| _ ").color(Cell.Color.WHITE).create();
+                        cells[2][1] = Cell.Creator.withBounds("| _ ").color(Cell.Color.WHITE).create();
                         break;
                     case "R6":
                         cells[1][1] = Cell.Creator.withBounds("|_|_").color(Cell.Color.PURPLE).create();
+                        cells[2][1] = Cell.Creator.withBounds("||_ ").color(Cell.Color.WHITE).create();
                         break;
                 }
                 break;
         }
         switch (type.getRight()) {
             case "R5":
-                cells[2][0] = Cell.Creator.withBounds("__| ").color(Cell.Color.BLUE).spawnPoint().create();
-                cells[2][1] = Cell.Creator.withBounds("||_ ").color(Cell.Color.PURPLE).create();
+                cells[0][2] = Cell.Creator.withBounds("__| ").color(Cell.Color.BLUE).spawnPoint().create();
+                cells[1][2] = Cell.Creator.withBounds("||_ ").color(type.getLeft().equals("L5") ? Cell.Color.RED : Cell.Color.PURPLE).create();
                 cells[2][2] = Cell.Creator.withBounds("_|_ ").color(Cell.Color.WHITE).create();
-                cells[3][0] = null;
-                cells[3][1] = Cell.Creator.withBounds("__ |").color(Cell.Color.YELLOW).create();
-                cells[3][2] = Cell.Creator.withBounds(" __|").color(Cell.Color.YELLOW).spawnPoint().create();
+                cells[0][3] = null;
+                cells[1][3] = Cell.Creator.withBounds("__ |").color(Cell.Color.YELLOW).create();
+                cells[2][3] = Cell.Creator.withBounds(" __|").color(Cell.Color.YELLOW).spawnPoint().create();
                 break;
             case "R6":
-                cells[1][2] = Cell.Creator.withBounds("||__").color(Cell.Color.WHITE).create();
-                cells[2][0] = Cell.Creator.withBounds("_|| ").color(Cell.Color.BLUE).spawnPoint().create();
-                cells[2][1] = Cell.Creator.withBounds("|  _").color(Cell.Color.YELLOW).create();
+                cells[0][2] = Cell.Creator.withBounds("_|| ").color(Cell.Color.BLUE).spawnPoint().create();
+                cells[1][2] = Cell.Creator.withBounds("|  _").color(Cell.Color.YELLOW).create();
                 cells[2][2] = Cell.Creator.withBounds("  _|").color(Cell.Color.YELLOW).create();
-                cells[3][0] = Cell.Creator.withBounds("__||").color(Cell.Color.GREEN).create();
-                cells[3][1] = Cell.Creator.withBounds("|_  ").color(Cell.Color.YELLOW).create();
-                cells[3][2] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
+                cells[0][3] = Cell.Creator.withBounds("__||").color(Cell.Color.GREEN).create();
+                cells[1][3] = Cell.Creator.withBounds("|_  ").color(Cell.Color.YELLOW).create();
+                cells[2][3] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
                 break;
         }
         ArrayList<User> users = Collections.nCopies(5, null).parallelStream().map(f -> new User(UUID.randomUUID().toString())).collect(Collectors.toCollection(ArrayList::new));

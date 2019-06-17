@@ -100,19 +100,19 @@ public class Bounds implements Serializable {
         /**
          * N direction.
          */
-        N(0, 1),
+        N(-1, 0),
         /**
          * S direction.
          */
-        S(0, -1),
+        S(1, 0),
         /**
          * W direction.
          */
-        W(-1, 0),
+        W(0, -1),
         /**
          * E direction.
          */
-        E(1, 0);
+        E(0, 1);
 
         private int dx;
         private int dy;

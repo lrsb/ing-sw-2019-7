@@ -47,7 +47,7 @@ public class Game implements Displayable, Serializable {
 
     public Game() {
         uuid = UUID.randomUUID();
-        cells = new Cell[MAX_X][MAX_Y];
+        cells = new Cell[MAX_Y][MAX_X];
         type = Type.values()[new SecureRandom().nextInt(Type.values().length)];
     }
 

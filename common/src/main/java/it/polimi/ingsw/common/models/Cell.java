@@ -147,6 +147,7 @@ public class Cell implements Serializable {
                         break;
                     default:
                         index = 3;
+                        break;
                 }
                 switch (boundsString.charAt(index)) {
                     case '_':

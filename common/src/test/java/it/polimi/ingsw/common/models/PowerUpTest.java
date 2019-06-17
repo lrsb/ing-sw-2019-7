@@ -4,9 +4,11 @@ import it.polimi.ingsw.common.models.exceptions.PlayerNotFoundException;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static it.polimi.ingsw.common.models.Game.MAX_X;
 import static it.polimi.ingsw.common.models.Game.MAX_Y;
@@ -19,6 +21,7 @@ class PowerUpTest {
         Game game = createGame();
         PowerUp ts = new PowerUp(AmmoCard.Color.values()[new SecureRandom().nextInt(AmmoCard.Color.values().length)],
                 PowerUp.Type.TARGETING_SCOPE);
+        assertFalse(Stream.of(AmmoCard.Color.values()).noneMatch(e -> e.equals(ts.getAmmoColor())));
         game.getPlayers().get(0).addPowerUp(ts);
         assertThrows(PlayerNotFoundException.class, () -> ts.use(game));
         ts.setTarget(game.getPlayers().get(1));
@@ -29,6 +32,24 @@ class PowerUpTest {
         assertTrue(game.getPlayers().get(1).getDamagesTaken().contains(game.getPlayers().get(0).getUuid()));
         for (int i = 0; i < 100; i++) assertTrue(ts.use(game));
         assertEquals(12, game.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(1, game.getPlayers().get(1).getSortedHitters().size());
+        assertTrue(game.getPlayers().get(1).getSortedHitters().contains(game.getPlayers().get(0).getUuid()));
+    }
+
+    @RepeatedTest(value = 100)
+    void testNewton() {
+        Game game = createGame();
+        PowerUp newt = new PowerUp(AmmoCard.Color.values()[new SecureRandom().nextInt(AmmoCard.Color.values().length)],
+                PowerUp.Type.NEWTON);
+        assertFalse(Stream.of(AmmoCard.Color.values()).noneMatch(e -> e.equals(newt.getAmmoColor())));
+        game.getPlayers().get(0).addPowerUp(newt);
+        game.getPlayers().get(0).setPosition(new Point(2, 3));
+        assertThrows(NullPointerException.class, () -> newt.use(game));
+        game.getPlayers().get(1).setPosition(new Point(0, 0));
+        newt.setTarget(game.getPlayers().get(1));
+        newt.setTargetPoint(new Point(0, 2));
+        assertTrue(newt.use(game));
+        assertEquals(new Point(0, 2), game.getPlayers().get(1).getPosition());
     }
 
     @Test
@@ -61,56 +82,57 @@ class PowerUpTest {
     @Test
     Game createGame() {
         Game.Type type = Game.Type.values()[new SecureRandom().nextInt(Game.Type.values().length)];
-        var cells = new Cell[MAX_X][MAX_Y];
+        var cells = new Cell[MAX_Y][MAX_X];
         switch (type.getLeft()) {
             case "L5":
                 cells[0][0] = Cell.Creator.withBounds("_ |_").color(Cell.Color.BLUE).create();
-                cells[0][1] = Cell.Creator.withBounds("| __").color(Cell.Color.RED).spawnPoint().create();
-                cells[0][2] = null;
-                cells[1][0] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.BLUE).create();
+                cells[1][0] = Cell.Creator.withBounds("| __").color(Cell.Color.RED).spawnPoint().create();
+                cells[2][0] = null;
+                cells[0][1] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.BLUE).create();
                 switch (type.getRight()) {
                     case "R5":
                         cells[1][1] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.RED).create();
-                        cells[1][2] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
+                        cells[2][1] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
                         break;
                     case "R6":
-                        cells[1][1] = Cell.Creator.withBounds("___ ").color(Cell.Color.RED).create();
+                        cells[1][1] = Cell.Creator.withBounds("__| ").color(Cell.Color.RED).create();
+                        cells[2][1] = Cell.Creator.withBounds("||__").color(Cell.Color.WHITE).create();
                         break;
                 }
                 break;
             case "L6":
-                cells[0][0] = Cell.Creator.withBounds("_| _").color(Cell.Color.BLUE).create();
-                cells[0][1] = Cell.Creator.withBounds(" _|_").color(Cell.Color.RED).spawnPoint().create();
-                cells[0][2] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
-                cells[1][0] = Cell.Creator.withBounds("_ ||").color(Cell.Color.BLUE).create();
+                cells[0][0] = Cell.Creator.withBounds("_| _").color(Cell.Color.RED).create();
+                cells[1][0] = Cell.Creator.withBounds(" _|_").color(Cell.Color.RED).spawnPoint().create();
+                cells[2][0] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
+                cells[0][1] = Cell.Creator.withBounds("_ ||").color(Cell.Color.BLUE).create();
                 switch (type.getRight()) {
                     case "R5":
                         cells[1][1] = Cell.Creator.withBounds("| |_").color(Cell.Color.PURPLE).create();
-                        cells[1][2] = Cell.Creator.withBounds("| _ ").color(Cell.Color.WHITE).create();
+                        cells[2][1] = Cell.Creator.withBounds("| _ ").color(Cell.Color.WHITE).create();
                         break;
                     case "R6":
                         cells[1][1] = Cell.Creator.withBounds("|_|_").color(Cell.Color.PURPLE).create();
+                        cells[2][1] = Cell.Creator.withBounds("||_ ").color(Cell.Color.WHITE).create();
                         break;
                 }
                 break;
         }
         switch (type.getRight()) {
             case "R5":
-                cells[2][0] = Cell.Creator.withBounds("__| ").color(Cell.Color.BLUE).spawnPoint().create();
-                cells[2][1] = Cell.Creator.withBounds("||_ ").color(Cell.Color.PURPLE).create();
+                cells[0][2] = Cell.Creator.withBounds("__| ").color(Cell.Color.BLUE).spawnPoint().create();
+                cells[1][2] = Cell.Creator.withBounds("||_ ").color(type.getLeft().equals("L5") ? Cell.Color.RED : Cell.Color.PURPLE).create();
                 cells[2][2] = Cell.Creator.withBounds("_|_ ").color(Cell.Color.WHITE).create();
-                cells[3][0] = null;
-                cells[3][1] = Cell.Creator.withBounds("__ |").color(Cell.Color.YELLOW).create();
-                cells[3][2] = Cell.Creator.withBounds(" __|").color(Cell.Color.YELLOW).spawnPoint().create();
+                cells[0][3] = null;
+                cells[1][3] = Cell.Creator.withBounds("__ |").color(Cell.Color.YELLOW).create();
+                cells[2][3] = Cell.Creator.withBounds(" __|").color(Cell.Color.YELLOW).spawnPoint().create();
                 break;
             case "R6":
-                cells[1][2] = Cell.Creator.withBounds("||__").color(Cell.Color.WHITE).create();
-                cells[2][0] = Cell.Creator.withBounds("_|| ").color(Cell.Color.BLUE).spawnPoint().create();
-                cells[2][1] = Cell.Creator.withBounds("|  _").color(Cell.Color.YELLOW).create();
+                cells[0][2] = Cell.Creator.withBounds("_|| ").color(Cell.Color.BLUE).spawnPoint().create();
+                cells[1][2] = Cell.Creator.withBounds("|  _").color(Cell.Color.YELLOW).create();
                 cells[2][2] = Cell.Creator.withBounds("  _|").color(Cell.Color.YELLOW).create();
-                cells[3][0] = Cell.Creator.withBounds("__||").color(Cell.Color.GREEN).create();
-                cells[3][1] = Cell.Creator.withBounds("|_  ").color(Cell.Color.YELLOW).create();
-                cells[3][2] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
+                cells[0][3] = Cell.Creator.withBounds("__||").color(Cell.Color.GREEN).create();
+                cells[1][3] = Cell.Creator.withBounds("|_  ").color(Cell.Color.YELLOW).create();
+                cells[2][3] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
                 break;
         }
         return new Game(UUID.randomUUID(), type, cells, createPlayers(), new SecureRandom().nextInt(4) + 5);

@@ -268,13 +268,13 @@ public class Player implements Displayable, Serializable {
      */
     public boolean isPointAtMaxDistanceInDirection(@NotNull Point point, @NotNull Cell[][] cells, int maxDistance, @NotNull Bounds.Direction direction) {
         if (position == null) return false;
-        int countDistance = 0, x = position.x, y = position.y;
+        int countDistance = 0, x = (int) position.getX(), y = (int) position.getY();
         while (countDistance < maxDistance) {
-            if (cells[x][y].getBounds().getType(direction) == Bounds.Type.WALL) return false;
+            if (cells[x][y].getBounds().getType(direction).equals(Bounds.Type.WALL)) return false;
             countDistance++;
             x += direction.getdX();
             y += direction.getdY();
-            if (x == point.getX() && y == point.getY()) return true;
+            if (x == (int) point.getX() && y == (int) point.getY()) return true;
         }
         return false;
     }
@@ -288,9 +288,9 @@ public class Player implements Displayable, Serializable {
      */
     public boolean canSeeCell(@NotNull Point point, @NotNull Cell[][] cells) {
         if (position == null) return false;
-        if (cells[position.x][position.y].getColor() == cells[point.x][point.y].getColor()) return true;
+        if (cells[position.x][position.y].getColor().equals(cells[point.x][point.y].getColor())) return true;
         for (var direction : Bounds.Direction.values())
-            if (cells[position.x][position.y].getBounds().getType(direction) == Bounds.Type.DOOR &&
+            if (cells[position.x][position.y].getBounds().getType(direction).equals(Bounds.Type.DOOR) &&
                     cells[position.x + direction.getdX()][position.y + direction.getdY()].getColor()
                             == cells[point.x][point.y].getColor()) return true;
         return false;
