@@ -52,6 +52,35 @@ class PowerUpTest {
         assertEquals(new Point(0, 2), game.getPlayers().get(1).getPosition());
     }
 
+    @RepeatedTest(value = 100)
+    void testTagbackGrenade() {
+        Game game = createGame();
+        PowerUp tbg = new PowerUp(AmmoCard.Color.values()[new SecureRandom().nextInt(AmmoCard.Color.values().length)],
+                PowerUp.Type.TAGBACK_GRENADE);
+        assertFalse(Stream.of(AmmoCard.Color.values()).noneMatch(e -> e.equals(tbg.getAmmoColor())));
+        game.getPlayers().get(1).addPowerUp(tbg);
+        assertFalse(tbg.use(game));
+        game.addToLastsDamaged(game.getPlayers().get(1));
+        assertTrue(game.getTagbackPlayers().contains(game.getPlayers().get(1).getUuid()));
+        game.responsivePlayers.addAll(game.getTagbackPlayers());
+        assertTrue(tbg.use(game));
+        assertEquals(1, game.getPlayers().get(0).getMarksTaken().size());
+        assertTrue(game.getPlayers().get(0).getMarksTaken().contains(game.getPlayers().get(1).getUuid()));
+    }
+
+    @RepeatedTest(value = 100)
+    void testTeleporter() {
+        Game game = createGame();
+        PowerUp tp = new PowerUp(AmmoCard.Color.values()[new SecureRandom().nextInt(AmmoCard.Color.values().length)],
+                PowerUp.Type.TELEPORTER);
+        assertFalse(Stream.of(AmmoCard.Color.values()).noneMatch(e -> e.equals(tp.getAmmoColor())));
+        game.getPlayers().get(0).addPowerUp(tp);
+        assertFalse(tp.use(game));
+        tp.setTargetPoint(new Point(0, 0));
+        assertTrue(tp.use(game));
+        assertEquals(new Point(0, 0), game.getPlayers().get(0).getPosition());
+    }
+
     @Test
     ArrayList<Player> createPlayers() {
         ArrayList<Player> players = new ArrayList<>();
