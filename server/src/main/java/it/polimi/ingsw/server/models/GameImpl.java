@@ -32,30 +32,7 @@ public class GameImpl extends Game implements Serializable {
         blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         Stream.of(cells).flatMap(Stream::of).filter(Objects::nonNull).filter(e -> !e.isSpawnPoint()).forEach(e -> e.setAmmoCard(ammoDeck.exitCard()));
-    }
-
-    List<PowerUp> getFirstMoveColors() {
-        exitedPowerUps.addAll(powerUpsDeck.exitCards(2));
-        return exitedPowerUps;
-    }
-
-    void completeFirstMove(PowerUp cardToThrow) {
-        exitedPowerUps.remove(cardToThrow);
-        powerUpsDeck.discardCard(cardToThrow);
-        var cardToKeep = exitedPowerUps.remove(0);
-        getActualPlayer().setPlayed();
-        getActualPlayer().addPowerUp(cardToKeep);
-        assert exitedPowerUps.isEmpty() && getActualPlayer().getPowerUps().size() == 1;
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                if (cells[i][j].isSpawnPoint() && cells[i][j].getColor().name().equals(cardToThrow.getAmmoColor().name())) {
-                    getActualPlayer().setPosition(new Point(i, j));
-                    nextTurn();
-                    return;
-                }
-            }
-        }
-        assert getActualPlayer().getPosition() != null;
+        for (int i = 0; i < 2; i++) getActualPlayer().addPowerUp(powerUpsDeck.exitCard());
     }
 
     //FIRST MOVE - End
@@ -163,15 +140,19 @@ public class GameImpl extends Game implements Serializable {
         final int beforeSkulls = skulls;
         for (var cells : cells)
             for (var cell : cells) {
-                if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
-                if (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
-                    addWeapon(cell.getColor(), weaponsDeck.exitCard());
+                if (cell != null) {
+                    if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
+                    while (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
+                        addWeapon(cell.getColor(), weaponsDeck.exitCard());
+                }
             }
         addReborningPlayers();
         deathPointsRedistribution();
         if (beforeSkulls > 0 && skulls == 0) players.forEach(Player::setEasyBoard);
         if (skulls == 0 && seqPlay % (players.size() - 1) == 0) lastTurn = true;
         if (responsivePlayers.isEmpty()) seqPlay++;
+        if (getActualPlayer().getPosition() == null)
+            for (int i = 0; i < 2; i++) getActualPlayer().addPowerUp(powerUpsDeck.exitCard());
     }
 
     private void deathPointsRedistribution() {
@@ -190,6 +171,7 @@ public class GameImpl extends Game implements Serializable {
                 })));
         deadPlayers.forEach(e -> {
             e.manageDeath();
+            e.addPowerUp(powerUpsDeck.exitCard());
             if (skulls > 0) skulls--;
         });
     }
@@ -276,29 +258,26 @@ public class GameImpl extends Game implements Serializable {
         if (getActualPlayer().getPowerUps().contains(powerUp)) {
             powerUpsDeck.discardCard(powerUp);
             getActualPlayer().getPowerUps().remove(powerUp);
-            for (int x = 0; x < 4; x++)
-                for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 3; x++)
+                for (int y = 0; y < 4; y++) {
                     var cell = getCell(new Point(x, y));
                     if (cell != null && cell.isSpawnPoint()) {
                         switch (cell.getColor()) {
                             case RED:
                                 if (powerUp.getAmmoColor().equals(AmmoCard.Color.RED)) {
                                     getActualPlayer().setPosition(new Point(x, y));
-                                    responsivePlayers.remove(0);
                                     return true;
                                 }
                                 break;
                             case YELLOW:
                                 if (powerUp.getAmmoColor().equals(AmmoCard.Color.YELLOW)) {
                                     getActualPlayer().setPosition(new Point(x, y));
-                                    responsivePlayers.remove(0);
                                     return true;
                                 }
                                 break;
                             case BLUE:
                                 if (powerUp.getAmmoColor().equals(AmmoCard.Color.BLUE)) {
                                     getActualPlayer().setPosition(new Point(x, y));
-                                    responsivePlayers.remove(0);
                                     return true;
                                 }
                                 break;
@@ -312,8 +291,10 @@ public class GameImpl extends Game implements Serializable {
     }
 
     public boolean doAction(@NotNull Action action) {
-        if (getActualPlayer().getPosition() == null) return false;
-        switch (Opt.of(action.getActionType()).get(Action.Type.NOTHING)) {
+        if (getActualPlayer().getPosition() == null)
+            if (action.getActionType().equals(Action.Type.REBORN)) return reborn(action);
+            else return false;
+        else switch (Opt.of(action.getActionType()).get(Action.Type.NOTHING)) {
             case MOVE:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 if (action.getDestination() == null) return false;
@@ -372,7 +353,11 @@ public class GameImpl extends Game implements Serializable {
                 return true;
             case REBORN:
                 if (!isAReborn()) throw new ActionDeniedException();
-                return reborn(action);
+                if (reborn(action)) {
+                    responsivePlayers.remove(0);
+                    return true;
+                }
+                return false;
             default:
                 break;
         }
