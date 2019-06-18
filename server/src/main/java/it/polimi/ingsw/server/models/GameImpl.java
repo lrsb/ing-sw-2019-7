@@ -24,7 +24,11 @@ public class GameImpl extends Game implements Serializable {
     private @NotNull Deck<PowerUp> powerUpsDeck = Deck.Creator.newPowerUpsDeck();
     private @NotNull Deck<Weapon> weaponsDeck = Deck.Creator.newWeaponsDeck();
 
-    private @NotNull ArrayList<PowerUp> exitedPowerUps = new ArrayList<>();
+    private int remainedActions = 2;
+
+    int getRemainedActions() {
+        return remainedActions;
+    }
 
     private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
         super(uuid, type, cells, players, skulls);
@@ -42,6 +46,7 @@ public class GameImpl extends Game implements Serializable {
         if (!lastTurn && (skulls == 0 && canMove(getActualPlayer().getPosition(), to, 4) ||
                 canMove(getActualPlayer().getPosition(), to, 3))) {
             getActualPlayer().setPosition(to);
+            remainedActions--;
             return true;
         }
         return false;
@@ -67,6 +72,7 @@ public class GameImpl extends Game implements Serializable {
                 getActualPlayer().removeWeapon(discardedWeaponName);
                 addWeapon(cell.getColor(), discardedWeaponName);
             }
+            remainedActions--;
             return true;
         }
         return false;
@@ -106,6 +112,7 @@ public class GameImpl extends Game implements Serializable {
                         getActualPlayer().getPowerUps().size() > 2 ? powerUpsDeck.exitCard() : null);
         ammoDeck.discardCard(cell.getAmmoCard());
         cell.removeAmmoCard();
+        remainedActions--;
         return true;
     }
 
@@ -131,6 +138,7 @@ public class GameImpl extends Game implements Serializable {
         }
         if (weapon.fire(action.getOptions())) {
             weapon.getAlternativePaymentUsed().forEach(e -> powerUpsDeck.discardCard(e));
+            remainedActions--;
             return true;
         }
         return false;
@@ -153,6 +161,8 @@ public class GameImpl extends Game implements Serializable {
         if (responsivePlayers.isEmpty()) seqPlay++;
         if (getActualPlayer().getPosition() == null)
             for (int i = 0; i < 2; i++) getActualPlayer().addPowerUp(powerUpsDeck.exitCard());
+        if (lastTurn) remainedActions = 1;
+        else remainedActions = 2;
     }
 
     private void deathPointsRedistribution() {
@@ -297,19 +307,21 @@ public class GameImpl extends Game implements Serializable {
         else switch (Opt.of(action.getActionType()).get(Action.Type.NOTHING)) {
             case MOVE:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
-                if (action.getDestination() == null) return false;
+                if (action.getDestination() == null || remainedActions < 1) return false;
                 return moveTo(action.getDestination());
             case GRAB_WEAPON:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
-                if (action.getWeapon() == null) return false;
+                if (action.getWeapon() == null || remainedActions < 1) return false;
                 return grabWeapon(Opt.of(action.getDestination()).get(getActualPlayer().getPosition()),
                         action.getWeapon(), action.getDiscardedWeapon(), action.getPowerUpPayment());
             case GRAB_AMMOCARD:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
+                if (remainedActions < 1) return false;
                 return grabAmmoCard(Opt.of(action.getDestination()).get(getActualPlayer().getPosition()));
             case FIRE:
                 Point mockPosition = new Point(getActualPlayer().getPosition());
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
+                if (remainedActions < 1) return false;
                 if (action.getWeapon() != null && getActualPlayer().hasWeapon(action.getWeapon()) &&
                         (getActualPlayer().isALoadedGun(action.getWeapon()) || skulls == 0)) {
                     if (action.getDestination() != null && (getActualPlayer().getDamagesTaken().size() >= 6 &&
@@ -339,7 +351,7 @@ public class GameImpl extends Game implements Serializable {
                 return false;
             case RELOAD:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
-                if (action.getWeapon() == null) return false;
+                if (action.getWeapon() == null || remainedActions != 0) return false;
                 if (getActualPlayer().hasWeapon(action.getWeapon()) &&
                         !getActualPlayer().isALoadedGun(action.getWeapon()) &&
                         canPayWeaponAndPay(action.getWeapon(), action.getPowerUpPayment())) {
@@ -452,7 +464,7 @@ public class GameImpl extends Game implements Serializable {
                     cells[0][1] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.BLUE).create();
                     switch (room.getGameType().getRight()) {
                         case "R5":
-                            cells[1][1] = Cell.Creator.withBounds("_ _ ").color(Cell.Color.RED).create();
+                            cells[1][1] = Cell.Creator.withBounds("_ | ").color(Cell.Color.RED).create();
                             cells[2][1] = Cell.Creator.withBounds("| __").color(Cell.Color.WHITE).create();
                             break;
                         case "R6":

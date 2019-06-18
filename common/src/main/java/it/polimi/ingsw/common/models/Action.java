@@ -199,12 +199,12 @@ public class Action implements Serializable {
          */
 
         public @NotNull Action buildFireAction(@NotNull Weapon weapon, @NotNull Point destination,
-                                               @Nullable ArrayList<PowerUp> powerUpPayment, boolean alternativeFire,
-                                               int options, @NotNull ArrayList<UUID> basicTarget,
+                                               @Nullable List<PowerUp> powerUpPayment, boolean alternativeFire,
+                                               int options, @NotNull List<UUID> basicTarget,
                                                @Nullable Point basicTargetPoint,
                                                @NotNull java.util.List<UUID> firstAdditionalTarget,
                                                @Nullable Point firstAdditionalTargetPoint,
-                                               @NotNull ArrayList<UUID> secondAdditionalTarget,
+                                               @NotNull List<UUID> secondAdditionalTarget,
                                                @Nullable Point secondAdditionalTargetPoint) {
             var action = new Action(Type.FIRE, gameUuid);
             action.weapon = weapon;
@@ -247,7 +247,7 @@ public class Action implements Serializable {
          * @param powerUpPayment the power ups player wants to use as payment instead of using cubes
          * @return the constructed action to reload a weapon
          */
-        public @NotNull Action buildReload(@NotNull Weapon weapon, @Nullable ArrayList<PowerUp> powerUpPayment) {
+        public @NotNull Action buildReload(@NotNull Weapon weapon, @Nullable List<PowerUp> powerUpPayment) {
             var action = new Action(Type.RELOAD, gameUuid);
             action.weapon = weapon;
             if (powerUpPayment != null) action.powerUpPayment = new ArrayList<>(powerUpPayment);

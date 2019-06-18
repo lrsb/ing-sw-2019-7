@@ -60,6 +60,56 @@ class GameImplTest {
             assertEquals(expectedColor.toString(), gameImpl.getCell(gameImpl.getActualPlayer().getPosition()).getColor().toString());
             assertTrue(gameImpl.doAction(Action.Builder.create(gameImpl.getUuid()).buildNextTurn()));
         }
+        //Set posizioni giocatori
+        gameImpl.getPlayers().get(0).setPosition(new Point(0, 0));
+        gameImpl.getPlayers().get(1).setPosition(new Point(1, 2));
+        gameImpl.getPlayers().get(2).setPosition(new Point(2, 2));
+        gameImpl.getPlayers().get(3).setPosition(new Point(2, 2));
+        gameImpl.getPlayers().get(4).setPosition(new Point(2, 3));
+        //tolgo powerUps
+        for (Player player : gameImpl.getPlayers()) {
+            PowerUp powerUp = player.getPowerUps().get(0);
+            player.removePowerUp(powerUp);
+            assertEquals(0, player.getPowerUps().size());
+        }
+        //Turno 1, giocatore 1
+        assertEquals(2, gameImpl.getRemainedActions());
+        gameImpl.getActualPlayer().addWeapon(Weapon.LOCK_RIFLE);
+        ArrayList<UUID> targets = new ArrayList<>();
+        targets.add(gameImpl.getPlayers().get(1).getUuid());
+        assertTrue(gameImpl.doAction(Action.Builder.create(gameImpl.getUuid()).buildFireAction(Weapon.LOCK_RIFLE, new Point(0, 0),
+                null, false, 0, targets, null, new ArrayList<>(),
+                null, new ArrayList<>(), null)));
+        assertEquals(1, gameImpl.getRemainedActions());
+        assertEquals(2, gameImpl.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(1, gameImpl.getPlayers().get(1).getMarksTaken().size());
+        assertTrue(gameImpl.getPlayers().get(1).getDamagesTaken().contains(gameImpl.getActualPlayer().getUuid()));
+        assertFalse(gameImpl.getActualPlayer().isALoadedGun(Weapon.LOCK_RIFLE));
+        assertFalse(gameImpl.doAction(Action.Builder.create(gameImpl.getUuid()).buildReload(Weapon.LOCK_RIFLE, null)));
+        assertFalse(gameImpl.doAction(Action.Builder.create(gameImpl.getUuid()).buildAmmoCardGrabAction(new Point(1, 0))));
+        assertEquals(1, gameImpl.getRemainedActions());
+        assertTrue(gameImpl.doAction(Action.Builder.create(gameImpl.getUuid()).buildMoveAction(new Point(2, 1))));
+        assertEquals(new Point(2, 1), gameImpl.getActualPlayer().getPosition());
+        assertTrue(gameImpl.doAction(Action.Builder.create(gameImpl.getUuid()).buildReload(Weapon.LOCK_RIFLE, null)));
+        assertTrue(gameImpl.getActualPlayer().isALoadedGun(Weapon.LOCK_RIFLE));
+        assertEquals(1, gameImpl.getActualPlayer().getColoredCubes(AmmoCard.Color.BLUE));
+        assertTrue(gameImpl.doAction(Action.Builder.create(gameImpl.getUuid()).buildNextTurn()));
+        //Turno 1, giocatore 2
+        assertEquals(gameImpl.getPlayers().get(1), gameImpl.getActualPlayer());
+        gameImpl.getActualPlayer().addWeapon(Weapon.ELECTROSCYTHE);
+        assertTrue(gameImpl.doAction(Action.Builder.create(gameImpl.getUuid()).buildMoveAction(new Point(2, 2))));
+        targets.clear();
+        assertTrue(gameImpl.doAction(Action.Builder.create(gameImpl.getUuid()).buildFireAction(Weapon.ELECTROSCYTHE, new Point(2, 2),
+                null, true, 0, targets, null, new ArrayList<>(),
+                null, new ArrayList<>(), null)));
+        assertEquals(2, gameImpl.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(2, gameImpl.getPlayers().get(2).getDamagesTaken().size());
+        assertEquals(2, gameImpl.getPlayers().get(3).getDamagesTaken().size());
+        assertTrue(gameImpl.getPlayers().get(2).getDamagesTaken().contains(gameImpl.getActualPlayer().getUuid()));
+        assertTrue(gameImpl.getPlayers().get(3).getDamagesTaken().contains(gameImpl.getActualPlayer().getUuid()));
+        assertTrue(gameImpl.doAction(Action.Builder.create(gameImpl.getUuid()).buildReload(Weapon.ELECTROSCYTHE, null)));
+        assertEquals(1, gameImpl.getActualPlayer().getColoredCubes(AmmoCard.Color.BLUE));
+        assertEquals(2, gameImpl.getActualPlayer().getColoredCubes(AmmoCard.Color.RED));
     }
 
     @Test

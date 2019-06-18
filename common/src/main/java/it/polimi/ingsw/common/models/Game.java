@@ -192,11 +192,11 @@ public class Game implements Displayable, Serializable {
     @Contract(pure = true)
     private boolean canMoveImpl(@NotNull Point from, @NotNull Point to, int step, int maxStep) {
         if (from.x < 0 || from.x >= cells.length || from.y < 0 || from.y >= cells[from.x].length ||
-                to.x < 0 || to.x >= cells.length || to.y < 0 || to.y >= cells[to.x].length || step >= maxStep || step < 0)
+                to.x < 0 || to.x >= cells.length || to.y < 0 || to.y >= cells[to.x].length || step > maxStep || step < 0)
             return false;
         if (from.equals(to)) return true;
         return Stream.of(Bounds.Direction.values()).anyMatch(e -> cells[from.x][from.y].getBounds().getType(e) != Bounds.Type.WALL &&
-                canMoveImpl(new Point(from.x + e.getdX(), to.y + e.getdY()), to, step + 1, maxStep));
+                canMoveImpl(new Point(from.x + e.getdX(), from.y + e.getdY()), to, step + 1, maxStep));
     }
 
 
