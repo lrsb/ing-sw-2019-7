@@ -63,7 +63,9 @@ class PowerUpTest {
         game.addToLastsDamaged(game.getPlayers().get(1));
         assertTrue(game.getTagbackPlayers().contains(game.getPlayers().get(1).getUuid()));
         game.responsivePlayers.addAll(game.getTagbackPlayers());
+        game.tagbackTime = true;
         assertTrue(tbg.use(game));
+        game.tagbackTime = false;
         assertEquals(1, game.getPlayers().get(0).getMarksTaken().size());
         assertTrue(game.getPlayers().get(0).getMarksTaken().contains(game.getPlayers().get(1).getUuid()));
     }

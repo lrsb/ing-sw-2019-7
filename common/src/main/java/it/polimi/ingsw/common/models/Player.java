@@ -67,8 +67,8 @@ public class Player implements Displayable, Serializable {
      */
     public @NotNull List<UUID> getSortedHitters() {
         return damagesTaken.parallelStream().distinct().sorted((e, f) -> {
-            var diff = damagesTaken.parallelStream().filter(e::equals).count() -
-                    damagesTaken.parallelStream().filter(f::equals).count();
+            var diff = damagesTaken.parallelStream().filter(f::equals).count() -
+                    damagesTaken.parallelStream().filter(e::equals).count();
             return diff == 0 ? damagesTaken.indexOf(e) - damagesTaken.indexOf(f) : (int) diff;
         }).collect(Collectors.toList());
     }
@@ -141,9 +141,10 @@ public class Player implements Displayable, Serializable {
             if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().uuid);
         }
         if (damages > 0) {
-            for (UUID hitterUuid : marksTaken) {
-                if (game.getActualPlayer().uuid.equals(hitterUuid)) {
-                    marksTaken.remove(hitterUuid);
+            for (int i = 0; i < marksTaken.size(); i++) {
+                if (game.getActualPlayer().uuid.equals(marksTaken.get(i))) {
+                    marksTaken.remove(i);
+                    i--;
                     if (damagesTaken.size() < 12) {
                         damagesTaken.add(game.getActualPlayer().uuid);
                         game.addToLastsDamaged(this);
@@ -152,8 +153,8 @@ public class Player implements Displayable, Serializable {
             }
         }
         int oldMarks = 0;
-        for (UUID hitterUuid : marksTaken) {
-            if (game.getActualPlayer().uuid.equals(hitterUuid)) oldMarks++;
+        for (UUID value : marksTaken) {
+            if (game.getActualPlayer().uuid.equals(value)) oldMarks++;
         }
         for (int i = 0; i < marks && oldMarks + i < 3; i++) {
             marksTaken.add(game.getActualPlayer().uuid);
@@ -165,7 +166,7 @@ public class Player implements Displayable, Serializable {
     }
 
     public void addMark(@NotNull Player avenger) {
-        if (marksTaken.parallelStream().filter(e -> e == avenger.getUuid()).count() < 3)
+        if (marksTaken.parallelStream().filter(e -> e.equals(avenger.getUuid())).count() < 3)
             marksTaken.add(avenger.getUuid());
     }
 

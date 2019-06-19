@@ -184,6 +184,162 @@ class GameImplTest {
     }
 
     @Test
+    void testPoints() {
+        GameImpl game = createGameImpl(Game.Type.SIX_SIX);
+        for (Player player : game.getPlayers()) {
+            player.setPosition(new Point(2, 3));
+            player.addWeapon(Weapon.LOCK_RIFLE);
+        }
+        //Turno1
+        easyFire(game, game.getPlayers().get(1));
+        easyFire(game, game.getPlayers().get(4));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        easyFire(game, game.getPlayers().get(3));
+        easyFire(game, game.getPlayers().get(3));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        easyFire(game, game.getPlayers().get(0));
+        easyFire(game, game.getPlayers().get(4));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        easyFire(game, game.getPlayers().get(2));
+        easyFire(game, game.getPlayers().get(1));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        easyFire(game, game.getPlayers().get(3));
+        easyFire(game, game.getPlayers().get(0));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        //Riepilogo1
+        assertEquals(4, game.getPlayers().get(0).getDamagesTaken().size());
+        assertEquals(2, game.getPlayers().get(0).getMarksTaken().size());
+        assertEquals(0, game.getPlayers().get(0).getPoints());
+        assertEquals(4, game.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(2, game.getPlayers().get(1).getMarksTaken().size());
+        assertEquals(0, game.getPlayers().get(1).getPoints());
+        assertEquals(2, game.getPlayers().get(2).getDamagesTaken().size());
+        assertEquals(1, game.getPlayers().get(2).getMarksTaken().size());
+        assertEquals(0, game.getPlayers().get(2).getPoints());
+        assertEquals(7, game.getPlayers().get(3).getDamagesTaken().size());
+        assertEquals(2, game.getPlayers().get(3).getMarksTaken().size());
+        assertEquals(0, game.getPlayers().get(3).getPoints());
+        assertEquals(4, game.getPlayers().get(4).getDamagesTaken().size());
+        assertEquals(2, game.getPlayers().get(4).getMarksTaken().size());
+        assertEquals(0, game.getPlayers().get(4).getPoints());
+        assertEquals(5, game.getSkulls());
+        //Turno2
+        easyFire(game, game.getPlayers().get(3));
+        easyFire(game, game.getPlayers().get(2));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        easyFire(game, game.getPlayers().get(4));
+        easyFire(game, game.getPlayers().get(3));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildReborn(
+                game.getActualPlayer().getPowerUps().get(0).getType(),
+                game.getActualPlayer().getPowerUps().get(0).getAmmoColor())));
+        game.getPlayers().get(3).setPosition(new Point(2, 3));
+        easyFire(game, game.getPlayers().get(0));
+        easyFire(game, game.getPlayers().get(0));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        easyFire(game, game.getPlayers().get(2));
+        easyFire(game, game.getPlayers().get(1));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        easyFire(game, game.getPlayers().get(1));
+        easyFire(game, game.getPlayers().get(2));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        //Riepilogo2
+        assertEquals(10, game.getPlayers().get(0).getDamagesTaken().size());
+        assertEquals(2, game.getPlayers().get(0).getMarksTaken().size());
+        assertEquals(4, game.getPlayers().get(0).getPoints());
+        assertEquals(10, game.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(3, game.getPlayers().get(1).getMarksTaken().size());
+        assertEquals(9, game.getPlayers().get(1).getPoints());
+        assertEquals(9, game.getPlayers().get(2).getDamagesTaken().size());
+        assertEquals(3, game.getPlayers().get(2).getMarksTaken().size());
+        assertEquals(0, game.getPlayers().get(2).getPoints());
+        assertEquals(0, game.getPlayers().get(3).getDamagesTaken().size());
+        assertEquals(3, game.getPlayers().get(3).getMarksTaken().size());
+        assertEquals(0, game.getPlayers().get(3).getPoints());
+        assertEquals(6, game.getPlayers().get(4).getDamagesTaken().size());
+        assertEquals(3, game.getPlayers().get(4).getMarksTaken().size());
+        assertEquals(6, game.getPlayers().get(4).getPoints());
+        assertEquals(4, game.getSkulls());
+        //Turno 3
+        easyFire(game, game.getPlayers().get(4));
+        easyFire(game, game.getPlayers().get(4));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildReborn(
+                game.getActualPlayer().getPowerUps().get(0).getType(),
+                game.getActualPlayer().getPowerUps().get(0).getAmmoColor())));
+        game.getPlayers().get(4).setPosition(new Point(2, 3));
+        easyFire(game, game.getPlayers().get(2));
+        easyFire(game, game.getPlayers().get(0));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildReborn(
+                game.getActualPlayer().getPowerUps().get(0).getType(),
+                game.getActualPlayer().getPowerUps().get(0).getAmmoColor())));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildReborn(
+                game.getActualPlayer().getPowerUps().get(0).getType(),
+                game.getActualPlayer().getPowerUps().get(0).getAmmoColor())));
+        game.getPlayers().get(0).setPosition(new Point(2, 3));
+        game.getPlayers().get(2).setPosition(new Point(2, 3));
+        easyFire(game, game.getPlayers().get(3));
+        easyFire(game, game.getPlayers().get(3));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        easyFire(game, game.getPlayers().get(1));
+        easyFire(game, game.getPlayers().get(1));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildReborn(
+                game.getActualPlayer().getPowerUps().get(0).getType(),
+                game.getActualPlayer().getPowerUps().get(0).getAmmoColor())));
+        game.getPlayers().get(1).setPosition(new Point(2, 3));
+        easyFire(game, game.getPlayers().get(1));
+        easyFire(game, game.getPlayers().get(2));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertTrue(game.isLastTurn());
+        //Riepilogo3
+        assertEquals(0, game.getPlayers().get(0).getDamagesTaken().size());
+        assertEquals(4, game.getPlayers().get(0).getMarksTaken().size());
+        assertEquals(26, game.getPlayers().get(0).getPoints());
+        assertEquals(2, game.getPlayers().get(0).getMaximumPoints());
+        assertEquals(3, game.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(4, game.getPlayers().get(1).getMarksTaken().size());
+        assertEquals(20, game.getPlayers().get(1).getPoints());
+        assertEquals(2, game.getPlayers().get(1).getMaximumPoints());
+        assertEquals(3, game.getPlayers().get(2).getDamagesTaken().size());
+        assertEquals(4, game.getPlayers().get(2).getMarksTaken().size());
+        assertEquals(15, game.getPlayers().get(2).getPoints());
+        assertEquals(2, game.getPlayers().get(2).getMaximumPoints());
+        assertEquals(5, game.getPlayers().get(3).getDamagesTaken().size());
+        assertEquals(5, game.getPlayers().get(3).getMarksTaken().size());
+        assertEquals(17, game.getPlayers().get(3).getPoints());
+        assertEquals(6, game.getPlayers().get(3).getMaximumPoints());
+        assertEquals(0, game.getPlayers().get(4).getDamagesTaken().size());
+        assertEquals(3, game.getPlayers().get(4).getMarksTaken().size());
+        assertEquals(20, game.getPlayers().get(4).getPoints());
+        assertEquals(2, game.getPlayers().get(1).getMaximumPoints());
+        assertEquals(0, game.getSkulls());
+        assertTrue(game.getPlayers().get(0).isEasyBoard());
+        assertTrue(game.getPlayers().get(1).isEasyBoard());
+        assertTrue(game.getPlayers().get(2).isEasyBoard());
+        assertFalse(game.getPlayers().get(3).isEasyBoard());
+        assertTrue(game.getPlayers().get(4).isEasyBoard());
+        //LastTurn
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertEquals(32, game.getPlayers().get(0).getPoints());
+        assertEquals(28, game.getPlayers().get(1).getPoints());
+        assertEquals(22, game.getPlayers().get(2).getPoints());
+        assertEquals(21, game.getPlayers().get(3).getPoints());
+        assertEquals(26, game.getPlayers().get(4).getPoints());
+        ArrayList<ArrayList<UUID>> ranking = game.getRanking();
+        assertEquals(game.getPlayers().get(0).getUuid(), ranking.get(0).get(0));
+        assertEquals(game.getPlayers().get(1).getUuid(), ranking.get(1).get(0));
+        assertEquals(game.getPlayers().get(4).getUuid(), ranking.get(2).get(0));
+        assertEquals(game.getPlayers().get(2).getUuid(), ranking.get(3).get(0));
+        assertEquals(game.getPlayers().get(3).getUuid(), ranking.get(4).get(0));
+    }
+
+    @Test
     GameImpl createGameImpl(@NotNull Game.Type type) {
         String gameName = "NomePartita";
         User creator = new User("God");
@@ -197,6 +353,29 @@ class GameImplTest {
         room.setSkulls(5);
         while (room.getUsers().size() < 5) room.addUser(possibleUserPlayer.get(room.getUsers().size() - 1));
         return GameImpl.Creator.newGame(room);
+    }
+
+    void cubesTotalRecharging(@NotNull GameImpl game) {
+        for (Player player : game.getPlayers()) {
+            for (AmmoCard.Color color : AmmoCard.Color.values()) {
+                while (player.getColoredCubes(color) < 3) player.removeColoredCubes(color, -1);
+                assertEquals(3, player.getColoredCubes(color));
+            }
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            assertEquals(0, player.getPowerUps().size());
+            player.removeWeapon(player.getWeapons().get(0));
+            player.addWeapon(Weapon.LOCK_RIFLE);
+        }
+
+    }
+
+    void easyFire(@NotNull GameImpl game, @NotNull Player target) {
+        ArrayList<UUID> basicTarget = new ArrayList<>();
+        basicTarget.add(target.getUuid());
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(game.getActualPlayer().getWeapons().get(0),
+                game.getActualPlayer().getPosition(), null, false, 0, basicTarget,
+                null, new ArrayList<>(), null, new ArrayList<>(), null)));
+        cubesTotalRecharging(game);
     }
 
     Action reborningAction(@NotNull PowerUp toThrow, @NotNull GameImpl game) {

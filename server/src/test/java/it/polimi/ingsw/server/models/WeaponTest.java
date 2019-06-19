@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server.models;
 
 import it.polimi.ingsw.common.models.*;
-import it.polimi.ingsw.server.models.exceptions.CardNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -200,16 +199,6 @@ class WeaponTest {
                 secondTargets, null)));
         basicTargets.clear();
         firstTargets.clear();
-        basicTargets.add(game.getPlayers().get(4).getUuid());
-        basicTargets.add(game.getPlayers().get(3).getUuid());
-        firstTargets.add(game.getPlayers().get(3).getUuid());
-        game.getActualPlayer().addPowerUp(new PowerUp(AmmoCard.Color.YELLOW, PowerUp.Type.TELEPORTER));
-        assertThrows(CardNotFoundException.class, () -> game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.MACHINE_GUN, game.getActualPlayer().getPosition(),
-                game.getActualPlayer().getPowerUps(), false, 1, basicTargets, null, firstTargets, null,
-                secondTargets, null)));
-        basicTargets.clear();
-        firstTargets.clear();
-        secondTargets.clear();
     }
 
     @Test

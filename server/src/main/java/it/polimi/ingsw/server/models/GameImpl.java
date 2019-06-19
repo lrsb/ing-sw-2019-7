@@ -157,10 +157,17 @@ public class GameImpl extends Game implements Serializable {
                         addWeapon(cell.getColor(), weaponsDeck.exitCard());
                 }
             }
-        addReborningPlayers();
+        if (isATagbackResponse()) {
+            responsivePlayers.remove(0);
+            if (responsivePlayers.isEmpty()) {
+                clearLastsDamaged();
+                tagbackTime = false;
+            }
+        }
         deathPointsRedistribution();
+        if (lastTurn && seqPlay % players.size() == players.size() - 1) endGame();
         if (beforeSkulls > 0 && skulls == 0) players.forEach(Player::setEasyBoard);
-        if (skulls == 0 && seqPlay % (players.size() - 1) == 0) lastTurn = true;
+        if (skulls == 0 && seqPlay % players.size() == players.size() - 1) lastTurn = true;
         if (responsivePlayers.isEmpty()) seqPlay++;
         if (getActualPlayer().getPosition() == null)
             for (int i = 0; i < 2; i++) getActualPlayer().addPowerUp(powerUpsDeck.exitCard());
@@ -175,18 +182,19 @@ public class GameImpl extends Game implements Serializable {
         deadPlayers.forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream().filter(g -> g.getUuid() == f)
                 .forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
-                    g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
+                    g.addPoints(e.getDamagesTaken().get(0) == f ? 1 : 0);
                     if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) {
-                        e.addMark(g);
+                        g.addMark(e);
                         addToKillshotsTrack(f);
                     }
                     if (f == e.getDamagesTaken().get(10)) addToKillshotsTrack(f);
                 })));
-        deadPlayers.forEach(e -> {
-            e.manageDeath();
-            e.addPowerUp(powerUpsDeck.exitCard());
+        addReborningPlayers();
+        for (int i = 0; i < deadPlayers.size(); i++) {
+            deadPlayers.get(i).manageDeath();
+            deadPlayers.get(i).addPowerUp(powerUpsDeck.exitCard());
             if (skulls > 0) skulls--;
-        });
+        }
     }
 
     /**
@@ -196,7 +204,7 @@ public class GameImpl extends Game implements Serializable {
         players.parallelStream().filter(e -> !e.getDamagesTaken().isEmpty()).forEachOrdered(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f).forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
-                    g.addPoints(e.getSortedHitters().indexOf(f) == 0 ? 1 : 0);
+                    g.addPoints(e.getDamagesTaken().get(0) == f ? 1 : 0);
                 })));
         int points = 8;
         for (int i = 0; i < getSortedKillshooters().size(); i++) {
@@ -207,6 +215,11 @@ public class GameImpl extends Game implements Serializable {
                 }
             }
         }
+    }
+
+    private void endGame() {
+        finalPointsRedistribution();
+        //todo: cose per finire?
     }
 
     /**
@@ -251,7 +264,7 @@ public class GameImpl extends Game implements Serializable {
         players.forEach(e -> tmpRanking.add(new PlayerPoint(e.getUuid(), e.getPoints())));
         Collections.sort(tmpRanking);
         int pos = 0;
-        for (int from = 0; from < tmpRanking.size(); from++) {
+        for (int from = 0; from < tmpRanking.size();) {
             int to = from + 1;
             while (to < tmpRanking.size() && tmpRanking.get(from).points == tmpRanking.get(to).points &&
                     tmpRanking.get(from).killshots == 0 && tmpRanking.get(to).killshots == 0) to++;
@@ -310,20 +323,24 @@ public class GameImpl extends Game implements Serializable {
         else switch (Opt.of(action.getActionType()).get(Action.Type.NOTHING)) {
             case MOVE:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
+                clearLastsDamaged();
                 if (action.getDestination() == null || remainedActions < 1) return false;
                 return moveTo(action.getDestination());
             case GRAB_WEAPON:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
+                clearLastsDamaged();
                 if (action.getWeapon() == null || remainedActions < 1) return false;
                 return grabWeapon(Opt.of(action.getDestination()).get(getActualPlayer().getPosition()),
                         action.getWeapon(), action.getDiscardedWeapon(), action.getPowerUpPayment());
             case GRAB_AMMOCARD:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
+                clearLastsDamaged();
                 if (remainedActions < 1) return false;
                 return grabAmmoCard(Opt.of(action.getDestination()).get(getActualPlayer().getPosition()));
             case FIRE:
                 Point mockPosition = new Point(getActualPlayer().getPosition());
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
+                clearLastsDamaged();
                 if (remainedActions < 1) return false;
                 if (action.getWeapon() != null && getActualPlayer().hasWeapon(action.getWeapon()) &&
                         (getActualPlayer().isALoadedGun(action.getWeapon()) || skulls == 0)) {
@@ -348,7 +365,10 @@ public class GameImpl extends Game implements Serializable {
                 if (powerUp.use(this)) {
                     getActualPlayer().removePowerUp(powerUp);
                     powerUpsDeck.discardCard(powerUp);
-                    if (powerUp.getType().equals(PowerUp.Type.TAGBACK_GRENADE)) responsivePlayers.remove(0);
+                    if (powerUp.getType().equals(PowerUp.Type.TAGBACK_GRENADE)) {
+                        responsivePlayers.remove(0);
+                        if (responsivePlayers.isEmpty()) tagbackTime = false;
+                    }
                     return true;
                 }
                 return false;
@@ -363,13 +383,19 @@ public class GameImpl extends Game implements Serializable {
                 }
                 return false;
             case NEXT_TURN:
-                if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
-                nextTurn();
+                if (isAReborn())
+                    doAction(Action.Builder.create(getUuid()).buildReborn(getActualPlayer().getPowerUps().get(0).getType(),
+                            getActualPlayer().getPowerUps().get(0).getAmmoColor()));
+                else nextTurn();
                 return true;
             case REBORN:
                 if (!isAReborn()) throw new ActionDeniedException();
                 if (reborn(action)) {
                     responsivePlayers.remove(0);
+                    if (responsivePlayers.isEmpty()) {
+                        seqPlay++;
+                        reborningTime = false;
+                    }
                     return true;
                 }
                 return false;
@@ -380,10 +406,12 @@ public class GameImpl extends Game implements Serializable {
     }
 
     private void addTagbackPlayers() {
+        if (!getTagbackPlayers().isEmpty()) tagbackTime = true;
         responsivePlayers.addAll(getTagbackPlayers());
     }
 
     private void addReborningPlayers() {
+        if (!getDeadPlayers().isEmpty()) reborningTime = true;
         responsivePlayers.addAll(getDeadPlayers());
     }
 
@@ -414,7 +442,7 @@ public class GameImpl extends Game implements Serializable {
     }
 
     private int getPlayerKillshots(@NotNull UUID uuid) {
-        return hashKillshotsTrack.get(uuid);
+        return hashKillshotsTrack.getOrDefault(uuid, 0);
     }
 
 

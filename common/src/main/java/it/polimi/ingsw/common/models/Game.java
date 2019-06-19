@@ -33,6 +33,8 @@ public class Game implements Displayable, Serializable {
     protected final @NotNull Type type;
     protected final @NotNull ArrayList<Player> players = new ArrayList<>();
     protected int seqPlay = 0;
+    protected boolean reborningTime = false;
+    protected boolean tagbackTime = false;
 
     private final @NotNull ArrayList<UUID> lastsDamaged = new ArrayList<>();
     protected @NotNull ArrayList<UUID> responsivePlayers = new ArrayList<>();
@@ -102,6 +104,10 @@ public class Game implements Displayable, Serializable {
         return getActualPlayer().isFirstMove();
     }
 
+    public boolean isLastTurn() {
+        return lastTurn;
+    }
+
     /**
      * Add the player to a list when this takes a damage and the list doesn't already contains the player
      *
@@ -113,6 +119,10 @@ public class Game implements Displayable, Serializable {
 
     @NotNull List<UUID> getLastsDamaged() {
         return lastsDamaged;
+    }
+
+    protected void clearLastsDamaged() {
+        lastsDamaged.clear();
     }
 
 
@@ -141,16 +151,15 @@ public class Game implements Displayable, Serializable {
      * @return true if the action being processing must be a possible response with a tagback grenade
      */
     public boolean isATagbackResponse() {
-        return getTagbackPlayers().contains(getActualPlayer().getUuid());
+        return getTagbackPlayers().contains(getActualPlayer().getUuid()) && tagbackTime;
     }
 
     /**
      * @return true if the action that is being processing must be referred to a player that has to respawn
      */
     public boolean isAReborn() {
-        return !isATagbackResponse() && responsivePlayers.contains(getActualPlayer().getUuid());
+        return !isATagbackResponse() && responsivePlayers.contains(getActualPlayer().getUuid()) && reborningTime;
     }
-
 
     public int getSkulls() {
         return skulls;
