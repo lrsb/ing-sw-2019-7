@@ -151,6 +151,7 @@ public class GameImpl extends Game implements Serializable {
         final int beforeSkulls = skulls;
         for (var cells : cells)
             for (var cell : cells) {
+                //noinspection ConstantConditions
                 if (cell != null) {
                     if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
                     while (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
