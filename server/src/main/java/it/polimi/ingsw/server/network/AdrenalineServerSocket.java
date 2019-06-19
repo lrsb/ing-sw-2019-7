@@ -7,17 +7,15 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * The type Adrenaline server socket.
+ * Adrenaline server socket.
  */
 public class AdrenalineServerSocket extends ServerSocket {
-    /**
-     * Instantiates a new Adrenaline server socket.
-     *
-     * @param listener the listener
-     * @throws IOException the io exception
-     */
+    private static final @NotNull Logger logger = Logger.getLogger("AdrenalineServerSocket");
+
     public AdrenalineServerSocket(@NotNull AdrenalineServerSocketListener listener) throws IOException {
         super(Server.SOCKET_PORT);
         new Thread(() -> {
@@ -26,7 +24,7 @@ public class AdrenalineServerSocket extends ServerSocket {
                 socket.bindStreams();
                 listener.onNewSocket(socket);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.log(Level.INFO, e.getMessage(), e);
             }
         }).start();
     }

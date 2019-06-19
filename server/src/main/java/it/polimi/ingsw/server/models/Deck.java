@@ -39,7 +39,7 @@ public class Deck<T extends Serializable> implements Serializable {
      * @param shuffleable true if the deck is shuffleable when finished.
      * @throws EmptyDeckException Thrown when {@code cards} is empty.
      */
-    Deck(@NotNull List<T> cards, boolean shuffleable) throws EmptyDeckException {
+    Deck(@NotNull List<T> cards, boolean shuffleable) {
         if (cards.isEmpty()) throw new EmptyDeckException();
         this.playableCards.addAll(cards);
         this.shuffleable = shuffleable;
@@ -52,7 +52,7 @@ public class Deck<T extends Serializable> implements Serializable {
      * @return The discarded card.
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
      */
-    public @NotNull T discardCard() throws EmptyDeckException {
+    public @NotNull T discardCard() {
         if (playableCards.isEmpty()) shuffleDeck();
         var discardedCard = playableCards.remove(0);
         discardedCards.add(discardedCard);
@@ -66,7 +66,7 @@ public class Deck<T extends Serializable> implements Serializable {
      * @return The exited card
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shufflable.
      */
-    public @NotNull T exitCard() throws EmptyDeckException {
+    public @NotNull T exitCard() {
         if (playableCards.isEmpty()) shuffleDeck();
         var exitedCard = playableCards.remove(0);
         exitedCards.add(exitedCard);
@@ -80,7 +80,7 @@ public class Deck<T extends Serializable> implements Serializable {
      * @return List of card removed from the deck.
      * @throws EmptyDeckException Thrown when there are no more available cards, and the deck is not shuffleable.
      */
-    public @NotNull List<T> exitCards(int n) throws EmptyDeckException {
+    public @NotNull List<T> exitCards(int n) {
         if (playableCards.size() + discardedCards.size() < n) throw new InvalidParameterException();
         if (playableCards.size() < n) if (shuffleable) shuffleDeck();
         else throw new EmptyDeckException();
@@ -96,7 +96,7 @@ public class Deck<T extends Serializable> implements Serializable {
      * @param exitedCard The card that has been used.
      * @throws CardNotFoundException Thrown when specified card isn't in the group of the exited.
      */
-    public void discardCard(@NotNull T exitedCard) throws CardNotFoundException {
+    public void discardCard(@NotNull T exitedCard) {
         if (exitedCards.indexOf(exitedCard) > -1) {
             exitedCards.remove(exitedCard);
             discardedCards.add(exitedCard);
@@ -113,7 +113,7 @@ public class Deck<T extends Serializable> implements Serializable {
         return playableCards.size();
     }
 
-    private void shuffleDeck() throws EmptyDeckException {
+    private void shuffleDeck() {
         if (!shuffleable) throw new EmptyDeckException();
         playableCards.addAll(discardedCards);
         discardedCards.clear();

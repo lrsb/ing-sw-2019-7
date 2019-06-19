@@ -82,13 +82,13 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     throw new IllegalStateException("Unexpected value: " + packet.getType());
             }
         } catch (UserRemoteException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, e.getMessage(), e);
             socket.send(new AdrenalinePacket(AdrenalinePacket.Type.USER_REMOTE_EXCEPTION, null, e));
         } catch (RemoteException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, e.getMessage(), e);
             socket.send(new AdrenalinePacket(AdrenalinePacket.Type.REMOTE_EXCEPTION, null, e));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, e.getMessage(), e);
             socket.send(new AdrenalinePacket(AdrenalinePacket.Type.REMOTE_EXCEPTION, null, new RemoteException(e.getMessage())));
         }
     }

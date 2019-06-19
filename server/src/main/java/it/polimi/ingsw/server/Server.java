@@ -15,8 +15,8 @@ import java.rmi.registry.LocateRegistry;
 
 public class Server {
     public static final int SOCKET_PORT = 0xCAFE;
-    public static final int RMI_PORT = 0xBABE;
-    public static final @NotNull String RMI_NAME = "adrenaline";
+    private static final int RMI_PORT = 0xBABE;
+    private static final @NotNull String RMI_NAME = "adrenaline";
 
     public static final @NotNull MongoDatabase mongoDatabase = new MongoClient(new MongoClientURI(System.getenv().get("MONGODB_URI"))).getDatabase("heroku_wb845rtj");
     public static final @NotNull ServerController controller = new ServerController();
@@ -32,6 +32,9 @@ public class Server {
                     break;
                 case "-s":
                     new AdrenalineServerSocket(new ServerSocketImpl());
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + arg);
             }
         }
     }

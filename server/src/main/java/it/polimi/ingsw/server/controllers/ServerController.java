@@ -20,7 +20,6 @@ import java.util.stream.StreamSupport;
 
 import static com.mongodb.client.model.Filters.eq;
 
-@SuppressWarnings("Duplicates")
 public class ServerController implements API {
     private static final @NotNull MongoCollection<Document> rooms = Server.mongoDatabase.getCollection("rooms");
     private static final @NotNull MongoCollection<Document> games = Server.mongoDatabase.getCollection("games");

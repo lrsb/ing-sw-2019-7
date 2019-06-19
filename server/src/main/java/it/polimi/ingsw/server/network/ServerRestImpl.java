@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ServerRestImpl extends NanoWSD {
+    private static final @NotNull Logger logger = Logger.getLogger("ServerRestImpl");
     private static final @NotNull ExecutorService executorService = Executors.newCachedThreadPool();
 
     public ServerRestImpl() throws IOException {
@@ -100,10 +101,13 @@ public class ServerRestImpl extends NanoWSD {
                     return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
             }
         } catch (UserRemoteException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
             return newFixedLengthResponse(Response.Status.UNAUTHORIZED, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         } catch (RemoteException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
             return newFixedLengthResponse(Response.Status.NOT_ACCEPTABLE, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         } catch (Exception e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
             return newFixedLengthResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "Something wrong happened!");
         }
         return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
@@ -124,7 +128,7 @@ public class ServerRestImpl extends NanoWSD {
                                     try {
                                         sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(List.of(new Gson().toJson(game), new Gson().toJson(message)))));
                                     } catch (IOException e) {
-                                        e.printStackTrace();
+                                        logger.log(Level.WARNING, e.getMessage(), e);
                                     }
                                 });
                         schedulePing();
@@ -135,7 +139,7 @@ public class ServerRestImpl extends NanoWSD {
                                     try {
                                         sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(update)));
                                     } catch (IOException e) {
-                                        e.printStackTrace();
+                                        logger.log(Level.WARNING, e.getMessage(), e);
                                     }
                                 });
                         schedulePing();
@@ -144,7 +148,7 @@ public class ServerRestImpl extends NanoWSD {
                         close(WebSocketFrame.CloseCode.UnsupportedData, "Endpoint not valid!", true);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, e.getMessage(), e);
             }
         }
 
@@ -154,7 +158,7 @@ public class ServerRestImpl extends NanoWSD {
                     sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Ping, true, ""));
                     Thread.sleep(30000);
                 } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
+                    logger.log(Level.WARNING, e.getMessage(), e);
                     Thread.currentThread().interrupt();
                 }
             });
@@ -167,10 +171,12 @@ public class ServerRestImpl extends NanoWSD {
 
         @Override
         protected void onMessage(@NotNull WebSocketFrame message) {
+            //not important
         }
 
         @Override
         protected void onPong(WebSocketFrame pong) {
+            //not important
         }
 
         @Override
@@ -180,25 +186,26 @@ public class ServerRestImpl extends NanoWSD {
 
         @Override
         protected void debugFrameReceived(WebSocketFrame frame) {
+            //not important
         }
 
         @Override
         protected void debugFrameSent(WebSocketFrame frame) {
+            //not important
         }
 
         private void close() {
             try {
-                switch (getHandshakeRequest().getUri()) {
-                    case "/gameUpdate":
-                        Server.controller.removeGameListener(getHandshakeRequest().getHeaders().get("auth-token"),
-                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)));
-                        break;
-                    case "/roomUpdate":
-                        Server.controller.removeRoomListener(getHandshakeRequest().getHeaders().get("auth-token"),
-                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)));
+                String uri = getHandshakeRequest().getUri();
+                if ("/gameUpdate".equals(uri)) {
+                    Server.controller.removeGameListener(getHandshakeRequest().getHeaders().get("auth-token"),
+                            UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)));
+                } else if ("/roomUpdate".equals(uri)) {
+                    Server.controller.removeRoomListener(getHandshakeRequest().getHeaders().get("auth-token"),
+                            UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, e.getMessage(), e);
             }
         }
     }

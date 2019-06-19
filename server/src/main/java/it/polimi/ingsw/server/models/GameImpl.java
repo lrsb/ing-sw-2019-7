@@ -151,11 +151,9 @@ public class GameImpl extends Game implements Serializable {
         final int beforeSkulls = skulls;
         for (var cells : cells)
             for (var cell : cells) {
-                if (cell != null) {
-                    if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
-                    while (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
-                        addWeapon(cell.getColor(), weaponsDeck.exitCard());
-                }
+                if (!cell.isSpawnPoint() && cell.getAmmoCard() == null) cell.setAmmoCard(ammoDeck.exitCard());
+                while (cell.isSpawnPoint() && getWeapons(cell.getColor()).size() < 3 && weaponsDeck.remainedCards() > 0)
+                    addWeapon(cell.getColor(), weaponsDeck.exitCard());
             }
         if (isATagbackResponse()) {
             responsivePlayers.remove(0);
@@ -177,7 +175,7 @@ public class GameImpl extends Game implements Serializable {
 
     private void deathPointsRedistribution() {
         ArrayList<Player> deadPlayers = new ArrayList<>();
-        players.parallelStream().filter(e -> getDeadPlayers().contains(e.getUuid())).forEach(deadPlayers::add);
+        players.parallelStream().filter(e -> getDeadPlayers().contains(e.getUuid())).forEachOrdered(deadPlayers::add);
         getActualPlayer().addPoints(deadPlayers.size() > 1 ? 1 : 0);
         deadPlayers.forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream().filter(g -> g.getUuid() == f)
                 .forEachOrdered(g -> {
@@ -190,9 +188,9 @@ public class GameImpl extends Game implements Serializable {
                     if (f == e.getDamagesTaken().get(10)) addToKillshotsTrack(f);
                 })));
         addReborningPlayers();
-        for (int i = 0; i < deadPlayers.size(); i++) {
-            deadPlayers.get(i).manageDeath();
-            deadPlayers.get(i).addPowerUp(powerUpsDeck.exitCard());
+        for (Player deadPlayer : deadPlayers) {
+            deadPlayer.manageDeath();
+            deadPlayer.addPowerUp(powerUpsDeck.exitCard());
             if (skulls > 0) skulls--;
         }
     }
@@ -360,7 +358,7 @@ public class GameImpl extends Game implements Serializable {
                 if (!action.getPowerUpType().equals(PowerUp.Type.TAGBACK_GRENADE) && !responsivePlayers.isEmpty())
                     throw new ActionDeniedException();
                 var powerUp = new PowerUp(action.getColor(), action.getPowerUpType());
-                getPlayers().stream().filter(e -> e.getUuid().equals(action.getTarget())).forEach(powerUp::setTarget);
+                getPlayers().parallelStream().filter(e -> e.getUuid().equals(action.getTarget())).forEachOrdered(powerUp::setTarget);
                 powerUp.setTargetPoint(action.getDestination());
                 if (powerUp.use(this)) {
                     getActualPlayer().removePowerUp(powerUp);
@@ -417,7 +415,7 @@ public class GameImpl extends Game implements Serializable {
 
     private ArrayList<UUID> getDeadPlayers() {
         ArrayList<UUID> deadPlayers = new ArrayList<>();
-        getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() >= 11).map(Player::getUuid).forEach(deadPlayers::add);
+        getPlayers().parallelStream().filter(e -> e.getDamagesTaken().size() >= 11).map(Player::getUuid).forEachOrdered(deadPlayers::add);
         return deadPlayers;
     }
 
@@ -483,7 +481,6 @@ public class GameImpl extends Game implements Serializable {
         private Creator() {
         }
 
-        //TODO: impl
         @Contract("_ -> new")
         public static @NotNull GameImpl newGame(@NotNull Room room) {
             var cells = new Cell[MAX_Y][MAX_X];
