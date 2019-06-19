@@ -170,6 +170,17 @@ class GameImplTest {
                 game.getActualPlayer().getColoredCubes(AmmoCard.Color.RED) +
                 game.getActualPlayer().getColoredCubes(AmmoCard.Color.YELLOW) +
                 game.getActualPlayer().getColoredCubes(AmmoCard.Color.BLUE));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertTrue(game.doAction(reborningAction(game.getActualPlayer().getPowerUps().get(0), game)));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(game.getActualPlayer().getPosition(),
+                game.getWeapons(game.getCell(game.getActualPlayer().getPosition()).getColor()).get(0),
+                null, game.getActualPlayer().getPowerUps())));
+        assertTrue(game.getActualPlayer().getPowerUps().isEmpty() ||
+                game.getActualPlayer().getPowerUps().size() == 1 ||
+                game.getActualPlayer().getPowerUps().size() == 2);
+        assertTrue(game.getActualPlayer().getPowerUps().parallelStream()
+                .allMatch(e -> game.getActualPlayer().getWeapons().get(0).getGrabCost(e.getAmmoColor()) == 0 &&
+                        game.getActualPlayer().getColoredCubes(e.getAmmoColor()) == 3));
     }
 
     @Test

@@ -82,9 +82,12 @@ public class GameImpl extends Game implements Serializable {
         int[] cost = new int[AmmoCard.Color.values().length];
         Stream.of(AmmoCard.Color.values()).forEach(e -> cost[e.getIndex()] = weapon.getGrabCost(e));
         if (getActualPlayer().hasWeapon(weapon)) cost[weapon.getColor().getIndex()]++;
-        if (powerUpPayment != null) for (PowerUp e : powerUpPayment) {
-            if (cost[e.getAmmoColor().getIndex()] > 0) cost[e.getAmmoColor().getIndex()]--;
-            else powerUpPayment.remove(e);
+        if (powerUpPayment != null) for (int i = 0; i < powerUpPayment.size(); i++) {
+            if (cost[powerUpPayment.get(i).getAmmoColor().getIndex()] > 0) cost[powerUpPayment.get(i).getAmmoColor().getIndex()]--;
+            else {
+                powerUpPayment.remove(i);
+                i--;
+            }
         }
         if (Stream.of(AmmoCard.Color.values())
                 .allMatch(e -> getActualPlayer().getColoredCubes(e) >= cost[e.getIndex()])) {
