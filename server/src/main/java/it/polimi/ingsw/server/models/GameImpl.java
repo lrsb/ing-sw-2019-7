@@ -109,7 +109,7 @@ public class GameImpl extends Game implements Serializable {
         getActualPlayer().setPosition(to);
         getActualPlayer().ammoCardRecharging(cell.getAmmoCard(),
                 cell.getAmmoCard().getType() == AmmoCard.Type.POWER_UP &&
-                        getActualPlayer().getPowerUps().size() > 2 ? powerUpsDeck.exitCard() : null);
+                        getActualPlayer().getPowerUps().size() < 3 ? powerUpsDeck.exitCard() : null);
         ammoDeck.discardCard(cell.getAmmoCard());
         cell.removeAmmoCard();
         remainedActions--;

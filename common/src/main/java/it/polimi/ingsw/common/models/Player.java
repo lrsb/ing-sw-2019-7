@@ -10,10 +10,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,6 +51,10 @@ public class Player implements Displayable, Serializable {
 
     public @NotNull String getNickname() {
         return nickname;
+    }
+
+    public @NotNull List<Weapon> getWeapons() {
+        return new ArrayList<>(weapons.keySet());
     }
 
     public @NotNull List<UUID> getDamagesTaken() {

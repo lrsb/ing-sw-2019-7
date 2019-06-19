@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.models;
 
 import it.polimi.ingsw.common.models.*;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -110,6 +111,65 @@ class GameImplTest {
         assertTrue(gameImpl.doAction(Action.Builder.create(gameImpl.getUuid()).buildReload(Weapon.ELECTROSCYTHE, null)));
         assertEquals(1, gameImpl.getActualPlayer().getColoredCubes(AmmoCard.Color.BLUE));
         assertEquals(2, gameImpl.getActualPlayer().getColoredCubes(AmmoCard.Color.RED));
+    }
+
+    @RepeatedTest(value = 100)
+    void testGrabItems() {
+        GameImpl game = createGameImpl(Game.Type.FIVE_FIVE);
+        game.getActualPlayer().setPosition(new Point(0, 0));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(1, 0), game.getWeapons(Cell.Color.RED).get(0), null, null)));
+        assertEquals(2, game.getWeapons(Cell.Color.RED).size());
+        assertEquals(1, game.getActualPlayer().getWeaponsSize());
+        for (AmmoCard.Color color : AmmoCard.Color.values())
+            assertEquals(3 - game.getActualPlayer().getWeapons().get(0).getGrabCost(color), game.getActualPlayer().getColoredCubes(color));
+        assertEquals(new Point(1, 0), game.getActualPlayer().getPosition());
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(1, 0), game.getWeapons(Cell.Color.BLUE).get(0), null, null)));
+        assertEquals(2, game.getWeapons(Cell.Color.RED).size());
+        assertEquals(3, game.getWeapons(Cell.Color.BLUE).size());
+        assertEquals(1, game.getActualPlayer().getWeaponsSize());
+        assertEquals(new Point(1, 0), game.getActualPlayer().getPosition());
+        for (AmmoCard.Color color : AmmoCard.Color.values())
+            assertEquals(3 - game.getActualPlayer().getWeapons().get(0).getGrabCost(color), game.getActualPlayer().getColoredCubes(color));
+        game.getPlayers().get(1).setPosition(new Point(0, 1));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertEquals(3, game.getWeapons(Cell.Color.RED).size());
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildAmmoCardGrabAction(new Point(0, 2))));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(0, 2), game.getWeapons(Cell.Color.BLUE).get(0), null, null)));
+        for (AmmoCard.Color color: AmmoCard.Color.values())
+            game.getActualPlayer().removeColoredCubes(color, game.getActualPlayer().getColoredCubes(color));
+        while (!game.getActualPlayer().getPowerUps().isEmpty()) game.getActualPlayer().removePowerUp(game.getActualPlayer().getPowerUps().get(0));
+        AmmoCard ammoCard = game.getCell(new Point(0, 1)).getAmmoCard();
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildAmmoCardGrabAction(new Point(0, 1))));
+        assertEquals(ammoCard.getType().equals(AmmoCard.Type.POWER_UP) ? 1 : 0, game.getActualPlayer().getPowerUps().size());
+        switch (ammoCard.getType()) {
+            case POWER_UP:
+                assertTrue(game.getActualPlayer().getColoredCubes(ammoCard.getLeft()) == 1 &&
+                        game.getActualPlayer().getColoredCubes(ammoCard.getRight()) == 1 ||
+                        game.getActualPlayer().getColoredCubes(ammoCard.getLeft()) == 2 &&
+                                game.getActualPlayer().getColoredCubes(ammoCard.getRight()) == 2);
+                break;
+            case RED:
+                assertEquals(1, game.getActualPlayer().getColoredCubes(AmmoCard.Color.RED));
+                assertEquals(2, game.getActualPlayer().getColoredCubes(ammoCard.getLeft()));
+                assertEquals(2, game.getActualPlayer().getColoredCubes(ammoCard.getRight()));
+                break;
+            case YELLOW:
+                assertEquals(1, game.getActualPlayer().getColoredCubes(AmmoCard.Color.YELLOW));
+                assertEquals(2, game.getActualPlayer().getColoredCubes(ammoCard.getLeft()));
+                assertEquals(2, game.getActualPlayer().getColoredCubes(ammoCard.getRight()));
+                break;
+            case BLUE:
+                assertEquals(1, game.getActualPlayer().getColoredCubes(AmmoCard.Color.BLUE));
+                assertEquals(2, game.getActualPlayer().getColoredCubes(ammoCard.getLeft()));
+                assertEquals(2, game.getActualPlayer().getColoredCubes(ammoCard.getRight()));
+                break;
+            default:
+                break;
+        }
+        assertEquals(3, game.getActualPlayer().getPowerUps().size() +
+                game.getActualPlayer().getColoredCubes(AmmoCard.Color.RED) +
+                game.getActualPlayer().getColoredCubes(AmmoCard.Color.YELLOW) +
+                game.getActualPlayer().getColoredCubes(AmmoCard.Color.BLUE));
     }
 
     @Test

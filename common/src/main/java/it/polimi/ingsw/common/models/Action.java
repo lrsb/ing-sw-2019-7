@@ -157,7 +157,7 @@ public class Action implements Serializable {
          *                           the cost to grab the @param weapon
          * @return the constructed action to grab a weapon
          */
-        public @NotNull Action buildWeaponGrabAction(@Nullable Point destination, @NotNull Weapon weapon, @Nullable Weapon discardedWeapon, @Nullable ArrayList<PowerUp> alternativePayment) {
+        public @NotNull Action buildWeaponGrabAction(@Nullable Point destination, @NotNull Weapon weapon, @Nullable Weapon discardedWeapon, @Nullable List<PowerUp> alternativePayment) {
             var action = new Action(Type.GRAB_WEAPON, gameUuid);
             action.destination = destination;
             action.weapon = weapon;
