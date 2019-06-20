@@ -16,7 +16,7 @@ class UserTest {
         nickNames.add("Cugola");
         nickNames.add("Vulcan Raven");
         ArrayList<User.Auth> auths = new ArrayList<>();
-        nickNames.parallelStream().forEach(e -> auths.add(new User.Auth(new User(e), e.toLowerCase())));
+        nickNames.forEach(e -> auths.add(new User.Auth(new User(e), e.toLowerCase())));
         for (User.Auth auth : auths) {
             assertNotNull(auth.getToken());
             assertNotNull(auth.getUuid());
