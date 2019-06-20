@@ -604,7 +604,7 @@ abstract class WeaponImpl {
             boolean canBasicFire() {
                 return basicTargets.size() == 1 && game.getActualPlayer().canSeeNotSame(basicTargets.get(0), game.getCells()) &&
                         (basicTargetsPoint == null || Opt.of(basicTargets.get(0).getPosition())
-                                .e(e -> e.equals(basicTargetsPoint)).get(false) &&
+                                .e(e -> e.equals(basicTargetsPoint)).get(false) ||
                                 Stream.of(Bounds.Direction.values()).anyMatch(e -> basicTargets.get(0)
                                         .isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 1, e)));
             }
@@ -653,6 +653,7 @@ abstract class WeaponImpl {
 
             @Override
             void basicFireImpl() {
+                secondAdditionalTargetsPoint = basicTargets.get(0).getPosition();
                 basicTargets.get(0).takeHits(game, 2, 0);
                 if (basicTargetsPoint != null) basicTargets.get(0).setPosition(basicTargetsPoint);
             }
@@ -741,7 +742,7 @@ abstract class WeaponImpl {
             }
 
             @Override
-            boolean canFirstAdditionalFire() {
+            boolean canSecondAdditionalFire() {
                 if (secondAdditionalTargets.size() != 1) return false;
                 if (Opt.of(mockPlayer.getPosition()).e(e -> !e.equals(secondAdditionalTargets.get(0).getPosition()))
                         .get(false) && basicTargetsPoint != null)
@@ -751,9 +752,9 @@ abstract class WeaponImpl {
             }
 
             @Override
-            void firstAdditionalFireImpl() {
+            void secondAdditionalFireImpl() {
                 game.getActualPlayer().setPosition(mockPlayer.getPosition());
-                secondAdditionalTargets.get(0).takeHits(game, 1, 0);
+                secondAdditionalTargets.get(0).takeHits(game, 2, 0);
                 if (basicTargetsPoint != null) game.getActualPlayer().setPosition(basicTargetsPoint);
             }
 
