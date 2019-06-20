@@ -28,7 +28,7 @@ class WeaponTest {
         });
     }
 
-    @Test
+    @RepeatedTest(value = 100)
     void testLockRifle() {
         GameImpl game = createGameImpl(Game.Type.FIVE_FIVE);
         for (Player player : game.getPlayers()) {
@@ -134,7 +134,7 @@ class WeaponTest {
         assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
     }
 
-    @Test
+    @RepeatedTest(value = 100)
     void testMachineGun() {
         GameImpl game = createGameImpl(Game.Type.FIVE_SIX);
         for (Player player : game.getPlayers()) {
@@ -202,7 +202,7 @@ class WeaponTest {
         firstTargets.clear();
     }
 
-    @Test
+    @RepeatedTest(value = 100)
     void testThor() {
         GameImpl game = createGameImpl(Game.Type.SIX_FIVE);
         for (Player player : game.getPlayers())
