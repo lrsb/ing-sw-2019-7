@@ -183,7 +183,7 @@ class GameImplTest {
                         game.getActualPlayer().getColoredCubes(e.getAmmoColor()) == 3));
     }
 
-    @RepeatedTest(value = 1000)
+    @RepeatedTest(value = 100)
     void testPoints() {
         GameImpl game = createGameImpl(Game.Type.SIX_SIX);
         for (Player player : game.getPlayers()) {

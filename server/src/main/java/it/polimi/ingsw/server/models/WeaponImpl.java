@@ -375,19 +375,19 @@ abstract class WeaponImpl {
             @Override
             boolean canBasicFire() {
                 if (basicTargets.size() != 1) return false;
-                if (firstAdditionalTargetsPoint == null) return game.getActualPlayer()
+                if (basicTargetsPoint == null) return game.getActualPlayer()
                         .canSeeNotSame(basicTargets.get(0), game.getCells());
                 var mockPlayer = new Player(new User(""), Player.BoardType.BANSHEE);
-                mockPlayer.setPosition(firstAdditionalTargetsPoint);
-                return game.canMove(game.getActualPlayer().getPosition(), firstAdditionalTargetsPoint, 2) &&
+                mockPlayer.setPosition(basicTargetsPoint);
+                return game.canMove(game.getActualPlayer().getPosition(), basicTargetsPoint, 2) &&
                         (mockPlayer.canSeeNotSame(basicTargets.get(0), game.getCells()) ||
                                 game.getActualPlayer().canSeeNotSame(basicTargets.get(0), game.getCells()));
             }
 
             @Override
             void basicFireImpl() {
-                if (firstAdditionalTargetsPoint != null)
-                    game.getActualPlayer().setPosition(firstAdditionalTargetsPoint);
+                if (basicTargetsPoint != null)
+                    game.getActualPlayer().setPosition(basicTargetsPoint);
                 basicTargets.get(0).takeHits(game, 2, 0);
             }
 
@@ -443,18 +443,19 @@ abstract class WeaponImpl {
 
             @Override
             boolean canBasicFire() {
-                if (basicTargetsPoint == null || basicTargets.size() != 1) return false;
+                if (basicTargets.size() != 1) return false;
                 var mockPlayer = new Player(new User(""), Player.BoardType.BANSHEE);
+                if (basicTargetsPoint == null) basicTargetsPoint = basicTargets.get(0).getPosition();
                 mockPlayer.setPosition(basicTargetsPoint);
                 return (alternativeFire && game.canMove(basicTargets.get(0).getPosition(), game.getActualPlayer().getPosition(), 2)) ||
-                        (!alternativeFire && game.canMove(basicTargets.get(0).getPosition(), basicTargetsPoint, 2) &&
+                        (!alternativeFire && game.canMove(basicTargets.get(0).getPosition(), mockPlayer.getPosition(), 2) &&
                                 game.getActualPlayer().canSeeNotSame(mockPlayer, game.getCells()));
             }
 
             @Override
             void basicFireImpl() {
-                if (basicTargetsPoint == null) return;
                 if (!alternativeFire) basicTargets.get(0).setPosition(basicTargetsPoint);
+                else basicTargets.get(0).setPosition(game.getActualPlayer().getPosition());
                 basicTargets.get(0).takeHits(game, alternativeFire ? 3 : 1, 0);
             }
         }
@@ -716,7 +717,7 @@ abstract class WeaponImpl {
 
             Cyberblade(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
-                firstAdditionalCost = YELLOW;
+                secondAdditionalCost = YELLOW;
             }
 
             @Override
@@ -741,18 +742,18 @@ abstract class WeaponImpl {
 
             @Override
             boolean canFirstAdditionalFire() {
-                if (firstAdditionalTargets.size() != 1) return false;
-                if (Opt.of(mockPlayer.getPosition()).e(e -> !e.equals(firstAdditionalTargets.get(0).getPosition()))
+                if (secondAdditionalTargets.size() != 1) return false;
+                if (Opt.of(mockPlayer.getPosition()).e(e -> !e.equals(secondAdditionalTargets.get(0).getPosition()))
                         .get(false) && basicTargetsPoint != null)
                     mockPlayer.setPosition(basicTargetsPoint);
-                return Opt.of(mockPlayer.getPosition()).e(e -> e.equals(firstAdditionalTargets.get(0).getPosition()))
-                                .get(false) && !basicTargets.get(0).equals(firstAdditionalTargets.get(0));
+                return Opt.of(mockPlayer.getPosition()).e(e -> e.equals(secondAdditionalTargets.get(0).getPosition()))
+                                .get(false) && !basicTargets.get(0).equals(secondAdditionalTargets.get(0));
             }
 
             @Override
             void firstAdditionalFireImpl() {
                 game.getActualPlayer().setPosition(mockPlayer.getPosition());
-                firstAdditionalTargets.get(0).takeHits(game, 1, 0);
+                secondAdditionalTargets.get(0).takeHits(game, 1, 0);
                 if (basicTargetsPoint != null) game.getActualPlayer().setPosition(basicTargetsPoint);
             }
 
