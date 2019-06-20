@@ -396,6 +396,251 @@ class WeaponTest {
         basicTargets.clear();
     }
 
+    @RepeatedTest(value = 100)
+    void testVortexCannon() {
+        GameImpl game = createGameImpl(Game.Type.SIX_SIX);
+        for (Player player : game.getPlayers())
+            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+        ArrayList<UUID> basicTargets = new ArrayList<>();
+        ArrayList<UUID> firstTargets = new ArrayList<>();
+        ArrayList<UUID> secondTargets = new ArrayList<>();
+        Point basicTargetPoint = null;
+        Point firstTargetPoint = null;
+        Point secondTargetPoint = null;
+        game.getPlayers().get(0).setPosition(new Point(2, 3));
+        game.getPlayers().get(1).setPosition(new Point(1, 3));
+        game.getPlayers().get(2).setPosition(new Point(0, 2));
+        game.getPlayers().get(3).setPosition(new Point(2, 2));
+        game.getPlayers().get(4).setPosition(new Point(1, 2));
+        game.getPlayers().forEach(e -> e.addWeapon(Weapon.VORTEX_CANNON));
+        basicTargets.add(game.getPlayers().get(1).getUuid());
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.VORTEX_CANNON, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        basicTargetPoint = new Point(0, 1);
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.VORTEX_CANNON, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        basicTargetPoint = new Point(1, 2);
+        firstTargets.add(game.getPlayers().get(1).getUuid());
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.VORTEX_CANNON, game.getActualPlayer().getPosition(),
+                null, false, 1, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        firstTargets.clear();
+        firstTargets.add(game.getPlayers().get(2).getUuid());
+        firstTargets.add(game.getPlayers().get(3).getUuid());
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.VORTEX_CANNON, game.getActualPlayer().getPosition(),
+                null, false, 1, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        assertEquals(basicTargetPoint, game.getPlayers().get(1).getPosition());
+        assertEquals(basicTargetPoint, game.getPlayers().get(2).getPosition());
+        assertEquals(basicTargetPoint, game.getPlayers().get(3).getPosition());
+        assertEquals(2, game.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(1, game.getPlayers().get(2).getDamagesTaken().size());
+        assertEquals(1, game.getPlayers().get(3).getDamagesTaken().size());
+        assertEquals(2, game.getActualPlayer().getColoredCubes(AmmoCard.Color.RED));
+    }
+
+    @RepeatedTest(value = 100)
+    void testFurnace() {
+        GameImpl game = createGameImpl(Game.Type.FIVE_SIX);
+        for (Player player : game.getPlayers())
+            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+        ArrayList<UUID> basicTargets = new ArrayList<>();
+        ArrayList<UUID> firstTargets = new ArrayList<>();
+        ArrayList<UUID> secondTargets = new ArrayList<>();
+        Point basicTargetPoint = null;
+        Point firstTargetPoint = null;
+        Point secondTargetPoint = null;
+        game.getPlayers().get(0).setPosition(new Point(1, 0));
+        game.getPlayers().get(1).setPosition(new Point(0, 2));
+        game.getPlayers().get(2).setPosition(new Point(0, 1));
+        game.getPlayers().get(3).setPosition(new Point(1, 1));
+        game.getPlayers().get(4).setPosition(new Point(1, 1));
+        game.getPlayers().forEach(e -> e.addWeapon(Weapon.FURNACE));
+        basicTargetPoint = new Point(2, 0);
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.FURNACE, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        basicTargetPoint = new Point(1, 1);
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.FURNACE, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.FURNACE, game.getActualPlayer().getPosition(),
+                null, true, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        assertEquals(1, game.getPlayers().get(3).getDamagesTaken().size());
+        assertEquals(1, game.getPlayers().get(4).getDamagesTaken().size());
+        assertEquals(1, game.getPlayers().get(3).getMarksTaken().size());
+        assertEquals(1, game.getPlayers().get(4).getMarksTaken().size());
+        rechargingPlayers(game);
+        basicTargetPoint = new Point(0, 0);
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.FURNACE, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        assertEquals(1, game.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(1, game.getPlayers().get(2).getDamagesTaken().size());
+        assertEquals(0, game.getPlayers().get(1).getMarksTaken().size());
+        assertEquals(0, game.getPlayers().get(2).getMarksTaken().size());
+    }
+
+    @RepeatedTest(value = 100)
+    void testHeatseeker() {
+        GameImpl game = createGameImpl(Game.Type.SIX_FIVE);
+        for (Player player : game.getPlayers())
+            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+        ArrayList<UUID> basicTargets = new ArrayList<>();
+        ArrayList<UUID> firstTargets = new ArrayList<>();
+        ArrayList<UUID> secondTargets = new ArrayList<>();
+        Point basicTargetPoint = null;
+        Point firstTargetPoint = null;
+        Point secondTargetPoint = null;
+        game.getPlayers().get(0).setPosition(new Point(1, 0));
+        game.getPlayers().get(1).setPosition(new Point(2, 1));
+        game.getPlayers().get(2).setPosition(new Point(0, 1));
+        game.getPlayers().get(3).setPosition(new Point(0, 0));
+        game.getPlayers().get(4).setPosition(new Point(1, 1));
+        game.getPlayers().forEach(e -> e.addWeapon(Weapon.HEATSEEKER));
+        basicTargets.add(game.getPlayers().get(1).getUuid());
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.HEATSEEKER, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        assertEquals(0, game.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(0, game.getPlayers().get(1).getMarksTaken().size());
+        basicTargets.clear();
+        basicTargets.add(game.getPlayers().get(2).getUuid());
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.HEATSEEKER, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        assertEquals(3, game.getPlayers().get(2).getDamagesTaken().size());
+        assertEquals(0, game.getPlayers().get(2).getMarksTaken().size());
+        basicTargets.clear();
+        rechargingPlayers(game);
+        basicTargets.add(game.getPlayers().get(3).getUuid());
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.HEATSEEKER, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        assertEquals(0, game.getPlayers().get(3).getDamagesTaken().size());
+        assertEquals(0, game.getPlayers().get(3).getMarksTaken().size());
+        basicTargets.clear();
+        basicTargets.add(game.getPlayers().get(4).getUuid());
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.HEATSEEKER, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        assertEquals(3, game.getPlayers().get(4).getDamagesTaken().size());
+        assertEquals(0, game.getPlayers().get(4).getMarksTaken().size());
+        basicTargets.clear();
+    }
+
+    @RepeatedTest(value = 100)
+    void testHellion() {
+        GameImpl game = createGameImpl(Game.Type.SIX_SIX);
+        for (Player player : game.getPlayers())
+            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+        ArrayList<UUID> basicTargets = new ArrayList<>();
+        ArrayList<UUID> firstTargets = new ArrayList<>();
+        ArrayList<UUID> secondTargets = new ArrayList<>();
+        Point basicTargetPoint = null;
+        Point firstTargetPoint = null;
+        Point secondTargetPoint = null;
+        game.getPlayers().get(0).setPosition(new Point(0, 0));
+        game.getPlayers().get(1).setPosition(new Point(0, 0));
+        game.getPlayers().get(2).setPosition(new Point(1, 0));
+        game.getPlayers().get(3).setPosition(new Point(1, 2));
+        game.getPlayers().get(4).setPosition(new Point(0, 2));
+        game.getPlayers().forEach(e -> e.addWeapon(Weapon.HELLION));
+        basicTargets.add(game.getPlayers().get(1).getUuid());
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.HELLION, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        basicTargets.clear();
+        assertEquals(0, game.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(0, game.getPlayers().get(1).getMarksTaken().size());
+        basicTargets.add(game.getPlayers().get(2).getUuid());
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.HELLION, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        basicTargets.clear();
+        assertEquals(1, game.getPlayers().get(2).getDamagesTaken().size());
+        assertEquals(1, game.getPlayers().get(2).getMarksTaken().size());
+        rechargingPlayers(game);
+        basicTargets.add(game.getPlayers().get(3).getUuid());
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.HELLION, game.getActualPlayer().getPosition(),
+                null, true, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        basicTargets.clear();
+        assertEquals(0, game.getPlayers().get(3).getDamagesTaken().size());
+        assertEquals(0, game.getPlayers().get(3).getMarksTaken().size());
+        basicTargets.add(game.getPlayers().get(4).getUuid());
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.HELLION, game.getActualPlayer().getPosition(),
+                null, true, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        basicTargets.clear();
+        assertEquals(1, game.getPlayers().get(4).getDamagesTaken().size());
+        assertEquals(2, game.getPlayers().get(4).getMarksTaken().size());
+        assertEquals(2, game.getActualPlayer().getColoredCubes(AmmoCard.Color.RED));
+    }
+
+    @RepeatedTest(value = 100)
+    void testFlamethrower() {
+        GameImpl game = createGameImpl(Game.Type.FIVE_FIVE);
+        for (Player player : game.getPlayers())
+            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+        ArrayList<UUID> basicTargets = new ArrayList<>();
+        ArrayList<UUID> firstTargets = new ArrayList<>();
+        ArrayList<UUID> secondTargets = new ArrayList<>();
+        Point basicTargetPoint = null;
+        Point firstTargetPoint = null;
+        Point secondTargetPoint = null;
+        game.getPlayers().get(0).setPosition(new Point(1, 1));
+        game.getPlayers().get(1).setPosition(new Point(1, 2));
+        game.getPlayers().get(2).setPosition(new Point(1, 3));
+        game.getPlayers().get(3).setPosition(new Point(2, 2));
+        game.getPlayers().get(4).setPosition(new Point(1, 2));
+        game.getPlayers().forEach(e -> e.addWeapon(Weapon.FLAMETHROWER));
+        basicTargets.add(game.getPlayers().get(1).getUuid());
+        basicTargets.add(game.getPlayers().get(3).getUuid());
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.FLAMETHROWER, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.FLAMETHROWER, game.getActualPlayer().getPosition(),
+                null, true, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        basicTargets.clear();
+        basicTargets.add(game.getPlayers().get(1).getUuid());
+        basicTargets.add(game.getPlayers().get(2).getUuid());
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.FLAMETHROWER, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        assertEquals(1, game.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(1, game.getPlayers().get(2).getDamagesTaken().size());
+        assertEquals(0, game.getPlayers().get(1).getMarksTaken().size());
+        assertEquals(0, game.getPlayers().get(2).getMarksTaken().size());
+        basicTargets.clear();
+        rechargingPlayers(game);
+        basicTargets.add(game.getPlayers().get(3).getUuid());
+        assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.FLAMETHROWER, game.getActualPlayer().getPosition(),
+                null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        basicTargets.clear();
+        basicTargetPoint = new Point(1, 3);
+        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.FLAMETHROWER, game.getActualPlayer().getPosition(),
+                null, true, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
+                secondTargets, secondTargetPoint)));
+        assertEquals(3, game.getPlayers().get(1).getDamagesTaken().size());
+        assertEquals(2, game.getPlayers().get(2).getDamagesTaken().size());
+        assertEquals(2, game.getPlayers().get(4).getDamagesTaken().size());
+        assertEquals(0, game.getPlayers().get(1).getMarksTaken().size());
+        assertEquals(0, game.getPlayers().get(2).getMarksTaken().size());
+        assertEquals(0, game.getPlayers().get(4).getMarksTaken().size());
+        assertEquals(1, game.getActualPlayer().getColoredCubes(AmmoCard.Color.YELLOW));
+    }
+
+    @RepeatedTest(value = 100)
+    void testGrenadeLauncher() {
+
+    }
+
     @Test
     GameImpl createGameImpl(@NotNull Game.Type type) {
         String gameName = "NomePartita";
