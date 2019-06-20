@@ -4,9 +4,9 @@ sudo: false
 
 services: docker
 
-script:
-  - mvn clean verify
-  - bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
+script: mvn clean verify
+
+after_success: bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
 
 deploy:
   - provider: heroku

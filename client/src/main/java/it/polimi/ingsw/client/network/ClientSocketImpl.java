@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.network;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.common.models.Action;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Room;
@@ -47,7 +48,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
 
     @Contract(pure = true)
     public ClientSocketImpl(@NotNull String ip) throws IOException {
-        this.adrenalineSocket = new AdrenalineSocket(ip, this);
+        this.adrenalineSocket = new AdrenalineSocket(ip, Client.SOCKET_PORT, this);
     }
 
     @Override

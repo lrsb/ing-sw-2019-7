@@ -27,8 +27,8 @@ public class AdrenalineSocket extends Socket {
         super(socketImpl);
     }
 
-    public AdrenalineSocket(@NotNull String ip, @NotNull AdrenalineSocketListener listener) throws IOException {
-        super(ip, 0xCAFE);
+    public AdrenalineSocket(@NotNull String ip, int port, @NotNull AdrenalineSocketListener listener) throws IOException {
+        super(ip, port);
         this.listener = listener;
         bindStreams();
     }

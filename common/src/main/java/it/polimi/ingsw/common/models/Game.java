@@ -125,7 +125,6 @@ public class Game implements Displayable, Serializable {
         lastsDamaged.clear();
     }
 
-
     @NotNull Player getTagbackedPlayer() {
         if (getActualPlayer().equals(players.get(seqPlay % players.size()))) throw new SelfResponseException();
         return players.get(seqPlay % players.size());
@@ -184,7 +183,6 @@ public class Game implements Displayable, Serializable {
         }
     }
 
-
     /**
      * Determines if a player can move from "from" to "to" with "maxStep" steps
      *
@@ -207,7 +205,6 @@ public class Game implements Displayable, Serializable {
         return Stream.of(Bounds.Direction.values()).anyMatch(e -> cells[from.x][from.y].getBounds().getType(e) != Bounds.Type.WALL &&
                 canMoveImpl(new Point(from.x + e.getdX(), from.y + e.getdY()), to, step + 1, maxStep));
     }
-
 
     public @NotNull List<Player> getPlayersAtPosition(@NotNull Point point) {
         return players.parallelStream().filter(e -> e.getPosition() != null).filter(e -> e.getPosition().equals(point)).collect(Collectors.toList());

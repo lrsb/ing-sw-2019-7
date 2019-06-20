@@ -23,8 +23,8 @@ public class ServerRestImpl extends NanoWSD {
     private static final @NotNull Logger logger = Logger.getLogger("ServerRestImpl");
     private static final @NotNull ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public ServerRestImpl() throws IOException {
-        super(Integer.parseInt(System.getProperty("server.port")));
+    public ServerRestImpl(int port) throws IOException {
+        super(port);
         start(Integer.MAX_VALUE, false);
     }
 

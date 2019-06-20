@@ -3,14 +3,13 @@ package it.polimi.ingsw.client.controllers.base;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 /**
  * You can use NavigationController to create a root-child navigation behaviour between BaseViewController(s), with a LIFO logic.
  */
-public class NavigationController implements Closeable {
+public class NavigationController {
     private final @NotNull ArrayList<BaseViewController> viewControllers = new ArrayList<>();
 
     /**
@@ -105,7 +104,6 @@ public class NavigationController implements Closeable {
      * Closes the controller.
      */
     @SuppressWarnings("ForLoopReplaceableByForEach")
-    @Override
     public void close() {
         for (var i = 0; i < viewControllers.size(); i++) disposeViewController(viewControllers.get(i));
         viewControllers.clear();

@@ -1,13 +1,12 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Server" type="Application" factoryName="Application">
     <envs>
-      <env name="ROOM_TIMEOUT" value="30" />
+      <env name="HTTP_PORT" value="80" />
     </envs>
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.server.Server" />
     <module name="server" />
-    <option name="PROGRAM_PARAMETERS" value="-h -s -r" />
-    <option name="VM_PARAMETERS" value="-Dserver.port=80" />
+    <option name="PROGRAM_PARAMETERS" value="-w -s -r" />
     <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
     <extension name="coverage">
       <pattern>

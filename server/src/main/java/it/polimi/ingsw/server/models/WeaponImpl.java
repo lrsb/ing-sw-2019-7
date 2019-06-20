@@ -209,7 +209,7 @@ abstract class WeaponImpl {
             }
         });
         alternativePaymentUsed.forEach(e -> {
-            if (alternativePaymentToUse.contains(e)) alternativePaymentToUse.remove(e);
+            alternativePaymentToUse.remove(e);
         });
         return Stream.of(AmmoCard.Color.values()).allMatch(e -> game.getActualPlayer().getColoredCubes(e) >= usedCubes[e.getIndex()]);
     }
@@ -250,8 +250,8 @@ abstract class WeaponImpl {
     }
 
     @SuppressWarnings("unused")
-    private static class Weapons {
-        private static class LockRifle extends WeaponImpl {
+    static class Weapons {
+        static class LockRifle extends WeaponImpl {
             LockRifle(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 firstAdditionalCost = RED;
@@ -281,7 +281,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class MachineGun extends WeaponImpl {
+        static class MachineGun extends WeaponImpl {
             MachineGun(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 firstAdditionalCost = YELLOW;
@@ -324,7 +324,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class Thor extends WeaponImpl {
+        static class Thor extends WeaponImpl {
             Thor(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 firstAdditionalCost = BLUE;
@@ -366,7 +366,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class PlasmaGun extends WeaponImpl {
+        static class PlasmaGun extends WeaponImpl {
             PlasmaGun(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 secondAdditionalCost = BLUE;
@@ -397,7 +397,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class Whisper extends WeaponImpl {
+        static class Whisper extends WeaponImpl {
             Whisper(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
             }
@@ -415,7 +415,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class Electroscythe extends WeaponImpl {
+        static class Electroscythe extends WeaponImpl {
             Electroscythe(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 basicAlternativeCost.addAll(List.of(BLUE, RED));
@@ -435,7 +435,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class TractorBeam extends WeaponImpl {
+        static class TractorBeam extends WeaponImpl {
             TractorBeam(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 basicAlternativeCost.addAll(List.of(RED, YELLOW));
@@ -460,7 +460,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class VortexCannon extends WeaponImpl {
+        static class VortexCannon extends WeaponImpl {
             VortexCannon(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 firstAdditionalCost = RED;
@@ -496,7 +496,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class Furnace extends WeaponImpl {
+        static class Furnace extends WeaponImpl {
             Furnace(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
             }
@@ -521,7 +521,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class Heatseeker extends WeaponImpl {
+        static class Heatseeker extends WeaponImpl {
             Heatseeker(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
             }
@@ -538,7 +538,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class Hellion extends WeaponImpl {
+        static class Hellion extends WeaponImpl {
             Hellion(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 basicAlternativeCost.add(RED);
@@ -559,7 +559,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class Flamethrower extends WeaponImpl {
+        static class Flamethrower extends WeaponImpl {
             Flamethrower(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 basicAlternativeCost.addAll(List.of(YELLOW, YELLOW));
@@ -594,7 +594,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class GrenadeLauncher extends WeaponImpl {
+        static class GrenadeLauncher extends WeaponImpl {
             GrenadeLauncher(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 firstAdditionalCost = RED;
@@ -630,7 +630,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class RocketLauncher extends WeaponImpl {
+        static class RocketLauncher extends WeaponImpl {
             RocketLauncher(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 firstAdditionalCost = BLUE;
@@ -681,7 +681,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class Railgun extends WeaponImpl {
+        static class Railgun extends WeaponImpl {
             Railgun(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
             }
@@ -712,7 +712,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class Cyberblade extends WeaponImpl {
+        static class Cyberblade extends WeaponImpl {
             Player mockPlayer = new Player(new User(""), Player.BoardType.BANSHEE);
 
             Cyberblade(@NotNull Game game, boolean alternativeFire) {
@@ -759,7 +759,7 @@ abstract class WeaponImpl {
 
         }
 
-        private static class ZX2 extends WeaponImpl {
+        static class ZX2 extends WeaponImpl {
             ZX2(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
             }
@@ -777,7 +777,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class Shotgun extends WeaponImpl {
+        static class Shotgun extends WeaponImpl {
             Shotgun(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
             }
@@ -802,7 +802,7 @@ abstract class WeaponImpl {
 
         }
 
-        private static class PowerGlove extends WeaponImpl {
+        static class PowerGlove extends WeaponImpl {
             PowerGlove(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 basicAlternativeCost.add(BLUE);
@@ -860,7 +860,7 @@ abstract class WeaponImpl {
 
         }
 
-        private static class Shockwave extends WeaponImpl {
+        static class Shockwave extends WeaponImpl {
             Shockwave(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 basicAlternativeCost.add(YELLOW);
@@ -889,7 +889,7 @@ abstract class WeaponImpl {
             }
         }
 
-        private static class Sledgehammer extends WeaponImpl {
+        static class Sledgehammer extends WeaponImpl {
             Sledgehammer(@NotNull Game game, boolean alternativeFire) {
                 super(game, alternativeFire);
                 basicAlternativeCost.add(RED);

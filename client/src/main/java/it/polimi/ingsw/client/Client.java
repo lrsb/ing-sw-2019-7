@@ -20,9 +20,17 @@ public class Client {
     public static API API;
 
     public static void main(String[] args) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InterruptedException {
-        if (args != null) for (var arg : args)
+        if (args != null) for (var arg : args) {
             switch (arg) {
+                default:
+                case "--help":
                 case "-h":
+                    System.out.println("Adrenaline board game client\n");
+                    System.out.println("Option Meaning");
+                    System.out.println("-w     Run client with web server located at: ing-sw-2019-7.herokuapp.com");
+                    System.out.println("-c     Run client with CLI interface");
+                    return;
+                case "-w":
                     Client.API = new ClientRestImpl("ing-sw-2019-7.herokuapp.com");
                     new NavigationController(LoginViewController.class);
                     return;
@@ -30,7 +38,7 @@ public class Client {
                     CliMenuManager.startCli(StartupCli.class, false);
                     return;
             }
-        //test();
+        }
         new NavigationController(ConnTypeViewController.class);
     }
 }

@@ -201,7 +201,7 @@ public class GameImpl extends Game implements Serializable {
     /**
      * when the game ends distributes the lasts points to players
      */
-    void finalPointsRedistribution() {
+    private void finalPointsRedistribution() {
         players.parallelStream().filter(e -> !e.getDamagesTaken().isEmpty()).forEachOrdered(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f).forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
@@ -445,7 +445,6 @@ public class GameImpl extends Game implements Serializable {
     private int getPlayerKillshots(@NotNull UUID uuid) {
         return hashKillshotsTrack.getOrDefault(uuid, 0);
     }
-
 
     private void addWeapon(@NotNull Cell.Color color, @NotNull Weapon weapon) {
         switch (color) {
