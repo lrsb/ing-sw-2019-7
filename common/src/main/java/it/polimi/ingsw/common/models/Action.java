@@ -198,11 +198,11 @@ public class Action implements Serializable {
          * @return the constructed action to fire
          */
 
-        public @NotNull Action buildFireAction(@NotNull Weapon weapon, @NotNull Point destination,
+        public @NotNull Action buildFireAction(@NotNull Weapon weapon, @Nullable Point destination,
                                                @Nullable List<PowerUp> powerUpPayment, boolean alternativeFire,
                                                int options, @NotNull List<UUID> basicTarget,
                                                @Nullable Point basicTargetPoint,
-                                               @NotNull java.util.List<UUID> firstAdditionalTarget,
+                                               @NotNull List<UUID> firstAdditionalTarget,
                                                @Nullable Point firstAdditionalTargetPoint,
                                                @NotNull List<UUID> secondAdditionalTarget,
                                                @Nullable Point secondAdditionalTargetPoint) {
