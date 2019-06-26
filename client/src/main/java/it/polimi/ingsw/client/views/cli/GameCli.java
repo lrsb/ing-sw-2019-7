@@ -11,18 +11,12 @@ import org.jetbrains.annotations.Nullable;
 public class GameCli {
     private static TypeCell[][] buildBoard(@NotNull Game game) {
         var cells = game.getCells();
-        var board = new TypeCell[Game.MAX_X * 9][Game.MAX_Y * 9];
+        var board = new TypeCell[Game.MAX_Y * 9][Game.MAX_X * 9];
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[i].length; j++) {
                 var cellCli = buildCell(cells[i][j]);
                 for (int k = 0; k < cellCli.length; k++) {
-                    for (int l = 0; l < cellCli[k].length; l++) {
-                        if (cellCli[k][l] == null) {
-                            board[(9 * i) + k][(9 * j) + l].setCharacter(' ');
-                        } else {
-                            board[(9 * i) + k][(9 * j) + l] = cellCli[k][l];
-                        }
-                    }
+                    System.arraycopy(cellCli[k], 0, board[(9 * i) + k], (9 * j), cellCli[k].length);
                 }
             }
         }
@@ -31,120 +25,93 @@ public class GameCli {
 
     private static TypeCell[][] buildCell(@Nullable Cell cell) {
         var cellCli = new TypeCell[9][9];
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
+        for (int i = 0; i < 9; i++) for (int j = 0; j < 9; j++) {
                 cellCli[i][j] = new TypeCell();
-            }
+                cellCli[i][j].setCharacter(' ');
         }
-        if (cell == null) { // falso
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 9; j++) {
-                    cellCli[i][j].setCharacter(' ');
-                }
-            }
-        } else {
+        if (cell != null) {
             var northBound = cell.getBounds().getType(Bounds.Direction.N);
             var southBound = cell.getBounds().getType(Bounds.Direction.S);
             var westBound = cell.getBounds().getType(Bounds.Direction.W);
             var eastBound = cell.getBounds().getType(Bounds.Direction.E);
             switch (northBound) {
                 case SAME_ROOM: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[0][i].setAll(' ', cell.getColor());
-                    }
+                    for (int i = 1; i < 8; i++) cellCli[0][i].setAll(' ', cell.getColor());
+                    cellCli[0][0].setAll(westBound == Bounds.Type.SAME_ROOM ? ' ' : '║', cell.getColor());
+                    cellCli[0][8].setAll(eastBound == Bounds.Type.SAME_ROOM ? ' ' : '║', cell.getColor());
                     break;
                 }
                 case DOOR: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[i][0].setAll('=', cell.getColor());
-                    }
+                    for (int i = 1; i < 8; i++) cellCli[0][i].setAll('=', cell.getColor());
+                    cellCli[0][0].setAll(westBound == Bounds.Type.SAME_ROOM ? '=' : '╔', cell.getColor());
                     cellCli[0][3].setAll('╡', cell.getColor());
                     cellCli[0][4].setAll(' ', cell.getColor());
                     cellCli[0][5].setAll('╞', cell.getColor());
+                    cellCli[0][8].setAll(eastBound == Bounds.Type.SAME_ROOM ? '=' : '╗', cell.getColor());
                     break;
                 }
                 case WALL: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[i][0].setAll('=', cell.getColor());
-                    }
-                    cellCli[0][0].setAll('╔', cell.getColor());
-                    cellCli[8][0].setAll('╗', cell.getColor());
+                    for (int i = 1; i < 8; i++) cellCli[0][i].setAll('=', cell.getColor());
+                    cellCli[0][0].setAll(westBound == Bounds.Type.SAME_ROOM ? '=' : '╔', cell.getColor());
+                    cellCli[0][8].setAll(eastBound == Bounds.Type.SAME_ROOM ? '=' : '╗', cell.getColor());
                     break;
                 }
             }
 
             switch (southBound) {
                 case SAME_ROOM: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[i][8].setAll(' ', cell.getColor());
-                    }
-                    cellCli[0][8].setAll('╚', cell.getColor());
-                    cellCli[8][8].setAll('╝', cell.getColor());
+                    for (int i = 1; i < 8; i++) cellCli[8][i].setAll(' ', cell.getColor());
+                    cellCli[8][0].setAll(westBound == Bounds.Type.SAME_ROOM ? ' ' : '║', cell.getColor());
+                    cellCli[8][8].setAll(eastBound == Bounds.Type.SAME_ROOM ? ' ' : '║', cell.getColor());
                     break;
                 }
                 case DOOR: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[i][8].setAll('=', cell.getColor());
-                    }
-                    cellCli[0][8].setAll('╚', cell.getColor());
-                    cellCli[3][8].setAll('╡', cell.getColor());
-                    cellCli[4][8].setAll(' ', cell.getColor());
-                    cellCli[5][8].setAll('╞', cell.getColor());
-                    cellCli[8][8].setAll('╝', cell.getColor());
+                    for (int i = 1; i < 8; i++) cellCli[8][i].setAll('=', cell.getColor());
+                    cellCli[8][0].setAll(westBound == Bounds.Type.SAME_ROOM ? '=' : '╚', cell.getColor());
+                    cellCli[8][3].setAll('╡', cell.getColor());
+                    cellCli[8][4].setAll(' ', cell.getColor());
+                    cellCli[8][5].setAll('╞', cell.getColor());
+                    cellCli[8][8].setAll(eastBound == Bounds.Type.SAME_ROOM ? '=' : '╝', cell.getColor());
                     break;
                 }
                 case WALL: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[i][8].setAll('=', cell.getColor());
-                    }
-                    cellCli[0][8].setAll('╚', cell.getColor());
-                    cellCli[8][8].setAll('╝', cell.getColor());
+                    for (int i = 1; i < 8; i++) cellCli[8][i].setAll('=', cell.getColor());
+                    cellCli[8][0].setAll(westBound == Bounds.Type.SAME_ROOM ? '=' : '╚', cell.getColor());
+                    cellCli[8][8].setAll(eastBound == Bounds.Type.SAME_ROOM ? '=' : '╝', cell.getColor());
                     break;
                 }
             }
             switch (eastBound) {
                 case SAME_ROOM: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[0][i].setAll(' ', cell.getColor());
-                    }
+                    for (int i = 1; i < 8; i++) cellCli[i][8].setAll(' ', cell.getColor());
                     break;
                 }
                 case DOOR: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[0][i].setAll('║', cell.getColor());
-                    }
-                    cellCli[0][3].setAll('╨', cell.getColor());
-                    cellCli[0][4].setAll(' ', cell.getColor());
-                    cellCli[0][5].setAll('╥', cell.getColor());
+                    for (int i = 1; i < 8; i++) cellCli[i][8].setAll('║', cell.getColor());
+                    cellCli[3][8].setAll('╨', cell.getColor());
+                    cellCli[4][8].setAll(' ', cell.getColor());
+                    cellCli[5][8].setAll('╥', cell.getColor());
                     break;
                 }
                 case WALL: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[0][i].setAll('║', cell.getColor());
-                    }
+                    for (int i = 1; i < 8; i++) cellCli[i][8].setAll('║', cell.getColor());
                     break;
                 }
             }
             switch (westBound) {
                 case SAME_ROOM: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[8][i].setAll(' ', cell.getColor());
-                    }
+                    for (int i = 1; i < 8; i++) cellCli[i][0].setAll(' ', cell.getColor());
                     break;
                 }
                 case DOOR: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[8][i].setAll('=', cell.getColor());
-                    }
-                    cellCli[8][3].setAll('╨', cell.getColor());
-                    cellCli[8][4].setAll(' ', cell.getColor());
-                    cellCli[8][5].setAll('╥', cell.getColor());
+                    for (int i = 1; i < 8; i++) cellCli[i][0].setAll('║', cell.getColor());
+                    cellCli[3][0].setAll('╨', cell.getColor());
+                    cellCli[4][0].setAll(' ', cell.getColor());
+                    cellCli[5][0].setAll('╥', cell.getColor());
                     break;
                 }
                 case WALL: {
-                    for (int i = 1; i < 8; i++) {
-                        cellCli[8][i].setAll('║', cell.getColor());
-                    }
+                    for (int i = 1; i < 8; i++) cellCli[i][0].setAll('║', cell.getColor());
                     break;
                 }
             }
@@ -218,6 +185,7 @@ public class GameCli {
             }
             System.out.println("\n");
         }
-        return null;//TODO da sistemare
+        //todo
+        return null;
     }
 }
