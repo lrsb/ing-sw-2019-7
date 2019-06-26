@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.models;
 
+import it.polimi.ingsw.client.views.cli.GameCli;
 import it.polimi.ingsw.common.models.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.RepeatedTest;
@@ -353,6 +354,15 @@ class GameImplTest {
         room.setSkulls(5);
         while (room.getUsers().size() < 5) room.addUser(possibleUserPlayer.get(room.getUsers().size() - 1));
         return GameImpl.Creator.newGame(room);
+    }
+
+    @Test
+    void printBoard() {
+        for (Game.Type type : Game.Type.values()) {
+            System.out.println(type);
+            GameImpl game = createGameImpl(type);
+            assertThrows(IllegalStateException.class, () -> GameCli.game(game));
+        }
     }
 
     void cubesTotalRecharging(@NotNull GameImpl game) {
