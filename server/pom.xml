@@ -81,11 +81,5 @@
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>it.polimi.ingsw</groupId>
-            <artifactId>client</artifactId>
-            <version>1.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>
