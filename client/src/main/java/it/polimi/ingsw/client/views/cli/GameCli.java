@@ -68,7 +68,7 @@ public class GameCli {
                     break;
                 }
                 case DOOR: {
-                    for (int i = 1; i < 17; i++) cellCli[17][i].setAll('=', cell.getColor());
+                    for (int i = 1; i < 35; i++) cellCli[17][i].setAll('=', cell.getColor());
                     cellCli[17][0].setAll('╚', cell.getColor());
                     cellCli[17][16].setAll('╡', cell.getColor());
                     cellCli[17][17].setAll(' ', cell.getColor());
