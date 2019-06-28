@@ -34,7 +34,7 @@ public class Server {
                     System.out.println("-r            RMI interface");
                     System.out.println("-s            SOCKET interface");
                     System.out.println();
-                    System.out.println("ENV vars:");
+                    System.out.println("Property vars: (use: -D<name>=<value> to set)");
                     System.out.println("Name          Meaning");
                     System.out.println("MONGODB_URI   URI of MongoDB (mandatory)");
                     System.out.println("MONGODB_NAME  Name of DB to use (mandatory)");
@@ -43,7 +43,7 @@ public class Server {
                     System.out.println("GAME_TIMEOUT  Game timeout in seconds (optional, default: 30s)");
                     return;
                 case "-w":
-                    new ServerRestImpl(Integer.parseInt(System.getenv().get("HTTP_PORT") == null ? "80" : System.getenv().get("HTTP_PORT")));
+                    new ServerRestImpl(Integer.parseInt(System.getProperty("HTTP_PORT", "80")));
                     break;
                 case "-r":
                     LocateRegistry.createRegistry(RMI_PORT).rebind(RMI_NAME, new ServerRmiImpl());
@@ -55,7 +55,7 @@ public class Server {
         }
         else System.out.println("Use --help");
         try {
-            mongoDatabase = new MongoClient(new MongoClientURI(System.getenv().get("MONGODB_URI"))).getDatabase(System.getenv().get("MONGODB_NAME"));
+            mongoDatabase = new MongoClient(new MongoClientURI(System.getProperty("MONGODB_URI"))).getDatabase(System.getProperty("MONGODB_NAME"));
         } catch (Exception ignored) {
             System.out.println("Use --help");
             return;

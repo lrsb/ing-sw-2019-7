@@ -107,6 +107,7 @@ $RECYCLE.BIN/
 .idea/sonarlint/
 .idea/sonarlint-state.xml
 .idea/misc.xml
+*.iml
 
 # CMake
 cmake-build-*/

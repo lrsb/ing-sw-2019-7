@@ -69,11 +69,7 @@ public class ServerController implements API {
             var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid.toString())).first()).e(Document::toJson).get(""), Room.class);
             if (!room.addUser(user)) throw new RemoteException("The room is full, go away!!");
             if (room.getUsers().size() >= 3) {
-                var timeout = 30;
-                try {
-                    timeout = Integer.parseInt(System.getenv().get("ROOM_TIMEOUT"));
-                } catch (Exception ignored) {
-                }
+                var timeout = Integer.parseInt(System.getProperty("ROOM_TIMEOUT", "30"));
                 room.setStartTime(System.currentTimeMillis() + timeout * 1000);
                 var timer = new Timer();
                 timer.schedule(new TimerTask() {
