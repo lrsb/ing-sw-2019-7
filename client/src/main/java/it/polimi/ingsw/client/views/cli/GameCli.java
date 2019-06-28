@@ -20,13 +20,13 @@ public class GameCli {
                 for (int u = 0; u < game.getPlayers().size(); u++) {
                     try {
                         if (game.getPlayers().get(u).getPosition().getX() == i && game.getPlayers().get(u).getPosition().getY() == j) {
-                            board[15 * i + 4][30 * j + 15].setAll('P', game.getPlayers().get(u).getBoardType().escape());
-                            board[15 * i + 4][30 * j + 16].setAll('l', game.getPlayers().get(u).getBoardType().escape());
-                            board[15 * i + 4][30 * j + 17].setAll('a', game.getPlayers().get(u).getBoardType().escape());
-                            board[15 * i + 4][30 * j + 18].setAll('y', game.getPlayers().get(u).getBoardType().escape());
-                            board[15 * i + 4][30 * j + 19].setAll('e', game.getPlayers().get(u).getBoardType().escape());
-                            board[15 * i + 4][30 * j + 20].setAll('r', game.getPlayers().get(u).getBoardType().escape());
-                            board[15 * i + 4][30 * j + 21].setAll((char) u, game.getPlayers().get(u).getBoardType().escape());
+                            cellCli[4][15].setAll('P', game.getPlayers().get(u).getBoardType().escape());
+                            cellCli[4][16].setAll('l', game.getPlayers().get(u).getBoardType().escape());
+                            cellCli[4][17].setAll('a', game.getPlayers().get(u).getBoardType().escape());
+                            cellCli[4][18].setAll('y', game.getPlayers().get(u).getBoardType().escape());
+                            cellCli[4][19].setAll('e', game.getPlayers().get(u).getBoardType().escape());
+                            cellCli[4][20].setAll('r', game.getPlayers().get(u).getBoardType().escape());
+                            cellCli[4][21].setAll((char) (u + 48), game.getPlayers().get(u).getBoardType().escape());
                         }
                     } catch (NullPointerException ignored) {
                     }

@@ -404,9 +404,11 @@ class GameImplTest {
         for (Game.Type type : Game.Type.values()) {
             System.out.println(type);
             Game game = createGameImpl(type);
-            for (Player player : game.getPlayers()) {
-                player.setPosition(new Point(1, 0));
-            }
+            game.getPlayers().get(0).setPosition(new Point(1, 0));
+            game.getPlayers().get(1).setPosition(new Point(1, 1));
+            game.getPlayers().get(2).setPosition(new Point(1, 2));
+            game.getPlayers().get(3).setPosition(new Point(2, 1));
+            game.getPlayers().get(4).setPosition(new Point(2, 2));
             GameCli gameCli = new GameCli();
             gameCli.buildBoard(game);
             gameCli.game(game);
@@ -492,18 +494,15 @@ class GameImplTest {
                 for (int j = 0; j < cells[i].length; j++) {
                     var cellCli = buildCell(cells[i][j]);
                     for (int u = 0; u < game.getPlayers().size(); u++) {
-                        try {
                             if (game.getPlayers().get(u).getPosition().getX() == i && game.getPlayers().get(u).getPosition().getY() == j) {
-                                board[15 * i + 4][30 * j + 15].setAll('P', game.getPlayers().get(u).getBoardType().escape());
-                                board[15 * i + 4][30 * j + 16].setAll('l', game.getPlayers().get(u).getBoardType().escape());
-                                board[15 * i + 4][30 * j + 17].setAll('a', game.getPlayers().get(u).getBoardType().escape());
-                                board[15 * i + 4][30 * j + 18].setAll('y', game.getPlayers().get(u).getBoardType().escape());
-                                board[15 * i + 4][30 * j + 19].setAll('e', game.getPlayers().get(u).getBoardType().escape());
-                                board[15 * i + 4][30 * j + 20].setAll('r', game.getPlayers().get(u).getBoardType().escape());
-                                board[15 * i + 4][30 * j + 21].setAll((char) u, game.getPlayers().get(u).getBoardType().escape());
+                                cellCli[4][15].setAll('P', game.getPlayers().get(u).getBoardType().escape());
+                                cellCli[4][16].setAll('l', game.getPlayers().get(u).getBoardType().escape());
+                                cellCli[4][17].setAll('a', game.getPlayers().get(u).getBoardType().escape());
+                                cellCli[4][18].setAll('y', game.getPlayers().get(u).getBoardType().escape());
+                                cellCli[4][19].setAll('e', game.getPlayers().get(u).getBoardType().escape());
+                                cellCli[4][20].setAll('r', game.getPlayers().get(u).getBoardType().escape());
+                                cellCli[4][21].setAll((char) (u + 48), game.getPlayers().get(u).getBoardType().escape());
                             }
-                        } catch (NullPointerException ignored) {
-                        }
                     }
                     for (int k = 0; k < cellCli.length; k++) {
                         System.arraycopy(cellCli[k], 0, board[(15 * i) + k], (30 * j), cellCli[k].length);
