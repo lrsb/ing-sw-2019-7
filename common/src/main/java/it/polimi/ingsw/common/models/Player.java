@@ -10,8 +10,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -314,18 +316,31 @@ public class Player implements Displayable, Serializable {
     }
 
     public enum BoardType {
-        BANSHEE(Color.BLUE), D_STRUCT(Color.YELLOW), DOZER(Color.GRAY), SPROG(Color.GREEN), VIOLET(Color.MAGENTA);
+        BANSHEE(Color.BLUE, "\033[4;36m"), D_STRUCT(Color.YELLOW, "\033[0;33m"), DOZER(Color.GRAY, "\u001b[38;5;242m"), SPROG(Color.GREEN, "\u001b[38;5;34m"), VIOLET(Color.MAGENTA, "\u001B[35m");
+
 
         private @NotNull Color color;
 
-        @Contract(pure = true)
-        BoardType(@NotNull Color color) {
-            this.color = color;
-        }
+        private @NotNull String escape;
 
         @Contract(pure = true)
         public @NotNull Color getColor() {
             return color;
+        }
+
+        @Contract(pure = true)
+        BoardType(@NotNull Color color, String escape) {
+            this.color = color;
+        }
+
+        @Contract(pure = true)
+        BoardType(@NotNull String escape) {
+            this.escape = escape;
+        }
+
+        @Contract(pure = true)
+        public @NotNull String escape() {
+            return escape;
         }
     }
 }

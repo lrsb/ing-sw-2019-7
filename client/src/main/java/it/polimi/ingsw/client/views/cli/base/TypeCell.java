@@ -5,13 +5,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class TypeCell {
     private Character character;
-    private Cell.Color color;
+    private String color;
 
-    public Cell.Color getColor() {
+    public String getColor() {
         return color;
     }
 
-    public void setColor(Cell.Color color) {
+    public void setColor(String color) {
         this.color = color;
     }
 
@@ -21,10 +21,10 @@ public class TypeCell {
 
     public void setCharacter(@NotNull Character character) {
         this.character = character;
-        this.color = Cell.Color.WHITE;
+        this.color = Cell.Color.WHITE.escape();
     }
 
-    public void setAll(@NotNull Character character, @NotNull Cell.Color color) {
+    public void setAll(@NotNull Character character, @NotNull String color) {
         this.color = color;
         this.character = character;
     }

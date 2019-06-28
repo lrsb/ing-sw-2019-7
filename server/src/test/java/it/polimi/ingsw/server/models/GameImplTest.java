@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server.models;
 
 import it.polimi.ingsw.common.models.*;
-import it.polimi.ingsw.common.models.exceptions.ActionDeniedException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -341,62 +340,6 @@ class GameImplTest {
     }
 
     @Test
-    void testTagback() {
-        GameImpl game = createGameImpl(Game.Type.SIX_SIX);
-        game.getPlayers().get(0).addWeapon(Weapon.LOCK_RIFLE);
-        game.getPlayers().get(0).addWeapon(Weapon.MACHINE_GUN);
-        game.getPlayers().get(1).addPowerUp(new PowerUp(AmmoCard.Color.RED, PowerUp.Type.TAGBACK_GRENADE));
-        game.getPlayers().get(2).addPowerUp(new PowerUp(AmmoCard.Color.YELLOW, PowerUp.Type.TAGBACK_GRENADE));
-        for (Player player : game.getPlayers()) {
-            player.setPosition(new Point(0, 0));
-        }
-        ArrayList<UUID> basicTargets = new ArrayList<>();
-        ArrayList<UUID> firstTargets = new ArrayList<>();
-        ArrayList<UUID> secondTargets = new ArrayList<>();
-        Point basicPoint = null;
-        Point firstPoint = null;
-        Point secondPoint = null;
-        basicTargets.add(game.getPlayers().get(1).getUuid());
-        firstTargets.add(game.getPlayers().get(2).getUuid());
-        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.LOCK_RIFLE, game.getActualPlayer().getPosition(),
-                null, false, 0, basicTargets, basicPoint, firstTargets,
-                firstPoint, secondTargets, secondPoint)));
-        assertEquals(game.getPlayers().get(1), game.getActualPlayer());
-        basicTargets.clear();
-        firstTargets.clear();
-        basicTargets.add(game.getPlayers().get(1).getUuid());
-        basicTargets.add(game.getPlayers().get(2).getUuid());
-        secondTargets.add(game.getPlayers().get(3).getUuid());
-        assertThrows(ActionDeniedException.class, () -> game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.MACHINE_GUN, game.getActualPlayer().getPosition(),
-                null, false, 2, basicTargets, basicPoint, firstTargets,
-                firstPoint, secondTargets, secondPoint)));
-        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
-        assertEquals(game.getPlayers().get(0), game.getActualPlayer());
-        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.MACHINE_GUN, game.getActualPlayer().getPosition(),
-                null, false, 2, basicTargets, basicPoint, firstTargets,
-                firstPoint, secondTargets, secondPoint)));
-        //per usarlo dovrei riuscire a inserire nell exitCard le carte che voglio
-        /*
-        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(PowerUp.Type.TAGBACK_GRENADE, AmmoCard.Color.RED, null, null)));
-        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(PowerUp.Type.TAGBACK_GRENADE, AmmoCard.Color.RED, null, null)));
-        assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
-        assertEquals(game.getPlayers().get(1), game.getActualPlayer());
-        assertEquals(0, game.getPlayers().get(1).getPowerUps().size());
-        assertEquals(0, game.getPlayers().get(2).getPowerUps().size());
-        assertEquals(3, game.getPlayers().get(1).getDamagesTaken().size());
-        assertEquals(1, game.getPlayers().get(2).getDamagesTaken().size());
-        assertEquals(2, game.getPlayers().get(0).getMarksTaken().size());
-        assertEquals(1, game.getPlayers().get(1).getMarksTaken().size());
-        assertEquals(1, game.getPlayers().get(2).getMarksTaken().size());
-        assertTrue(game.getPlayers().get(1).getDamagesTaken().contains(game.getPlayers().get(0).getUuid()));
-        assertTrue(game.getPlayers().get(2).getDamagesTaken().contains(game.getPlayers().get(0).getUuid()));
-        assertTrue(game.getPlayers().get(0).getMarksTaken().contains(game.getPlayers().get(1).getUuid()));
-        assertTrue(game.getPlayers().get(0).getMarksTaken().contains(game.getPlayers().get(2).getUuid()));
-        assertTrue(game.getPlayers().get(1).getMarksTaken().contains(game.getPlayers().get(0).getUuid()));
-        assertTrue(game.getPlayers().get(2).getMarksTaken().contains(game.getPlayers().get(0).getUuid()));*/
-    }
-
-    @Test
     GameImpl createGameImpl(@NotNull Game.Type type) {
         String gameName = "NomePartita";
         User creator = new User("God");
@@ -410,6 +353,15 @@ class GameImplTest {
         room.setSkulls(5);
         while (room.getUsers().size() < 5) room.addUser(possibleUserPlayer.get(room.getUsers().size() - 1));
         return GameImpl.Creator.newGame(room);
+    }
+
+    @Test
+    void printBoard() {
+        for (Game.Type type : Game.Type.values()) {
+            System.out.println(type);
+            GameImpl game = createGameImpl(type);
+            //assertThrows(IllegalStateException.class, () -> GameCli.game(game));
+        }
     }
 
     void cubesTotalRecharging(@NotNull GameImpl game) {
