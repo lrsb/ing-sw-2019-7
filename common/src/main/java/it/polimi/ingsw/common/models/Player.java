@@ -329,12 +329,8 @@ public class Player implements Displayable, Serializable {
         }
 
         @Contract(pure = true)
-        BoardType(@NotNull Color color, String escape) {
+        BoardType(@NotNull Color color, @NotNull String escape) {
             this.color = color;
-        }
-
-        @Contract(pure = true)
-        BoardType(@NotNull String escape) {
             this.escape = escape;
         }
 
