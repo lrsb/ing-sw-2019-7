@@ -2,11 +2,13 @@ package it.polimi.ingsw.client.views.cli;
 
 import it.polimi.ingsw.client.views.cli.base.Segue;
 import it.polimi.ingsw.client.views.cli.base.TypeCell;
-import it.polimi.ingsw.common.models.Bounds;
-import it.polimi.ingsw.common.models.Cell;
-import it.polimi.ingsw.common.models.Game;
+import it.polimi.ingsw.common.models.*;
+import it.polimi.ingsw.server.models.GameImpl;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 
 import static it.polimi.ingsw.common.models.Cell.Color.WHITE;
 
@@ -36,7 +38,6 @@ public class GameCli {
                 }
             }
         }
-
         return board;
     }
 
@@ -172,7 +173,6 @@ public class GameCli {
                 cellCli[4][2].setCharacter('└');
                 cellCli[3][2].setCharacter('│');
                 cellCli[2][2].setCharacter('│');
-
                 if (cell.getAmmoCard() != null) {
                     switch (cell.getAmmoCard().getLeft()) {
                         case RED: {
@@ -230,7 +230,23 @@ public class GameCli {
         return cellCli;
     }
 
-    public static @NotNull Segue game(Game game) {
+    @Contract(pure = true)
+    public static @NotNull Segue start() {
+        String gameName = "NomePartita";
+        User creator = new User("God");
+        ArrayList<User> possibleUserPlayer = new ArrayList<>();
+        possibleUserPlayer.add(new User("Luca"));
+        possibleUserPlayer.add(new User("Federico"));
+        possibleUserPlayer.add(new User("Lore"));
+        possibleUserPlayer.add(new User("Tia"));
+        Room room = new Room(gameName, creator);
+        room.setGameType(Game.Type.FIVE_FIVE);
+        room.setSkulls(5);
+        while (room.getUsers().size() < 5) room.addUser(possibleUserPlayer.get(room.getUsers().size() - 1));
+        return Segue.of("game", GameImpl.Creator.newGame(room));
+    }
+
+    public static @NotNull Segue game(GameImpl game) {
         var board = buildBoard(game);
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -239,7 +255,6 @@ public class GameCli {
             }
             System.out.println();
         }
-
         System.out.print("\u001b[0m");
         return null;
     }

@@ -4,7 +4,7 @@ import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.controllers.startup.ConnTypeViewController;
 import it.polimi.ingsw.client.controllers.startup.LoginViewController;
 import it.polimi.ingsw.client.network.ClientRestImpl;
-import it.polimi.ingsw.client.views.cli.StartupCli;
+import it.polimi.ingsw.client.views.cli.GameCli;
 import it.polimi.ingsw.client.views.cli.base.CliMenuManager;
 import it.polimi.ingsw.common.network.API;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +35,8 @@ public class Client {
                     new NavigationController(LoginViewController.class);
                     return;
                 case "-c":
-                    CliMenuManager.startCli(StartupCli.class, false);
+                    CliMenuManager.startCli(GameCli.class, false);
+                    //CliMenuManager.startCli(StartupCli.class, false);
                     return;
             }
         }

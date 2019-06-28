@@ -17,7 +17,6 @@ import java.util.Scanner;
 public class StartupCli {
     public static @NotNull Scanner in = new Scanner(System.in);
 
-
     public static @NotNull Segue connType() {
         System.out.println("Ciao, benvenuto in Adrenalina, come vuoi effettuare la connessione?");
         System.out.println("1: SOCKET");
@@ -29,7 +28,6 @@ public class StartupCli {
         } catch (NumberFormatException e) {
         }
         if (input > 3 || input < 1) {
-            System.out.println("Scelta non valida dio bastone!"); //TODO rimuovere bestemmia
             return Segue.of("connType");
         }
         System.out.println("Done! Qual è il nome del tuo hostname?");
@@ -59,7 +57,7 @@ public class StartupCli {
         var nickname = in.nextLine();
         System.out.println("Inserisci la tua password");
         var psw = in.nextLine();
-        if (nickname.equals("*")) return Segue.of("sigup");
+        if (nickname.equals("*")) return Segue.of("signup");
         else {
             try {
                 Preferences.setToken(Client.API.authUser(nickname, psw));

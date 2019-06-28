@@ -67,6 +67,11 @@
             <artifactId>common</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>it.polimi.ingsw</groupId>
+            <artifactId>server</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
 </project>

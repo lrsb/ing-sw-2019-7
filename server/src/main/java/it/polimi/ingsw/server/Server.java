@@ -3,12 +3,7 @@ package it.polimi.ingsw.server;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
-import it.polimi.ingsw.client.views.cli.GameCli;
-import it.polimi.ingsw.common.models.Game;
-import it.polimi.ingsw.common.models.Room;
-import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.server.controllers.ServerController;
-import it.polimi.ingsw.server.models.GameImpl;
 import it.polimi.ingsw.server.network.AdrenalineServerSocket;
 import it.polimi.ingsw.server.network.ServerRestImpl;
 import it.polimi.ingsw.server.network.ServerRmiImpl;
@@ -17,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
-import java.util.ArrayList;
 
 public class Server {
     public static final int SOCKET_PORT = 0xCAFE;
@@ -57,19 +51,6 @@ public class Server {
                 case "-s":
                     new AdrenalineServerSocket(new ServerSocketImpl());
                     break;
-                case "-t":
-                    String gameName = "NomePartita";
-                    User creator = new User("God");
-                    ArrayList<User> possibleUserPlayer = new ArrayList<>();
-                    possibleUserPlayer.add(new User("Luca"));
-                    possibleUserPlayer.add(new User("Federico"));
-                    possibleUserPlayer.add(new User("Lore"));
-                    possibleUserPlayer.add(new User("Tia"));
-                    Room room = new Room(gameName, creator);
-                    room.setGameType(Game.Type.FIVE_FIVE);
-                    room.setSkulls(5);
-                    while (room.getUsers().size() < 5) room.addUser(possibleUserPlayer.get(room.getUsers().size() - 1));
-                    GameCli.game(GameImpl.Creator.newGame(room));
             }
         }
         else System.out.println("Use --help");
