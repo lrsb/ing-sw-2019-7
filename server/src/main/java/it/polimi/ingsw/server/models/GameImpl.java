@@ -163,6 +163,7 @@ public class GameImpl extends Game implements Serializable {
             if (responsivePlayers.isEmpty()) {
                 clearLastsDamaged();
                 tagbackTime = false;
+                return;
             }
         }
         deathPointsRedistribution();

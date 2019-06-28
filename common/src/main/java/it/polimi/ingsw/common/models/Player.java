@@ -141,14 +141,12 @@ public class Player implements Displayable, Serializable {
             if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().uuid);
         }
         if (damages > 0) {
+            game.addToLastsDamaged(this);
             for (int i = 0; i < marksTaken.size(); i++) {
                 if (game.getActualPlayer().uuid.equals(marksTaken.get(i))) {
                     marksTaken.remove(i);
                     i--;
-                    if (damagesTaken.size() < 12) {
-                        damagesTaken.add(game.getActualPlayer().uuid);
-                        game.addToLastsDamaged(this);
-                    }
+                    if (damagesTaken.size() < 12) damagesTaken.add(game.getActualPlayer().uuid);
                 }
             }
         }
