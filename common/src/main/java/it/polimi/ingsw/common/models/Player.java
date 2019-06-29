@@ -79,6 +79,10 @@ public class Player implements Displayable, Serializable {
         return marksTaken;
     }
 
+    public int getDeaths() {
+        return deaths;
+    }
+
     /**
      * set the board of a player to the one with lower rewards
      */

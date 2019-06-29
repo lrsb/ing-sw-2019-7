@@ -149,7 +149,7 @@ public class GameImpl extends Game implements Serializable {
 
     private void nextTurn() {
         final int beforeSkulls = skulls;
-        for (var cells : cells)
+        if (!isATagbackResponse()) for (var cells : cells)
             for (var cell : cells) {
                 //noinspection ConstantConditions
                 if (cell != null) {
