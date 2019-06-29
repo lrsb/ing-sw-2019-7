@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.Base64;
 import java.util.UUID;
 
 public class User implements Serializable {
@@ -14,9 +13,7 @@ public class User implements Serializable {
     private @NotNull String nickname;
 
     public User(@NotNull String nickname) {
-        if (new String(Base64.getDecoder().decode("Y3Vnb2xh")).equalsIgnoreCase(nickname))
-            this.nickname = new String(Base64.getDecoder().decode("aWwgTWVyZGE="));
-        else this.nickname = nickname;
+        this.nickname = nickname;
     }
 
     public @NotNull UUID getUuid() {

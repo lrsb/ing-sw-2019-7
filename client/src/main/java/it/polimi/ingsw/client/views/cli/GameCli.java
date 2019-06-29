@@ -1,18 +1,24 @@
 package it.polimi.ingsw.client.views.cli;
 
+import it.polimi.ingsw.client.Client;
+import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.views.cli.base.Segue;
 import it.polimi.ingsw.client.views.cli.base.TypeCell;
 import it.polimi.ingsw.common.models.*;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import it.polimi.ingsw.server.models.GameImpl;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import static it.polimi.ingsw.common.models.Cell.Color.WHITE;
 
 public class GameCli {
+    private static Game game;
+
     private static TypeCell[][] buildBoard(@NotNull Game game) {
         var cells = game.getCells();
         var board = new TypeCell[Game.MAX_Y * 15][Game.MAX_X * 30];
@@ -230,6 +236,38 @@ public class GameCli {
         return cellCli;
     }
 
+    public static @NotNull Segue preGame(@NotNull Game game) {
+        GameCli.game = game;
+        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
+        try {
+            Client.API.addGameListener(Preferences.getOptionalToken().get(), game.getUuid(), (f, message) -> {
+                GameCli.game = f;
+                printGame(f);
+                System.out.println(message);
+            });
+        } catch (UserRemoteException ex) {
+            ex.printStackTrace();
+            return Segue.of("login", StartupCli.class);
+        } catch (RemoteException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return Segue.of("lobby");
+    }
+
+    public static @NotNull Segue postGame() {
+        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
+        try {
+            Client.API.removeGameListener(Preferences.getOptionalToken().get(), game.getUuid());
+            return Segue.of("mainMenu", PregameCli.class);
+        } catch (UserRemoteException ex) {
+            ex.printStackTrace();
+            return Segue.of("login", StartupCli.class);
+        } catch (RemoteException ex) {
+            System.out.println(ex.getMessage());
+            return Segue.of("mainMenu", PregameCli.class);
+        }
+    }
+
     @Contract(pure = true)
     public static @NotNull Segue start() {
         String gameName = "NomePartita";
@@ -243,10 +281,10 @@ public class GameCli {
         room.setGameType(Game.Type.FIVE_FIVE);
         room.setSkulls(5);
         while (room.getUsers().size() < 5) room.addUser(possibleUserPlayer.get(room.getUsers().size() - 1));
-        return Segue.of("game", GameImpl.Creator.newGame(room));
+        return Segue.of("printGame", GameImpl.Creator.newGame(room));
     }
 
-    public static @NotNull Segue game(GameImpl game) {
+    public static @NotNull Segue printGame(Game game) {
         var board = buildBoard(game);
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
