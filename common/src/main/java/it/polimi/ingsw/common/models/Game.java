@@ -108,6 +108,10 @@ public class Game implements Displayable, Serializable {
         return lastTurn;
     }
 
+    public @NotNull List<UUID> getKillshotsTrack() {
+        return new ArrayList<>(arrayKillshotsTrack);
+    }
+
     /**
      * Add the player to a list when this takes a damage and the list doesn't already contains the player
      *
@@ -162,6 +166,11 @@ public class Game implements Displayable, Serializable {
 
     public int getSkulls() {
         return skulls;
+    }
+
+    public @NotNull String getTurn() {
+        String finalFrenzy = skulls == 0 ? "\nFRENESIA FINALE ATTIVA" : "";
+        return lastTurn ? "ULTIMO TURNO" : "TURNO " + (seqPlay/getPlayers().size() + 1) + finalFrenzy;
     }
 
     /**
