@@ -147,6 +147,7 @@ public class PowerUp implements Displayable, Serializable {
         }
     }
 
+
     /**
      * {@link PowerUp} Type enum
      */

@@ -51,4 +51,8 @@ public enum Weapon implements Displayable {
     public @NotNull BufferedImage getBackImage() throws IOException {
         return Utils.readPngImage(Weapon.class, "back");
     }
+
+    public Object getName() {
+        return name();
+    }
 }
