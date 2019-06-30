@@ -281,10 +281,13 @@ public class GameCli {
         System.out.println("_____________________________________________________________________________");
         System.out.printf("%10s %15s %30s %15s %15s %15s %15s %15s %15s", "NOME", "PUNTI MAX", "MUN R", "MUN Y", "MUN B", "SANGUE", "ARMI", "POWERUPS", "TESCHI"); //TODO fix spazi
         System.out.println();
-        System.out.println(game.getPlayers().parallelStream().map(e -> System.out.printf("%10s %15s %30s %15s %15s %15s %15s %15s %15s", e.getNickname(), e.getMaximumPoints(),
+        game.getPlayers().parallelStream().forEach(e -> {
+            System.out.printf("%10s %15s %30s %15s %15s %15s %15s %15s %15s", e.getNickname(), e.getMaximumPoints(),
                 e.getColoredCubes(AmmoCard.Color.RED), e.getColoredCubes(AmmoCard.Color.YELLOW), e.getColoredCubes(AmmoCard.Color.BLUE), e.getDamagesTaken(),
                 e.getWeapons().parallelStream().map(c -> c.getName().toString()).collect(Collectors.joining(", ")),
-                e.getPowerUps().parallelStream().map(d -> d.getType().toString()).collect(Collectors.joining(", ")), e.getDeaths())));
+                e.getPowerUps().parallelStream().map(d -> d.getType().toString()).collect(Collectors.joining(", ")), e.getDeaths());
+            System.out.println();
+        });
     }
 
     public static void printGame(Game game) {
