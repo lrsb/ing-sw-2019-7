@@ -321,6 +321,9 @@ public class GameImpl extends Game implements Serializable {
     public boolean doAction(@NotNull Action action) {
         if (getActualPlayer().getPosition() == null)
             if (action.getActionType().equals(Action.Type.REBORN)) return reborn(action);
+            else if (action.getActionType().equals(Action.Type.NEXT_TURN))
+                doAction(Action.Builder.create(getUuid()).buildReborn(getActualPlayer().getPowerUps().get(0).getType(),
+                    getActualPlayer().getPowerUps().get(0).getAmmoColor()));
             else return false;
         else switch (Opt.of(action.getActionType()).get(Action.Type.NOTHING)) {
             case MOVE:

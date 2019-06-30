@@ -52,7 +52,8 @@ public enum Weapon implements Displayable {
         return Utils.readPngImage(Weapon.class, "back");
     }
 
-    public Object getName() {
+    @Contract(pure = true)
+    public @NotNull Object getName() {
         return name();
     }
 }
