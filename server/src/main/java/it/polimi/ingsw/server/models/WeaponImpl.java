@@ -143,19 +143,19 @@ abstract class WeaponImpl {
     void addBasicTarget(@NotNull UUID playerUuid) {
         if (game.getActualPlayer().getUuid().equals(playerUuid) ||
                 basicTargets.parallelStream().anyMatch(e -> e.getUuid().equals(playerUuid))) return;
-        game.getPlayers().stream().filter(e -> e.getUuid().equals(playerUuid)).findAny().ifPresent(basicTargets::add);
+        game.getPlayers().stream().filter(e -> e.getUuid().equals(playerUuid) && e.getPosition() != null).findAny().ifPresent(basicTargets::add);
     }
 
     void addFirstAdditionalTarget(@NotNull UUID playerUuid) {
         if (game.getActualPlayer().getUuid().equals(playerUuid) ||
                 firstAdditionalTargets.parallelStream().anyMatch(e -> e.getUuid().equals(playerUuid))) return;
-        game.getPlayers().stream().filter(e -> e.getUuid().equals(playerUuid)).findAny().ifPresent(firstAdditionalTargets::add);
+        game.getPlayers().stream().filter(e -> e.getUuid().equals(playerUuid) && e.getPosition() != null).findAny().ifPresent(firstAdditionalTargets::add);
     }
 
     void addSecondAdditionalTarget(@NotNull UUID playerUuid) {
         if (game.getActualPlayer().getUuid().equals(playerUuid) ||
                 secondAdditionalTargets.parallelStream().anyMatch(e -> e.getUuid().equals(playerUuid))) return;
-        game.getPlayers().stream().filter(e -> e.getUuid().equals(playerUuid)).findAny().ifPresent(secondAdditionalTargets::add);
+        game.getPlayers().stream().filter(e -> e.getUuid().equals(playerUuid) && e.getPosition() != null).findAny().ifPresent(secondAdditionalTargets::add);
     }
 
     void setBasicTargetsPoint(@NotNull Point basicTargetsPoint) {
