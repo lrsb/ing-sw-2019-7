@@ -55,7 +55,7 @@ public class Server {
         }
         else System.out.println("Use --help");
         try {
-            mongoDatabase = new MongoClient(new MongoClientURI(System.getProperty("MONGODB_URI"))).getDatabase(System.getProperty("MONGODB_NAME"));
+            mongoDatabase = new MongoClient(new MongoClientURI(System.getProperty("MONGODB_URI", System.getenv().get("MONGODB_URI")))).getDatabase(System.getProperty("MONGODB_NAME", "heroku_wb845rtj"));
         } catch (Exception ignored) {
             System.out.println("Use --help");
             return;

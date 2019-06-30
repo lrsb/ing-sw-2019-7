@@ -1,18 +1,25 @@
 package it.polimi.ingsw.client.views.cli;
 
+import it.polimi.ingsw.client.Client;
+import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.views.cli.base.Segue;
 import it.polimi.ingsw.client.views.cli.base.TypeCell;
 import it.polimi.ingsw.common.models.*;
+import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import it.polimi.ingsw.server.models.GameImpl;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
-import static it.polimi.ingsw.common.models.Cell.Color.WHITE;
+import static it.polimi.ingsw.common.models.Cell.Color.*;
 
 public class GameCli {
+    private static Game game;
+
     private static TypeCell[][] buildBoard(@NotNull Game game) {
         var cells = game.getCells();
         var board = new TypeCell[Game.MAX_Y * 15][Game.MAX_X * 30];
@@ -20,22 +27,18 @@ public class GameCli {
             for (int j = 0; j < cells[i].length; j++) {
                 var cellCli = buildCell(cells[i][j]);
                 for (int u = 0; u < game.getPlayers().size(); u++) {
-                    try {
-                        if (game.getPlayers().get(u).getPosition().getX() == i && game.getPlayers().get(u).getPosition().getY() == j) {
-                            cellCli[4][15].setAll('P', game.getPlayers().get(u).getBoardType().escape());
-                            cellCli[4][16].setAll('l', game.getPlayers().get(u).getBoardType().escape());
-                            cellCli[4][17].setAll('a', game.getPlayers().get(u).getBoardType().escape());
-                            cellCli[4][18].setAll('y', game.getPlayers().get(u).getBoardType().escape());
-                            cellCli[4][19].setAll('e', game.getPlayers().get(u).getBoardType().escape());
-                            cellCli[4][20].setAll('r', game.getPlayers().get(u).getBoardType().escape());
-                            cellCli[4][21].setAll((char) (u + 48), game.getPlayers().get(u).getBoardType().escape());
-                        }
-                    } catch (NullPointerException ignored) {
+                    if (game.getPlayers().get(u).getPosition() != null && game.getPlayers().get(u).getPosition().getX() == i && game.getPlayers().get(u).getPosition().getY() == j) {
+                        cellCli[15 * i + 4 + u][30 * j + 15].setAll('P', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[15 * i + 4 + u][30 * j + 16].setAll('l', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[15 * i + 4 + u][30 * j + 17].setAll('a', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[15 * i + 4 + u][30 * j + 18].setAll('y', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[15 * i + 4 + u][30 * j + 19].setAll('e', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[15 * i + 4 + u][30 * j + 20].setAll('r', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[15 * i + 4 + u][30 * j + 21].setAll((char) (u + 48), game.getPlayers().get(u).getBoardType().escape());
                     }
                 }
-                for (int k = 0; k < cellCli.length; k++) {
+                for (int k = 0; k < cellCli.length; k++)
                     System.arraycopy(cellCli[k], 0, board[(15 * i) + k], (30 * j), cellCli[k].length);
-                }
             }
         }
         return board;
@@ -230,6 +233,76 @@ public class GameCli {
         return cellCli;
     }
 
+    public static @NotNull Segue preGame(@NotNull Game game) {
+        GameCli.game = game;
+        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
+        try {
+            Client.API.addGameListener(Preferences.getOptionalToken().get(), game.getUuid(), (f, message) -> {
+                GameCli.game = f;
+                printGame(f);
+                System.out.println(message);
+            });
+        } catch (UserRemoteException ex) {
+            ex.printStackTrace();
+            return Segue.of("login", StartupCli.class);
+        } catch (RemoteException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return Segue.of("lobby");
+    }
+
+    public static @NotNull Segue postGame() {
+        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
+        try {
+            Client.API.removeGameListener(Preferences.getOptionalToken().get(), game.getUuid());
+            return Segue.of("mainMenu", PregameCli.class);
+        } catch (UserRemoteException ex) {
+            ex.printStackTrace();
+            return Segue.of("login", StartupCli.class);
+        } catch (RemoteException ex) {
+            System.out.println(ex.getMessage());
+            return Segue.of("mainMenu", PregameCli.class);
+        }
+    }
+
+    public static void boardInfo(Game game) {
+        System.out.println("_____________________________________________________________________________");
+        System.out.println();
+        System.out.println("Teschi: " + game.getSkulls());
+        System.out.println("Armi SP rosso: " + game.getWeapons(RED));
+        System.out.println("Armi SP giallo: " + game.getWeapons(YELLOW));
+        System.out.println("Armi SP blu: " + game.getWeapons(BLUE));
+        System.out.println();
+        System.out.println("_____________________________________________________________________________");
+    }
+
+    public static void playerInfo(Game game) {
+        System.out.println("informazioni sui giocatori");
+        System.out.println("_____________________________________________________________________________");
+        System.out.printf("%10s %15s %30s %15s %15s %15s %15s %15s %15s", "NOME", "PUNTI MAX", "MUN R", "MUN Y", "MUN B", "SANGUE", "ARMI", "POWERUPS", "TESCHI"); //TODO fix spazi
+        System.out.println(game.getPlayers().parallelStream().map(e -> System.out.printf("%10s %15s %30s", e.getNickname(), e.getMaximumPoints(),
+                e.getColoredCubes(AmmoCard.Color.RED), e.getColoredCubes(AmmoCard.Color.YELLOW), e.getColoredCubes(AmmoCard.Color.BLUE), e.getDamagesTaken(), //TODO SISTEMARE DAMAGETAKEN
+                e.getWeapons().parallelStream().map(c -> c.getName()).collect(Collectors.joining(", "),
+                        e.getPowerUps().parallelStream().map(d -> d.getType()).collect(Collectors.joining(", ")), e.getDeaths()))));
+    }
+
+    public static @NotNull Segue printGame(Game game) {
+        var board = buildBoard(game);
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                System.out.print(board[i][j].getColor());
+                System.out.print(board[i][j].getCharacter());
+            }
+            System.out.println();
+        }
+
+        System.out.print("\u001b[0m");
+        boardInfo(game);
+        playerInfo(game);
+
+        return null;
+    }
+
     @Contract(pure = true)
     public static @NotNull Segue start() {
         String gameName = "NomePartita";
@@ -243,19 +316,6 @@ public class GameCli {
         room.setGameType(Game.Type.FIVE_FIVE);
         room.setSkulls(5);
         while (room.getUsers().size() < 5) room.addUser(possibleUserPlayer.get(room.getUsers().size() - 1));
-        return Segue.of("game", GameImpl.Creator.newGame(room));
-    }
-
-    public static @NotNull Segue game(GameImpl game) {
-        var board = buildBoard(game);
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                System.out.print(board[i][j].getColor());
-                System.out.print(board[i][j].getCharacter());
-            }
-            System.out.println();
-        }
-        System.out.print("\u001b[0m");
-        return null;
+        return Segue.of("printGame", GameImpl.Creator.newGame(room));
     }
 }

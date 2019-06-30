@@ -56,7 +56,6 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private boolean yourTurn;
     private @Nullable Action.Type type;
 
-
     public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) throws IOException {
         super("Gioca", 1100, 700, navigationController);
         game = (Game) params[0];
@@ -152,7 +151,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         actualPlayerLabel.setText(yourTurn ? "TE" : game.getActualPlayer().getNickname());
 
         if (game.isFirstMove()) {
-            //game.getPowerUps()
+            //game.getActualPlayer().getPowerUps()
             //Action.Builder.create(game.getUuid()).buildFirstMove();
         } else if (game.isAReborn()) {
 

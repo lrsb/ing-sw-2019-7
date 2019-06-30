@@ -157,7 +157,7 @@ public class PregameCli {
 
     public static @NotNull Segue preLobby(@NotNull Room room) {
         PregameCli.room = room;
-        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
+        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
         try {
             Client.API.addRoomListener(Preferences.getOptionalToken().get(), room.getUuid(), f -> PregameCli.room = f);
         } catch (UserRemoteException ex) {
@@ -170,10 +170,10 @@ public class PregameCli {
     }
 
     public static @NotNull Segue postLobby() {
-        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
+        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
         try {
             Client.API.removeRoomListener(Preferences.getOptionalToken().get(), room.getUuid());
-            return Segue.of("game", GameCli.class, Client.API.getActiveGame(Preferences.getOptionalToken().get()));
+            return Segue.of("preGame", GameCli.class, Client.API.getActiveGame(Preferences.getOptionalToken().get()));
         } catch (UserRemoteException ex) {
             ex.printStackTrace();
             return Segue.of("login", StartupCli.class);
