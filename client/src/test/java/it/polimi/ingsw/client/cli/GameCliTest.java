@@ -8,6 +8,7 @@ import it.polimi.ingsw.server.models.GameImpl;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class GameCliTest {
@@ -16,6 +17,11 @@ public class GameCliTest {
     public void testPrintGameCli() {
         for (Game.Type type : Game.Type.values()) {
             GameImpl game = createGameImpl(type);
+            game.getPlayers().get(0).setPosition(new Point(0, 1));
+            game.getPlayers().get(1).setPosition(new Point(0, 1));
+            game.getPlayers().get(2).setPosition(new Point(2, 1));
+            game.getPlayers().get(3).setPosition(new Point(1, 1));
+            game.getPlayers().get(4).setPosition(new Point(1, 0));
             GameCli.printGame(game);
         }
     }

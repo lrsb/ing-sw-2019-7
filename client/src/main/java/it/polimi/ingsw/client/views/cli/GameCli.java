@@ -28,13 +28,13 @@ public class GameCli {
                 var cellCli = buildCell(cells[i][j]);
                 for (int u = 0; u < game.getPlayers().size(); u++) {
                     if (game.getPlayers().get(u).getPosition() != null && game.getPlayers().get(u).getPosition().getX() == i && game.getPlayers().get(u).getPosition().getY() == j) {
-                        cellCli[15 * i + 4 + u][30 * j + 15].setAll('P', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[15 * i + 4 + u][30 * j + 16].setAll('l', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[15 * i + 4 + u][30 * j + 17].setAll('a', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[15 * i + 4 + u][30 * j + 18].setAll('y', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[15 * i + 4 + u][30 * j + 19].setAll('e', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[15 * i + 4 + u][30 * j + 20].setAll('r', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[15 * i + 4 + u][30 * j + 21].setAll((char) (u + 48), game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[4 + u][15].setAll('P', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[4 + u][16].setAll('l', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[4 + u][17].setAll('a', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[4 + u][18].setAll('y', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[4 + u][19].setAll('e', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[4 + u][20].setAll('r', game.getPlayers().get(u).getBoardType().escape());
+                        cellCli[4 + u][21].setAll((char) (u + 48), game.getPlayers().get(u).getBoardType().escape());
                     }
                 }
                 for (int k = 0; k < cellCli.length; k++)
@@ -268,7 +268,9 @@ public class GameCli {
     private static void boardInfo(Game game) {
         System.out.println("_____________________________________________________________________________");
         System.out.println();
+        System.out.println(game.getTurn());
         System.out.println("Teschi: " + game.getSkulls());
+        System.out.println("Colpi Mortali: " + game.getKillshotsTrack());
         System.out.println("Armi SP rosso: " + game.getWeapons(RED));
         System.out.println("Armi SP giallo: " + game.getWeapons(YELLOW));
         System.out.println("Armi SP blu: " + game.getWeapons(BLUE));
@@ -279,7 +281,7 @@ public class GameCli {
     private static void playerInfo(Game game) {
         System.out.println("informazioni sui giocatori");
         System.out.println("_____________________________________________________________________________");
-        System.out.printf("%10s %15s %30s %15s %15s %15s %15s %15s %15s", "NOME", "PUNTI MAX", "MUN R", "MUN Y", "MUN B", "SANGUE", "ARMI", "POWERUPS", "TESCHI"); //TODO fix spazi
+        System.out.printf("%10s %15s %30s %15s %15s %15s %15s %15s %15s", "NOME", "VALORE BOARD", "MUN R", "MUN Y", "MUN B", "COLPI SUBITI", "ARMI", "POWERUPS", "MORTI"); //TODO fix spazi
         System.out.println();
         game.getPlayers().parallelStream().forEach(e -> {
             System.out.printf("%10s %15s %30s %15s %15s %15s %15s %15s %15s", e.getNickname(), e.getMaximumPoints(),
