@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.security.SecureRandom;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -542,9 +541,8 @@ public class GameImpl extends Game implements Serializable {
                     cells[2][3] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
                     break;
             }
-            var random = new SecureRandom();
             return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream()
-                    .map(e -> new Player(e, Player.BoardType.values()[random.nextInt(Player.BoardType.values().length)]))
+                    .map(e -> new Player(e, Player.BoardType.values()[room.getUsers().indexOf(e)]))
                     .collect(Collectors.toList()), room.getSkulls());
         }
     }

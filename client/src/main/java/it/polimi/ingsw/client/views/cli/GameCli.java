@@ -283,7 +283,7 @@ public class GameCli {
         System.out.println("_____________________________________________________________________________");
         System.out.printf("%10s %15s %30s %15s %15s %15s %15s %15s %15s", "NOME", "VALORE BOARD", "MUN R", "MUN Y", "MUN B", "COLPI SUBITI", "ARMI", "POWERUPS", "MORTI"); //TODO fix spazi
         System.out.println();
-        game.getPlayers().parallelStream().forEach(e -> {
+        game.getPlayers().forEach(e -> {
             System.out.printf("%10s %15s %30s %15s %15s %15s %15s %15s %15s", e.getNickname(), e.getMaximumPoints(),
                 e.getColoredCubes(AmmoCard.Color.RED), e.getColoredCubes(AmmoCard.Color.YELLOW), e.getColoredCubes(AmmoCard.Color.BLUE), e.getDamagesTaken(),
                 e.getWeapons().parallelStream().map(c -> c.getName().toString()).collect(Collectors.joining(", ")),
