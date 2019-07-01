@@ -47,6 +47,14 @@ public class Game implements Displayable, Serializable {
     protected ArrayList<Weapon> blueWeapons = new ArrayList<>();
     protected ArrayList<Weapon> yellowWeapons = new ArrayList<>();
 
+
+    protected int remainedActions = 2;
+
+    public int getRemainedActions() {
+        return remainedActions;
+    }
+
+
     public Game() {
         uuid = UUID.randomUUID();
         cells = new Cell[MAX_Y][MAX_X];

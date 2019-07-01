@@ -23,12 +23,6 @@ public class GameImpl extends Game implements Serializable {
     private @NotNull Deck<PowerUp> powerUpsDeck = Deck.Creator.newPowerUpsDeck();
     private @NotNull Deck<Weapon> weaponsDeck = Deck.Creator.newWeaponsDeck();
 
-    private int remainedActions = 2;
-
-    int getRemainedActions() {
-        return remainedActions;
-    }
-
     private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
         super(uuid, type, cells, players, skulls);
         redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
@@ -317,6 +311,14 @@ public class GameImpl extends Game implements Serializable {
         return false;
     }
 
+
+    /**
+     * Takes info from the param action, in order to build
+     * and, if possible, execute the required action
+     *
+     * @param action
+     * @return True if player's action worked, false otherwise
+     */
     public boolean doAction(@NotNull Action action) {
         if (getActualPlayer().getPosition() == null)
             if (action.getActionType().equals(Action.Type.REBORN)) return reborn(action);
@@ -382,6 +384,7 @@ public class GameImpl extends Game implements Serializable {
                 if (getActualPlayer().hasWeapon(action.getWeapon()) &&
                         !getActualPlayer().isALoadedGun(action.getWeapon()) &&
                         canPayWeaponAndPay(action.getWeapon(), action.getPowerUpPayment())) {
+                    clearLastsDamaged();
                     getActualPlayer().reloadWeapon(action.getWeapon());
                     return true;
                 }
@@ -486,6 +489,13 @@ public class GameImpl extends Game implements Serializable {
         private Creator() {
         }
 
+        /**
+         * Build the game in its initial state starting from
+         * the room's info (players, field and other param of the game)
+         *
+         * @param room
+         * @return a playable game
+         */
         @Contract("_ -> new")
         public static @NotNull GameImpl newGame(@NotNull Room room) {
             var cells = new Cell[MAX_Y][MAX_X];

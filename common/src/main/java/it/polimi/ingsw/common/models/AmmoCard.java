@@ -124,21 +124,24 @@ public class AmmoCard implements Displayable, Serializable {
         /**
          * Red color.
          */
-        RED(0),
+        RED(0, "\u001B[31m"),
         /**
          * Yellow color.
          */
-        YELLOW(1),
+        YELLOW(1, "\u001B[33m"),
         /**
          * Blue color.
          */
-        BLUE(2);
+        BLUE(2, "\u001B[36m");
 
         private int index;
 
+        private @NotNull String escape;
+
         @Contract(pure = true)
-        Color(int index) {
+        Color(int index, @NotNull String escape) {
             this.index = index;
+            this.escape = escape;
         }
 
         /**
@@ -149,6 +152,11 @@ public class AmmoCard implements Displayable, Serializable {
         @Contract(pure = true)
         public int getIndex() {
             return index;
+        }
+
+        @Contract(pure = true)
+        public @NotNull String escape() {
+            return escape;
         }
     }
 }
