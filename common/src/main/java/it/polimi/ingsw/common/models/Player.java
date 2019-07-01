@@ -320,7 +320,7 @@ public class Player implements Displayable, Serializable {
     }
 
     public enum BoardType {
-        BANSHEE(Color.BLUE, "\033[4;36m"), D_STRUCT(Color.YELLOW, "\033[0;33m"), DOZER(Color.GRAY, "\u001b[38;5;242m"), SPROG(Color.GREEN, "\u001b[38;5;34m"), VIOLET(Color.MAGENTA, "\u001B[35m");
+        BANSHEE(Color.BLUE, "\u001b[38;5;34m"), D_STRUCT(Color.YELLOW, "\033[0;33m"), DOZER(Color.GRAY, "\u001b[38;5;242m"), SPROG(Color.GREEN, "\u001B[32m"), VIOLET(Color.MAGENTA, "\u001B[35m");
 
 
         private @NotNull Color color;

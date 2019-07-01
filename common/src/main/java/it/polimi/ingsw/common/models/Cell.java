@@ -93,7 +93,7 @@ public class Cell implements Serializable {
         /**
          * Blue color.
          */
-        BLUE("\u001B[36m"),
+        BLUE("\u001b[38;5;34m"),
         /**
          * Red color.
          */

@@ -270,7 +270,10 @@ public class GameCli {
         System.out.println();
         System.out.println(game.getTurn());
         System.out.println("Teschi: " + game.getSkulls());
-        System.out.println("Colpi Mortali: " + game.getKillshotsTrack());
+        System.out.print("Colpi Mortali: ");
+        game.getKillshotsTrack().forEach(e -> game.getPlayers().parallelStream().filter(f -> f.getUuid().equals(e))
+                .forEach(f -> System.out.print(f.getBoardType().escape() + "■ " + "\u001b[0m")));
+        System.out.println();
         System.out.println("Armi SP rosso: " + game.getWeapons(RED));
         System.out.println("Armi SP giallo: " + game.getWeapons(YELLOW));
         System.out.println("Armi SP blu: " + game.getWeapons(BLUE));
@@ -278,21 +281,32 @@ public class GameCli {
         System.out.println("_____________________________________________________________________________");
     }
 
-    private static void playerInfo(Game game) {
+    private static void playerInfo(@NotNull Game game) {
         System.out.println("informazioni sui giocatori");
         System.out.println("_____________________________________________________________________________");
-        System.out.printf("%10s %15s %30s %15s %15s %15s %15s %15s %15s", "NOME", "VALORE BOARD", "MUN R", "MUN Y", "MUN B", "COLPI SUBITI", "ARMI", "POWERUPS", "MORTI"); //TODO fix spazi
+        System.out.printf("%1s %15s %1s %5s %10s %8s %18s", "", "NOME", "", "VAL BOARD", "MUN R - Y - B", "MORTI", "PUNTI ACCUMULATI"); //TODO fix spazi
         System.out.println();
         game.getPlayers().forEach(e -> {
-            System.out.printf("%10s %15s %30s %15s %15s %15s %15s %15s %15s", e.getNickname(), e.getMaximumPoints(),
-                e.getColoredCubes(AmmoCard.Color.RED), e.getColoredCubes(AmmoCard.Color.YELLOW), e.getColoredCubes(AmmoCard.Color.BLUE), e.getDamagesTaken(),
-                e.getWeapons().parallelStream().map(c -> c.getName().toString()).collect(Collectors.joining(", ")),
-                e.getPowerUps().parallelStream().map(d -> d.getType().toString()).collect(Collectors.joining(", ")), e.getDeaths());
+            System.out.printf("%1s %15s %1s %10s %14s %8s %12s", e.getBoardType().escape(), e.getNickname(), "\u001b[0m", e.getMaximumPoints(),
+                    e.getColoredCubes(AmmoCard.Color.RED) + "   " + e.getColoredCubes(AmmoCard.Color.YELLOW) + "   " + e.getColoredCubes(AmmoCard.Color.BLUE), e.getDeaths(),
+                    e.getPoints());
             System.out.println();
+            System.out.print("ARMI: " + e.getWeapons().parallelStream().map(c -> c.getName().toString()).collect(Collectors.joining(", ")));
+            System.out.println();
+            System.out.print("POWERUP: " + e.getPowerUps().parallelStream().map(d -> d.getType().toString()).collect(Collectors.joining(", ")));
+            System.out.println();
+            System.out.print("COLPI SUBITI: ");
+            e.getDamagesTaken().forEach(f -> game.getPlayers().parallelStream().filter(g -> g.getUuid().equals(f))
+                    .forEach(g -> System.out.print(g.getBoardType().escape() + "■ " + "\u001b[0m")));
+            System.out.println();
+            System.out.print("MARCHI: ");
+            e.getMarksTaken().forEach(f -> game.getPlayers().parallelStream().filter(g -> g.getUuid().equals(f))
+                    .forEach(g -> System.out.println(g.getBoardType().escape() + "■ " + "\u001b[0m")));
+            System.out.println("\n________________________________________________________________________");
         });
     }
 
-    public static void printGame(Game game) {
+    public static void printGame(@NotNull Game game) {
         var board = buildBoard(game);
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -301,11 +315,23 @@ public class GameCli {
             }
             System.out.println();
         }
-
         System.out.print("\u001b[0m");
         boardInfo(game);
         playerInfo(game);
+        if (game.getActualPlayer().getUuid().equals(Preferences.getUuid())) {
 
+        }
+
+    }
+
+    private void actionMenu(@NotNull Game game) {
+        if (game.getActualPlayer().getPosition() == null) {
+            System.out.println("Scegli quale powerup scartare per spawnare");
+            for (int i = 0; i < game.getActualPlayer().getPowerUps().size(); i++) {
+                System.out.println((i + 1) + ": " + game.getActualPlayer().getPowerUps().get(i).getAmmoColor().escape()
+                        + game.getActualPlayer().getPowerUps().get(i).getType().name() + "\u001b[0m");
+            }
+        }
     }
 
     @Contract(pure = true)
