@@ -17,9 +17,6 @@ import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.common.models.Cell.Color.*;
 
-/**
- *
- */
 public class GameCli {
     private static Game game;
 
