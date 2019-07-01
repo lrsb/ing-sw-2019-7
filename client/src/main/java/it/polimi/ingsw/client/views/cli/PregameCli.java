@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 /**
  * The class that contains all the views that are displayed before that the game begin
  */
+@SuppressWarnings("unused")
 public class PregameCli {
     private static Room room;
 
@@ -211,10 +212,8 @@ public class PregameCli {
     /**
      * The cli lobby
      * @return The next view
-     * @throws InterruptedException
-     * @throws IOException
      */
-    public static @NotNull Segue lobby() throws InterruptedException, IOException {
+    public static @NotNull Segue lobby() throws IOException, InterruptedException {
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
         System.out.println("LOBBY");
         System.out.println();
