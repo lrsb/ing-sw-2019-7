@@ -274,9 +274,15 @@ public class GameCli {
         game.getKillshotsTrack().forEach(e -> game.getPlayers().parallelStream().filter(f -> f.getUuid().equals(e))
                 .forEach(f -> System.out.print(f.getBoardType().escape() + "■ " + "\u001b[0m")));
         System.out.println();
-        System.out.println("Armi SP rosso: " + game.getWeapons(RED));
-        System.out.println("Armi SP giallo: " + game.getWeapons(YELLOW));
-        System.out.println("Armi SP blu: " + game.getWeapons(BLUE));
+        System.out.print(RED.escape() + "Armi SP rosso: " + "\u001b[0m" + game.getWeapons(RED).stream()
+                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m" + " ").collect(Collectors.joining(", ")));
+        System.out.println();
+        System.out.print(YELLOW.escape() + "Armi SP giallo: " + "\u001b[0m" + game.getWeapons(YELLOW).stream()
+                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m" + " ").collect(Collectors.joining(", ")));
+        System.out.println();
+        System.out.print(BLUE.escape() + "Armi SP blu: " + "\u001b[0m" + game.getWeapons(BLUE).stream()
+                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m" + " ").collect(Collectors.joining(", ")));
+        System.out.println();
         System.out.println();
         System.out.println("_____________________________________________________________________________");
     }
@@ -291,9 +297,9 @@ public class GameCli {
                     e.getColoredCubes(AmmoCard.Color.RED) + "   " + e.getColoredCubes(AmmoCard.Color.YELLOW) + "   " + e.getColoredCubes(AmmoCard.Color.BLUE), e.getDeaths(),
                     e.getPoints());
             System.out.println();
-            System.out.print("ARMI: " + e.getWeapons().parallelStream().map(c -> c.getName().toString()).collect(Collectors.joining(", ")));
+            System.out.print("ARMI: " + e.getWeapons().stream().map(c -> c.getColor().escape() + c.getName().toString() + "\u001b[0m").collect(Collectors.joining(", ")));
             System.out.println();
-            System.out.print("POWERUP: " + e.getPowerUps().parallelStream().map(d -> d.getType().toString()).collect(Collectors.joining(", ")));
+            System.out.print("POWERUP: " + e.getPowerUps().stream().map(d -> d.getAmmoColor().escape() + d.getType().toString() + "\u001b[0m").collect(Collectors.joining(", ")));
             System.out.println();
             System.out.print("COLPI SUBITI: ");
             e.getDamagesTaken().forEach(f -> game.getPlayers().parallelStream().filter(g -> g.getUuid().equals(f))
