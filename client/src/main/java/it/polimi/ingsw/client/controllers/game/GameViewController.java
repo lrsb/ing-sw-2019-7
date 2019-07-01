@@ -88,6 +88,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
+                    if (f.isCompleted()) navigationController.popViewController();
                 });
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();

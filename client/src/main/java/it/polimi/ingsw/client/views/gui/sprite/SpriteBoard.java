@@ -60,6 +60,7 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
     public void addAllSprite(@NotNull java.util.List<Sprite> sprites) {
         this.sprites.addAll(sprites);
         sprites.forEach(e -> e.setSpriteListener(this));
+        repaint();
     }
 
     public @Nullable Sprite removeSprite(@NotNull Sprite sprite) {

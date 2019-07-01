@@ -499,6 +499,7 @@ public class GameImpl extends Game implements Serializable {
         @Contract("_ -> new")
         public static @NotNull GameImpl newGame(@NotNull Room room) {
             var cells = new Cell[MAX_Y][MAX_X];
+            if (room.getUsers().size() > 5 || room.getUsers().size() < 3) throw new IllegalArgumentException();
             switch (room.getGameType().getLeft()) {
                 case "L5":
                     cells[0][0] = Cell.Creator.withBounds("_ |_").color(Cell.Color.BLUE).create();
@@ -551,9 +552,10 @@ public class GameImpl extends Game implements Serializable {
                     cells[2][3] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
                     break;
             }
+            var boards = new ArrayList<>(List.of(Player.BoardType.values()));
+            Collections.shuffle(boards);
             return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream()
-                    .map(e -> new Player(e, Player.BoardType.values()[room.getUsers().indexOf(e)]))
-                    .collect(Collectors.toList()), room.getSkulls());
+                    .map(e -> new Player(e, boards.remove(0))).collect(Collectors.toList()), room.getSkulls());
         }
     }
 }

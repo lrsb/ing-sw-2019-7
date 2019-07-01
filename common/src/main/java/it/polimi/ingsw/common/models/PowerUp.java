@@ -147,10 +147,6 @@ public class PowerUp implements Displayable, Serializable {
         }
     }
 
-
-    /**
-     * {@link PowerUp} Type enum
-     */
     public enum Type {
         TARGETING_SCOPE, NEWTON, TAGBACK_GRENADE, TELEPORTER
     }

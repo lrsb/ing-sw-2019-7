@@ -163,9 +163,10 @@ public class ServerController implements API {
             if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid()))) return;
             game.getPlayers().remove(new Player(user, Player.BoardType.BANSHEE));
             if (game.getPlayers().size() < 3) {
-                games.deleteOne(eq("uuid", gameUuid.toString()));
+                //TODO
+                //games.deleteOne(eq("uuid", gameUuid.toString()));
                 game.setCompleted(true);
-            }
+            } //else games.replaceOne(eq("uuid", gameUuid.toString()), Document.parse(new Gson().toJson(game)));
             informGamePlayers(game, user.getNickname() + " left the game." + (game.isCompleted() ? "\nNot enough players." : ""));
         } catch (Exception ignored) {
             throw new RemoteException("Something went wrong, sometimes it happens!!");

@@ -311,7 +311,7 @@ public class Player implements Displayable, Serializable {
 
     @Override
     public @NotNull BufferedImage getFrontImage() throws IOException {
-        return Utils.readJpgImage(Player.class, boardType.name().substring(0, 3) + (isEasyBoard() ? "F" : ""));
+        return Utils.readPngImage(Player.class, boardType.name().substring(0, 3) + "P");
     }
 
     @Override

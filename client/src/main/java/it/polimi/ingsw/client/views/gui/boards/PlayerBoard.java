@@ -27,17 +27,41 @@ public class PlayerBoard extends AbstractBoard {
         //noinspection OptionalGetWithoutIsPresent
         var damages = player.getDamagesTaken().stream().map(e -> game.getPlayers().parallelStream()
                 .filter(f -> e.equals(f.getUuid())).findAny().get()).map(Player::getBoardType).collect(Collectors.toList());
-        for (int i = 0; i < damages.size(); i++) {
-            var x = 87 + i * 47 + (i > 1 ? 8 : 0) + (i > 4 ? 8 : 0) + (i > 9 ? 8 : 0);
-            var damage = new Sprite(x, 83, 28, 40, applyColorToMask(mask, damages.get(i).getColor()));
-            damage.setTag("p:" + x + ",83");
-            damage.setDraggable(true);
-            addSprite(damage);
+        if (player.isEasyBoard()) {
+            for (var i = 0; i < 12; i++) {
+                var x = 139 + i * 66;
+                var damage = new Sprite(x, 368, 30, 45, applyColorToMask(mask, damages.get(i).getColor()));
+                damage.setTag("p:" + x + ",368");
+                damage.setDraggable(true);
+                addSprite(damage);
+            }
+        } else {
+            for (int i = 0, x = 114; i < Math.min(damages.size(), 10); i++) {
+                if (i != 0) {
+                    if (i < 3 || i == 5) x += 73;
+                    else x += 66;
+                }
+                var damage = new Sprite(x, 368, 30, 45, applyColorToMask(mask, damages.get(i).getColor()));
+                damage.setTag("p:" + x + ",368");
+                damage.setDraggable(true);
+                addSprite(damage);
+            }
+            if (damages.size() == 11) {
+                var skull = new Sprite(781, 334, 65, 70, Utils.readPngImage(Game.class, "skull"));
+                skull.setTag("p:" + "781" + ",334");
+                skull.setDraggable(true);
+                addSprite(skull);
+            }
+            if (damages.size() == 12) {
+                var target = new Sprite(856, 351, 50, 50, Utils.readPngImage(Game.class, "target"));
+                target.setTag("p:" + "856" + ",351");
+                target.setDraggable(true);
+                addSprite(target);
+            }
         }
     }
 
     @Override
     public void onSpriteClicked(@NotNull Sprite sprite) {
-
     }
 }

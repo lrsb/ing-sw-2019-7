@@ -37,10 +37,19 @@ public class Room implements Serializable {
         this.gameType = Game.Type.values()[rand.nextInt(Game.Type.values().length)];
     }
 
+    /**
+     * Get the timestamp when the game starts.
+     *
+     * @return The timestamp when the game starts.
+     */
     public long getStartTime() {
         return Long.parseLong(startTime);
     }
 
+    /**
+     * Set the timestamp when the game starts.
+     * @param startType The timestamp when the game starts.
+     */
     public void setStartTime(long startType) {
         if (startType >= 0) this.startTime = Long.toString(startType);
         else this.startTime = Long.toString(1);

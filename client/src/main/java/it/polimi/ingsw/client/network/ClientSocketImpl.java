@@ -70,7 +70,7 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
     @Override
     public @NotNull Game getActiveGame(@NotNull String token) throws RemoteException {
         activeGame = null;
-        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.GET_ACTIVE_GAME, null, null));
+        adrenalineSocket.send(new AdrenalinePacket(AdrenalinePacket.Type.GET_ACTIVE_GAME, token, null));
         while (activeGame == null) wait1ms();
         return activeGame;
     }

@@ -40,6 +40,16 @@ public class Game implements Displayable, Serializable {
     protected @NotNull ArrayList<UUID> responsivePlayers = new ArrayList<>();
 
     protected int skulls;
+
+    protected int startingSkulls;
+
+    protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
+        this.uuid = uuid;
+        this.type = type;
+        this.cells = cells;
+        this.players.addAll(players);
+        this.startingSkulls = this.skulls = skulls;
+    }
     protected @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
     protected boolean isCompleted = false;
     protected boolean lastTurn = false;
@@ -61,12 +71,8 @@ public class Game implements Displayable, Serializable {
         type = Type.values()[new SecureRandom().nextInt(Type.values().length)];
     }
 
-    protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
-        this.uuid = uuid;
-        this.type = type;
-        this.cells = cells;
-        this.players.addAll(players);
-        this.skulls = skulls;
+    public int getStartingSkulls() {
+        return startingSkulls;
     }
 
     public @NotNull UUID getUuid() {
@@ -88,7 +94,7 @@ public class Game implements Displayable, Serializable {
     }
 
     public @NotNull List<Player> getPlayers() {
-        return new ArrayList<>(players);
+        return players;
     }
 
     /**

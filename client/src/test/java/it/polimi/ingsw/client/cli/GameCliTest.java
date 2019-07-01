@@ -53,5 +53,4 @@ public class GameCliTest {
         while (room.getUsers().size() < 5) room.addUser(possibleUserPlayer.get(room.getUsers().size() - 1));
         return GameImpl.Creator.newGame(room);
     }
-
 }

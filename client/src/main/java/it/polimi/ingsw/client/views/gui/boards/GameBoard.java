@@ -14,6 +14,7 @@ import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static it.polimi.ingsw.client.others.Utils.applyColorToMask;
 import static it.polimi.ingsw.client.others.Utils.blurBorder;
 
 public class GameBoard extends AbstractBoard {
@@ -47,10 +48,6 @@ public class GameBoard extends AbstractBoard {
         populateWeapons(game);
         populateSkulls(game);
         populatePlayers(game);
-
-        var weapon = new Sprite(50, 50, 80, 80, Utils.readPngImage(Weapon.class, "back"));
-        weapon.setDraggable(true);
-        addSprite(weapon);
     }
 
     @Override
@@ -97,9 +94,9 @@ public class GameBoard extends AbstractBoard {
 
     private void populateAmmoCard(@NotNull Game game) {
         var cells = game.getCells();
-        for (var point = new Point(); point.y < cells.length; point.y++)
-            for (point.x = 0; point.x < cells[point.y].length; point.x++) {
-                Optional.ofNullable(cells[point.y][point.x]).map(Cell::getAmmoCard).ifPresent(e -> {
+        for (var point = new Point(); point.x < cells.length; point.x++)
+            for (point.y = 0; point.y < cells[point.x].length; point.y++) {
+                Optional.ofNullable(cells[point.x][point.y]).map(Cell::getAmmoCard).ifPresent(e -> {
                     var position = new Point(-100, -100);
                     if (point.x == 0 && point.y == 0) {
                         if (game.getType().getLeft().equals(Game.Type.SIX_SIX.getLeft()))
@@ -198,13 +195,25 @@ public class GameBoard extends AbstractBoard {
     }
 
     private void populateSkulls(@NotNull Game game) throws IOException {
-        for (int i = 0; i < game.getSkulls(); i++) {
-            var skull = new Sprite((int) (86 + 50.5 * i), 51, 60, 60, Utils.readPngImage(Game.class, "skull"));
-            skull.setTag("p:" + (int) (86 + 50.5 * i) + ",51");
+        var mask = Utils.readPngImage(Player.class, "mark");
+        for (var i = 0; i < game.getSkulls(); i++) {
+            var skull = new Sprite((int) (436.5 - 50 * i), 51, 60, 60, Utils.readPngImage(Game.class, "skull"));
+            skull.setTag("p:" + (int) (436.5 - 50 * i) + ",51");
             skull.setDraggable(true);
             skull.fade(new LinearFadeInterpolator(0, 1, 1000) {
             });
             addSprite(skull);
+        }
+        //noinspection OptionalGetWithoutIsPresent
+        var killshots = game.getKillshotsTrack().stream().map(e -> game.getPlayers().parallelStream()
+                .filter(f -> e.equals(f.getUuid())).findAny().get()).map(Player::getBoardType).collect(Collectors.toList());
+        for (int i = 0, x = 86 * (9 - game.getStartingSkulls()); i < killshots.size(); i++, x += 50) {
+            var killshot = new Sprite(x, 51, 60, 60, applyColorToMask(mask, killshots.get(i).getColor()));
+            killshot.setTag("p:" + x + ",51");
+            killshot.setDraggable(true);
+            killshot.fade(new LinearFadeInterpolator(0, 1, 1000) {
+            });
+            addSprite(killshot);
         }
     }
 
@@ -212,17 +221,19 @@ public class GameBoard extends AbstractBoard {
         var random = new SecureRandom();
         addAllSprite(game.getPlayers().parallelStream().filter(e -> e.getPosition() != null).map(e -> {
             var optSprite = getSprites().parallelStream().filter(f -> f.getAssociatedObject() instanceof Player && f.getAssociatedObject().equals(e)).findAny();
-            var x = 250 + e.getPosition().x * 220;
-            var y = 210 + e.getPosition().y * 190;
+            var x = 250 + e.getPosition().x * 220 - 30 + random.nextInt(60);
+            var y = 210 + e.getPosition().y * 190 + random.nextInt(60);
             if (optSprite.isPresent()) {
                 optSprite.get().moveTo(new LinearPointInterpolator(optSprite.get().getPosition(), new Point(x, y), 250) {
                 });
                 return optSprite.get();
             }
             try {
-                var sprite = new Sprite(x, y, 80, 80, Utils.readPngImage(Game.class, "skull"));
-                sprite.setTag("p:" + x + "," + y);
+                var sprite = new Sprite(x, y, 80, 80, e.getFrontImage());
+                sprite.setTag("p:" + x + "," + y + ";static");
                 sprite.setDraggable(true);
+                sprite.fade(new LinearFadeInterpolator(0, 1, 1000) {
+                });
                 sprite.setAssociatedObject(e);
                 return sprite;
             } catch (IOException ex) {
