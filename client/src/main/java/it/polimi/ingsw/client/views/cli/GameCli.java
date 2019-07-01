@@ -25,10 +25,18 @@ public class GameCli {
 
     private static TypeCell[][] buildBoard(@NotNull Game game) {
         var cells = game.getCells();
-        var board = new TypeCell[Game.MAX_Y * 15][Game.MAX_X * 30];
+        var board = new TypeCell[Game.MAX_Y * 15][(Game.MAX_X * 30)];
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[i].length; j++) {
                 var cellCli = buildCell(cells[i][j]);
+                if (cells[i][j] != null) {
+                    cellCli[1][24].setCharacter('(');
+                    cellCli[1][25].setCharacter((char) (i + 48));
+                    cellCli[1][26].setCharacter(',');
+                    cellCli[1][27].setCharacter((char) (j + 48));
+                    cellCli[1][28].setCharacter(')');
+                }
+
                 for (int u = 0; u < game.getPlayers().size(); u++) {
                     if (game.getPlayers().get(u).getPosition() != null && game.getPlayers().get(u).getPosition().getX() == i && game.getPlayers().get(u).getPosition().getY() == j) {
                         cellCli[4 + u][15].setAll('P', game.getPlayers().get(u).getBoardType().escape());
