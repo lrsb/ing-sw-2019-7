@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * This class is composed of three decks that contains the playable, exited ( on the game board or in players' hand)
- * and discarded (already used and need to be reshuffled) cards.
+ * This class is composed of three decks that contains the playable, exited (on the game board or in players' hand)
+ * and discarded (already used and needed to be reshuffled) cards.
  *
  * @param <T> Indicates the type of cards in the deck.
  */
@@ -36,7 +36,7 @@ public class Deck<T extends Serializable> implements Serializable {
      * Creates a new Deck.
      *
      * @param cards       The cards included in the deck.
-     * @param shuffleable true if the deck is shuffleable when finished.
+     * @param shuffleable true if the deck is shuffleable when there are no drawable.
      * @throws EmptyDeckException Thrown when {@code cards} is empty.
      */
     Deck(@NotNull List<T> cards, boolean shuffleable) {
@@ -104,9 +104,9 @@ public class Deck<T extends Serializable> implements Serializable {
     }
 
     /**
-     * Returns the number of playable cards.
+     * Returns the number of cards still drawable.
      *
-     * @return The number of playable cards.
+     * @return The number of cards still drawable.
      */
     @Contract(pure = true)
     public int remainedCards() {
@@ -129,9 +129,9 @@ public class Deck<T extends Serializable> implements Serializable {
         }
 
         /**
-         * New ammo deck deck.
+         * Builds the tiles' deck
          *
-         * @return the deck
+         * @return the tiles' deck
          */
         @Contract(" -> new")
         public static @NotNull Deck<AmmoCard> newAmmoDeck() {
@@ -151,9 +151,9 @@ public class Deck<T extends Serializable> implements Serializable {
         }
 
         /**
-         * New power ups deck deck.
+         * Build the powerups' deck
          *
-         * @return the deck
+         * @return the powerups' deck
          */
         @Contract(" -> new")
         public static @NotNull Deck<PowerUp> newPowerUpsDeck() {
@@ -165,9 +165,9 @@ public class Deck<T extends Serializable> implements Serializable {
         }
 
         /**
-         * New weapons deck deck.
+         * Build the weapons' deck
          *
-         * @return the deck
+         * @return the weapons' deck
          */
         @Contract(" -> new")
         public static @NotNull Deck<Weapon> newWeaponsDeck() {

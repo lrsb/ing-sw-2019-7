@@ -192,9 +192,6 @@ public class GameImpl extends Game implements Serializable {
         }
     }
 
-    /**
-     * when the game ends distributes the lasts points to players
-     */
     private void finalPointsRedistribution() {
         players.parallelStream().filter(e -> !e.getDamagesTaken().isEmpty()).forEachOrdered(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
                 .filter(g -> g.getUuid() == f).forEachOrdered(g -> {
@@ -484,6 +481,9 @@ public class GameImpl extends Game implements Serializable {
         }
     }
 
+    /**
+     * Creator
+     */
     public static class Creator {
         @Contract(pure = true)
         private Creator() {
