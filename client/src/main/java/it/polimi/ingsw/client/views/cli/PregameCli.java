@@ -13,9 +13,17 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.stream.Collectors;
 
+/**
+ * The class that contains all the views that are displayed before that the game begin
+ */
 public class PregameCli {
     private static Room room;
 
+    /**
+     * Display the view that represent the main menu
+     *
+     * @return The next view
+     */
     public static @NotNull Segue mainMenu() {
         System.out.println("Adrenalina");
         System.out.println(" ");
@@ -41,6 +49,10 @@ public class PregameCli {
         }
     }
 
+    /**
+     * Display the view that allow to create a new game and set up all the settings
+     * @return The next view
+     */
     public static @NotNull Segue newGame() {
         System.out.println("NUOVA PARTITA");
         System.out.println(" ");
@@ -102,6 +114,10 @@ public class PregameCli {
         return Segue.of("newGame");
     }
 
+    /**
+     * Display the view that allow to choose between all the available games that are currently running on the server
+     * @return The next view
+     */
     public static @NotNull Segue joinGame() {
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
         try {
@@ -155,6 +171,11 @@ public class PregameCli {
         return Segue.of("joinGame");
     }
 
+    /**
+     * The view that allow to continually update the lobby
+     * @param room the actual room
+     * @return The next view
+     */
     public static @NotNull Segue preLobby(@NotNull Room room) {
         PregameCli.room = room;
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
@@ -169,6 +190,10 @@ public class PregameCli {
         return Segue.of("lobby");
     }
 
+    /**
+     * The view that allow to pass between the lobby and the game
+     * @return The next view
+     */
     public static @NotNull Segue postLobby() {
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
         try {
@@ -183,6 +208,12 @@ public class PregameCli {
         }
     }
 
+    /**
+     * The cli lobby
+     * @return The next view
+     * @throws InterruptedException
+     * @throws IOException
+     */
     public static @NotNull Segue lobby() throws InterruptedException, IOException {
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
         System.out.println("LOBBY");

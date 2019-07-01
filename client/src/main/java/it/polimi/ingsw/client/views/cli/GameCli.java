@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.common.models.Cell.Color.*;
 
+/**
+ *
+ */
 public class GameCli {
     private static Game game;
 
@@ -50,7 +53,7 @@ public class GameCli {
             for (int j = 0; j < 30; j++) {
                 cellCli[i][j] = new TypeCell();
                 cellCli[i][j].setCharacter(' ');
-        }
+            }
         if (cell != null) {
             var northBound = cell.getBounds().getType(Bounds.Direction.N);
             var southBound = cell.getBounds().getType(Bounds.Direction.S);
@@ -274,14 +277,14 @@ public class GameCli {
         game.getKillshotsTrack().forEach(e -> game.getPlayers().parallelStream().filter(f -> f.getUuid().equals(e))
                 .forEach(f -> System.out.print(f.getBoardType().escape() + "■ " + "\u001b[0m")));
         System.out.println();
-        System.out.print(RED.escape() + "Armi SP rosso: " + "\u001b[0m" + game.getWeapons(RED).stream()
-                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m" + " ").collect(Collectors.joining(", ")));
+        System.out.print(RED.escape() + "■ " + "\u001b[0m" + "Armi SP rosso: " + game.getWeapons(RED).stream()
+                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m").collect(Collectors.joining(", ")));
         System.out.println();
-        System.out.print(YELLOW.escape() + "Armi SP giallo: " + "\u001b[0m" + game.getWeapons(YELLOW).stream()
-                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m" + " ").collect(Collectors.joining(", ")));
+        System.out.print(YELLOW.escape() + "■ " + "\u001b[0m" + "Armi SP giallo: " + game.getWeapons(YELLOW).stream()
+                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m").collect(Collectors.joining(", ")));
         System.out.println();
-        System.out.print(BLUE.escape() + "Armi SP blu: " + "\u001b[0m" + game.getWeapons(BLUE).stream()
-                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m" + " ").collect(Collectors.joining(", ")));
+        System.out.print(BLUE.escape() + "■ " + "\u001b[0m" + "Armi SP blu: " + game.getWeapons(BLUE).stream()
+                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m").collect(Collectors.joining(", ")));
         System.out.println();
         System.out.println();
         System.out.println("_____________________________________________________________________________");
@@ -328,16 +331,6 @@ public class GameCli {
 
         }
 
-    }
-
-    private void actionMenu(@NotNull Game game) {
-        if (game.getActualPlayer().getPosition() == null) {
-            System.out.println("Scegli quale powerup scartare per spawnare");
-            for (int i = 0; i < game.getActualPlayer().getPowerUps().size(); i++) {
-                System.out.println((i + 1) + ": " + game.getActualPlayer().getPowerUps().get(i).getAmmoColor().escape()
-                        + game.getActualPlayer().getPowerUps().get(i).getType().name() + "\u001b[0m");
-            }
-        }
     }
 
     @Contract(pure = true)

@@ -14,9 +14,17 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.Scanner;
 
+/**
+ * The class that contains all the method that displays all the views to setup the cli game
+ */
 public class StartupCli {
     public static @NotNull Scanner in = new Scanner(System.in);
 
+    /**
+     * Display the view that allow to choose the connection type between the available ones
+     *
+     * @return The next view
+     */
     public static @NotNull Segue connType() {
         System.out.println("Ciao, benvenuto in Adrenalina, come vuoi effettuare la connessione?");
         System.out.println("1: SOCKET");
@@ -52,6 +60,10 @@ public class StartupCli {
         else return Segue.of("login");
     }
 
+    /**
+     * Display the view that allow to log in
+     * @return The next view
+     */
     public static @NotNull Segue login() {
         System.out.println("Inserisci il tuo nickname o * per registrarti");
         var nickname = in.nextLine();
@@ -72,6 +84,10 @@ public class StartupCli {
         }
     }
 
+    /**
+     * Display the view that allow to sign up
+     * @return The next view
+     */
     public static @NotNull Segue signup() {
         System.out.println("Inserisci il nickname col quale ti vuoi registrare");
         var nickname = in.nextLine();
@@ -88,6 +104,10 @@ public class StartupCli {
         return Segue.of("signup");
     }
 
+    /**
+     * The method called by the client
+     * @return The next view
+     */
     @Contract(pure = true)
     public static @NotNull Segue start() {
         return Segue.of("connType");

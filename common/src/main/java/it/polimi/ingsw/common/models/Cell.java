@@ -119,17 +119,30 @@ public class Cell implements Serializable {
             this.escape = escape;
         }
 
+        /**
+         * This method allow to get the escape code of each color
+         *
+         * @return The color as an escape ascii code
+         */
         @Contract(pure = true)
         public @NotNull String escape() {
             return escape;
         }
     }
 
+    /**
+     * The class that allow to create a game cell
+     */
     public static class Creator {
         private @Nullable Bounds bounds;
         private @Nullable Color color;
         private boolean spawnPoint = false;
 
+        /**
+         * This method allow to create a cell's creator
+         * @param boundsString The cell's informations as a string
+         * @return The creator of the cell
+         */
         public static Creator withBounds(@NotNull String boundsString) {
             var creator = new Creator();
             creator.bounds = new Bounds(Bounds.Type.SAME_ROOM, Bounds.Type.SAME_ROOM, Bounds.Type.SAME_ROOM, Bounds.Type.SAME_ROOM);
@@ -166,16 +179,29 @@ public class Cell implements Serializable {
             return creator;
         }
 
+        /**
+         * Used to change the creator's color
+         * @param color the color that we want to set
+         * @return The modified creator
+         */
         public @NotNull Creator color(Color color) {
             this.color = color;
             return this;
         }
 
+        /**
+         * Used to set the cell as a spawnpoint
+         * @return The creator
+         */
         public @NotNull Creator spawnPoint() {
             this.spawnPoint = true;
             return this;
         }
 
+        /**
+         * Used to create a cell from a creator
+         * @return The cell
+         */
         public @Nullable Cell create() {
             return bounds != null && color != null ? new Cell(color, bounds, spawnPoint) : null;
         }

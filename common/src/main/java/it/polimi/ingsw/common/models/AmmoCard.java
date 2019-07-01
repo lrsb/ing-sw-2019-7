@@ -132,7 +132,7 @@ public class AmmoCard implements Displayable, Serializable {
         /**
          * Blue color.
          */
-        BLUE(2, "\u001B[36m");
+        BLUE(2, "\u001b[38;5;34m");
 
         private int index;
 
