@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.common.models.Cell.Color.*;
 
+@SuppressWarnings("UnusedReturnValue")
 public class GameCli {
     private static Game game;
 
@@ -35,7 +36,8 @@ public class GameCli {
                 }
 
                 for (int u = 0; u < game.getPlayers().size(); u++) {
-                    if (game.getPlayers().get(u).getPosition() != null && game.getPlayers().get(u).getPosition().getX() == i && game.getPlayers().get(u).getPosition().getY() == j) {
+                    var position = game.getPlayers().get(u).getPosition();
+                    if (position != null && position.getX() == i && position.getY() == j) {
                         cellCli[4 + u][15].setAll('P', game.getPlayers().get(u).getBoardType().escape());
                         cellCli[4 + u][16].setAll('l', game.getPlayers().get(u).getBoardType().escape());
                         cellCli[4 + u][17].setAll('a', game.getPlayers().get(u).getBoardType().escape());
@@ -298,7 +300,7 @@ public class GameCli {
     private static void playerInfo(@NotNull Game game) {
         System.out.println("informazioni sui giocatori");
         System.out.println("_____________________________________________________________________________");
-        System.out.printf("%1s %15s %1s %5s %10s %8s %18s", "", "NOME", "", "VAL BOARD", "MUN R - Y - B", "MORTI", "PUNTI ACCUMULATI"); //TODO fix spazi
+        System.out.printf("%1s %15s %1s %5s %10s %8s %18s", "", "NOME", "", "VAL BOARD", "MUN R - Y - B", "MORTI", "PUNTI ACCUMULATI");
         System.out.println();
         game.getPlayers().forEach(e -> {
             System.out.printf("%1s %15s %1s %10s %14s %8s %12s", e.getBoardType().escape(), e.getNickname(), "\u001b[0m", e.getMaximumPoints(),
@@ -322,6 +324,7 @@ public class GameCli {
 
     public static void printGame(@NotNull Game game) {
         var board = buildBoard(game);
+        //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 System.out.print(board[i][j].getColor());
@@ -333,7 +336,7 @@ public class GameCli {
         boardInfo(game);
         playerInfo(game);
         if (game.getActualPlayer().getUuid().equals(Preferences.getUuid())) {
-
+            //TODO
         }
 
     }

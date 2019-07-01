@@ -17,6 +17,7 @@ import java.util.Scanner;
 /**
  * The class that contains all the method that displays all the views to setup the cli game
  */
+@SuppressWarnings("unused")
 public class StartupCli {
     public static @NotNull Scanner in = new Scanner(System.in);
 
