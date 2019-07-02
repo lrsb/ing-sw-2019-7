@@ -36,9 +36,10 @@ public class Client {
                 default:
                 case "--help":
                 case "-h":
-                    System.out.println("Adrenaline board game client\n");
+                    System.out.println("Adrenaline board game client");
+                    System.out.println();
                     System.out.println("Option Meaning");
-                    System.out.println("-w     Run client with web server located at: ing-sw-2019-7.herokuapp.com");
+                    System.out.println("-w     Run client in GUI mode with web server located at: ing-sw-2019-7.herokuapp.com");
                     System.out.println("-c     Run client with CLI interface");
                     return;
                 case "-w":
