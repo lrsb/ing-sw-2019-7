@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class CliMenuManager {
-    public static <T> void startCli(@NotNull Class<T> aClass, boolean withFollettina) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
+    public static <T> void startCli(@NotNull Class<T> aClass, boolean withFollettina) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         @Nullable Clip clip = null;
         if (withFollettina) try {
             clip = AudioSystem.getClip();
@@ -29,7 +29,7 @@ public class CliMenuManager {
         if (clip != null) clip.stop();
     }
 
-    private static void invoke(@NotNull Method method, @Nullable Object object) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
+    private static void invoke(@NotNull Method method, @Nullable Object object) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         System.out.print("\033[H\033[2J");
         System.out.flush();
         @NotNull Object result;
@@ -46,6 +46,6 @@ public class CliMenuManager {
                     invoke(method.getDeclaringClass().getMethod(segue.getMenu(), segue.getObject().getClass()), segue.getObject());
                 else invoke(method.getDeclaringClass().getMethod(segue.getMenu()), null);
             }
-        } else throw new IllegalArgumentException("You must return a segue");
+        }
     }
 }
