@@ -207,9 +207,9 @@ public class GameBoard extends AbstractBoard {
         //noinspection OptionalGetWithoutIsPresent
         var killshots = game.getKillshotsTrack().stream().map(e -> game.getPlayers().parallelStream()
                 .filter(f -> e.equals(f.getUuid())).findAny().get()).map(Player::getBoardType).collect(Collectors.toList());
-        for (int i = 0, x = 86 * (9 - game.getStartingSkulls()); i < killshots.size(); i++, x += 50) {
-            var killshot = new Sprite(x, 51, 60, 60, applyColorToMask(mask, killshots.get(i).getColor()));
-            killshot.setTag("p:" + x + ",51");
+        for (int i = 0, x = 96 + 50 * (8 - game.getStartingSkulls()); i < killshots.size(); i++, x += 50) {
+            var killshot = new Sprite(x, 56, 35, 50, applyColorToMask(mask, killshots.get(i).getColor()));
+            killshot.setTag("p:" + x + ",56");
             killshot.setDraggable(true);
             killshot.fade(new LinearFadeInterpolator(0, 1, 1000) {
             });

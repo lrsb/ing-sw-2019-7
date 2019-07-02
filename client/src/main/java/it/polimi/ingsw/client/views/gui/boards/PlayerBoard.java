@@ -28,7 +28,7 @@ public class PlayerBoard extends AbstractBoard {
         var damages = player.getDamagesTaken().stream().map(e -> game.getPlayers().parallelStream()
                 .filter(f -> e.equals(f.getUuid())).findAny().get()).map(Player::getBoardType).collect(Collectors.toList());
         if (player.isEasyBoard()) {
-            for (var i = 0; i < 12; i++) {
+            for (var i = 0; i < damages.size(); i++) {
                 var x = 139 + i * 66;
                 var damage = new Sprite(x, 368, 30, 45, applyColorToMask(mask, damages.get(i).getColor()));
                 damage.setTag("p:" + x + ",368");

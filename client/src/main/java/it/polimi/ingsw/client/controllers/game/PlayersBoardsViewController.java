@@ -19,7 +19,7 @@ public class PlayersBoardsViewController extends BaseViewController {
     private JTabbedPane tabbedPane;
 
     public PlayersBoardsViewController(@Nullable NavigationController navigationController, @NotNull Object... params) {
-        super("Plance", 900, 270, navigationController);
+        super("Plance", 850, 270, navigationController);
         setContentPane(panel);
         //noinspection ComparatorMethodParameterNotUsed
         ((Game) params[0]).getPlayers().parallelStream().sorted((e, f) -> e.getUuid().equals(Preferences.getUuid()) ? 1 : 0).forEachOrdered(e -> {

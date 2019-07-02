@@ -1,309 +1,306 @@
 {
-  "cli": {
-    "select_action": "Scegli la mossa da effettuare:\n",
-    "possible_actions": {
-      "standard_actions": "1. Muoviti\n2. Raccogli ammocard\n3. Raccogli arma\n4. Spara\n5. Usa power up\n6. Passa il turno\n",
-      "last_standard_actions": "1. Usa power up\n2. Ricarica arma\n3. Passa il turno\n",
-      "frenzy_actions": "1. Muoviti\n2. Raccogli ammocard\n3. Raccogli arma\n4. Eventualmente ricarica, e spara\n5. Usa power up\n6. Passa il turno\n",
-      "last_turn_actions": "1. Raccogli ammocard\n2. Raccogli arma\n3. Eventualmente ricarica, e spara\n4. Usa power up\n5. Passa il turno\n"
-    },
-    "actions": {
-      "alternative_payment": "Seleziona le power ups che vuoi utilizzare come pagamento alternativo:\n",
-      "move_action": {
-        "select_square": "Scegli la cella nella quale desideri spostarti:\n",
-        "standard_move": "Puoi muoverti di massimo 3 caselle\n",
-        "frenzy_move": "Puoi muoverti di massimo 4 caselle\n",
-        "move_message": " si muove in "
-      },
-      "grab_action": {
-        "grab_move1": "Puoi muoverti di 1 casella al massimo\n",
-        "grab_move2": "Puoi muoverti di 2 caselle al massimo\n",
-        "grab_move3": "Puoi muoverti di 3 caselle al massimo\n",
-        "grab_ammo_square": "Scegli la cella nella quale desideri raccogliere l'ammocard:\n",
-        "grab_weapon": {
-          "select_square": "Scegli la cella spawnpoint nella quale desideri recuperare l'arma:\n1. Spawnpoint Rosso\n2. Spawnpoint Giallo\n3. Spawnpoint Blu\n",
-          "select_weapon": "Scegli l'arma da raccogliere:\n",
-          "discard_weapon": "Hai già 3 armi, quale arma vuoi scartare per far spazio?\n",
-          "alternative_payment_request": "Vuoi utilizzare delle power ups per pagare il costo per raccogliere l'arma?\n1. Sì\n2. No\n"
+    "cli": {
+        "select_action": "Scegli la mossa da effettuare:\n",
+        "possible_actions": {
+            "standard_actions": "1. Muoviti\n2. Raccogli ammocard\n3. Raccogli arma\n4. Spara\n5. Usa power up\n6. Passa il turno\n",
+            "last_standard_actions": "1. Usa power up\n2. Ricarica arma\n3. Passa il turno\n",
+            "frenzy_actions": "1. Muoviti\n2. Raccogli ammocard\n3. Raccogli arma\n4. Eventualmente ricarica, e spara\n5. Usa power up\n6. Passa il turno\n",
+            "last_turn_actions": "1. Raccogli ammocard\n2. Raccogli arma\n3. Eventualmente ricarica, e spara\n4. Usa power up\n5. Passa il turno\n"
         },
-        "grab_message": " ha raccolto "
-      },
-      "fire_action": {
-        "reload_before_shoot": "Ricorda che puoi utilizzare anche un'arma scarica, ma dovrai pagarne il prezzo.\n",
-        "move1_before_shoot_request": "Puoi muoverti di 1 casella prima di sparare.\n Vuoi muoverti?\n1. Sì\n2. No\n",
-        "move2_before_shoot_request": "Puoi muoverti di 2 caselle prima di sparare.\n Vuoi muoverti?\n1. Sì\n2. No\n",
-        "select_move_square": "Scegli la cella nella quale desideri spostarti prima di sparare:\n",
-        "alternative_payment_request": "Vuoi utilizzare delle power ups come pagamento alternativo ai prezzi che potresti pagare?\n1. Sì\n2. No\n",
-        "select_weapon": "Seleziona l'arma con la quale vuoi fare fuoco:\n",
-        "select_fire_mode": {
-          "standard_message": "Scegli la modalità di fuoco:\n",
-          "lock_rifle": "1. basic effect\n2. basic effect + with second lock (costo: 1 cubo blu)\n",
-          "machine_gun": "1. basic effect\n2. basic effect + with focus shot (costo: 1 cubo giallo)\n3. basic effect + with turret tripod (costo: 1 cubo blu)\n4. basic effect + with focus shot + with turret tripod (costo: 1 cubo giallo + 1 cubo blu)\n",
-          "thor": "1. basic effect\n2. basic effect + with chain reaction (costo: 1 cubo blu)\n3. basic effect + with chain reaction + with high voltage (costo: 2 cubi blu)\n",
-          "plasma_gun": "1. basic effect\n2. basic effect + with charged shot (costo: 1 cubo blu)\nNota: \"with phase glide\" sarà compreso nella richiesta dei dettagli di fuoco\n",
-          "whisper": "1. effect\n",
-          "electroscythe": "1. basic mode\n2. reaper mode (costo: 1 cubo rosso + 1 cubo blu)\n",
-          "tractor_beam": "1. basic mode\n2. punisher mode (costo: 1 cubo rosso + 1 cubo giallo)\n",
-          "vortex_cannon": "1. basic effect\n2. basic effect + with black hole (costo: 1 cubo rosso)\n",
-          "furnace": "1. basic mode\n2. cozy fire mode\n",
-          "heatseeker": "1. effect\n",
-          "hellion": "1. basic mode\n2. nano-tracer mode (costo: 1 cubo rosso)\n",
-          "flamethrower": "1. basic mode\n2. barbecue mode (costo: 2 cubi gialli)\n",
-          "grenade launcher": "1. basic effect\n2. basic effect + with extra grenade (costo: 1 cubo rosso)\n",
-          "rocket_launcher": "1. basic effect\n2. basic effect + with rocke jump (costo: 1 cubo blu)\n3. basic effect + with fragmenting warhead (costo: 1 cubo giallo)\n4. basic effect + with rocket jump + with fragmenting warhead (costo: 1 cubo giallo + 1 cubo blu)\n",
-          "railgun": "1. basic mode\n2. piercing mode\n",
-          "cyberblade": "1. basic effect\n2. basic effect + with slice and dice (costo: 1 cubo giallo)\nNota: \"with shadowstep\" sarà già compreso nella richiesta dei dettagli di fuoco\n",
-          "zx2": "1. basic mode\n2. scanner mode\n",
-          "shotgun": "1. basic mode\n2. long barrel mode\n",
-          "power_glove": "1. basic mode\n2. rocket fist mode (costo: 1 cubo blu)\n",
-          "shockwave": "1. basic mode\n2. tsunami mode (costo: 1 cubo giallo)\n",
-          "sledgehammer": "1. basic mode\n2. pulverize mode (costo: 1 cubo rosso)\n"
+        "actions": {
+            "alternative_payment": "Seleziona le power ups che vuoi utilizzare come pagamento alternativo:\n",
+            "move_action": {
+                "select_square": "Scegli la cella nella quale desideri spostarti:\n",
+                "standard_move": "Puoi muoverti di massimo 3 caselle\n",
+                "frenzy_move": "Puoi muoverti di massimo 4 caselle\n",
+                "move_message": " si muove in "
+            },
+            "grab_action": {
+                "grab_move1": "Puoi muoverti di 1 casella al massimo\n",
+                "grab_move2": "Puoi muoverti di 2 caselle al massimo\n",
+                "grab_move3": "Puoi muoverti di 3 caselle al massimo\n",
+                "grab_ammo_square": "Scegli la cella nella quale desideri raccogliere l'ammocard:\n",
+                "grab_weapon": {
+                    "select_square": "Scegli la cella spawnpoint nella quale desideri recuperare l'arma:\n1. Spawnpoint Rosso\n2. Spawnpoint Giallo\n3. Spawnpoint Blu\n",
+                    "select_weapon": "Scegli l'arma da raccogliere:\n",
+                    "discard_weapon": "Hai già 3 armi, quale arma vuoi scartare per far spazio?\n",
+                    "alternative_payment_request": "Vuoi utilizzare delle power ups per pagare il costo per raccogliere l'arma?\n1. Sì\n2. No\n"
+                },
+                "grab_message": " ha raccolto "
+            },
+            "fire_action": {
+                "reload_before_shoot": "Ricorda che puoi utilizzare anche un'arma scarica, ma dovrai pagarne il prezzo.\n",
+                "move1_before_shoot_request": "Puoi muoverti di 1 casella prima di sparare.\n Vuoi muoverti?\n1. Sì\n2. No\n",
+                "move2_before_shoot_request": "Puoi muoverti di 2 caselle prima di sparare.\n Vuoi muoverti?\n1. Sì\n2. No\n",
+                "select_move_square": "Scegli la cella nella quale desideri spostarti prima di sparare:\n",
+                "alternative_payment_request": "Vuoi utilizzare delle power ups come pagamento alternativo ai prezzi che potresti pagare?\n1. Sì\n2. No\n",
+                "select_weapon": "Seleziona l'arma con la quale vuoi fare fuoco:\n",
+                "select_fire_mode": {
+                    "standard_message": "Scegli la modalità di fuoco:\n",
+                    "lock_rifle": "1. basic effect\n2. basic effect + with second lock (costo: 1 cubo blu)\n",
+                    "machine_gun": "1. basic effect\n2. basic effect + with focus shot (costo: 1 cubo giallo)\n3. basic effect + with turret tripod (costo: 1 cubo blu)\n4. basic effect + with focus shot + with turret tripod (costo: 1 cubo giallo + 1 cubo blu)\n",
+                    "thor": "1. basic effect\n2. basic effect + with chain reaction (costo: 1 cubo blu)\n3. basic effect + with chain reaction + with high voltage (costo: 2 cubi blu)\n",
+                    "plasma_gun": "1. basic effect\n2. basic effect + with charged shot (costo: 1 cubo blu)\nNota: \"with phase glide\" sarà compreso nella richiesta dei dettagli di fuoco\n",
+                    "whisper": "1. effect\n",
+                    "electroscythe": "1. basic mode\n2. reaper mode (costo: 1 cubo rosso + 1 cubo blu)\n",
+                    "tractor_beam": "1. basic mode\n2. punisher mode (costo: 1 cubo rosso + 1 cubo giallo)\n",
+                    "vortex_cannon": "1. basic effect\n2. basic effect + with black hole (costo: 1 cubo rosso)\n",
+                    "furnace": "1. basic mode\n2. cozy fire mode\n",
+                    "heatseeker": "1. effect\n",
+                    "hellion": "1. basic mode\n2. nano-tracer mode (costo: 1 cubo rosso)\n",
+                    "flamethrower": "1. basic mode\n2. barbecue mode (costo: 2 cubi gialli)\n",
+                    "grenade launcher": "1. basic effect\n2. basic effect + with extra grenade (costo: 1 cubo rosso)\n",
+                    "rocket_launcher": "1. basic effect\n2. basic effect + with rocke jump (costo: 1 cubo blu)\n3. basic effect + with fragmenting warhead (costo: 1 cubo giallo)\n4. basic effect + with rocket jump + with fragmenting warhead (costo: 1 cubo giallo + 1 cubo blu)\n",
+                    "railgun": "1. basic mode\n2. piercing mode\n",
+                    "cyberblade": "1. basic effect\n2. basic effect + with slice and dice (costo: 1 cubo giallo)\nNota: \"with shadowstep\" sarà già compreso nella richiesta dei dettagli di fuoco\n",
+                    "zx2": "1. basic mode\n2. scanner mode\n",
+                    "shotgun": "1. basic mode\n2. long barrel mode\n",
+                    "power_glove": "1. basic mode\n2. rocket fist mode (costo: 1 cubo blu)\n",
+                    "shockwave": "1. basic mode\n2. tsunami mode (costo: 1 cubo giallo)\n",
+                    "sledgehammer": "1. basic mode\n2. pulverize mode (costo: 1 cubo rosso)\n"
+                },
+                "weapon_usage_message": " usa "
+            },
+            "use_power_up_action": {
+                "select_power_up": "Seleziona la power up che desideri utilizzare:\n",
+                "targeting_scope": {
+                    "select_target": "Seleziona un bersaglio che hai appena colpito al quale infliggere un danno aggiuntivo:\n",
+                    "message": " usa \"Targeting Scope\" per infliggere 1 danno aggiuntivo a "
+                },
+                "newton": {
+                    "select_target": "Seleziona il bersaglio che vuoi spostare:\n",
+                    "select_square": "Seleziona la cella in cui desideri spostare il bersaglio:\n",
+                    "message": " usa \"Newton\" per spostare "
+                },
+                "teleporter": {
+                    "select_square": "Seleziona la cella in cui desideri teletrasportarti:\n",
+                    "message": " usa \"Teleporter\" per teletrasportarsi "
+                }
+            },
+            "reload_action": {
+                "select_weapon": "Seleziona l'arma che desideri ricaricare:\n",
+                "alternative_payment_request": "Vuoi utilizzare delle power ups come pagamento alternativo per ricaricare l'arma?\n1. Sì\n2. No\n",
+                "reload_message": " ricarica "
+            },
+            "reborning_action": "Scegli una power up da scartare per rinascere:\n",
+            "reborn_message": " respawna nello spawnpoint ",
+            "tagback_response_action": "Hai la possibilità di rispondere al fuoco con una tagback grenade:\n1. Usa una tagback grenade\n2. Non rispondere al fuoco\n",
+            "tagback_message": " usa \"Tagback Grenade\" su "
         },
-        "weapon_usage_message": " usa "
-      },
-      "use_power_up_action": {
-        "select_power_up": "Seleziona la power up che desideri utilizzare:\n",
-        "targeting_scope": {
-          "select_target": "Seleziona un bersaglio che hai appena colpito al quale infliggere un danno aggiuntivo:\n",
-          "message": " usa \"Targeting Scope\" per infliggere 1 danno aggiuntivo a "
+        "weapons_details": {
+            "lock_rifle": {
+                "grab_cost": "1 cubo blu\n",
+                "reload_cost": "2 cubi blu\n",
+                "fire_description": "basic effect: infliggi 2 danni e assegna 1 marchio a 1 bersaglio che puoi vedere.\nwith second lock: assegna 1 marchio a 1 bersaglio (differente dal bersaglio scelto per il \"basic effect\") che puoi vedere (costo: 1 cubo rosso)\n",
+                "fire_details": {
+                    "select_target_basic_effect": "Seleziona 1 bersaglio per il \"basic effect\":\n",
+                    "select_target_second_lock": "Seleziona 1 bersaglio per il \"second lock\":\n"
+                },
+                "fire_messages": {
+                    "basic_effect_bn": " colpisce col \"basic effect\" ",
+                    "basic_effect_an": " infliggendogli 2 danni e assegnandogli 1 marchio",
+                    "second_lock": " sfrutta il \"Second Lock\" per assegnare 1 marchio a "
+                }
+            },
+            "machine_gun": {
+                "grab_cost": "1 cubo rosso\n",
+                "reload_cost": "1 cubo rosso + 1 cubo blu\n",
+                "fire_description": "basic effect: scegli fino a 2 bersagli che puoi vedere, infliggi a ciascuno 1 danno.\nwith focus shoot: scegli uno dei due bersagli scelti per il \"basic effect\" e infliggigli 1 danno addizionale (costo: 1 cubo giallo).\nwith turret tripod: scegli un bersaglio tra quelli scelti per il \"basic effect\" (se usi il \"with focus shot\" non puoi scegliere lo stesso bersaglio) e/o un altro bersaglio che puoi vedere (differente da quelli già selezionati), infliggi a ciascun bersaglio scelto per questo effetto 1 danno addizionale (costo: 1 cubo blu)\n",
+                "fire_details": {
+                    "select_targets_basic_effect": "Seleziona il/i bersaglio/i del \"basic effect\":\n",
+                    "select_target_focus_shot": "Seleziona il bersaglio del \"focus shot\":\n",
+                    "select_targets_turret_tripod": "Seleziona il/i bersaglio/i del \"tripod turret\":\n"
+                },
+                "fire_messages": {
+                    "basic_effect_bn": " colpisce col \"basic effect\" ",
+                    "basic_effect_an": " infliggendo al bersaglio 1 danno",
+                    "focus_shot": " sfrutta il \"Focus Shot\" per infliggere 1 danno aggiuntivo a ",
+                    "turret_tripod": " sfrutta il \"Turret Tripod\" per infliggere 1 danno a "
+                }
+            },
+            "thor": {
+                "grab_cost": "1 cubo rosso\n",
+                "reload_cost": "1 cubo rosso + 1 cubo blu\n",
+                "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio che puoi vedere\nwith chain reaction: infliggi 1 danno a un bersaglio visibile al bersaglio del \"basic effect\" (costo: 1 cubo blu)\nwith high voltage: infliggi 2 danni a un bersaglio visibile al bersaglio del \"with chain reaction\" (non può essere il bersaglio del \"basic effect\") (costo: 1 cubo blu)\nNota: non puoi usare l'effetto \"high voltage\" senza usare l'effetto \"chain reaction\"\n",
+                "fire_details": {
+                    "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
+                    "select_target_chain_reaction": "Seleziona il bersaglio del \"chain reaction\":\n",
+                    "select_target_high_voltage": "Seleziona il/i bersaglio/i dell' \"high voltage\":\n"
+                },
+                "fire_messages": {
+                    "basic_effect_bn": " colpisce col \"basic effect\" ",
+                    "basic_effect_an": " infliggendogli 2 danni\n"
+                }
+            },
+            "plasma_gun": {
+                "grab_cost": "1 cubo giallo\n",
+                "reload_cost": "1 cubo giallo + 1 cubo blu\n",
+                "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio che puoi vedere\nwith phase glide: effettua fino a 2 passi prima o dopo aver usato il \"basic effect\" (costo: gratuito)\nwith charged shot: infliggi 1 danno addizionale al bersaglio del \"basic effect\" (costo: 1 cubo blu)\n",
+                "fire_details": {
+                    "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
+                    "select_point_phase_glide": "Seleziona una cella in cui spostarti prima o dopo il fuoco:\n"
+                }
+            },
+            "whisper": {
+                "grab cost": "1 cubo giallo + 1 cubo blu\n",
+                "reload cost": "1 cubo giallo + 2 cubi blu\n",
+                "fire_description": "effect: infliggi 3 danni e assegna 1 marchio a 1 bersaglio che puoi vedere, ma almeno a 2 passi da te\n",
+                "fire_details": {
+                    "select_target_effect": "Seleziona il bersaglio dell' \"effect\":\n"
+                }
+            },
+            "electroscythe": {
+                "grab_cost": "gratuito\n",
+                "reload_cost": "1 cubo blu\n",
+                "fire_description": "basic mode: infliggi 1 danno a tutti gli altri giocatori presenti nella tua cella\nreaper mode: infliggi 2 danni a tutti gli altri giocatori presenti nella tua cella (costo: 1 cubo rosso + 1 cubo blu)\n"
+            },
+            "tractor_beam": {
+                "grab_cost": "gratuito\n",
+                "reload_cost": "1 cubo blu\n",
+                "fire_description": "basic mode: muovi un bersaglio di 0,1 o 2 passi e infliggigli 1 danno (funziona solo se dopo lo spostamento puoi vederlo)\npunisher mode: scegli un bersaglio che può raggiungere la tua posizione con 0,1 o 2 passi, muovilo nella tua cella e infliggigli 3 danni (costo: 1 cubo rosso + 1 cubo giallo)\n",
+                "fire_details": {
+                    "select_target": "Seleziona il tuo bersaglio:\n",
+                    "select_point_basic_mode": "Seleziona la cella nella quale vuoi spostare il tuo bersaglio:\n"
+                }
+            },
+            "vortex_cannon": {
+                "grab_cost": "1 cubo blu\n",
+                "reload_cost": " 1 cubo rosso + 1 cub blu\n",
+                "fire_description": "basic effect: scegli 1 casella che puoi vedere, questa sarà \"il vortice\", scegli 1 bersaglio nel vortice o ad 1 passo da esso, muovilo nel vortice e infliggigli 2 danni\nwith black hole: scegli fino ad altri 2 bersagli (differenti da quello scelto per il \"basic effect\") che si trovano nel vortice o ad 1 passo da esso, muovili nel vortice e infliggi ad ognuno 1 danno (costo: 1 cubo rosso)\n",
+                "fire_details": {
+                    "select_the_vortex": "Seleziona \"il vortice\":\n",
+                    "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
+                    "select_targets_black_hole": "Seleziona il/i bersaglio/i del \"black hole\":\n"
+                }
+            },
+            "furnace": {
+                "grab_cost": "1 cubo blu\n",
+                "reload_cost": "1 cubo rosso + 1 cubo blu\n",
+                "fire_description": "basic mode: scegli una stanza che puoi vedere, ma non quella in cui ti trovi, infliggi 1 danno a tutti i giocatori all'interno della stanza scelta\ncozy fire mode: scegli 1 cella ad esattamente 1 passo da te, infliggi 1 danno e assegna 1 marchio a tutti i giocatori presenti nella cella scelta\n",
+                "fire_details": {
+                    "select_chamber": "Seleziona la stanza bersaglio del tuo attacco:\n",
+                    "select_square": "Seleziona la cella bersaglio del tuo attacco:\n"
+                }
+            },
+            "heatseeker": {
+                "grab_cost": "1 cubo rosso + 1 cubo giallo\n",
+                "reload_cost": "2 cubi rossi + 1 cubo giallo\n",
+                "fire_description": "effect: scegli 1 bersaglio che non puoi vedere e infliggigli 3 danni\n",
+                "fire_details": {
+                    "select_target_effect": "Seleziona il bersaglio dell' \"effect\":\n"
+                }
+            },
+            "hellion": {
+                "grab_cost": "1 cubo giallo\n",
+                "reload_cost": "1 cubo rosso + 1 cubo giallo\n",
+                "fire_description": "basic mode: infliggi 1 danno e assegna 1 marchio a 1 bersaglio che puoi vedere, ma non nella tua stessa posizione\nnano-tracer mode: scegli 1 bersaglio che puoi vedere, ma non nella tua stessa posizione, infliggigli 1 danno, poi assegna 2 marchi a tutti i giocatori che si trovano nella stessa cella del bersaglio di cui sopra, compreso il bersaglio principale stesso (costo: 1 cubo rosso)\n",
+                "fire_details": {
+                    "select_target": "Seleziona il bersaglio del tuo attacco:\n"
+                }
+            },
+            "flamethrower": {
+                "grab_cost": "gratuito\n",
+                "reload_cost": "1 cubo rosso\n",
+                "fire_description": "basic mode: scegli fino a 2 bersagli che rispetto a te si trovino nella stessa direzione (senza muri tra te e i bersagli), non nella tua stessa cella e, se più d'uno, non tra di loro nella stessa cella, ma al massimo a due passi da te, infliggi ai bersagli 1 danno ciascuno\nbarbecue mode: scegli 1 o 2 celle rispetto a te nella stessa direzione, non la tua stessa cella e non a più di 2 passi da te, ogni bersaglio che si trovi nella cella da te selezionata ad un passo di distanza subisce 2 danni, mentre ogni bersaglio si trovi a 2 passi da te subisce 1 danno (costo: 2 cubi gialli)\n",
+                "fire_details": {
+                    "select_targets": "Seleziona 1 o 2 bersagli per la \"basic mode\":\n",
+                    "select_point": "Seleziona la cella fino alla quale desideri incenerire i tuoi avversari:\n"
+                }
+            },
+            "grenade_launcher": {
+                "grab_cost": "gratuito\n",
+                "reload_cost": "1 cubo rosso",
+                "fire_description": "basic effect: infliggi 1 danno a 1 bersaglio che puoi vedere, poi puoi muoverlo di 1 passo\nwith extra grenade: scegli 1 cella che puoi vedere, infliggi 1 danno a tutti i giocatori presenti in quella casella (costo: 1 cubo rosso)\n",
+                "fire_details": {
+                    "select_target_basic_effect": "Seleziona il bersaglio del \"basic_effect\":\n",
+                    "select_point_basic_effect": "Seleziona la cella in cui spostare il bersaglio del \"basic effect\":\n",
+                    "select_point_extra_grenade": "Seleziona la cella da colpire con la \"granata extra\":\n"
+                }
+            },
+            "rocket_launcher": {
+                "grab_cost": "1 cubo rosso\n",
+                "reload_cost": "2 cubi rossi\n",
+                "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio che puoi vedere, ma che non ha la tua stessa posizione, poi puoi spostarlo di 1 passo\nwith rocket jump: muoviti fino a 2 passi, prima o dopo il \"basic effect\" (costo: 1 cubo blu)\nwith fragmenting warhead: infliggi 1 danno aggiuntivo al bersaglio del \"basic effect\" e 1 danno a tutti i giocatori presenti nella cella originaria del bersaglio del \"basic effect\" (costo: 1 cubo giallo)\n",
+                "fire_details": {
+                    "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
+                    "select_point_rocket_jump": "Seleziona il punto in cui vuoi spostarti prima o dopo il \"basic_effect\":\n"
+                }
+            },
+            "railgun": {
+                "grab_cost": "1 cubo giallo + 1 cubo blu\n",
+                "reload_cost": "2 cubi gialli + 1 cubo blu\n",
+                "fire_description": "basic mode: scegli 1 bersaglio che si trova nella tua cella o in una direzione cardinale rispetto a te, anche se ci sono muri tra di voi, infliggigli 3 danni\npiercing mode: scegli 2 bersagli che si trovino entrambi rispetto a te nella stessa direzione, ignora i muri, infliggi a ciascun bersaglio scelto 2 danni\n",
+                "fire_details": {
+                    "select_target_basic_mode": "Seleziona il bersaglio del tuo attacco:\n",
+                    "select_target_piercing_mode": "Seleziona i bersagli del tuo attacco:\n"
+                }
+            },
+            "cyberblade": {
+                "grab_cost": "1 cubo rosso\n",
+                "reload_cost": "1 cubo rosso + 1 cubo giallo\n",
+                "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio nella tua cella\nwith shadowstep: puoi muoverti di un passo, prima o dopo il \"basic effect\" o  dopo il \"with slice and dice\"\nwith slice and dice: infliggi 2 danni a 1 bersaglio nella tua cella (deve essere un bersaglio diverso da quello del \"basic effect\") (costo: 1 cubo giallo)\n",
+                "fire_details": {
+                    "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
+                    "select_point_shadowstep": "Seleziona la cella in cui spostarti prima o dopo il \"basic effect\":\n",
+                    "select_target_slice_and_dice": "Seleziona il bersaglio del \"slice and dice\":\n"
+                }
+            },
+            "zx2": {
+                "grab_cost": "1 cubo rosso\n",
+                "reload_cost": "1 cubo rosso + 1 cubo giallo\n",
+                "fire_description": "basic mode: infliggi 1 danno e assegna 2 marchi a 1 bersaglio che puoi vedere\nscanner mode: scegli fino a 3 bersagli che puoi vedere, infliggi 1 marchio ad ogni bersaglio selezionato\n",
+                "fire_details": {
+                    "select_target_basic_mode": "Seleziona il bersaglio del tuo attacco:\n",
+                    "select_targets_scanner_mode": "Seleziona i bersagli del tuo attacco:\n"
+                }
+            },
+            "shotgun": {
+                "grab_cost": "1 cubo giallo\n",
+                "reload_cost": "2 cubi gialli\n",
+                "fire_description": "basic mode: infliggi 3 danni ad 1 bersaglio nella tua cella, dopodichè, se vuoi, spostalo di 1 passo\nlong barrel mode: infliggi 2 danni ad 1 bersaglio che si trova in una cella ad 1 passo dalla tua\n",
+                "fire_details": {
+                    "select_target": "Seleziona il bersaglio del tuo attacco:\n",
+                    "select_point_basic_mode": "Seleziona la posizione in cui spostare il tuo bersaglio dopo l'attacco:\n"
+                }
+            },
+            "power_glove": {
+                "grab_cost": "1 cubo blu\n",
+                "reload_cost": "1 cubo giallo + 1 cubo blu\n",
+                "fire_description": "basic mode: scegli 1 bersaglio che si trova esattamente ad 1 passo da te, muoviti nella sua cella, infliggigli 1 danno e assegnagli 2 marchi\nrocket fist mode: scegli 1 cella che si trova ad 1 passo in una certa direzione, muoviti in quella cella e, se vuoi infliggi 2 danni a 1 giocatore in quella cella, ora, tenendo la stessa direzione, puo muoverti nella cella adiacente e, se vuoi, infliggi 2 danni ad 1 giocatore in quella cella (costo: 1 cubo blu)\n",
+                "fire_details": {
+                    "select_target_basic_mode": "Seleziona il bersaglio del tuo attacco:\n",
+                    "select_targets_rocket_fist_mode": "Seleziona il/i bersaglio/i del tuo attacco:\n",
+                    "select_point_rocket_fist_mode": "Seleziona il punto in cui vuoi terminare il tuo attacco:\n"
+                }
+            },
+            "shockwave": {
+                "grab_cost": "gratuito\n",
+                "reload_cost": "1 cubo giallo\n",
+                "fire_description": "basic mode: scegli fino a 3 giocatori, che si trovino ad 1 passo di distanza dalla tua cella e che siano tutti in celle diverse tra loro, infliggi a ciascun bersaglio selezionato 1 danno\ntsunami mode: infliggi 1 danno a tutti i giocatori che si trovino esattamente ad 1 passo di distanza da te (costo: 1 cubo giallo)\n",
+                "fire_details": {
+                    "select_targets_shockwave": "Seleziona il/i bersaglio/i del tuo attacco:\n"
+                }
+            },
+            "sledgehammer": {
+                "grab_cost": "gratuito\n",
+                "reload_cost": "1 cubo giallo\n",
+                "fire_description": "basic mode: infliggi 2 danni ad 1 bersaglio nella tua cella\npulverize mode: infliggi 3 danni ad 1 bersaglio nella tua cella, poi puoi muoverlo dii 0,1 o 2 passi in una stessa direzione (costo: 1 cubo rosso)\n",
+                "fire_details": {
+                    "select_target": "Scegli un bersaglio da prendere a martellate:\n",
+                    "select_point_pulverize_mode": "Scegli la cella in cui spedire il tuo bersaglio:\n"
+                }
+            }
         },
-        "newton": {
-          "select_target": "Seleziona il bersaglio che vuoi spostare:\n",
-          "select_square": "Seleziona la cella in cui desideri spostare il bersaglio:\n",
-          "message": " usa \"Newton\" per spostare "
+        "power_ups_details": {
+            "targeting_scope": "Infliggi un danno aggiuntivo ad un giocatore che hai appena danneggiato\n",
+            "newton": "Sposta un giocatore di 1 o 2 posizioni nella stessa direzione\n",
+            "tagback_grenade": "Quando vieni danneggiato da un giocatore puoi usare questa carta per vendicarti, assegnando a quel giocatore un marchio\n",
+            "teleporter": "Spostati in una qualsiasi cella della mappa\n"
         },
-        "teleporter": {
-          "select_square": "Seleziona la cella in cui desideri teletrasportarti:\n",
-          "message": " usa \"Teleporter\" per teletrasportarsi "
+        "combat_phrases": {
+            "team_rocket": "Arrendetevi subito o preparatevi a combattere!\n",
+            "one_punch_man": "Speriamo non finisca di nuovo con un pugno solo...\n",
+            "ash_ketchum": "Io sarò il più grande allenatore di Adrenaline!\n"
         }
-      },
-      "reload_action": {
-        "select_weapon": "Seleziona l'arma che desideri ricaricare:\n",
-        "alternative_payment_request": "Vuoi utilizzare delle power ups come pagamento alternativo per ricaricare l'arma?\n1. Sì\n2. No\n",
-        "reload_message": " ricarica "
-      },
-      "reborning_action": "Scegli una power up da scartare per rinascere:\n",
-      "reborn_message": " respawna nello spawnpoint ",
-      "tagback_response_action": "Hai la possibilità di rispondere al fuoco con una tagback grenade:\n1. Usa una tagback grenade\n2. Non rispondere al fuoco\n",
-      "tagback_message": " usa \"Tagback Grenade\" su "
-    },
-    "weapons_details": {
-      "lock_rifle": {
-        "grab_cost": "1 cubo blu\n",
-        "reload_cost": "2 cubi blu\n",
-        "fire_description": "basic effect: infliggi 2 danni e assegna 1 marchio a 1 bersaglio che puoi vedere.\nwith second lock: assegna 1 marchio a 1 bersaglio (differente dal bersaglio scelto per il \"basic effect\") che puoi vedere (costo: 1 cubo rosso)\n",
-        "fire_details": {
-          "select_target_basic_effect": "Seleziona 1 bersaglio per il \"basic effect\":\n",
-          "select_target_second_lock": "Seleziona 1 bersaglio per il \"second lock\":\n"
-        },
-        "fire_messages": {
-          "basic_effect_bn": " colpisce col \"basic effect\" ",
-          "basic_effect_an": " infliggendogli 2 danni e assegnandogli 1 marchio",
-          "second_lock": " sfrutta il \"Second Lock\" per assegnare 1 marchio a "
-        }
-      },
-      "machine_gun": {
-        "grab_cost": "1 cubo rosso\n",
-        "reload_cost": "1 cubo rosso + 1 cubo blu\n",
-        "fire_description": "basic effect: scegli fino a 2 bersagli che puoi vedere, infliggi a ciascuno 1 danno.\nwith focus shoot: scegli uno dei due bersagli scelti per il \"basic effect\" e infliggigli 1 danno addizionale (costo: 1 cubo giallo).\nwith turret tripod: scegli un bersaglio tra quelli scelti per il \"basic effect\" (se usi il \"with focus shot\" non puoi scegliere lo stesso bersaglio) e/o un altro bersaglio che puoi vedere (differente da quelli già selezionati), infliggi a ciascun bersaglio scelto per questo effetto 1 danno addizionale (costo: 1 cubo blu)\n",
-        "fire_details": {
-          "select_targets_basic_effect": "Seleziona il/i bersaglio/i del \"basic effect\":\n",
-          "select_target_focus_shot": "Seleziona il bersaglio del \"focus shot\":\n",
-          "select_targets_turret_tripod": "Seleziona il/i bersaglio/i del \"tripod turret\":\n"
-        },
-        "fire_messages": {
-          "basic_effect_bn": " colpisce col \"basic effect\" ",
-          "basic_effect_an": " infliggendo al bersaglio 1 danno",
-          "focus_shot": " sfrutta il \"Focus Shot\" per infliggere 1 danno aggiuntivo a ",
-          "turret_tripod": " sfrutta il \"Turret Tripod\" per infliggere 1 danno a "
-        }
-      },
-      "thor": {
-        "grab_cost": "1 cubo rosso\n",
-        "reload_cost": "1 cubo rosso + 1 cubo blu\n",
-        "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio che puoi vedere\nwith chain reaction: infliggi 1 danno a un bersaglio visibile al bersaglio del \"basic effect\" (costo: 1 cubo blu)\nwith high voltage: infliggi 2 danni a un bersaglio visibile al bersaglio del \"with chain reaction\" (non può essere il bersaglio del \"basic effect\") (costo: 1 cubo blu)\nNota: non puoi usare l'effetto \"high voltage\" senza usare l'effetto \"chain reaction\"\n",
-        "fire_details": {
-          "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
-          "select_target_chain_reaction": "Seleziona il bersaglio del \"chain reaction\":\n",
-          "select_target_high_voltage": "Seleziona il/i bersaglio/i dell' \"high voltage\":\n"
-        },
-        "fire_messages": {
-          "basic_effect_bn": " colpisce col \"basic effect\" ",
-          "basic_effect_an": " infliggendogli 2 danni\n"
-        }
-      },
-      "plasma_gun": {
-        "grab_cost": "1 cubo giallo\n",
-        "reload_cost": "1 cubo giallo + 1 cubo blu\n",
-        "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio che puoi vedere\nwith phase glide: effettua fino a 2 passi prima o dopo aver usato il \"basic effect\" (costo: gratuito)\nwith charged shot: infliggi 1 danno addizionale al bersaglio del \"basic effect\" (costo: 1 cubo blu)\n",
-        "fire_details": {
-          "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
-          "select_point_phase_glide": "Seleziona una cella in cui spostarti prima o dopo il fuoco:\n"
-        }
-      },
-      "whisper": {
-        "grab cost": "1 cubo giallo + 1 cubo blu\n",
-        "reload cost": "1 cubo giallo + 2 cubi blu\n",
-        "fire_description": "effect: infliggi 3 danni e assegna 1 marchio a 1 bersaglio che puoi vedere, ma almeno a 2 passi da te\n",
-        "fire_details": {
-          "select_target_effect": "Seleziona il bersaglio dell' \"effect\":\n"
-        }
-      },
-      "electroscythe": {
-        "grab_cost": "gratuito\n",
-        "reload_cost": "1 cubo blu\n",
-        "fire_description": "basic mode: infliggi 1 danno a tutti gli altri giocatori presenti nella tua cella\nreaper mode: infliggi 2 danni a tutti gli altri giocatori presenti nella tua cella (costo: 1 cubo rosso + 1 cubo blu)\n"
-      },
-      "tractor_beam": {
-        "grab_cost": "gratuito\n",
-        "reload_cost": "1 cubo blu\n",
-        "fire_description": "basic mode: muovi un bersaglio di 0,1 o 2 passi e infliggigli 1 danno (funziona solo se dopo lo spostamento puoi vederlo)\npunisher mode: scegli un bersaglio che può raggiungere la tua posizione con 0,1 o 2 passi, muovilo nella tua cella e infliggigli 3 danni (costo: 1 cubo rosso + 1 cubo giallo)\n",
-        "fire_details": {
-          "select_target": "Seleziona il tuo bersaglio:\n",
-          "select_point_basic_mode": "Seleziona la cella nella quale vuoi spostare il tuo bersaglio:\n"
-        }
-      },
-      "vortex_cannon": {
-        "grab_cost": "1 cubo blu\n",
-        "reload_cost": " 1 cubo rosso + 1 cub blu\n",
-        "fire_description": "basic effect: scegli 1 casella che puoi vedere, questa sarà \"il vortice\", scegli 1 bersaglio nel vortice o ad 1 passo da esso, muovilo nel vortice e infliggigli 2 danni\nwith black hole: scegli fino ad altri 2 bersagli (differenti da quello scelto per il \"basic effect\") che si trovano nel vortice o ad 1 passo da esso, muovili nel vortice e infliggi ad ognuno 1 danno (costo: 1 cubo rosso)\n",
-        "fire_details": {
-          "select_the_vortex": "Seleziona \"il vortice\":\n",
-          "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
-          "select_targets_black_hole": "Seleziona il/i bersaglio/i del \"black hole\":\n"
-        }
-      },
-      "furnace": {
-        "grab_cost": "1 cubo blu\n",
-        "reload_cost": "1 cubo rosso + 1 cubo blu\n",
-        "fire_description": "basic mode: scegli una stanza che puoi vedere, ma non quella in cui ti trovi, infliggi 1 danno a tutti i giocatori all'interno della stanza scelta\ncozy fire mode: scegli 1 cella ad esattamente 1 passo da te, infliggi 1 danno e assegna 1 marchio a tutti i giocatori presenti nella cella scelta\n",
-        "fire_details": {
-          "select_chamber": "Seleziona la stanza bersaglio del tuo attacco:\n",
-          "select_square": "Seleziona la cella bersaglio del tuo attacco:\n"
-        }
-      },
-      "heatseeker": {
-        "grab_cost": "1 cubo rosso + 1 cubo giallo\n",
-        "reload_cost": "2 cubi rossi + 1 cubo giallo\n",
-        "fire_description": "effect: scegli 1 bersaglio che non puoi vedere e infliggigli 3 danni\n",
-        "fire_details": {
-          "select_target_effect": "Seleziona il bersaglio dell' \"effect\":\n"
-        }
-      },
-      "hellion": {
-        "grab_cost": "1 cubo giallo\n",
-        "reload_cost": "1 cubo rosso + 1 cubo giallo\n",
-        "fire_description": "basic mode: infliggi 1 danno e assegna 1 marchio a 1 bersaglio che puoi vedere, ma non nella tua stessa posizione\nnano-tracer mode: scegli 1 bersaglio che puoi vedere, ma non nella tua stessa posizione, infliggigli 1 danno, poi assegna 2 marchi a tutti i giocatori che si trovano nella stessa cella del bersaglio di cui sopra, compreso il bersaglio principale stesso (costo: 1 cubo rosso)\n",
-        "fire_details": {
-          "select_target": "Seleziona il bersaglio del tuo attacco:\n"
-        }
-      },
-      "flamethrower": {
-        "grab_cost": "gratuito\n",
-        "reload_cost": "1 cubo rosso\n",
-        "fire_description": "basic mode: scegli fino a 2 bersagli che rispetto a te si trovino nella stessa direzione (senza muri tra te e i bersagli), non nella tua stessa cella e, se più d'uno, non tra di loro nella stessa cella, ma al massimo a due passi da te, infliggi ai bersagli 1 danno ciascuno\nbarbecue mode: scegli 1 o 2 celle rispetto a te nella stessa direzione, non la tua stessa cella e non a più di 2 passi da te, ogni bersaglio che si trovi nella cella da te selezionata ad un passo di distanza subisce 2 danni, mentre ogni bersaglio si trovi a 2 passi da te subisce 1 danno (costo: 2 cubi gialli)\n",
-        "fire_details": {
-          "select_targets": "Seleziona 1 o 2 bersagli per la \"basic mode\":\n",
-          "select_point": "Seleziona la cella fino alla quale desideri incenerire i tuoi avversari:\n"
-        }
-      },
-      "grenade_launcher": {
-        "grab_cost": "gratuito\n",
-        "reload_cost": "1 cubo rosso",
-        "fire_description": "basic effect: infliggi 1 danno a 1 bersaglio che puoi vedere, poi puoi muoverlo di 1 passo\nwith extra grenade: scegli 1 cella che puoi vedere, infliggi 1 danno a tutti i giocatori presenti in quella casella (costo: 1 cubo rosso)\n",
-        "fire_details": {
-          "select_target_basic_effect": "Seleziona il bersaglio del \"basic_effect\":\n",
-          "select_point_basic_effect": "Seleziona la cella in cui spostare il bersaglio del \"basic effect\":\n",
-          "select_point_extra_grenade": "Seleziona la cella da colpire con la \"granata extra\":\n"
-        }
-      },
-      "rocket_launcher": {
-        "grab_cost": "1 cubo rosso\n",
-        "reload_cost": "2 cubi rossi\n",
-        "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio che puoi vedere, ma che non ha la tua stessa posizione, poi puoi spostarlo di 1 passo\nwith rocket jump: muoviti fino a 2 passi, prima o dopo il \"basic effect\" (costo: 1 cubo blu)\nwith fragmenting warhead: infliggi 1 danno aggiuntivo al bersaglio del \"basic effect\" e 1 danno a tutti i giocatori presenti nella cella originaria del bersaglio del \"basic effect\" (costo: 1 cubo giallo)\n",
-        "fire_details": {
-          "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
-          "select_point_rocket_jump": "Seleziona il punto in cui vuoi spostarti prima o dopo il \"basic_effect\":\n"
-        }
-      },
-      "railgun": {
-        "grab_cost": "1 cubo giallo + 1 cubo blu\n",
-        "reload_cost": "2 cubi gialli + 1 cubo blu\n",
-        "fire_description": "basic mode: scegli 1 bersaglio che si trova nella tua cella o in una direzione cardinale rispetto a te, anche se ci sono muri tra di voi, infliggigli 3 danni\npiercing mode: scegli 2 bersagli che si trovino entrambi rispetto a te nella stessa direzione, ignora i muri, infliggi a ciascun bersaglio scelto 2 danni\n",
-        "fire_details": {
-          "select_target_basic_mode": "Seleziona il bersaglio del tuo attacco:\n",
-          "select_target_piercing_mode": "Seleziona i bersagli del tuo attacco:\n"
-        }
-      },
-      "cyberblade": {
-        "grab_cost": "1 cubo rosso\n",
-        "reload_cost": "1 cubo rosso + 1 cubo giallo\n",
-        "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio nella tua cella\nwith shadowstep: puoi muoverti di un passo, prima o dopo il \"basic effect\" o  dopo il \"with slice and dice\"\nwith slice and dice: infliggi 2 danni a 1 bersaglio nella tua cella (deve essere un bersaglio diverso da quello del \"basic effect\") (costo: 1 cubo giallo)\n",
-        "fire_details": {
-          "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
-          "select_point_shadowstep": "Seleziona la cella in cui spostarti prima o dopo il \"basic effect\":\n",
-          "select_target_slice_and_dice": "Seleziona il bersaglio del \"slice and dice\":\n"
-        }
-      },
-      "zx2": {
-        "grab_cost": "1 cubo rosso\n",
-        "reload_cost": "1 cubo rosso + 1 cubo giallo\n",
-        "fire_description": "basic mode: infliggi 1 danno e assegna 2 marchi a 1 bersaglio che puoi vedere\nscanner mode: scegli fino a 3 bersagli che puoi vedere, infliggi 1 marchio ad ogni bersaglio selezionato\n",
-        "fire_details": {
-          "select_target_basic_mode": "Seleziona il bersaglio del tuo attacco:\n",
-          "select_targets_scanner_mode": "Seleziona i bersagli del tuo attacco:\n"
-        }
-      },
-      "shotgun": {
-        "grab_cost": "1 cubo giallo\n",
-        "reload_cost": "2 cubi gialli\n",
-        "fire_description": "basic mode: infliggi 3 danni ad 1 bersaglio nella tua cella, dopodichè, se vuoi, spostalo di 1 passo\nlong barrel mode: infliggi 2 danni ad 1 bersaglio che si trova in una cella ad 1 passo dalla tua\n",
-        "fire_details": {
-          "select_target": "Seleziona il bersaglio del tuo attacco:\n",
-          "select_point_basic_mode": "Seleziona la posizione in cui spostare il tuo bersaglio dopo l'attacco:\n"
-        }
-      },
-      "power_glove": {
-        "grab_cost": "1 cubo blu\n",
-        "reload_cost": "1 cubo giallo + 1 cubo blu\n",
-        "fire_description": "basic mode: scegli 1 bersaglio che si trova esattamente ad 1 passo da te, muoviti nella sua cella, infliggigli 1 danno e assegnagli 2 marchi\nrocket fist mode: scegli 1 cella che si trova ad 1 passo in una certa direzione, muoviti in quella cella e, se vuoi infliggi 2 danni a 1 giocatore in quella cella, ora, tenendo la stessa direzione, puo muoverti nella cella adiacente e, se vuoi, infliggi 2 danni ad 1 giocatore in quella cella (costo: 1 cubo blu)\n",
-        "fire_details": {
-          "select_target_basic_mode": "Seleziona il bersaglio del tuo attacco:\n",
-          "select_targets_rocket_fist_mode": "Seleziona il/i bersaglio/i del tuo attacco:\n",
-          "select_point_rocket_fist_mode": "Seleziona il punto in cui vuoi terminare il tuo attacco:\n"
-        }
-      },
-      "shockwave": {
-        "grab_cost": "gratuito\n",
-        "reload_cost": "1 cubo giallo\n",
-        "fire_description": "basic mode: scegli fino a 3 giocatori, che si trovino ad 1 passo di distanza dalla tua cella e che siano tutti in celle diverse tra loro, infliggi a ciascun bersaglio selezionato 1 danno\ntsunami mode: infliggi 1 danno a tutti i giocatori che si trovino esattamente ad 1 passo di distanza da te (costo: 1 cubo giallo)\n",
-        "fire_details": {
-          "select_targets_shockwave": "Seleziona il/i bersaglio/i del tuo attacco:\n" 
-        }
-      },
-      "sledgehammer": {
-        "grab_cost": "gratuito\n",
-        "reload_cost": "1 cubo giallo\n",
-        "fire_description": "basic mode: infliggi 2 danni ad 1 bersaglio nella tua cella\npulverize mode: infliggi 3 danni ad 1 bersaglio nella tua cella, poi puoi muoverlo dii 0,1 o 2 passi in una stessa direzione (costo: 1 cubo rosso)\n",
-        "fire_details": {
-          "select_target": "Scegli un bersaglio da prendere a martellate:\n",
-          "select_point_pulverize_mode": "Scegli la cella in cui spedire il tuo bersaglio:\n"
-        }
-      }
-    },
-    "power_ups_details": {
-      "targeting_scope": "Infliggi un danno aggiuntivo ad un giocatore che hai appena danneggiato\n",
-      "newton": "Sposta un giocatore di 1 o 2 posizioni nella stessa direzione\n",
-      "tagback_grenade": "Quando vieni danneggiato da un giocatore puoi usare questa carta per vendicarti, assegnando a quel giocatore un marchio\n",
-      "teleporter": "Spostati in una qualsiasi cella della mappa\n"
-    },
-    "combat_phrases": {
-      "team_rocket": "Arrendetevi subito o preparatevi a combattere!\n",
-      "one_punch_man": "Speriamo non finisca di nuovo con un pugno solo...\n",
-      "ash_ketchum": "Io sarò il più grande allenatore di Adrenaline!\n"
     }
-  },
-  "gui": {
-    
-  }
 }
