@@ -1,6 +1,7 @@
 {
     "cli": {
         "select_action": "Scegli la mossa da effettuare:\n",
+        "back_to_menu": "*. Torna al menu iniziale",
         "possible_actions": {
             "standard_actions": "1. Muoviti\n2. Raccogli ammocard\n3. Raccogli arma\n4. Spara\n5. Usa power up\n6. Passa il turno\n",
             "last_standard_actions": "1. Usa power up\n2. Ricarica arma\n3. Passa il turno\n",
