@@ -19,7 +19,7 @@ import static it.polimi.ingsw.common.models.Cell.Color.*;
 
 @SuppressWarnings("UnusedReturnValue")
 public class GameCli {
-    private static Game game;
+    private static @Nullable Game game;
 
     private static TypeCell[][] buildBoard(@NotNull Game game) {
         var cells = game.getCells();

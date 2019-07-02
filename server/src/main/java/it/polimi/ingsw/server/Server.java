@@ -28,7 +28,8 @@ public class Server {
                 case "-h":
                 case "--help":
                     System.out.println("Adrenaline board game server");
-                    System.out.println("You have to specify all interfaces you want to use.\n");
+                    System.out.println("You have to specify all interfaces you want to use.");
+                    System.out.println();
                     System.out.println("Option        Meaning");
                     System.out.println("-w            Web HTTP/WS interface");
                     System.out.println("-r            RMI interface");
@@ -38,7 +39,9 @@ public class Server {
                     System.out.println("Name          Meaning");
                     System.out.println("MONGODB_URI   URI of MongoDB (mandatory)");
                     System.out.println("MONGODB_NAME  Name of DB to use (mandatory)");
+                    System.out.println();
                     System.out.println("HTTP_PORT     Port where HTTP server have to listen (optional, default: 80)");
+                    System.out.println();
                     System.out.println("ROOM_TIMEOUT  Room timeout in seconds (optional, default: 30s)");
                     System.out.println("GAME_TIMEOUT  Game timeout in seconds (optional, default: 30s)");
                     return;
