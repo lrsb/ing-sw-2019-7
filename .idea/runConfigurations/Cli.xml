@@ -7,7 +7,7 @@
     <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="it.polimi.ingsw.client.views.cli.base.*" />
+        <option name="PATTERN" value="it.polimi.ingsw.client.views.cli.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

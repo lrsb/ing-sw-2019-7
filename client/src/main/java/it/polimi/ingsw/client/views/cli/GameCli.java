@@ -322,6 +322,10 @@ public class GameCli {
         });
     }
 
+    public static void printGameImpl(@NotNull GameImpl game) {
+        printGame(game);
+    }
+
     public static void printGame(@NotNull Game game) {
         var board = buildBoard(game);
         //noinspection ForLoopReplaceableByForEach
@@ -354,6 +358,6 @@ public class GameCli {
         room.setGameType(Game.Type.FIVE_FIVE);
         room.setSkulls(5);
         while (room.getUsers().size() < 5) room.addUser(possibleUserPlayer.get(room.getUsers().size() - 1));
-        return Segue.of("printGame", GameImpl.Creator.newGame(room));
+        return Segue.of("printGameImpl", GameImpl.Creator.newGame(room));
     }
 }

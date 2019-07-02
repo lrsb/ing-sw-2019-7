@@ -26,19 +26,6 @@ public class GameCliTest {
         }
     }
 
-    @Test
-    public void testPrintPreCli() {
-        for (Game.Type type : Game.Type.values()) {
-            GameImpl game = createGameImpl(type);
-            GameCli.preGame(game);
-        }
-    }
-
-    @Test
-    public void testPrintPostCli() {
-            GameCli.postGame();
-    }
-
     private @NotNull GameImpl createGameImpl(@NotNull Game.Type type) {
         String gameName = "NomePartita";
         User creator = new User("God");

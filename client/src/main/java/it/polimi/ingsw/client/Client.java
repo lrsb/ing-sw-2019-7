@@ -46,11 +46,13 @@ public class Client {
                     new NavigationController(LoginViewController.class);
                     return;
                 case "-c":
+                    //TODO
                     CliMenuManager.startCli(GameCli.class, false);
                     //CliMenuManager.startCli(StartupCli.class, false);
                     return;
             }
         }
+        //TODO
         //new NavigationController(ConnTypeViewController.class);
         Client.API = new API() {
             @Override

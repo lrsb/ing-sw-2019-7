@@ -20,13 +20,12 @@ public class Utils {
         }
     }
 
-
     public static @NotNull BufferedImage applyColorToMask(@NotNull BufferedImage mask, @NotNull Color color) {
         var maskPixels = mask.getRGB(0, 0, mask.getWidth(), mask.getHeight(), null, 0, mask.getWidth());
         var masked = new BufferedImage(mask.getWidth(), mask.getHeight(), BufferedImage.TYPE_INT_ARGB);
         var rgb = color.getRGB();
         masked.setRGB(0, 0, mask.getWidth(), mask.getHeight(),
-                Arrays.stream(maskPixels).parallel().map(e -> (e & 0xFF000000) | rgb).toArray(), 0, mask.getWidth());
+                Arrays.stream(maskPixels).parallel().map(e -> (e & 0xff000000) | (rgb & 0x00ffffff)).toArray(), 0, mask.getWidth());
         return masked;
     }
 
@@ -73,60 +72,43 @@ public class Utils {
         g.setComposite(AlphaComposite.DstOut);
         var c0 = new Color(0, 0, 0, 255);
         var c1 = new Color(0, 0, 0, 0);
-        g.setPaint(new GradientPaint(
-                new Point2D.Double(0, border), c0,
-                new Point2D.Double(border, border), c1));
-        g.fill(new Rectangle2D.Double(
-                0, border, border, h - border - border));
-
+        g.setPaint(new GradientPaint(new Point2D.Double(0, border), c0, new Point2D.Double(border, border), c1));
+        g.fill(new Rectangle2D.Double(0, border, border, h - border - border));
         // Right
-        g.setPaint(new GradientPaint(
-                new Point2D.Double(w - border, border), c1,
-                new Point2D.Double(w, border), c0));
-        g.fill(new Rectangle2D.Double(
-                w - border, border, border, h - border - border));
-
+        g.setPaint(new GradientPaint(new Point2D.Double(w - border, border), c1, new Point2D.Double(w, border), c0));
+        g.fill(new Rectangle2D.Double(w - border, border, border, h - border - border));
         // Top
         g.setPaint(new GradientPaint(
                 new Point2D.Double(border, 0), c0,
                 new Point2D.Double(border, border), c1));
-        g.fill(new Rectangle2D.Double(
-                border, 0, w - border - border, border));
-
+        g.fill(new Rectangle2D.Double(border, 0, w - border - border, border));
         // Bottom
         g.setPaint(new GradientPaint(
                 new Point2D.Double(border, h - border), c1,
                 new Point2D.Double(border, h), c0));
         g.fill(new Rectangle2D.Double(
                 border, h - border, w - border - border, border));
-
-
         // Top Left
         g.setPaint(new RadialGradientPaint(
                 new Rectangle2D.Double(0, 0, border + border, border + border),
                 new float[]{0, 1}, new Color[]{c1, c0}, MultipleGradientPaint.CycleMethod.NO_CYCLE));
         g.fill(new Rectangle2D.Double(0, 0, border, border));
-
         // Top Right
         g.setPaint(new RadialGradientPaint(
                 new Rectangle2D.Double(w - border - border, 0, border + border, border + border),
                 new float[]{0, 1}, new Color[]{c1, c0}, MultipleGradientPaint.CycleMethod.NO_CYCLE));
         g.fill(new Rectangle2D.Double(w - border, 0, border, border));
-
         // Bottom Left
         g.setPaint(new RadialGradientPaint(
                 new Rectangle2D.Double(0, h - border - border, border + border, border + border),
                 new float[]{0, 1}, new Color[]{c1, c0}, MultipleGradientPaint.CycleMethod.NO_CYCLE));
         g.fill(new Rectangle2D.Double(0, h - border, border, border));
-
         // Bottom Right
         g.setPaint(new RadialGradientPaint(
                 new Rectangle2D.Double(w - border - border, h - border - border, border + border, border + border),
                 new float[]{0, 1}, new Color[]{c1, c0}, MultipleGradientPaint.CycleMethod.NO_CYCLE));
         g.fill(new Rectangle2D.Double(w - border, h - border, border, border));
-
         g.dispose();
-
         return output;
     }
 }

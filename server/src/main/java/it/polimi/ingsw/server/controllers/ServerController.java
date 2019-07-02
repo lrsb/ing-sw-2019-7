@@ -57,7 +57,7 @@ public class ServerController implements API {
     public @NotNull List<Room> getRooms(@Nullable String token) throws RemoteException {
         SecureUserController.getUser(token);
         var gson = new Gson();
-        return StreamSupport.stream(rooms.find().filter(eq("gameCreated", false)).spliterator(), true)
+        return StreamSupport.stream(rooms.find().spliterator(), true)
                 .map(e -> gson.fromJson(e.toJson(), Room.class)).collect(Collectors.toList());
     }
 
@@ -107,6 +107,8 @@ public class ServerController implements API {
             room.setStartTime(-1);
             rooms.insertOne(Document.parse(new Gson().toJson(room)));
             return room;
+        } catch (RemoteException e) {
+            throw e;
         } catch (Exception ignored) {
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
