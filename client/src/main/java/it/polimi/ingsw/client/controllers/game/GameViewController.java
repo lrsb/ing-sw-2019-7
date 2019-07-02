@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Objects;
@@ -49,6 +50,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private JButton cancelButton;
     private JLabel actionDescriptionLabel;
     private JPanel cancelPanel;
+    private JButton bornButton;
+    private JButton button1;
 
     private @Nullable PlayersBoardsViewController playersBoardsViewController;
 
@@ -101,9 +104,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
         playersBoardButton.addActionListener(e -> {
             if (playersBoardsViewController != null) playersBoardsViewController.dispose();
-            playersBoardsViewController = new PlayersBoardsViewController(null, gameBoard.getGame());
+            playersBoardsViewController = new PlayersBoardsViewController(gameBoard.getGame());
             playersBoardsViewController.setVisible(true);
         });
+
         exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             if (JOptionPane.showConfirmDialog(null, "Vuoi uscire dal gioco?", "Esci", YES_NO_OPTION) == YES_OPTION) {
                 try {
@@ -137,6 +141,21 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 reloadActionPanel();
             }
         });
+        bornButton.addActionListener(e -> {
+            try {
+                new PowerUpSelectorViewController(game.getActualPlayer().getPowerUps(), (PowerUpSelectorViewController.PowerCallback) powerUps -> {
+                    try {
+                        Utils.getStrings("cli", "actions").get("borning_action").getAsString();
+                    } catch (FileNotFoundException ex) {
+                        ex.printStackTrace();
+                    }
+                    //Action.Builder.create(game.getUuid()).buildFirstMove();
+                    powerUps.get(0);
+                }).setVisible(true);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
 
         cancelButton.addActionListener(e -> {
             type = null;
@@ -147,22 +166,14 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private void updateBoards(@NotNull Game game) throws IOException {
         this.game = game;
         if (gameBoard != null) gameBoard.setGame(game);
+        if (playersBoardsViewController != null) {
+            playersBoardsViewController.dispose();
+            playersBoardsViewController = null;
+        }
         yourTurn = Preferences.getUuid().equals(game.getActualPlayer().getUuid());
         reloadActionPanel();
+
         actualPlayerLabel.setText(yourTurn ? "TE" : game.getActualPlayer().getNickname());
-
-        if (game.isFirstMove()) {
-            //game.getActualPlayer().getPowerUps()
-            //Action.Builder.create(game.getUuid()).buildFirstMove();
-        } else if (game.isAReborn()) {
-
-        } else if (game.isATagbackResponse()) {
-
-        } else if (game.isCompleted()) {
-
-        } else {
-            //TODO: mossa normale
-        }
     }
 
     private void reloadActionPanel() {
@@ -195,6 +206,18 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 cancelPanel.setVisible(true);
             } else {
                 actionPanel.setVisible(true);
+
+                if (game.isFirstMove()) {
+                } else if (game.isAReborn()) {
+
+                } else if (game.isATagbackResponse()) {
+
+                } else if (game.isCompleted()) {
+
+                } else {
+                    //TODO: mossa normale
+                }
+
                 grabButton.setVisible(game.getCell(game.getActualPlayer().getPosition()) != null);
                 cancelPanel.setVisible(false);
             }
@@ -306,7 +329,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         moveLabel.setText("Tocca a:");
         buttonPanel.add(moveLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         actionPanel = new JPanel();
-        actionPanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        actionPanel.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
         buttonPanel.add(actionPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         moveButton = new JButton();
         moveButton.setText("Muovi");
@@ -317,6 +340,12 @@ public class GameViewController extends BaseViewController implements GameBoardL
         grabButton = new JButton();
         grabButton.setText("Raccogli");
         actionPanel.add(grabButton, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        bornButton = new JButton();
+        bornButton.setText("Nasci");
+        actionPanel.add(bornButton, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        button1 = new JButton();
+        button1.setText("Button");
+        actionPanel.add(button1, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         cancelPanel = new JPanel();
         cancelPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         buttonPanel.add(cancelPanel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

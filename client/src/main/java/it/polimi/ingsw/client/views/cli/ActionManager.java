@@ -10,8 +10,10 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
+import java.util.Scanner;
+import java.util.UUID;
 
 public class ActionManager {
 
@@ -113,7 +115,7 @@ public class ActionManager {
         }
     }
 
-    private void selectAlternativePayment(@NotNull Game game) throws InterruptedException, FileNotFoundException, RemoteException{
+    private void selectAlternativePayment(@NotNull Game game) throws InterruptedException, FileNotFoundException {
         List<PowerUp> selectablePowerUps = new ArrayList<>(game.getActualPlayer().getPowerUps());
         if (powerUpPayment != null) powerUpPayment.forEach(selectablePowerUps::remove);
         if (selectablePowerUps.isEmpty()) return;

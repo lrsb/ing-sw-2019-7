@@ -5,6 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.others.Utils;
+import it.polimi.ingsw.common.models.PowerUp;
 import it.polimi.ingsw.common.models.Weapon;
 import it.polimi.ingsw.common.others.Displayable;
 import javafx.animation.Interpolator;
@@ -60,16 +61,18 @@ public class ExpoViewController extends BaseViewController {
                 e.printStackTrace();
             }
         });
-        if (params[0] instanceof Weapon) {
-            infoButton.addActionListener(e -> {
-                try {
-                    var info = Utils.getStrings("cli", "weapons_details", ((Weapon) params[0]).name().toLowerCase()).get("fire_description").getAsString();
+        infoButton.addActionListener(e -> {
+            try {
+                var info = "";
+                if (params[0] instanceof Weapon)
+                    info = Utils.getStrings("cli", "weapons_details", ((Weapon) params[0]).name().toLowerCase()).get("fire_description").getAsString();
+                else if (params[0] instanceof PowerUp)
+                    info = Utils.getStrings("cli", "power_ups_details").get(((PowerUp) params[0]).getType().name().toLowerCase()).getAsString();
                     JOptionPane.showMessageDialog(this, "<html><body><p style='width: 200px;'>" + info.replaceAll("\n", " ") + "</p></body></html>", "Info", JOptionPane.INFORMATION_MESSAGE);
-                } catch (FileNotFoundException ex) {
-                    ex.printStackTrace();
-                }
-            });
-        } else infoButton.setVisible(false);
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     private void createRotator(@NotNull Node front, @NotNull Node back) {

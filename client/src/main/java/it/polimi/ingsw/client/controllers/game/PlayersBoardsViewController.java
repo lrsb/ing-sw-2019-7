@@ -3,12 +3,10 @@ package it.polimi.ingsw.client.controllers.game;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
-import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.views.gui.boards.PlayerBoard;
 import it.polimi.ingsw.common.models.Game;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,8 +16,8 @@ public class PlayersBoardsViewController extends BaseViewController {
     private JPanel panel;
     private JTabbedPane tabbedPane;
 
-    public PlayersBoardsViewController(@Nullable NavigationController navigationController, @NotNull Object... params) {
-        super("Plance", 1000, 310, navigationController);
+    public PlayersBoardsViewController(@NotNull Object... params) {
+        super("Plance", 1000, 310, null);
         setContentPane(panel);
         //noinspection ComparatorMethodParameterNotUsed
         ((Game) params[0]).getPlayers().parallelStream().sorted((e, f) -> e.getUuid().equals(Preferences.getUuid()) ? 1 : 0).forEachOrdered(e -> {
