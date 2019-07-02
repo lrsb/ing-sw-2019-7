@@ -134,7 +134,7 @@ public class Game implements Displayable, Serializable {
         if (!lastsDamaged.contains(player.getUuid())) lastsDamaged.add(player.getUuid());
     }
 
-    @NotNull List<UUID> getLastsDamaged() {
+    public @NotNull List<UUID> getLastsDamaged() {
         return lastsDamaged;
     }
 

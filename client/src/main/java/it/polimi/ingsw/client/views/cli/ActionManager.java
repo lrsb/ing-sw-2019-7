@@ -109,7 +109,7 @@ public class ActionManager {
             }
         } else {
             System.out.println(invalidChoice);
-            selectMyDiscardWeapon(game);
+            selectReborningPowerUp(game);
         }
     }
 
@@ -126,12 +126,10 @@ public class ActionManager {
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectablePowerUps.size()) {
             powerUpPayment.add(selectablePowerUps.get(Integer.parseInt(choice) - 1));
             selectAlternativePayment(game);
-        }
-        else if (Integer.parseInt(choice) != selectablePowerUps.size() + 1) {
+        } else if (Integer.parseInt(choice) != selectablePowerUps.size() + 1) {
             System.out.println(invalidChoice);
             selectAlternativePayment(game);
         }
-        else if (choice.charAt(0) == '*') actionMenu(game);
     }
 
     private void selectTagbackResponse(@NotNull Game game) throws InterruptedException, RemoteException {
@@ -153,16 +151,81 @@ public class ActionManager {
         }
     }
 
-    private void selectStandardAction(@NotNull Game game) throws InterruptedException, FileNotFoundException {
-        System.out.println(Utils.getStrings("cli", "possible_actions").get("standard_actions").getAsString());
-        //todo: da qui reinderizza alle varie mosse
+    private void selectStandardAction(@NotNull Game game) throws InterruptedException, FileNotFoundException, RemoteException {
+        System.out.println(Utils.getStrings("cli", "possible_actions").get(game.getActualPlayer().getDamagesTaken().size() < 3 ?
+                "standard_actions" : game.getActualPlayer().getDamagesTaken().size() < 6 ? "standard_actions_plus1" :
+                "standard_actions_plus2").getAsString());
         String choice = getLine();
-
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 7) {
+            switch (Integer.parseInt(choice)) {
+                case 1:
+                    System.out.println(Utils.getStrings("cli", "actions", "move_action").get("select_square").getAsString());
+                    selectMyDestination(game, 3);
+                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildMoveAction(destination));
+                    break;
+                case 2:
+                    System.out.println(Utils.getStrings("cli", "actions", "grab_action").get("grab_ammo_square").getAsString());
+                    selectGrabAmmoDestination(game, game.getActualPlayer().getDamagesTaken().size() < 3 ? 1 : 2);
+                    break;
+                case 3:
+                    System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("select_square").getAsString());
+                    selectGrabWeaponDestination(game, game.getActualPlayer().getDamagesTaken().size() < 3 ? 1 : 2);
+                    System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("select_weapon").getAsString());
+                    selectSPWeapon(game);
+                    if (game.getActualPlayer().getWeaponsSize() > 2) {
+                        System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("discard_weapon").getAsString());
+                        selectMyDiscardWeapon(game);
+                    }
+                    System.out.println(Utils.getStrings("cli", "actions").get("alternative_payment").getAsString());
+                    selectAlternativePayment(game);
+                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                            .buildWeaponGrabAction(destination, weapon, discardedWeapon, powerUpPayment));
+                    break;
+                case 4:
+                    System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_weapon").getAsString());
+                    selectMyFireWeapon(game);
+                    if (game.getActualPlayer().getDamagesTaken().size() > 5) {
+                        System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_move_square").getAsString());
+                        selectMyDestination(game, 1);
+                    } else destination = game.getActualPlayer().getPosition();
+                    //todo fuoco con armi
+                    break;
+                case 5:
+                    buildUsePowerUp(game);
+                    break;
+                case 6:
+                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn());
+                    break;
+            }
+        } else {
+            System.out.println(invalidChoice);
+            selectStandardAction(game);
+        }
     }
 
-    private void selectLastAction(@NotNull Game game) {
-        System.out.println("1. Usa una powerup\n2. Ricarica un' arma\n3. Passa il turno");
-        //todo: da qui reindirizza alla mossa
+    private void selectLastAction(@NotNull Game game) throws FileNotFoundException, InterruptedException, RemoteException {
+        System.out.println(Utils.getStrings("cli", "possible_actions").get("last_standard_actions").getAsString());
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 4) {
+            switch (Integer.parseInt(choice)) {
+                case 1:
+                    buildUsePowerUp(game);
+                    break;
+                case 2:
+                    System.out.println(Utils.getStrings("cli", "actions", "reload_action").get("select_weapon").getAsString());
+                    selectMyReloadWeapon(game);
+                    System.out.println(Utils.getStrings("cli", "actions").get("alternative_payment").getAsString());
+                    selectAlternativePayment(game);
+                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildReload(weapon, powerUpPayment));
+                    break;
+                case 3:
+                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn());
+                    break;
+            }
+        } else {
+            System.out.println(invalidChoice);
+            selectStandardAction(game);
+        }
     }
 
     private void selectUltimateAction(@NotNull Game game) {
@@ -173,150 +236,261 @@ public class ActionManager {
         //todo: da qui reinderizza alle mosse
     }
 
-    private void selectMyFireWeapon(@NotNull Game game) {
-        List<Weapon> selectableWeapon = new ArrayList<>();
-        if (game.getSkulls() != 0)
-            game.getActualPlayer().getWeapons().parallelStream()
-                    .filter(e -> game.getActualPlayer().isALoadedGun(e)).forEach(selectableWeapon::add);
-        else selectableWeapon.addAll(game.getActualPlayer().getWeapons());
-        if (selectableWeapon.isEmpty()) {
-            System.out.println("Non hai armi con cui fare fuoco");
-            return;
-        }
-        for (int i = 0; i < selectableWeapon.size(); i++)
-            System.out.println((i + 1) + ". " + selectableWeapon.get(i).getColor().escape() + selectableWeapon.get(i).getName() +
-                    "\u001b[0m" + (game.getActualPlayer().isALoadedGun(selectableWeapon.get(i)) ? "" : " (scarica)"));
-        System.out.println((selectableWeapon.size() + 1) + ". Torna indietro");
-        //todo: inserire in weapon
-    }
-
-    private void selectMyReloadWeapon(@NotNull Game game) {
-        List<Weapon> selectableWeapon = new ArrayList<>();
-        game.getActualPlayer().getWeapons().parallelStream()
-                .filter(e -> !game.getActualPlayer().isALoadedGun(e)).forEach(selectableWeapon::add);
-        if (selectableWeapon.isEmpty()) {
-            System.out.println("Non hai armi da ricaricare");
-            return;
-        }
-        for (int i = 0; i < selectableWeapon.size(); i++)
-            System.out.println((i+1) + ". " + selectableWeapon.get(i).getColor().escape() +
-                    selectableWeapon.get(i).getName() + "\u001b[0m");
-        System.out.println((selectableWeapon.size()+1) + ". Torna indietro");
-        //todo inserire in weapon o torna indietro
-    }
-
-    private void selectSPWeapon(@NotNull Game game) {
-        if (game.getWeapons(game.getCell(destination).getColor()).isEmpty()) {
-            System.out.println("Non ci sono armi da raccogliere");
-            //todo: sistemare
-            return;
-        }
-        for (int i = 0; i < game.getWeapons(game.getCell(destination).getColor()).size(); i++)
-            System.out.println((i+1) + ". " + game.getWeapons(game.getCell(destination).getColor()).get(i).getColor().escape() +
-                    game.getWeapons(game.getCell(destination).getColor()).get(i).getName() + "\u001b[0m");
-
-        //todo insert in weapon
-    }
-
-    private void selectMyDiscardWeapon(@NotNull Game game) {
-        List<Weapon> selectableWeapon = new ArrayList<>();
-        game.getActualPlayer().getWeapons().parallelStream()
-                .filter(e -> !game.getActualPlayer().isALoadedGun(e)).forEach(selectableWeapon::add);
-        for (int i = 0; i < selectableWeapon.size(); i++)
-            System.out.println((i+1) + ". " + selectableWeapon.get(i).getColor().escape() +
-                    selectableWeapon.get(i).getName() + "\u001b[0m");
-        System.out.println((selectableWeapon.size()+1) + ". Torna indietro");
-    }
-
-    private void selectPowerUpToUse(@NotNull Game game) {
-        List<PowerUp> usablePowerUps = new ArrayList<>();
-        game.getActualPlayer().getPowerUps().stream().filter(e -> !e.getType().equals(PowerUp.Type.TAGBACK_GRENADE))
-                .forEach(usablePowerUps::add);
-        if (usablePowerUps.isEmpty()) {
-            System.out.println("Non hai powerups da utilizzare");
-            //todo: sistemare
-            return;
-        }
-        for (int i = 0; i < usablePowerUps.size(); i++)
-            System.out.println((i+1) + ". " + usablePowerUps.get(i).getAmmoColor().escape() + usablePowerUps.get(i).getType().name() +
-                    "\u001b[0m");
-        System.out.println((usablePowerUps.size() + 1) + ". Torna a \"seleziona mossa\"");
-    }
-
-    private void selectMyDestination(@NotNull Game game, int step) {
+    private void selectMyDestination(@NotNull Game game, int step) throws RemoteException, InterruptedException, FileNotFoundException {
         List<Point> possibleDestination = new ArrayList<>();
         for (int i = 0; i < Game.MAX_Y; i++)
             for (int j = 0; j < Game.MAX_X; j++)
                 if (game.getCell(new Point(i, j)) != null && game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), step))
                     possibleDestination.add(new Point(i, j));
-        for (int i = 0; i < possibleDestination.size(); i++)
-            System.out.println((i+1) + ". " + possibleDestination.get(i));
-        System.out.println((possibleDestination.size()+1) + ". Rimani fermo");
-        //todo: inserire destination
+        printDestinations(game, possibleDestination);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestination.size())
+            destination = possibleDestination.get(Integer.parseInt(choice) - 1);
+        else if (choice.charAt(0) != '*') {
+            System.out.println(invalidChoice);
+            selectMyDestination(game, step);
+        }
     }
 
-    private void selectGrabAmmoDestination(@NotNull Game game, int step) {
+    private void selectGrabAmmoDestination(@NotNull Game game, int step) throws RemoteException, InterruptedException, FileNotFoundException {
         List<Point> possibleDestination = new ArrayList<>();
         for (int i = 0; i < Game.MAX_Y; i++)
             for (int j = 0; j < Game.MAX_X; j++)
-                if (game.getCell(new Point(i, j)) != null && !game.getCell(new Point(i, j)).isSpawnPoint() &&
+                if (game.getCell(new Point(i, j)) != null && game.getCell(new Point(i, j)).getAmmoCard() != null &&
                         game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), step))
                     possibleDestination.add(new Point(i, j));
-        for (int i = 0; i < possibleDestination.size(); i++)
-            System.out.println((i+1) + ". " + possibleDestination.get(i));
-        if (!game.getCell(game.getActualPlayer().getPosition()).isSpawnPoint())
-            System.out.println((possibleDestination.size()+1) + ". Rimani fermo");
-        System.out.println(!game.getCell(game.getActualPlayer().getPosition()).isSpawnPoint() ?
-                (possibleDestination.size()+2) : (possibleDestination.size()+1) + ". Torna indietro");
-        //todo: inserisci destinatione e buildala pure qui l'action
+        printDestinations(game, possibleDestination);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestination.size())
+            Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                    .buildAmmoCardGrabAction(possibleDestination.get(Integer.parseInt(choice) - 1)));
+        else if (choice.charAt(0) != '*') {
+            System.out.println(invalidChoice);
+            selectGrabAmmoDestination(game, step);
+        }
     }
 
-    private void selectGrabWeaponDestination(@NotNull Game game, int step) {
+    private void selectGrabWeaponDestination(@NotNull Game game, int step) throws FileNotFoundException, InterruptedException {
         List<Point> possibleDestination = new ArrayList<>();
         for (int i = 0; i < Game.MAX_Y; i++)
             for (int j = 0; j < Game.MAX_X; j++)
                 if (game.getCell(new Point(i, j)) != null && game.getCell(new Point(i, j)).isSpawnPoint() &&
                         game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), step))
                     possibleDestination.add(new Point(i, j));
-        for (int i = 0; i < possibleDestination.size(); i++)
-            System.out.println((i+1) + ". " + possibleDestination.get(i));
-        if (game.getCell(game.getActualPlayer().getPosition()).isSpawnPoint())
-            System.out.println((possibleDestination.size()+1) + ". Rimane fermo");
-        System.out.println(game.getCell(game.getActualPlayer().getPosition()).isSpawnPoint() ?
-                (possibleDestination.size()+2) : (possibleDestination.size()+1) + ". Torna indietro");
-        //todo: insert in destination
-    }
-
-    private void buildMoveAction(@NotNull Game game) {
-        var action = Action.Builder.create(game.getUuid()).buildMoveAction(Objects.requireNonNull(destination));
-        try {
-            Client.API.doAction(Objects.requireNonNull(Preferences.getToken()), action);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        printDestinations(game, possibleDestination);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestination.size())
+            destination = possibleDestination.get(Integer.parseInt(choice) - 1);
+        else {
+            System.out.println(invalidChoice);
+            selectGrabWeaponDestination(game, step);
         }
     }
 
-    private void buildGrabWeaponAction(@NotNull Game game, int step) throws InterruptedException, FileNotFoundException, RemoteException {
-        selectGrabWeaponDestination(game, step);
-        selectSPWeapon(game);
-        if (game.getActualPlayer().getWeaponsSize() > 2) selectMyDiscardWeapon(game);
-        selectAlternativePayment(game);
-        var action = Action.Builder.create(game.getUuid())
-                .buildWeaponGrabAction(destination, weapon, discardedWeapon, powerUpPayment);
-        try {
-            Client.API.doAction(Objects.requireNonNull(Preferences.getToken()), action);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+    private void selectSPWeapon(@NotNull Game game) throws FileNotFoundException, RemoteException, InterruptedException {
+        for (int i = 0; i < game.getWeapons(game.getCell(destination).getColor()).size(); i++)
+            System.out.println((i+1) + ". " + game.getWeapons(game.getCell(destination).getColor()).get(i).getColor().escape() +
+                    game.getWeapons(game.getCell(destination).getColor()).get(i).name() + "\u001b[0m" + " " +
+                    Utils.getStrings("cli", "weapons_details", game.getWeapons(game.getCell(destination).getColor()).get(i).name().toLowerCase()).get("grab_cost").getAsString());
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= game.getWeapons(game.getCell(destination).getColor()).size()) {
+            weapon = game.getWeapons(game.getCell(destination).getColor()).get(Integer.parseInt(choice) - 1);
+        } else {
+            System.out.println(invalidChoice);
+            selectSPWeapon(game);
         }
     }
 
-    private void buildReloadAction(@NotNull Game game) {
+    private void selectMyDiscardWeapon(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        List<Weapon> selectableWeapon = new ArrayList<>(game.getActualPlayer().getWeapons());
+        for (int i = 0; i < selectableWeapon.size(); i++)
+            System.out.println((i+1) + ". " + selectableWeapon.get(i).getColor().escape() +
+                    selectableWeapon.get(i).name() + "\u001b[0m");
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= game.getWeapons(game.getCell(destination).getColor()).size()) {
+            discardedWeapon = selectableWeapon.get(Integer.parseInt(choice) - 1);
+        } else {
+            System.out.println(invalidChoice);
+            selectMyDiscardWeapon(game);
+        }
+    }
 
+    private void selectMyFireWeapon(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        List<Weapon> selectableWeapon = new ArrayList<>();
+        if (game.getSkulls() != 0)
+            game.getActualPlayer().getWeapons().parallelStream()
+                    .filter(e -> game.getActualPlayer().isALoadedGun(e)).forEach(selectableWeapon::add);
+        else selectableWeapon.addAll(game.getActualPlayer().getWeapons());
+        if (selectableWeapon.isEmpty())
+            System.out.println("Non hai armi con cui fare fuoco");
+        for (int i = 0; i < selectableWeapon.size(); i++)
+            System.out.println((i + 1) + ". " + selectableWeapon.get(i).getColor().escape() + selectableWeapon.get(i).name() +
+                    "\u001b[0m" + (game.getActualPlayer().isALoadedGun(selectableWeapon.get(i)) ? "" : " (scarica)"));
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableWeapon.size())
+            weapon = selectableWeapon.get(Integer.parseInt(choice) - 1);
+        else {
+            System.out.println(invalidChoice);
+            selectMyFireWeapon(game);
+        }
+    }
+
+    private void buildUsePowerUp(@NotNull Game game) throws FileNotFoundException, InterruptedException, RemoteException {
+        System.out.println(Utils.getStrings("cli", "actions", "use_power_up_action").get("select_power_up").getAsString());
+        selectPowerUpToUse(game);
+        switch (powerUpType) {
+            case TARGETING_SCOPE:
+                System.out.println(Utils.getStrings("cli", "actions", "use_power_up_action", "targeting_scope").get("select_target").getAsString());
+                selectTargetingScopeTarget(game);
+                Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUpType, color, destination, target));
+                break;
+            case NEWTON:
+                System.out.println(Utils.getStrings("cli", "actions", "use_power_up_action", "newton").get("select_target").getAsString());
+                selectNewtonTarget(game);
+                System.out.println(Utils.getStrings("cli", "actions", "use_power_up_action", "newton").get("select_square").getAsString());
+                selectNewtonDestination(game);
+                Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUpType, color, destination, target));
+                break;
+            case TELEPORTER:
+                System.out.println(Utils.getStrings("cli", "actions", "use_power_up_action", "teleporter").get("select_square").getAsString());
+                selectTeleporterDestination(game);
+                Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUpType, color, destination, target));
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void selectPowerUpToUse(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        List<PowerUp> usablePowerUps = new ArrayList<>();
+        game.getActualPlayer().getPowerUps().stream().filter(e -> !e.getType().equals(PowerUp.Type.TAGBACK_GRENADE))
+                .forEach(usablePowerUps::add);
+        if (usablePowerUps.isEmpty()) System.out.println("Non hai powerups da utilizzare");
+        for (int i = 0; i < usablePowerUps.size(); i++)
+            System.out.println((i+1) + ". " + usablePowerUps.get(i).getAmmoColor().escape() + usablePowerUps.get(i).getType().name() +
+                    "\u001b[0m");
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= usablePowerUps.size()) {
+            powerUpType = usablePowerUps.get(Integer.parseInt(choice) - 1).getType();
+            color = usablePowerUps.get(Integer.parseInt(choice) - 1).getAmmoColor();
+        } else {
+            System.out.println(invalidChoice);
+            selectMyFireWeapon(game);
+        }
+    }
+
+    private void selectTargetingScopeTarget(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        List<UUID> possibleTargets = new ArrayList<>(game.getLastsDamaged());
+        if (possibleTargets.isEmpty()) System.out.println("Non hai bersagli validi");
+        printTargets(game, possibleTargets);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleTargets.size())
+            target = possibleTargets.get(Integer.parseInt(choice) - 1);
+        else {
+            System.out.println(invalidChoice);
+            selectTargetingScopeTarget(game);
+        }
+    }
+
+    private void selectNewtonTarget(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        List<UUID> possibleTargets = new ArrayList<>();
+        game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer())).map(Player::getUuid)
+                .forEach(possibleTargets::add);
+        printTargets(game, possibleTargets);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleTargets.size())
+            target = possibleTargets.get(Integer.parseInt(choice) - 1);
+        else {
+            System.out.println(invalidChoice);
+            selectNewtonTarget(game);
+        }
+    }
+
+    private void selectNewtonDestination(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        List<Point> possibleDestinations = new ArrayList<>();
+        for (int i = 0; i < Game.MAX_Y; i++)
+            for (int j = 0; j < Game.MAX_X; j++) {
+                var point = new Point(i, j);
+                for (Bounds.Direction dir : Bounds.Direction.values())
+                    if (game.getPlayers().stream().filter(e -> e.getUuid().equals(target))
+                            .allMatch(e -> e.isPointAtMaxDistanceInDirection(point, game.getCells(), 2, dir)))
+                        possibleDestinations.add(point);
+            }
+        for (int i = 0; i < possibleDestinations.size(); i++)
+            System.out.println((i + 1) + ". " + possibleDestinations.get(i));
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestinations.size())
+            destination = possibleDestinations.get(Integer.parseInt(choice) - 1);
+        else {
+            System.out.println(invalidChoice);
+            selectNewtonDestination(game);
+        }
+    }
+
+    private void selectTeleporterDestination(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        List<Point> possibleDestinations = new ArrayList<>();
+        for (int i = 0; i < Game.MAX_Y; i++)
+            for (int j = 0; j < Game.MAX_X; j++)
+                if (game.getCell(new Point(i, j)) != null)
+                    possibleDestinations.add(new Point(i, j));
+        printDestinations(game, possibleDestinations);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestinations.size())
+            destination = possibleDestinations.get(Integer.parseInt(choice) - 1);
+        else {
+            System.out.println(invalidChoice);
+            selectTeleporterDestination(game);
+        }
+    }
+
+    private void selectMyReloadWeapon(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        List<Weapon> selectableWeapons = new ArrayList<>();
+        game.getActualPlayer().getWeapons().parallelStream()
+                .filter(e -> !game.getActualPlayer().isALoadedGun(e)).forEach(selectableWeapons::add);
+        if (selectableWeapons.isEmpty())
+            System.out.println("Non hai armi da ricaricare");
+        printWeapons(game, selectableWeapons);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableWeapons.size())
+            weapon = selectableWeapons.get(Integer.parseInt(choice) - 1);
+        else {
+            System.out.println(invalidChoice);
+            selectMyReloadWeapon(game);
+        }
     }
 
     private @NotNull String getLine() throws InterruptedException {
         var line = new Scanner(System.in).nextLine();
         if (line.equals("*")) throw new InterruptedException();
         return line;
+    }
+
+    private void printDestinations(@NotNull Game game, @NotNull List<Point> possibleDestination) throws FileNotFoundException {
+        for (int i = 0; i < possibleDestination.size(); i++)
+            System.out.println((i + 1) + ". " + (possibleDestination.get(i).equals(game.getActualPlayer().getPosition()) ?
+                    "Rimani fermo" : possibleDestination.get(i)));
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+    }
+
+    private void printTargets(@NotNull Game game, @NotNull List<UUID> possibleTargets) throws FileNotFoundException {
+        for (int i = 0; i < possibleTargets.size(); i++) {
+            var uuid = possibleTargets.get(i);
+            game.getPlayers().stream().filter(e -> e.getUuid().equals(uuid))
+                    .forEach(e -> System.out.println((possibleTargets.indexOf(uuid) + 1) + ". " +
+                            e.getBoardType().escape() + e.getNickname() + stdColor));
+        }
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+    }
+
+    private void printWeapons(@NotNull Game game, @NotNull List<Weapon> selectableWeapons) throws FileNotFoundException {
+        for (int i = 0; i < selectableWeapons.size(); i++)
+            System.out.println((i+1) + ". " + selectableWeapons.get(i).getColor().escape() +
+                    selectableWeapons.get(i).name() + "\u001b[0m");
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
     }
 }

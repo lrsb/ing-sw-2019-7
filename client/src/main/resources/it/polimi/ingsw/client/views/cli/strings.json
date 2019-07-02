@@ -3,10 +3,12 @@
         "select_action": "Scegli la mossa da effettuare:\n",
         "back_to_menu": "*. Torna al menu iniziale",
         "possible_actions": {
-            "standard_actions": "1. Muoviti\n2. Raccogli ammocard\n3. Raccogli arma\n4. Spara\n5. Usa power up\n6. Passa il turno\n",
+            "standard_actions": "1. Muoviti (massimo 3 passi)\n2. (Movimento opzionale di 1 passo +) Raccogli ammocard\n3. (Movimento opzionale di 1 passo +) Raccogli arma\n4. Spara\n5. Usa power up\n6. Passa il turno\n",
+            "standard_actions_plus1": "1. Muoviti (massimo 3 passi)\n2. (Movimento opzionale di max 2 passi +) Raccogli ammocard\n3. (Movimento opzionale di max 2 passi +) Raccogli arma\n4. Spara\n5. Usa power up\n6. Passa il turno\n",
+            "standard_actions_plus2": "1. Muoviti (massimo 3 passi)\n2. (Movimento opzionale di max 2 passi +) Raccogli ammocard\n3. (Movimento opzionale di max 2 passi +) Raccogli arma\n4. (Movimento opzionale di 1 passo +) Spara\n5. Usa power up\n6. Passa il turno\n",
             "last_standard_actions": "1. Usa power up\n2. Ricarica arma\n3. Passa il turno\n",
-            "frenzy_actions": "1. Muoviti\n2. Raccogli ammocard\n3. Raccogli arma\n4. Eventualmente ricarica, e spara\n5. Usa power up\n6. Passa il turno\n",
-            "last_turn_actions": "1. Raccogli ammocard\n2. Raccogli arma\n3. Eventualmente ricarica, e spara\n4. Usa power up\n5. Passa il turno\n"
+            "frenzy_actions": "1. Muoviti (massimo 4 passi)\n2. (Movimento opzionale di max 2 passi +)Raccogli ammocard\n3. (Movimento opzionale di max 2 passi +)Raccogli arma\n4. Eventualmente ricarica, (movimento opzionale di 1 passo) e spara\n5. Usa power up\n6. Passa il turno\n",
+            "last_turn_actions": "1. (Movimento opzionale di max 3 passi +) Raccogli ammocard\n2. (Movimento opzionale di max 3 passi +) Raccogli arma\n3. Eventualmente ricarica, (movimento opzionale di max 2 passi) e spara\n4. Usa power up\n5. Passa il turno\n"
         },
         "actions": {
             "alternative_payment": "Seleziona le power ups che vuoi utilizzare come pagamento alternativo:\n",
@@ -17,12 +19,9 @@
                 "move_message": " si muove in "
             },
             "grab_action": {
-                "grab_move1": "Puoi muoverti di 1 casella al massimo\n",
-                "grab_move2": "Puoi muoverti di 2 caselle al massimo\n",
-                "grab_move3": "Puoi muoverti di 3 caselle al massimo\n",
                 "grab_ammo_square": "Scegli la cella nella quale desideri raccogliere l'ammocard:\n",
                 "grab_weapon": {
-                    "select_square": "Scegli la cella spawnpoint nella quale desideri recuperare l'arma:\n1. Spawnpoint Rosso\n2. Spawnpoint Giallo\n3. Spawnpoint Blu\n",
+                    "select_square": "Scegli la cella spawnpoint nella quale desideri recuperare l'arma:\n",
                     "select_weapon": "Scegli l'arma da raccogliere:\n",
                     "discard_weapon": "Hai già 3 armi, quale arma vuoi scartare per far spazio?\n",
                     "alternative_payment_request": "Vuoi utilizzare delle power ups per pagare il costo per raccogliere l'arma?\n1. Sì\n2. No\n"

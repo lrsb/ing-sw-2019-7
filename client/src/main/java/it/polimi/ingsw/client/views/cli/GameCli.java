@@ -38,13 +38,13 @@ public class GameCli {
                 for (int u = 0; u < game.getPlayers().size(); u++) {
                     var position = game.getPlayers().get(u).getPosition();
                     if (position != null && position.getX() == i && position.getY() == j) {
-                        cellCli[4 + u][15].setAll('P', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[4 + u][16].setAll('l', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[4 + u][17].setAll('a', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[4 + u][18].setAll('y', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[4 + u][19].setAll('e', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[4 + u][20].setAll('r', game.getPlayers().get(u).getBoardType().escape());
-                        cellCli[4 + u][21].setAll((char) (u + 48), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 0) cellCli[4 + u][15].setAll(game.getPlayers().get(u).getNickname().charAt(0), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 1) cellCli[4 + u][16].setAll(game.getPlayers().get(u).getNickname().charAt(1), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 2) cellCli[4 + u][17].setAll(game.getPlayers().get(u).getNickname().charAt(2), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 3) cellCli[4 + u][18].setAll(game.getPlayers().get(u).getNickname().charAt(3), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 4) cellCli[4 + u][19].setAll(game.getPlayers().get(u).getNickname().charAt(4), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 5) cellCli[4 + u][20].setAll(game.getPlayers().get(u).getNickname().charAt(5), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 6) cellCli[4 + u][21].setAll(game.getPlayers().get(u).getNickname().charAt(6), game.getPlayers().get(u).getBoardType().escape());
                     }
                 }
                 for (int k = 0; k < cellCli.length; k++)
@@ -285,13 +285,13 @@ public class GameCli {
                 .forEach(f -> System.out.print(f.getBoardType().escape() + "■ " + "\u001b[0m")));
         System.out.println();
         System.out.print(RED.escape() + "■ " + "\u001b[0m" + "Armi SP rosso: " + game.getWeapons(RED).stream()
-                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m").collect(Collectors.joining(", ")));
+                .map(e -> e.getColor().escape() + e.name() + "\u001b[0m").collect(Collectors.joining(", ")));
         System.out.println();
         System.out.print(YELLOW.escape() + "■ " + "\u001b[0m" + "Armi SP giallo: " + game.getWeapons(YELLOW).stream()
-                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m").collect(Collectors.joining(", ")));
+                .map(e -> e.getColor().escape() + e.name() + "\u001b[0m").collect(Collectors.joining(", ")));
         System.out.println();
         System.out.print(BLUE.escape() + "■ " + "\u001b[0m" + "Armi SP blu: " + game.getWeapons(BLUE).stream()
-                .map(e -> e.getColor().escape() + e.getName() + "\u001b[0m").collect(Collectors.joining(", ")));
+                .map(e -> e.getColor().escape() + e.name() + "\u001b[0m").collect(Collectors.joining(", ")));
         System.out.println();
         System.out.println();
         System.out.println("_____________________________________________________________________________");
@@ -307,9 +307,9 @@ public class GameCli {
                     e.getColoredCubes(AmmoCard.Color.RED) + "   " + e.getColoredCubes(AmmoCard.Color.YELLOW) + "   " + e.getColoredCubes(AmmoCard.Color.BLUE), e.getDeaths(),
                     e.getPoints());
             System.out.println();
-            System.out.print("ARMI: " + e.getWeapons().stream().map(c -> c.getColor().escape() + c.getName().toString() + "\u001b[0m").collect(Collectors.joining(", ")));
+            System.out.print("ARMI: " + e.getWeapons().stream().map(c -> c.getColor().escape() + c.name().toString() + "\u001b[0m").collect(Collectors.joining(", ")));
             System.out.println();
-            System.out.print("POWERUP: " + e.getPowerUps().stream().map(d -> d.getAmmoColor().escape() + d.getType().toString() + "\u001b[0m").collect(Collectors.joining(", ")));
+            System.out.print("N° POWERUP: " + e.getPowerUps().size());
             System.out.println();
             System.out.print("COLPI SUBITI: ");
             e.getDamagesTaken().forEach(f -> game.getPlayers().parallelStream().filter(g -> g.getUuid().equals(f))
