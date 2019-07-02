@@ -246,6 +246,7 @@ public class GameCli {
     }
 
     public static @NotNull Segue preGame(@NotNull Game game) {
+        //TODO: add timer reprint
         GameCli.game = game;
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
         try {
@@ -260,7 +261,8 @@ public class GameCli {
         } catch (RemoteException ex) {
             System.out.println(ex.getMessage());
         }
-        return Segue.of("lobby");
+        printGame(game);
+        return null;
     }
 
     public static @NotNull Segue postGame() {
@@ -309,7 +311,7 @@ public class GameCli {
                     e.getColoredCubes(AmmoCard.Color.RED) + "   " + e.getColoredCubes(AmmoCard.Color.YELLOW) + "   " + e.getColoredCubes(AmmoCard.Color.BLUE), e.getDeaths(),
                     e.getPoints());
             System.out.println();
-            System.out.print("ARMI: " + e.getWeapons().stream().map(c -> c.getColor().escape() + c.name().toString() + "\u001b[0m").collect(Collectors.joining(", ")));
+            System.out.print("ARMI: " + e.getWeapons().stream().map(c -> c.getColor().escape() + c.name() + "\u001b[0m").collect(Collectors.joining(", ")));
             System.out.println();
             System.out.print("N° POWERUP: " + e.getPowerUps().size());
             System.out.println();

@@ -26,6 +26,15 @@ public class PregameCli {
      * @return The next view
      */
     public static @NotNull Segue mainMenu() {
+        if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
+        try {
+            return Segue.of("preGame", GameCli.class, Client.API.getActiveGame(Preferences.getOptionalToken().get()));
+        } catch (UserRemoteException ex) {
+            ex.printStackTrace();
+            return Segue.of("login", StartupCli.class);
+        } catch (RemoteException ex) {
+            System.out.println(ex.getMessage());
+        }
         System.out.println("Adrenalina");
         System.out.println(" ");
         System.out.println("1: nuova partita");

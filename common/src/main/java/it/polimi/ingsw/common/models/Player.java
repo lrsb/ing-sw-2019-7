@@ -34,7 +34,6 @@ public class Player implements Displayable, Serializable {
     private @NotNull int[] cubes = {3, 3, 3};
     private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();
     private @NotNull HashMap<Weapon, Boolean> weapons = new HashMap<>();
-    private boolean isFirstMove = true;
     private boolean easyBoard = false;
 
     public Player(@NotNull User user, @NotNull BoardType boardType) {
@@ -172,14 +171,6 @@ public class Player implements Displayable, Serializable {
     public void addMark(@NotNull Player avenger) {
         if (marksTaken.parallelStream().filter(e -> e.equals(avenger.getUuid())).count() < 3)
             marksTaken.add(avenger.getUuid());
-    }
-
-    public void setPlayed() {
-        isFirstMove = false;
-    }
-
-    public boolean isFirstMove() {
-        return isFirstMove;
     }
 
     private void addCube(@NotNull AmmoCard.Color color) {

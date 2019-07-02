@@ -29,7 +29,7 @@ public class GameBoard extends AbstractBoard {
                 sprite.getY() > 175 && sprite.getY() + sprite.getDimension().getHeight() / 2 < 744) {
             var x = (int) ((sprite.getX() + sprite.getDimension().getWidth() / 2 - 205) / 220);
             var y = (int) ((sprite.getY() + sprite.getDimension().getWidth() / 2 - 175) / 190);
-            return new Point(x, y);
+            return new Point(y, x);
         } else return null;
     }
 

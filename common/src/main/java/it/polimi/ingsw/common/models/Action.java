@@ -117,7 +117,7 @@ public class Action implements Serializable {
      */
 
     public enum Type implements Serializable {
-        NOTHING, MOVE, GRAB_WEAPON, GRAB_AMMOCARD, FIRE, USE_POWER_UP, RELOAD, NEXT_TURN, REBORN
+        MOVE, GRAB_WEAPON, GRAB_AMMOCARD, FIRE, USE_POWER_UP, RELOAD, NEXT_TURN, REBORN
     }
 
     public static class Builder {

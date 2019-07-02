@@ -322,7 +322,7 @@ public class GameImpl extends Game implements Serializable {
                 doAction(Action.Builder.create(getUuid()).buildReborn(getActualPlayer().getPowerUps().get(0).getType(),
                     getActualPlayer().getPowerUps().get(0).getAmmoColor()));
             else return false;
-        else switch (Opt.of(action.getActionType()).get(Action.Type.NOTHING)) {
+        else switch (action.getActionType()) {
             case MOVE:
                 if (!responsivePlayers.isEmpty()) throw new ActionDeniedException();
                 clearLastsDamaged();

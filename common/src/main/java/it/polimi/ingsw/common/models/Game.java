@@ -114,14 +114,6 @@ public class Game implements Displayable, Serializable {
         throw new PlayerNotFoundException();
     }
 
-    /**
-     * @return true if is the first turn of the current player
-     */
-    //non basterebbe dire che seqPlay < players.size()
-    public boolean isFirstMove() {
-        return getActualPlayer().isFirstMove();
-    }
-
     public boolean isLastTurn() {
         return lastTurn;
     }
