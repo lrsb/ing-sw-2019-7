@@ -4,8 +4,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
-import it.polimi.ingsw.client.controllers.game.GameViewController;
-import it.polimi.ingsw.client.controllers.game.PdfViewController;
 import it.polimi.ingsw.client.controllers.startup.LoginViewController;
 import it.polimi.ingsw.client.views.cli.GameCli;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +17,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 public class Utils {
@@ -30,15 +31,16 @@ public class Utils {
         }
     }
 
-    public static void swingOpenRules() {
+    public static void swingOpenRules() throws IOException, URISyntaxException {
         //noinspection unchecked
         var list = new JList(new String[]{"Regole gioco", "Regole armi"});
         JOptionPane.showMessageDialog(null, list, "Che regole vuoi visualizzare?", JOptionPane.PLAIN_MESSAGE);
         var index = list.getSelectedIndices();
         if (index.length > 0) {
             if (index[0] == 0)
-                new PdfViewController(GameViewController.class.getResource("rules.pdf").getFile()).setVisible(true);
-            else new PdfViewController(GameViewController.class.getResource("weapons.pdf").getFile()).setVisible(true);
+                Desktop.getDesktop().browse(new URI("https://czechgames.com/files/rules/adrenaline-rules-it.pdf"));
+            else
+                Desktop.getDesktop().browse(new URI("https://czechgames.com/files/rules/adrenaline-rules-weapons-it.pdf"));
         }
     }
 

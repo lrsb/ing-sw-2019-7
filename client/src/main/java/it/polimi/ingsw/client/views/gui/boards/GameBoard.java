@@ -221,8 +221,8 @@ public class GameBoard extends AbstractBoard {
         var random = new SecureRandom();
         addAllSprite(game.getPlayers().parallelStream().filter(e -> e.getPosition() != null).map(e -> {
             var optSprite = getSprites().parallelStream().filter(f -> f.getAssociatedObject() instanceof Player && f.getAssociatedObject().equals(e)).findAny();
-            var x = 250 + e.getPosition().x * 220 - 50 + random.nextInt(100);
-            var y = 210 + e.getPosition().y * 190 + random.nextInt(60);
+            var x = 250 + e.getPosition().y * 220 - 50 + random.nextInt(100);
+            var y = 210 + e.getPosition().x * 190 + random.nextInt(60);
             if (optSprite.isPresent()) {
                 optSprite.get().setTag("p:" + x + "," + y + ";static");
                 optSprite.get().moveTo(new LinearPointInterpolator(optSprite.get().getPosition(), new Point(x, y), 400) {

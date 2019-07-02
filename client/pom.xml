@@ -61,12 +61,6 @@
             <version>13-ea+8</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.icepdf.os</groupId>
-            <artifactId>icepdf-viewer</artifactId>
-            <version>6.2.2</version>
-        </dependency>
-
 
         <dependency>
             <groupId>it.polimi.ingsw</groupId>

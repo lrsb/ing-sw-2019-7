@@ -22,6 +22,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.Objects;
 import java.util.UUID;
@@ -103,7 +104,11 @@ public class GameViewController extends BaseViewController implements GameBoardL
         });
 
         playersBoardButton.addActionListener(e -> {
-            Utils.swingOpenRules();
+            try {
+                Utils.swingOpenRules();
+            } catch (URISyntaxException | IOException ex) {
+                ex.printStackTrace();
+            }
             if (playersBoardsViewController != null) playersBoardsViewController.dispose();
             playersBoardsViewController = new PlayersBoardsViewController(gameBoard.getGame());
             playersBoardsViewController.setVisible(true);

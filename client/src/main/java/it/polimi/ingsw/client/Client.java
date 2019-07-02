@@ -1,27 +1,16 @@
 package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.client.controllers.base.NavigationController;
-import it.polimi.ingsw.client.controllers.game.GameViewController;
+import it.polimi.ingsw.client.controllers.startup.ConnTypeViewController;
 import it.polimi.ingsw.client.controllers.startup.LoginViewController;
 import it.polimi.ingsw.client.network.ClientRestImpl;
 import it.polimi.ingsw.client.views.cli.GameCli;
 import it.polimi.ingsw.client.views.cli.base.CliMenuManager;
-import it.polimi.ingsw.common.models.Action;
-import it.polimi.ingsw.common.models.Game;
-import it.polimi.ingsw.common.models.Room;
-import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.API;
-import it.polimi.ingsw.common.network.GameListener;
-import it.polimi.ingsw.common.network.RoomListener;
-import it.polimi.ingsw.server.models.GameImpl;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.UUID;
 
 public class Client {
     public static final int SOCKET_PORT = 0xCAFE;
@@ -54,8 +43,8 @@ public class Client {
             }
         }
         //TODO
-        //new NavigationController(ConnTypeViewController.class);
-        Client.API = new API() {
+        new NavigationController(ConnTypeViewController.class);
+        /*Client.API = new API() {
             @Override
             public @NotNull User.Auth authUser(@NotNull String nickname, @NotNull String password) throws RemoteException {
                 return null;
@@ -147,6 +136,6 @@ public class Client {
 
             new NavigationController(GameViewController.class, game);
             break;
-        }
+        }*/
     }
 }
