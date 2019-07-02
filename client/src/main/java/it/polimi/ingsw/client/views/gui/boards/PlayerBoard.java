@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.views.gui.boards;
 
 import it.polimi.ingsw.client.views.gui.sprite.Sprite;
+import it.polimi.ingsw.common.models.AmmoCard;
 import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.models.Player;
 import it.polimi.ingsw.common.others.Utils;
@@ -57,6 +58,27 @@ public class PlayerBoard extends AbstractBoard {
                 target.setTag("p:" + "856" + ",351");
                 target.setDraggable(true);
                 addSprite(target);
+            }
+        }
+        var marks = player.getMarksTaken().stream().map(e -> game.getPlayers().parallelStream() //funzionerà quando andrà la applyColorToMask
+                .filter(f -> e.equals(f.getUuid())).findAny().get()).map(Player::getBoardType).collect(Collectors.toList());
+        for (var i = 0; i < marks.size(); i++) {
+            var x = 575 + i * 28;
+            var damage = new Sprite(x, 30, 24, 36, applyColorToMask(mask, marks.get(i).getColor()));
+            damage.setTag("p:" + x + ",368");
+            damage.setDraggable(false);
+            addSprite(damage);
+        }
+
+        for (var i = 0; i < AmmoCard.Color.values().length; i++) { //AmmoCard.Color.values().length
+            for (int j = 0; j < player.getColoredCubes(AmmoCard.Color.values()[i]); j++) { // player.getColoredCubes(AmmoCard.Color.values()[i])
+                var cubes = Utils.readPngImage(AmmoCard.class, AmmoCard.Color.values()[i].name().substring(0, 3));
+                var x = 963 + j * 66;
+                var y = 139 + i * 199;
+                var cube = new Sprite(x, y, 50, 50, cubes);
+                cube.setTag("p:" + x + "," + y);
+                cube.setDraggable(true);
+                addSprite(cube);
             }
         }
     }
