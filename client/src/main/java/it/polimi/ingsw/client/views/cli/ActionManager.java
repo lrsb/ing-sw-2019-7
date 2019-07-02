@@ -363,7 +363,8 @@ public class ActionManager {
             System.out.println("Non hai armi con cui fare fuoco");
         for (int i = 0; i < selectableWeapon.size(); i++)
             System.out.println((i + 1) + ". " + selectableWeapon.get(i).getColor().escape() + selectableWeapon.get(i).name() +
-                    "\u001b[0m" + (game.getActualPlayer().isALoadedGun(selectableWeapon.get(i)) ? "" : " (scarica)"));
+                    "\u001b[0m" + (game.getActualPlayer().isALoadedGun(selectableWeapon.get(i)) ? "" : " (scarica) " +
+                    Utils.getStrings("cli", "weapons_details", selectableWeapon.get(i).name().toLowerCase()).get("reload_cost").getAsString()));
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableWeapon.size())
@@ -490,7 +491,11 @@ public class ActionManager {
                 .filter(e -> !game.getActualPlayer().isALoadedGun(e)).forEach(selectableWeapons::add);
         if (selectableWeapons.isEmpty())
             System.out.println("Non hai armi da ricaricare");
-        printWeapons(game, selectableWeapons);
+        for (int i = 0; i < selectableWeapons.size(); i++)
+            System.out.println((i+1) + ". " + selectableWeapons.get(i).getColor().escape() +
+                selectableWeapons.get(i).name() + "\u001b[0m" +
+                Utils.getStrings("cli", "weapons_details", selectableWeapons.get(i).name().toLowerCase()).get("reload_cost").getAsString());
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableWeapons.size())
             weapon = selectableWeapons.get(Integer.parseInt(choice) - 1);
@@ -520,13 +525,6 @@ public class ActionManager {
                     .forEach(e -> System.out.println((possibleTargets.indexOf(uuid) + 1) + ". " +
                             e.getBoardType().escape() + e.getNickname() + stdColor));
         }
-        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
-    }
-
-    private void printWeapons(@NotNull Game game, @NotNull List<Weapon> selectableWeapons) throws FileNotFoundException {
-        for (int i = 0; i < selectableWeapons.size(); i++)
-            System.out.println((i+1) + ". " + selectableWeapons.get(i).getColor().escape() +
-                    selectableWeapons.get(i).name() + "\u001b[0m");
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
     }
 }
