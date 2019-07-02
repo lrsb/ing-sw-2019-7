@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 public abstract class AbstractBoard extends SpriteBoard implements SpriteBoardListener {
     private @Nullable GameBoardListener gameBoardListener;
@@ -39,6 +40,14 @@ public abstract class AbstractBoard extends SpriteBoard implements SpriteBoardLi
             sprite.moveTo(new LinearPointInterpolator(sprite.getPosition(), new Point(Integer.parseInt(ints[0]), Integer.parseInt(ints[1])), 250) {
             });
         }
+    }
+
+    @Override
+    public void onSpriteClicked(@NotNull Sprite sprite) {
+    }
+
+    @Override
+    public void onSpriteHovered(@NotNull List<Sprite> sprites) {
     }
 
     public void setBoardListener(@Nullable GameBoardListener boardListener) {

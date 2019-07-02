@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable {
     private static final int FRAMERATE = 60;
@@ -225,6 +226,12 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
                     e.moveTo(reversedPoint.x - relativePoint.x, reversedPoint.y - relativePoint.y);
                 }
             });
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            Optional.ofNullable(boardListener)
+                    .ifPresent(l -> l.onSpriteHovered(sprites.parallelStream().filter(f -> contained(f, e)).collect(Collectors.toList())));
         }
 
         @Override
