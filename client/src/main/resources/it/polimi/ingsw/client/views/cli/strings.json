@@ -7,7 +7,7 @@
             "standard_actions_plus1": "1. Muoviti (massimo 3 passi)\n2. (Movimento opzionale di max 2 passi +) Raccogli ammocard\n3. (Movimento opzionale di max 2 passi +) Raccogli arma\n4. Spara\n5. Usa power up\n6. Passa il turno\n",
             "standard_actions_plus2": "1. Muoviti (massimo 3 passi)\n2. (Movimento opzionale di max 2 passi +) Raccogli ammocard\n3. (Movimento opzionale di max 2 passi +) Raccogli arma\n4. (Movimento opzionale di 1 passo +) Spara\n5. Usa power up\n6. Passa il turno\n",
             "last_standard_actions": "1. Usa power up\n2. Ricarica arma\n3. Passa il turno\n",
-            "frenzy_actions": "1. Muoviti (massimo 4 passi)\n2. (Movimento opzionale di max 2 passi +)Raccogli ammocard\n3. (Movimento opzionale di max 2 passi +)Raccogli arma\n4. Eventualmente ricarica, (movimento opzionale di 1 passo) e spara\n5. Usa power up\n6. Passa il turno\n",
+            "frenzy_actions": "1. Muoviti (massimo 4 passi)\n2. (Movimento opzionale di max 2 passi +) Raccogli ammocard\n3. (Movimento opzionale di max 2 passi +) Raccogli arma\n4. Eventualmente ricarica, (movimento opzionale di 1 passo) e spara\n5. Usa power up\n6. Passa il turno\n",
             "last_turn_actions": "1. (Movimento opzionale di max 3 passi +) Raccogli ammocard\n2. (Movimento opzionale di max 3 passi +) Raccogli arma\n3. Eventualmente ricarica, (movimento opzionale di max 2 passi) e spara\n4. Usa power up\n5. Passa il turno\n"
         },
         "actions": {

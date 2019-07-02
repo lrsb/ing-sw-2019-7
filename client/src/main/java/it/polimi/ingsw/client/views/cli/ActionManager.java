@@ -152,24 +152,25 @@ public class ActionManager {
     }
 
     private void selectStandardAction(@NotNull Game game) throws InterruptedException, FileNotFoundException, RemoteException {
-        System.out.println(Utils.getStrings("cli", "possible_actions").get(game.getActualPlayer().getDamagesTaken().size() < 3 ?
+        if (game.getSkulls() > 0) System.out.println(Utils.getStrings("cli", "possible_actions").get(game.getActualPlayer().getDamagesTaken().size() < 3 ?
                 "standard_actions" : game.getActualPlayer().getDamagesTaken().size() < 6 ? "standard_actions_plus1" :
                 "standard_actions_plus2").getAsString());
+        else System.out.println(Utils.getStrings("cli", "possible_actions").get("frenzy_actions"));
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 7) {
             switch (Integer.parseInt(choice)) {
                 case 1:
                     System.out.println(Utils.getStrings("cli", "actions", "move_action").get("select_square").getAsString());
-                    selectMyDestination(game, 3);
+                    selectMyDestination(game, game.getSkulls() > 0 ? 3 : 4);
                     Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildMoveAction(destination));
                     break;
                 case 2:
                     System.out.println(Utils.getStrings("cli", "actions", "grab_action").get("grab_ammo_square").getAsString());
-                    selectGrabAmmoDestination(game, game.getActualPlayer().getDamagesTaken().size() < 3 ? 1 : 2);
+                    selectGrabAmmoDestination(game, game.getActualPlayer().getDamagesTaken().size() > 2 || game.getSkulls() == 0 ? 2 : 1);
                     break;
                 case 3:
                     System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("select_square").getAsString());
-                    selectGrabWeaponDestination(game, game.getActualPlayer().getDamagesTaken().size() < 3 ? 1 : 2);
+                    selectGrabWeaponDestination(game, game.getActualPlayer().getDamagesTaken().size() > 2 || game.getSkulls() == 0 ? 2 : 1);
                     System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("select_weapon").getAsString());
                     selectSPWeapon(game);
                     if (game.getActualPlayer().getWeaponsSize() > 2) {
@@ -184,7 +185,7 @@ public class ActionManager {
                 case 4:
                     System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_weapon").getAsString());
                     selectMyFireWeapon(game);
-                    if (game.getActualPlayer().getDamagesTaken().size() > 5) {
+                    if (game.getActualPlayer().getDamagesTaken().size() > 5 || game.getSkulls() == 0) {
                         System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_move_square").getAsString());
                         selectMyDestination(game, 1);
                     } else destination = game.getActualPlayer().getPosition();
@@ -228,12 +229,47 @@ public class ActionManager {
         }
     }
 
-    private void selectUltimateAction(@NotNull Game game) {
-        System.out.println("1. Muoviti (opzionalmente e di massimo 3 passi) e raccogli rifornimenti\n2. " +
-                "Muoviti (opzionalmente e di massimo 3 passi) e raccogli un'arma\n3. " +
-                "Muoviti (opzionalmente e di massimo 2 passi), ricarica se l'arma che vuoi usare è scarica " +
-                "e spara\n4. Usa una powerup\n5. Passa il turno");
-        //todo: da qui reinderizza alle mosse
+    private void selectUltimateAction(@NotNull Game game) throws FileNotFoundException, InterruptedException, RemoteException {
+        System.out.println(Utils.getStrings("cli", "possible_actions").get("last_turn_actions").getAsString());
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 6) {
+            switch (Integer.parseInt(choice)) {
+                case 1:
+                    System.out.println(Utils.getStrings("cli", "actions", "grab_action").get("grab_ammo_square").getAsString());
+                    selectGrabAmmoDestination(game, 3);
+                    break;
+                case 2:
+                    System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("select_square").getAsString());
+                    selectGrabWeaponDestination(game, 3);
+                    System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("select_weapon").getAsString());
+                    selectSPWeapon(game);
+                    if (game.getActualPlayer().getWeaponsSize() > 2) {
+                        System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("discard_weapon").getAsString());
+                        selectMyDiscardWeapon(game);
+                    }
+                    System.out.println(Utils.getStrings("cli", "actions").get("alternative_payment").getAsString());
+                    selectAlternativePayment(game);
+                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                            .buildWeaponGrabAction(destination, weapon, discardedWeapon, powerUpPayment));
+                    break;
+                case 3:
+                    System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_weapon").getAsString());
+                    selectMyFireWeapon(game);
+                    System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_move_square").getAsString());
+                    selectMyDestination(game, 2);
+                    //todo fuoco con armi
+                    break;
+                case 4:
+                    buildUsePowerUp(game);
+                    break;
+                case 5:
+                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn());
+                    break;
+            }
+        } else {
+            System.out.println(invalidChoice);
+            selectStandardAction(game);
+        }
     }
 
     private void selectMyDestination(@NotNull Game game, int step) throws RemoteException, InterruptedException, FileNotFoundException {
@@ -379,7 +415,7 @@ public class ActionManager {
             color = usablePowerUps.get(Integer.parseInt(choice) - 1).getAmmoColor();
         } else {
             System.out.println(invalidChoice);
-            selectMyFireWeapon(game);
+            selectPowerUpToUse(game);
         }
     }
 
