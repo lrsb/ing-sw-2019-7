@@ -82,6 +82,7 @@
                 "alternative_payment_request": "Vuoi utilizzare delle power ups come pagamento alternativo per ricaricare l'arma?\n1. Sì\n2. No\n",
                 "reload_message": " ricarica "
             },
+            "borning_action": "Scegli una power up da scartare per nascere",
             "reborning_action": "Scegli una power up da scartare per rinascere:\n",
             "reborn_message": " respawna nello spawnpoint ",
             "tagback_response_action": "Hai la possibilità di rispondere al fuoco con una tagback grenade:\n1. Usa una tagback grenade\n2. Non rispondere al fuoco\n",
