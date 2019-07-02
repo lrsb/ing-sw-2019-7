@@ -4,6 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.common.models.Weapon;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -23,14 +24,16 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class WeaponExpoViewController extends BaseViewController {
     private JPanel panel;
     private JFXPanel jfxPanel;
+    private JButton infoButton;
 
     public WeaponExpoViewController(@Nullable NavigationController navigationController, @NotNull Object... params) {
-        super(((Weapon) params[0]).name(), 500, 500, navigationController);
+        super(((Weapon) params[0]).name(), 800, 500, navigationController);
         $$$setupUI$$$();
         setContentPane(panel);
         Platform.setImplicitExit(false);
@@ -40,7 +43,7 @@ public class WeaponExpoViewController extends BaseViewController {
                 var back = new ImageView(SwingFXUtils.toFXImage(((Weapon) params[0]).getBackImage(), null));
                 var stackPane = new StackPane();
                 stackPane.getChildren().addAll(front, back);
-                var scene = new Scene(stackPane, 500, 500, true, SceneAntialiasing.BALANCED);
+                var scene = new Scene(stackPane, 450, 500, true, SceneAntialiasing.BALANCED);
                 scene.setCamera(new PerspectiveCamera());
                 jfxPanel.setScene(scene);
                 back.setVisible(false);
@@ -54,6 +57,14 @@ public class WeaponExpoViewController extends BaseViewController {
                 rotator.play();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        });
+        infoButton.addActionListener(e -> {
+            try {
+                var info = Utils.getStrings("cli", "weapons_details", ((Weapon) params[0]).name().toLowerCase()).get("fire_description").getAsString();
+                JOptionPane.showMessageDialog(this, "<html><body><p style='width: 200px;'>" + info.replaceAll("\n", " ") + "</p></body></html>", "Info", JOptionPane.INFORMATION_MESSAGE);
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
             }
         });
     }
@@ -73,13 +84,13 @@ public class WeaponExpoViewController extends BaseViewController {
             rotator2.setInterpolator(Interpolator.LINEAR);
             rotator2.setCycleCount(1);
             rotator2.setOnFinished(f -> createRotator(front, back));
-            rotator2.play();
             back.setVisible(false);
             front.setVisible(true);
+            rotator2.play();
         });
-        rotator1.play();
         front.setVisible(false);
         back.setVisible(true);
+        rotator1.play();
     }
 
     /**
@@ -91,9 +102,12 @@ public class WeaponExpoViewController extends BaseViewController {
      */
     private void $$$setupUI$$$() {
         panel = new JPanel();
-        panel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         jfxPanel = new JFXPanel();
         panel.add(jfxPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        infoButton = new JButton();
+        infoButton.setText("Info");
+        panel.add(infoButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
@@ -102,4 +116,5 @@ public class WeaponExpoViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
+
 }

@@ -1,7 +1,11 @@
 package it.polimi.ingsw.client.others;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.controllers.startup.LoginViewController;
+import it.polimi.ingsw.client.views.cli.GameCli;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,6 +13,9 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Arrays;
 
 public class Utils {
@@ -27,6 +34,12 @@ public class Utils {
         masked.setRGB(0, 0, mask.getWidth(), mask.getHeight(),
                 Arrays.stream(maskPixels).parallel().map(e -> (e & 0xff000000) | (rgb & 0x00ffffff)).toArray(), 0, mask.getWidth());
         return masked;
+    }
+
+    public static JsonObject getStrings(@NotNull String... args) throws FileNotFoundException {
+        var json = new JsonParser().parse(new JsonReader(new FileReader(new File(GameCli.class.getResource("strings.json").getFile())))).getAsJsonObject();
+        for (var arg : args) json = json.get(arg).getAsJsonObject();
+        return json;
     }
 
     public static boolean isRetina() {
