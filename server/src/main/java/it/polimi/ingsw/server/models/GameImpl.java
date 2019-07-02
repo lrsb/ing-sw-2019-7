@@ -226,7 +226,7 @@ public class GameImpl extends Game implements Serializable {
      *
      * @return the HashMap
      */
-    @NotNull ArrayList<ArrayList<UUID>> getRanking() {
+    @NotNull java.util.List<ArrayList<UUID>> getRanking() {
         class PlayerPoint implements Comparable<PlayerPoint> {
             private @NotNull UUID playerUuid;
             private int points;
@@ -249,7 +249,6 @@ public class GameImpl extends Game implements Serializable {
                 else return 0;
             }
         }
-
         ArrayList<ArrayList<UUID>> ranking = new ArrayList<>();
         for (int i = 0; i < players.size(); i++) ranking.add(new ArrayList<>());
         ArrayList<PlayerPoint> tmpRanking = new ArrayList<>();
@@ -263,6 +262,7 @@ public class GameImpl extends Game implements Serializable {
             for (; from < to; from++) ranking.get(pos).add(tmpRanking.get(from).playerUuid);
             pos += ranking.get(pos).size();
         }
+        finalRanking = ranking;
         return ranking;
     }
 

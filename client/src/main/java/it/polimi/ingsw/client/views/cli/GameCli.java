@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.common.models.Cell.Color.*;
@@ -341,8 +343,8 @@ public class GameCli {
         playerInfo(game);
         if (game.getActualPlayer().getUuid().equals(Preferences.getUuid())) {
             //TODO
-        }
-
+        } else System.out.println(game.getActualPlayer().getBoardType().escape() + game.getActualPlayer().getNickname() +
+                "\u001b[0m" + " sta facendo la sua mossa...");
     }
 
     @Contract(pure = true)
@@ -359,5 +361,22 @@ public class GameCli {
         room.setSkulls(5);
         while (room.getUsers().size() < 5) room.addUser(possibleUserPlayer.get(room.getUsers().size() - 1));
         return Segue.of("printGameImpl", GameImpl.Creator.newGame(room));
+    }
+
+    private void printRanking(@NotNull Game game) {
+        final List<ArrayList<UUID>> ranking = game.getFinalRanking();
+        if (ranking == null) return;
+        System.out.println("CLASSIFICA\n");
+        for (int i = 0; i < ranking.size(); i++) {
+            System.out.print((i+1) + ". ");
+            for (int j = 0; j < ranking.get(i).size(); j++) {
+                var uuid = ranking.get(i).get(j);
+                game.getPlayers().stream().filter(e -> e.getUuid().equals(uuid))
+                        .forEach(e -> System.out.print(e.getBoardType().escape() + e.getNickname() +
+                                "\u001b[0m" + " (" + e.getBoardType().escape() + e.getPoints() + "\u001b[0m" + ")"));
+                if (j + 1 < ranking.get(i).size()) System.out.print(", ");
+                else System.out.println();
+            }
+        }
     }
 }

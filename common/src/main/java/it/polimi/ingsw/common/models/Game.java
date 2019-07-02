@@ -35,6 +35,7 @@ public class Game implements Displayable, Serializable {
     protected int seqPlay = 0;
     protected boolean reborningTime = false;
     protected boolean tagbackTime = false;
+    protected @Nullable ArrayList<ArrayList<UUID>> finalRanking = null;
 
     private final @NotNull ArrayList<UUID> lastsDamaged = new ArrayList<>();
     protected @NotNull ArrayList<UUID> responsivePlayers = new ArrayList<>();
@@ -62,6 +63,10 @@ public class Game implements Displayable, Serializable {
 
     public int getRemainedActions() {
         return remainedActions;
+    }
+
+    public @Nullable List<ArrayList<UUID>> getFinalRanking() {
+        return finalRanking;
     }
 
     public Game() {
