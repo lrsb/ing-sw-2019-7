@@ -64,7 +64,6 @@ public class Game implements Displayable, Serializable {
         return remainedActions;
     }
 
-
     public Game() {
         uuid = UUID.randomUUID();
         cells = new Cell[MAX_Y][MAX_X];

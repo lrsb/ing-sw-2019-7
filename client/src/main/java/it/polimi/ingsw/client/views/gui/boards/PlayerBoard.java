@@ -1,6 +1,6 @@
 package it.polimi.ingsw.client.views.gui.boards;
 
-import it.polimi.ingsw.client.controllers.game.WeaponExpoViewController;
+import it.polimi.ingsw.client.controllers.game.ExpoViewController;
 import it.polimi.ingsw.client.views.gui.sprite.Sprite;
 import it.polimi.ingsw.client.views.gui.sprite.pointinterpolators.LinearPointInterpolator;
 import it.polimi.ingsw.common.models.AmmoCard;
@@ -107,7 +107,7 @@ public class PlayerBoard extends AbstractBoard {
     @Override
     public void onSpriteClicked(@NotNull Sprite sprite) {
         if (sprite.getAssociatedObject() instanceof Weapon)
-            new WeaponExpoViewController(null, sprite.getAssociatedObject()).setVisible(true);
+            new ExpoViewController(null, sprite.getAssociatedObject()).setVisible(true);
     }
 
     public void onSpriteHovered(@NotNull List<Sprite> sprites) {

@@ -13,6 +13,8 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -116,6 +118,13 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
             width = (int) (formFactor * height);
         }
         return new Dimension(width, height);
+    }
+
+    @Override
+    public void setVisible(boolean aFlag) {
+        super.setVisible(aFlag);
+        if (aFlag)
+            Executors.newSingleThreadScheduledExecutor().schedule((Runnable) super::repaint, 400, TimeUnit.MILLISECONDS);
     }
 
     @Override

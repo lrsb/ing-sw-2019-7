@@ -308,7 +308,6 @@ public class GameImpl extends Game implements Serializable {
         return false;
     }
 
-
     /**
      * Takes info from the param action, in order to build
      * and, if possible, execute the required action

@@ -6,6 +6,7 @@ import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.common.models.Weapon;
+import it.polimi.ingsw.common.others.Displayable;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.application.Platform;
@@ -27,20 +28,20 @@ import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class WeaponExpoViewController extends BaseViewController {
+public class ExpoViewController extends BaseViewController {
     private JPanel panel;
     private JFXPanel jfxPanel;
     private JButton infoButton;
 
-    public WeaponExpoViewController(@Nullable NavigationController navigationController, @NotNull Object... params) {
-        super(((Weapon) params[0]).name(), 800, 500, navigationController);
+    public ExpoViewController(@Nullable NavigationController navigationController, @NotNull Object... params) {
+        super("Info", 500, 500, navigationController);
         $$$setupUI$$$();
         setContentPane(panel);
         Platform.setImplicitExit(false);
         Platform.runLater(() -> {
             try {
-                var front = new ImageView(SwingFXUtils.toFXImage(((Weapon) params[0]).getFrontImage(), null));
-                var back = new ImageView(SwingFXUtils.toFXImage(((Weapon) params[0]).getBackImage(), null));
+                var front = new ImageView(SwingFXUtils.toFXImage(((Displayable) params[0]).getFrontImage(), null));
+                var back = new ImageView(SwingFXUtils.toFXImage(((Displayable) params[0]).getBackImage(), null));
                 var stackPane = new StackPane();
                 stackPane.getChildren().addAll(front, back);
                 var scene = new Scene(stackPane, 450, 500, true, SceneAntialiasing.BALANCED);
@@ -59,14 +60,16 @@ public class WeaponExpoViewController extends BaseViewController {
                 e.printStackTrace();
             }
         });
-        infoButton.addActionListener(e -> {
-            try {
-                var info = Utils.getStrings("cli", "weapons_details", ((Weapon) params[0]).name().toLowerCase()).get("fire_description").getAsString();
-                JOptionPane.showMessageDialog(this, "<html><body><p style='width: 200px;'>" + info.replaceAll("\n", " ") + "</p></body></html>", "Info", JOptionPane.INFORMATION_MESSAGE);
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        });
+        if (params[0] instanceof Weapon) {
+            infoButton.addActionListener(e -> {
+                try {
+                    var info = Utils.getStrings("cli", "weapons_details", ((Weapon) params[0]).name().toLowerCase()).get("fire_description").getAsString();
+                    JOptionPane.showMessageDialog(this, "<html><body><p style='width: 200px;'>" + info.replaceAll("\n", " ") + "</p></body></html>", "Info", JOptionPane.INFORMATION_MESSAGE);
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            });
+        } else infoButton.setVisible(false);
     }
 
     private void createRotator(@NotNull Node front, @NotNull Node back) {

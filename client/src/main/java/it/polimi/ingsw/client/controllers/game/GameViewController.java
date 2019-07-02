@@ -211,7 +211,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         if (data instanceof Weapon) {
             if (type == Action.Type.GRAB_WEAPON) {
                 //todo = Action.Builder.create(game.getUuid()).buildWeaponGrabAction()
-            } else new WeaponExpoViewController(null, data).setVisible(true);
+            } else new ExpoViewController(null, data).setVisible(true);
         }
         if (data instanceof AmmoCard && type == Action.Type.GRAB_AMMOCARD) {
             todo = Action.Builder.create(game.getUuid()).buildAmmoCardGrabAction(point);
