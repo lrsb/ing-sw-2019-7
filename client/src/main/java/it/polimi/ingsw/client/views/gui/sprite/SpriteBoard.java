@@ -124,7 +124,7 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
     public void setVisible(boolean aFlag) {
         super.setVisible(aFlag);
         if (aFlag)
-            Executors.newSingleThreadScheduledExecutor().schedule((Runnable) super::repaint, 400, TimeUnit.MILLISECONDS);
+            Executors.newSingleThreadScheduledExecutor().schedule((Runnable) super::repaint, 500, TimeUnit.MILLISECONDS);
     }
 
     @Override
