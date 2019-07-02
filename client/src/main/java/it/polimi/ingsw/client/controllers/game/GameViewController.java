@@ -103,6 +103,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         });
 
         playersBoardButton.addActionListener(e -> {
+            Utils.swingOpenRules();
             if (playersBoardsViewController != null) playersBoardsViewController.dispose();
             playersBoardsViewController = new PlayersBoardsViewController(gameBoard.getGame());
             playersBoardsViewController.setVisible(true);

@@ -4,11 +4,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.controllers.game.GameViewController;
+import it.polimi.ingsw.client.controllers.game.PdfViewController;
 import it.polimi.ingsw.client.controllers.startup.LoginViewController;
 import it.polimi.ingsw.client.views.cli.GameCli;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -24,6 +27,18 @@ public class Utils {
         if (navigationController != null) {
             navigationController.popToRootViewController();
             navigationController.presentViewController(true, LoginViewController.class);
+        }
+    }
+
+    public static void swingOpenRules() {
+        //noinspection unchecked
+        var list = new JList(new String[]{"Regole gioco", "Regole armi"});
+        JOptionPane.showMessageDialog(null, list, "Che regole vuoi visualizzare?", JOptionPane.PLAIN_MESSAGE);
+        var index = list.getSelectedIndices();
+        if (index.length > 0) {
+            if (index[0] == 0)
+                new PdfViewController(GameViewController.class.getResource("rules.pdf").getFile()).setVisible(true);
+            else new PdfViewController(GameViewController.class.getResource("weapons.pdf").getFile()).setVisible(true);
         }
     }
 
