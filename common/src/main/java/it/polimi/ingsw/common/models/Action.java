@@ -115,7 +115,6 @@ public class Action implements Serializable {
     /**
      * Each type of this enum represents a specific action that a player can do
      */
-
     public enum Type implements Serializable {
         MOVE, GRAB_WEAPON, GRAB_AMMOCARD, FIRE, USE_POWER_UP, RELOAD, NEXT_TURN, REBORN
     }

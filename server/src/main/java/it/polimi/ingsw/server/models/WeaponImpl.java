@@ -108,14 +108,14 @@ abstract class WeaponImpl {
                 if (!(getClass().equals(Weapons.RocketLauncher.class) && firstAdditionalTargetsPoint != null))
                     if (basicFire()) {
                         payCost();
-                        game.getActualPlayer().unloadWeapon(WeaponImpl.Loader.getName(getClass()));
+                        game.getActualPlayer().unloadWeapon(WeaponImpl.Loader.getWeapon(getClass()));
                         return true;
                     }
                 break;
             case 1:
                 if (canFirstAdditionalFire()) if (basicFire() && firstAdditionalFire()) {
                     payCost();
-                    game.getActualPlayer().unloadWeapon(WeaponImpl.Loader.getName(getClass()));
+                    game.getActualPlayer().unloadWeapon(WeaponImpl.Loader.getWeapon(getClass()));
                     return true;
                 }
                 break;
@@ -124,7 +124,7 @@ abstract class WeaponImpl {
                         !(getClass().equals(Weapons.RocketLauncher.class) && firstAdditionalTargetsPoint != null))
                     if (basicFire() && secondAdditionalFire()) {
                         payCost();
-                        game.getActualPlayer().unloadWeapon(WeaponImpl.Loader.getName(getClass()));
+                        game.getActualPlayer().unloadWeapon(WeaponImpl.Loader.getWeapon(getClass()));
                         return true;
                     }
                 break;
@@ -132,7 +132,7 @@ abstract class WeaponImpl {
                 if (canFirstAdditionalFire() && canSecondAdditionalFire())
                     if (basicFire() && firstAdditionalFire() && secondAdditionalFire()) {
                         payCost();
-                        game.getActualPlayer().unloadWeapon(WeaponImpl.Loader.getName(getClass()));
+                        game.getActualPlayer().unloadWeapon(WeaponImpl.Loader.getWeapon(getClass()));
                         return true;
                     }
                 break;
@@ -180,9 +180,11 @@ abstract class WeaponImpl {
     }
 
     private boolean canPayCost(int option) {
-        if (!game.getActualPlayer().isALoadedGun(WeaponImpl.Loader.getName(getClass())) && game.getSkulls() == 0) {
-            usedCubes[WeaponImpl.Loader.getName(getClass()).getColor().getIndex()]++;
-            Stream.of(AmmoCard.Color.values()).forEach(e -> usedCubes[e.getIndex()] += WeaponImpl.Loader.getName(getClass()).getGrabCost(e));
+        if (!game.getActualPlayer().isALoadedGun(WeaponImpl.Loader.getWeapon(getClass())) && game.getSkulls() == 0) {
+            var weaponLoader = WeaponImpl.Loader.getWeapon(getClass());
+            if (weaponLoader == null) return false;
+            usedCubes[weaponLoader.getColor().getIndex()]++;
+            Stream.of(AmmoCard.Color.values()).forEach(e -> usedCubes[e.getIndex()] += weaponLoader.getGrabCost(e));
         }
         switch (option) {
             case 0:
@@ -228,7 +230,7 @@ abstract class WeaponImpl {
     static class Loader {
         static @NotNull <T extends WeaponImpl> T build(@NotNull Weapon weapon, @NotNull Game game, boolean alternativeFire) throws MalformedParametersException {
             try {
-                var weaponClass = getWeapon(weapon);
+                var weaponClass = getClass(weapon);
                 if (weaponClass == null) throw new MalformedParametersException();
                 //noinspection unchecked
                 return (T) weaponClass.getDeclaredConstructors()[0].newInstance(game, alternativeFire);
@@ -238,14 +240,13 @@ abstract class WeaponImpl {
             }
         }
 
-        private static @Nullable Class getWeapon(@NotNull Weapon weapon) {
+        private static @Nullable Class getClass(@NotNull Weapon weapon) {
             return Stream.of(WeaponImpl.Weapons.class.getDeclaredClasses()).parallel()
                     .filter(e -> e.getSimpleName().toLowerCase().contains(weapon.toString().toLowerCase().replace("_", ""))).findAny().orElse(null);
         }
 
-
-        static @Nullable Weapon getName(@NotNull Class<? extends WeaponImpl> weaponClass) {
-            return Stream.of(Weapon.values()).filter(e -> weaponClass.equals(getWeapon(e))).findAny().orElse(null);
+        static @Nullable Weapon getWeapon(@NotNull Class<? extends WeaponImpl> weaponClass) {
+            return Stream.of(Weapon.values()).filter(e -> weaponClass.equals(getClass(e))).findAny().orElse(null);
         }
     }
 
@@ -569,7 +570,7 @@ abstract class WeaponImpl {
 
             @Override
             boolean canBasicFire() {
-                if (game.getActualPlayer().getPosition() == null || basicTargets.get(0).getPosition() == null) return false;
+                if (game.getActualPlayer().getPosition() == null) return false;
                 if (!alternativeFire && !basicTargets.isEmpty() && basicTargets.size() < 3)
                     return Stream.of(Bounds.Direction.values()).parallel().anyMatch(e ->
                             basicTargets.stream().allMatch(f -> Opt.of(f.getPosition()).e(g -> game.getActualPlayer().isPointAtMaxDistanceInDirection(g, game.getCells(), 2, e)).get(false))) &&

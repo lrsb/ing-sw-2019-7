@@ -267,6 +267,10 @@ public class GameImpl extends Game implements Serializable {
         return ranking;
     }
 
+    /**
+     *
+     * @param isCompleted true if the game is finished, false otherwise
+     */
     public void setCompleted(boolean isCompleted) {
         this.isCompleted = isCompleted;
     }
@@ -313,7 +317,7 @@ public class GameImpl extends Game implements Serializable {
      * Takes info from the param action, in order to build
      * and, if possible, execute the required action
      *
-     * @param action
+     * @param action the next action of the current player
      * @return True if player's action worked, false otherwise
      */
     public boolean doAction(@NotNull Action action) {
@@ -482,7 +486,7 @@ public class GameImpl extends Game implements Serializable {
     }
 
     /**
-     * Creator
+     * Creator construct the game starting from parameters of the room
      */
     public static class Creator {
         @Contract(pure = true)
@@ -493,7 +497,7 @@ public class GameImpl extends Game implements Serializable {
          * Build the game in its initial state starting from
          * the room's info (players, field and other param of the game)
          *
-         * @param room
+         * @param room with all the parameters that are needed to begin a game
          * @return a playable game
          */
         @Contract("_ -> new")
