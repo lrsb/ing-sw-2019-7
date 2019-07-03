@@ -5,7 +5,6 @@ import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.others.Utils;
 import it.polimi.ingsw.common.models.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.FileNotFoundException;
@@ -21,25 +20,25 @@ public class ActionManager {
     private final String stdColor = "\u001b[0m";
     private final String invalidChoice = "Scelta non valida";
     private boolean done = false;
-    private @Nullable Weapon weapon;
-    private @Nullable Weapon discardedWeapon;
-    private @Nullable Point destination;
-    private @Nullable PowerUp.Type powerUpType;
-    private @Nullable AmmoCard.Color color;
+    private Weapon weapon;
+    private Weapon discardedWeapon;
+    private Point destination;
+    private PowerUp.Type powerUpType;
+    private AmmoCard.Color color;
     private @NotNull ArrayList<PowerUp> powerUpPayment = new ArrayList<>();
 
     private boolean alternativeFire = false;
     private int options = 0;
     private @NotNull ArrayList<UUID> basicTarget = new ArrayList<>();
-    private @Nullable Point basicTargetPoint;
+    private Point basicTargetPoint;
 
     private @NotNull ArrayList<UUID> firstAdditionalTarget = new ArrayList<>();
-    private @Nullable Point firstAdditionalTargetPoint;
+    private Point firstAdditionalTargetPoint;
 
     private @NotNull ArrayList<UUID> secondAdditionalTarget = new ArrayList<>();
-    private @Nullable Point secondAdditionalTargetPoint;
+    private Point secondAdditionalTargetPoint;
 
-    private @Nullable UUID target;
+    private UUID target;
 
     private void clearAll() {
         weapon = null;
@@ -595,8 +594,13 @@ public class ActionManager {
                 alternativeFire = false;
                 doubleChoice(game);
                 selectBasicMovementPoint(game, 2);
-                //todo aggiusta per vedere anche quelli dopo il movimento
-                selectBasicVisibleTarget(game, new ArrayList<>());
+                var mockPlayer = new Player(new User(""), game.getActualPlayer().getBoardType());
+                mockPlayer.setPosition(basicTargetPoint);
+                List<UUID> selectablePlasmaTargets = game.getPlayers().stream().filter(e -> game.getActualPlayer().canSeeNotSame(e, game.getCells()) ||
+                        mockPlayer.canSeeNotSame(e, game.getCells())).map(Player::getUuid).collect(Collectors.toList());
+                System.out.println(Utils.getStrings("cli", "weapons_details", "plasma_gun", "fire_details").get("selecet_target_basic").getAsString());
+                printSelectableTargets(game, selectablePlasmaTargets);
+                simpleBasicTargetSelection(selectablePlasmaTargets);
                 if (options == 1) {
                     options = 2;
                     selectAlternativePayment(game);
@@ -773,9 +777,13 @@ public class ActionManager {
                     addMovementPoint(game, selectablePoints, 2);
                     printDestinations(game, selectablePoints);
                 }
-                //todo: aggiusta per fargli vedere anche quelli dopo il movimento se c'è
-                selectBasicVisibleTarget(game, game.getPlayers().stream().filter(e -> e.getPosition() != null &&
-                        !e.getPosition().equals(game.getActualPlayer().getPosition())).map(Player::getUuid).collect(Collectors.toList()));
+                var mockPlayer2 = new Player(new User(""), game.getActualPlayer().getBoardType());
+                mockPlayer2.setPosition(basicTargetPoint);
+                List<UUID> selectableRocketTargets = game.getPlayers().stream().filter(e -> game.getActualPlayer().canSeeNotSame(e, game.getCells()) ||
+                        mockPlayer2.canSeeNotSame(e, game.getCells())).map(Player::getUuid).collect(Collectors.toList());
+                System.out.println(Utils.getStrings("cli", "weapons_details", "rocket_launcher", "fire_details").get("selecet_target_basic").getAsString());
+                printSelectableTargets(game, selectableRocketTargets);
+                simpleBasicTargetSelection(selectableRocketTargets);
                 selectBasicTargetMovementInDirection(game, 1);
                 if (options > 0) selectAlternativePayment(game);
                 break;

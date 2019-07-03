@@ -3,7 +3,6 @@
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="it.polimi.ingsw.client.Client" />
     <module name="client" />
-    <option name="VM_PARAMETERS" value="-Xdock:name=Adrenaline" />
     <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
     <extension name="coverage">
       <pattern>
