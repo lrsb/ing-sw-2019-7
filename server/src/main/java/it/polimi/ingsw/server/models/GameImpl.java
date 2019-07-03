@@ -76,7 +76,8 @@ public class GameImpl extends Game implements Serializable {
         Stream.of(AmmoCard.Color.values()).forEach(e -> cost[e.getIndex()] = weapon.getGrabCost(e));
         if (getActualPlayer().hasWeapon(weapon)) cost[weapon.getColor().getIndex()]++;
         if (powerUpPayment != null) for (int i = 0; i < powerUpPayment.size(); i++) {
-            if (cost[powerUpPayment.get(i).getAmmoColor().getIndex()] > 0) cost[powerUpPayment.get(i).getAmmoColor().getIndex()]--;
+            if (cost[powerUpPayment.get(i).getAmmoColor().getIndex()] > 0)
+                cost[powerUpPayment.get(i).getAmmoColor().getIndex()]--;
             else {
                 powerUpPayment.remove(i);
                 i--;
@@ -255,7 +256,7 @@ public class GameImpl extends Game implements Serializable {
         players.forEach(e -> tmpRanking.add(new PlayerPoint(e.getUuid(), e.getPoints())));
         Collections.sort(tmpRanking);
         int pos = 0;
-        for (int from = 0; from < tmpRanking.size();) {
+        for (int from = 0; from < tmpRanking.size(); ) {
             int to = from + 1;
             while (to < tmpRanking.size() && tmpRanking.get(from).points == tmpRanking.get(to).points &&
                     tmpRanking.get(from).killshots == 0 && tmpRanking.get(to).killshots == 0) to++;
@@ -320,7 +321,7 @@ public class GameImpl extends Game implements Serializable {
             if (action.getActionType().equals(Action.Type.REBORN)) return reborn(action);
             else if (action.getActionType().equals(Action.Type.NEXT_TURN))
                 doAction(Action.Builder.create(getUuid()).buildReborn(getActualPlayer().getPowerUps().get(0).getType(),
-                    getActualPlayer().getPowerUps().get(0).getAmmoColor()));
+                        getActualPlayer().getPowerUps().get(0).getAmmoColor()));
             else return false;
         else switch (action.getActionType()) {
             case MOVE:

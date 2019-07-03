@@ -115,7 +115,8 @@ public class PowerUp implements Displayable, Serializable {
                 if (target == null) throw new PlayerNotFoundException();
                 return game.getLastsDamaged().contains(target.getUuid());
             case NEWTON:
-                if (target == null || targetPoint == null || target.getPosition() == null) throw new NullPointerException();
+                if (target == null || targetPoint == null || target.getPosition() == null)
+                    throw new NullPointerException();
                 return game.getPlayers().contains(target) && !game.getActualPlayer().equals(target) &&
                         !target.getPosition().equals(targetPoint) && Stream.of(Bounds.Direction.values())
                         .anyMatch(e -> target.isPointAtMaxDistanceInDirection(targetPoint, game.getCells(), 2, e));

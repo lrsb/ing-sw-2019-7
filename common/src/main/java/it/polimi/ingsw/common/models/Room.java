@@ -48,6 +48,7 @@ public class Room implements Serializable {
 
     /**
      * Set the timestamp when the game starts.
+     *
      * @param startType The timestamp when the game starts.
      */
     public void setStartTime(long startType) {
@@ -122,7 +123,7 @@ public class Room implements Serializable {
 
 
     /**
-     * Gets action timeout.
+     * Gets action timeout. Is the max delay between actions in game.
      *
      * @return the action timeout
      */

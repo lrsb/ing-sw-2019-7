@@ -43,7 +43,6 @@ public class Server {
                     System.out.println("HTTP_PORT     Port where HTTP server have to listen (optional, default: 80)");
                     System.out.println();
                     System.out.println("ROOM_TIMEOUT  Room timeout in seconds (optional, default: 30s)");
-                    System.out.println("GAME_TIMEOUT  Game timeout in seconds (optional, default: 30s)");
                     return;
                 case "-w":
                     new ServerRestImpl(Integer.parseInt(System.getProperty("HTTP_PORT", "80")));

@@ -32,17 +32,24 @@ public class Game implements Displayable, Serializable {
     protected final @NotNull Cell[][] cells;
     protected final @NotNull Type type;
     protected final @NotNull ArrayList<Player> players = new ArrayList<>();
+    private final @NotNull ArrayList<UUID> lastsDamaged = new ArrayList<>();
     protected int seqPlay = 0;
     protected boolean reborningTime = false;
     protected boolean tagbackTime = false;
     protected @Nullable ArrayList<ArrayList<UUID>> finalRanking = null;
-
-    private final @NotNull ArrayList<UUID> lastsDamaged = new ArrayList<>();
     protected @NotNull ArrayList<UUID> responsivePlayers = new ArrayList<>();
 
     protected int skulls;
 
     protected int startingSkulls;
+    protected @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
+    protected boolean isCompleted = false;
+    protected boolean lastTurn = false;
+    protected ArrayList<Weapon> redWeapons = new ArrayList<>();
+    protected ArrayList<Weapon> blueWeapons = new ArrayList<>();
+    protected ArrayList<Weapon> yellowWeapons = new ArrayList<>();
+    protected int remainedActions = 2;
+
 
     protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
         this.uuid = uuid;
@@ -51,15 +58,12 @@ public class Game implements Displayable, Serializable {
         this.players.addAll(players);
         this.startingSkulls = this.skulls = skulls;
     }
-    protected @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
-    protected boolean isCompleted = false;
-    protected boolean lastTurn = false;
-    protected ArrayList<Weapon> redWeapons = new ArrayList<>();
-    protected ArrayList<Weapon> blueWeapons = new ArrayList<>();
-    protected ArrayList<Weapon> yellowWeapons = new ArrayList<>();
 
-
-    protected int remainedActions = 2;
+    public Game() {
+        uuid = UUID.randomUUID();
+        cells = new Cell[MAX_Y][MAX_X];
+        type = Type.values()[new SecureRandom().nextInt(Type.values().length)];
+    }
 
     public int getRemainedActions() {
         return remainedActions;
@@ -67,12 +71,6 @@ public class Game implements Displayable, Serializable {
 
     public @Nullable List<ArrayList<UUID>> getFinalRanking() {
         return finalRanking;
-    }
-
-    public Game() {
-        uuid = UUID.randomUUID();
-        cells = new Cell[MAX_Y][MAX_X];
-        type = Type.values()[new SecureRandom().nextInt(Type.values().length)];
     }
 
     public int getStartingSkulls() {
@@ -180,7 +178,7 @@ public class Game implements Displayable, Serializable {
 
     public @NotNull String getTurn() {
         String finalFrenzy = skulls == 0 ? "\nFRENESIA FINALE ATTIVA" : "";
-        return lastTurn ? "ULTIMO TURNO" : "TURNO " + (seqPlay/getPlayers().size() + 1) + finalFrenzy;
+        return lastTurn ? "ULTIMO TURNO" : "TURNO " + (seqPlay / getPlayers().size() + 1) + finalFrenzy;
     }
 
     /**

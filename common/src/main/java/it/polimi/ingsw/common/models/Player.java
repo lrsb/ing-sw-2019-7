@@ -315,14 +315,14 @@ public class Player implements Displayable, Serializable {
         private @NotNull String escape;
 
         @Contract(pure = true)
-        public @NotNull Color getColor() {
-            return color;
-        }
-
-        @Contract(pure = true)
         BoardType(@NotNull Color color, @NotNull String escape) {
             this.color = color;
             this.escape = escape;
+        }
+
+        @Contract(pure = true)
+        public @NotNull Color getColor() {
+            return color;
         }
 
         @Contract(pure = true)

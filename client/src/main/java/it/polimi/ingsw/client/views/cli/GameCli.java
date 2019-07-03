@@ -40,13 +40,20 @@ public class GameCli {
                 for (int u = 0; u < game.getPlayers().size(); u++) {
                     var position = game.getPlayers().get(u).getPosition();
                     if (position != null && position.getX() == i && position.getY() == j) {
-                        if (game.getPlayers().get(u).getNickname().length() > 0) cellCli[4 + u][15].setAll(game.getPlayers().get(u).getNickname().charAt(0), game.getPlayers().get(u).getBoardType().escape());
-                        if (game.getPlayers().get(u).getNickname().length() > 1) cellCli[4 + u][16].setAll(game.getPlayers().get(u).getNickname().charAt(1), game.getPlayers().get(u).getBoardType().escape());
-                        if (game.getPlayers().get(u).getNickname().length() > 2) cellCli[4 + u][17].setAll(game.getPlayers().get(u).getNickname().charAt(2), game.getPlayers().get(u).getBoardType().escape());
-                        if (game.getPlayers().get(u).getNickname().length() > 3) cellCli[4 + u][18].setAll(game.getPlayers().get(u).getNickname().charAt(3), game.getPlayers().get(u).getBoardType().escape());
-                        if (game.getPlayers().get(u).getNickname().length() > 4) cellCli[4 + u][19].setAll(game.getPlayers().get(u).getNickname().charAt(4), game.getPlayers().get(u).getBoardType().escape());
-                        if (game.getPlayers().get(u).getNickname().length() > 5) cellCli[4 + u][20].setAll(game.getPlayers().get(u).getNickname().charAt(5), game.getPlayers().get(u).getBoardType().escape());
-                        if (game.getPlayers().get(u).getNickname().length() > 6) cellCli[4 + u][21].setAll(game.getPlayers().get(u).getNickname().charAt(6), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 0)
+                            cellCli[4 + u][15].setAll(game.getPlayers().get(u).getNickname().charAt(0), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 1)
+                            cellCli[4 + u][16].setAll(game.getPlayers().get(u).getNickname().charAt(1), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 2)
+                            cellCli[4 + u][17].setAll(game.getPlayers().get(u).getNickname().charAt(2), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 3)
+                            cellCli[4 + u][18].setAll(game.getPlayers().get(u).getNickname().charAt(3), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 4)
+                            cellCli[4 + u][19].setAll(game.getPlayers().get(u).getNickname().charAt(4), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 5)
+                            cellCli[4 + u][20].setAll(game.getPlayers().get(u).getNickname().charAt(5), game.getPlayers().get(u).getBoardType().escape());
+                        if (game.getPlayers().get(u).getNickname().length() > 6)
+                            cellCli[4 + u][21].setAll(game.getPlayers().get(u).getNickname().charAt(6), game.getPlayers().get(u).getBoardType().escape());
                     }
                 }
                 for (int k = 0; k < cellCli.length; k++)
@@ -347,8 +354,9 @@ public class GameCli {
         playerInfo(game);
         if (game.getActualPlayer().getUuid().equals(Preferences.getUuid())) {
             //TODO
-        } else System.out.println(game.getActualPlayer().getBoardType().escape() + game.getActualPlayer().getNickname() +
-                "\u001b[0m" + " sta facendo la sua mossa...");
+        } else
+            System.out.println(game.getActualPlayer().getBoardType().escape() + game.getActualPlayer().getNickname() +
+                    "\u001b[0m" + " sta facendo la sua mossa...");
     }
 
     @Contract(pure = true)
@@ -372,7 +380,7 @@ public class GameCli {
         if (ranking == null) return;
         System.out.println("CLASSIFICA\n");
         for (int i = 0; i < ranking.size(); i++) {
-            System.out.print((i+1) + ". ");
+            System.out.print((i + 1) + ". ");
             for (int j = 0; j < ranking.get(i).size(); j++) {
                 var uuid = ranking.get(i).get(j);
                 game.getPlayers().stream().filter(e -> e.getUuid().equals(uuid))

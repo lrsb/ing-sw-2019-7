@@ -149,11 +149,13 @@ public class ServerController implements API {
         var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid.toString())).first()).e(Document::toJson).get(""), Room.class);
         if (room.getUsers().size() < 3)
             throw new RemoteException("Too few players!");
+        if (room.getUsers().size() > 5)
+            throw new RemoteException("Too much players!");
         var game = GameImpl.Creator.newGame(room);
+        rooms.deleteOne(eq("uuid", roomUuid.toString()));
         games.insertOne(Document.parse(new Gson().toJson(game)));
         room.setGameCreated();
         informRoomUsers(room);
-        rooms.deleteOne(eq("uuid", roomUuid.toString()));
     }
 
     @Override

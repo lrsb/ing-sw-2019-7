@@ -32,7 +32,7 @@ class WeaponTest {
     void testLockRifle() {
         GameImpl game = createGameImpl(Game.Type.FIVE_FIVE);
         for (Player player : game.getPlayers()) {
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         }
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
@@ -139,7 +139,7 @@ class WeaponTest {
     void testMachineGun() {
         GameImpl game = createGameImpl(Game.Type.FIVE_SIX);
         for (Player player : game.getPlayers()) {
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         }
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
@@ -208,7 +208,7 @@ class WeaponTest {
     void testThor() {
         GameImpl game = createGameImpl(Game.Type.SIX_FIVE);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -238,7 +238,7 @@ class WeaponTest {
     void testPlasmaGun() {
         GameImpl game = createGameImpl(Game.Type.SIX_SIX);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -284,7 +284,7 @@ class WeaponTest {
     void testWhisper() {
         GameImpl game = createGameImpl(Game.Type.FIVE_FIVE);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -329,7 +329,7 @@ class WeaponTest {
     void testElectroscythe() {
         GameImpl game = createGameImpl(Game.Type.FIVE_SIX);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -363,7 +363,7 @@ class WeaponTest {
     void testTractorBeam() {
         GameImpl game = createGameImpl(Game.Type.SIX_FIVE);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -407,7 +407,7 @@ class WeaponTest {
     void testVortexCannon() {
         GameImpl game = createGameImpl(Game.Type.SIX_SIX);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -453,7 +453,7 @@ class WeaponTest {
     void testFurnace() {
         GameImpl game = createGameImpl(Game.Type.FIVE_SIX);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -497,7 +497,7 @@ class WeaponTest {
     void testHeatseeker() {
         GameImpl game = createGameImpl(Game.Type.SIX_FIVE);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -546,7 +546,7 @@ class WeaponTest {
     void testHellion() {
         GameImpl game = createGameImpl(Game.Type.SIX_SIX);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -596,7 +596,7 @@ class WeaponTest {
     void testFlamethrower() {
         GameImpl game = createGameImpl(Game.Type.FIVE_FIVE);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -652,7 +652,7 @@ class WeaponTest {
     void testGrenadeLauncher() {
         GameImpl game = createGameImpl(Game.Type.FIVE_SIX);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -701,7 +701,7 @@ class WeaponTest {
     void testRocketLauncher() {
         GameImpl game = createGameImpl(Game.Type.SIX_SIX);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -748,7 +748,7 @@ class WeaponTest {
     void testRailgun() {
         GameImpl game = createGameImpl(Game.Type.SIX_FIVE);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -797,7 +797,7 @@ class WeaponTest {
     void testCyberblade() {
         GameImpl game = createGameImpl(Game.Type.SIX_SIX);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -844,7 +844,7 @@ class WeaponTest {
     void testZX2() {
         GameImpl game = createGameImpl(Game.Type.FIVE_FIVE);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -901,7 +901,7 @@ class WeaponTest {
     void testShotgun() {
         GameImpl game = createGameImpl(Game.Type.FIVE_SIX);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -946,7 +946,7 @@ class WeaponTest {
     void testPowerGlove() {
         GameImpl game = createGameImpl(Game.Type.SIX_SIX);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -1007,7 +1007,7 @@ class WeaponTest {
     void testShockwave() {
         GameImpl game = createGameImpl(Game.Type.SIX_FIVE);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -1053,7 +1053,7 @@ class WeaponTest {
     void testSledgehammer() {
         GameImpl game = createGameImpl(Game.Type.SIX_SIX);
         for (Player player : game.getPlayers())
-            while(player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
+            while (player.getPowerUps().size() > 0) player.removePowerUp(player.getPowerUps().get(0));
         ArrayList<UUID> basicTargets = new ArrayList<>();
         ArrayList<UUID> firstTargets = new ArrayList<>();
         ArrayList<UUID> secondTargets = new ArrayList<>();
@@ -1120,7 +1120,7 @@ class WeaponTest {
     void rechargingPlayers(@NotNull GameImpl game) {
         game.getPlayers().forEach(e -> {
             for (AmmoCard.Color color : AmmoCard.Color.values())
-                while(e.getColoredCubes(color) < 3) e.removeColoredCubes(color, -1);
+                while (e.getColoredCubes(color) < 3) e.removeColoredCubes(color, -1);
             e.reloadWeapon(e.getWeapons().get(0));
         });
     }

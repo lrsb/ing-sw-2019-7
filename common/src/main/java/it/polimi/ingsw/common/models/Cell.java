@@ -140,6 +140,7 @@ public class Cell implements Serializable {
 
         /**
          * This method allow to create a cell's creator
+         *
          * @param boundsString The cell's informations as a string
          * @return The creator of the cell
          */
@@ -181,6 +182,7 @@ public class Cell implements Serializable {
 
         /**
          * Used to change the creator's color
+         *
          * @param color the color that we want to set
          * @return The modified creator
          */
@@ -191,6 +193,7 @@ public class Cell implements Serializable {
 
         /**
          * Used to set the cell as a spawnpoint
+         *
          * @return The creator
          */
         public @NotNull Creator spawnPoint() {
@@ -200,6 +203,7 @@ public class Cell implements Serializable {
 
         /**
          * Used to create a cell from a creator
+         *
          * @return The cell
          */
         public @Nullable Cell create() {

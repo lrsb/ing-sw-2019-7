@@ -63,6 +63,7 @@ public class StartupCli {
 
     /**
      * Display the view that allow to log in
+     *
      * @return The next view
      */
     public static @NotNull Segue login() {
@@ -87,6 +88,7 @@ public class StartupCli {
 
     /**
      * Display the view that allow to sign up
+     *
      * @return The next view
      */
     public static @NotNull Segue signup() {
@@ -107,6 +109,7 @@ public class StartupCli {
 
     /**
      * The method called by the client
+     *
      * @return The next view
      */
     @Contract(pure = true)

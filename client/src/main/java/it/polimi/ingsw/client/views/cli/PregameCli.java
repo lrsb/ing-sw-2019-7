@@ -61,6 +61,7 @@ public class PregameCli {
 
     /**
      * Display the view that allow to create a new game and set up all the settings
+     *
      * @return The next view
      */
     public static @NotNull Segue newGame() {
@@ -126,6 +127,7 @@ public class PregameCli {
 
     /**
      * Display the view that allow to choose between all the available games that are currently running on the server
+     *
      * @return The next view
      */
     public static @NotNull Segue joinGame() {
@@ -183,6 +185,7 @@ public class PregameCli {
 
     /**
      * The view that allow to continually update the lobby
+     *
      * @param room the actual room
      * @return The next view
      */
@@ -204,6 +207,7 @@ public class PregameCli {
 
     /**
      * The view that allow to pass between the lobby and the game
+     *
      * @return The next view
      */
     public static @NotNull Segue postLobby() {
@@ -222,6 +226,7 @@ public class PregameCli {
 
     /**
      * The cli lobby
+     *
      * @return The next view
      */
     public static @NotNull Segue lobby() throws IOException, InterruptedException {

@@ -19,9 +19,9 @@ import java.util.stream.Stream;
 
 public class ActionManager {
 
-    private boolean done = false;
     private final String stdColor = "\u001b[0m";
     private final String invalidChoice = "Scelta non valida";
+    private boolean done = false;
     private @Nullable Weapon weapon;
     private @Nullable Weapon discardedWeapon;
     private @Nullable Point destination;
@@ -101,7 +101,7 @@ public class ActionManager {
             }
         }
         for (int i = 0; i < game.getActualPlayer().getPowerUps().size(); i++)
-            System.out.println((1+i) + ". " + game.getActualPlayer().getPowerUps().get(i).getAmmoColor().escape() +
+            System.out.println((1 + i) + ". " + game.getActualPlayer().getPowerUps().get(i).getAmmoColor().escape() +
                     game.getActualPlayer().getPowerUps().get(i).getType().name() + stdColor);
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= game.getActualPlayer().getPowerUps().size()) {
@@ -124,7 +124,7 @@ public class ActionManager {
         powerUpPayment.forEach(selectablePowerUps::remove);
         if (selectablePowerUps.isEmpty()) return;
         for (int i = 0; i < selectablePowerUps.size(); i++)
-            System.out.println((1+i) + ". " + selectablePowerUps.get(i).getAmmoColor().escape() +
+            System.out.println((1 + i) + ". " + selectablePowerUps.get(i).getAmmoColor().escape() +
                     selectablePowerUps.get(i).getType().name() + stdColor);
         System.out.println((selectablePowerUps.size() + 1) + ". Fine selezione pagamento alternativo");
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
@@ -142,7 +142,7 @@ public class ActionManager {
         List<PowerUp> selectableTagbackGrenade = new ArrayList<>();
         game.getActualPlayer().getPowerUps().stream().filter(e -> e.getType().equals(PowerUp.Type.TAGBACK_GRENADE)).forEach(selectableTagbackGrenade::add);
         for (int i = 0; i < selectableTagbackGrenade.size(); i++)
-            System.out.println((i+1) + ". " + selectableTagbackGrenade.get(i).getAmmoColor().escape() +
+            System.out.println((i + 1) + ". " + selectableTagbackGrenade.get(i).getAmmoColor().escape() +
                     selectableTagbackGrenade.get(i).getType().name() + stdColor);
         System.out.println((selectableTagbackGrenade.size() + 1) + ". Non rispondere");
         String choice = getLine();
@@ -158,9 +158,10 @@ public class ActionManager {
     }
 
     private void selectStandardAction(@NotNull Game game) throws InterruptedException, FileNotFoundException, RemoteException {
-        if (game.getSkulls() > 0) System.out.println(Utils.getStrings("cli", "possible_actions").get(game.getActualPlayer().getDamagesTaken().size() < 3 ?
-                "standard_actions" : game.getActualPlayer().getDamagesTaken().size() < 6 ? "standard_actions_plus1" :
-                "standard_actions_plus2").getAsString());
+        if (game.getSkulls() > 0)
+            System.out.println(Utils.getStrings("cli", "possible_actions").get(game.getActualPlayer().getDamagesTaken().size() < 3 ?
+                    "standard_actions" : game.getActualPlayer().getDamagesTaken().size() < 6 ? "standard_actions_plus1" :
+                    "standard_actions_plus2").getAsString());
         else System.out.println(Utils.getStrings("cli", "possible_actions").get("frenzy_actions"));
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 7) {
@@ -336,7 +337,7 @@ public class ActionManager {
 
     private void selectSPWeapon(@NotNull Game game) throws FileNotFoundException, RemoteException, InterruptedException {
         for (int i = 0; i < game.getWeapons(game.getCell(destination).getColor()).size(); i++)
-            System.out.println((i+1) + ". " + game.getWeapons(game.getCell(destination).getColor()).get(i).getColor().escape() +
+            System.out.println((i + 1) + ". " + game.getWeapons(game.getCell(destination).getColor()).get(i).getColor().escape() +
                     game.getWeapons(game.getCell(destination).getColor()).get(i).name() + "\u001b[0m" + " " +
                     Utils.getStrings("cli", "weapons_details", game.getWeapons(game.getCell(destination).getColor()).get(i).name().toLowerCase()).get("grab_cost").getAsString());
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
@@ -352,7 +353,7 @@ public class ActionManager {
     private void selectMyDiscardWeapon(@NotNull Game game) throws FileNotFoundException, InterruptedException {
         List<Weapon> selectableWeapon = new ArrayList<>(game.getActualPlayer().getWeapons());
         for (int i = 0; i < selectableWeapon.size(); i++)
-            System.out.println((i+1) + ". " + selectableWeapon.get(i).getColor().escape() +
+            System.out.println((i + 1) + ". " + selectableWeapon.get(i).getColor().escape() +
                     selectableWeapon.get(i).name() + "\u001b[0m");
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
         String choice = getLine();
@@ -418,7 +419,7 @@ public class ActionManager {
                 .forEach(usablePowerUps::add);
         if (usablePowerUps.isEmpty()) System.out.println("Non hai powerups da utilizzare");
         for (int i = 0; i < usablePowerUps.size(); i++)
-            System.out.println((i+1) + ". " + usablePowerUps.get(i).getAmmoColor().escape() + usablePowerUps.get(i).getType().name() +
+            System.out.println((i + 1) + ". " + usablePowerUps.get(i).getAmmoColor().escape() + usablePowerUps.get(i).getType().name() +
                     "\u001b[0m");
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
         String choice = getLine();
@@ -503,9 +504,9 @@ public class ActionManager {
         if (selectableWeapons.isEmpty())
             System.out.println("Non hai armi da ricaricare");
         for (int i = 0; i < selectableWeapons.size(); i++)
-            System.out.println((i+1) + ". " + selectableWeapons.get(i).getColor().escape() +
-                selectableWeapons.get(i).name() + "\u001b[0m" +
-                Utils.getStrings("cli", "weapons_details", selectableWeapons.get(i).name().toLowerCase()).get("reload_cost").getAsString());
+            System.out.println((i + 1) + ". " + selectableWeapons.get(i).getColor().escape() +
+                    selectableWeapons.get(i).name() + "\u001b[0m" +
+                    Utils.getStrings("cli", "weapons_details", selectableWeapons.get(i).name().toLowerCase()).get("reload_cost").getAsString());
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableWeapons.size())
@@ -569,8 +570,10 @@ public class ActionManager {
                     do {
                         List<UUID> unselectable = new ArrayList<>(secondAdditionalTarget);
                         unselectable.addAll(firstAdditionalTarget);
-                        if (basicTarget.stream().anyMatch(secondAdditionalTarget::contains)) unselectable.addAll(basicTarget);
-                        else if (!unselectable.isEmpty()) game.getPlayers().stream().map(Player::getUuid).filter(e -> !basicTarget.contains(e)).forEach(unselectable::add);
+                        if (basicTarget.stream().anyMatch(secondAdditionalTarget::contains))
+                            unselectable.addAll(basicTarget);
+                        else if (!unselectable.isEmpty())
+                            game.getPlayers().stream().map(Player::getUuid).filter(e -> !basicTarget.contains(e)).forEach(unselectable::add);
                         selectSecondVisibleTarget(game, unselectable);
                         if (secondAdditionalTarget.size() < 2)
                             doneQuestion();
@@ -689,7 +692,7 @@ public class ActionManager {
                                 selectableColor.add(game.getCell(new Point(i, j)).getColor());
                     System.out.println(Utils.getStrings("cli", "weapons_details", "furnace", "fire_details").get("select_chamber").getAsString());
                     for (int i = 0; i < selectableColor.size(); i++)
-                        System.out.println((i+1) + ". " + selectableColor.get(i).escape() + "Stanza " +
+                        System.out.println((i + 1) + ". " + selectableColor.get(i).escape() + "Stanza " +
                                 selectableColor.get(i).name() + stdColor);
                     System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
                     selectColor(game, selectableColor);
@@ -743,14 +746,14 @@ public class ActionManager {
                                                     game.getActualPlayer().isPointAtMaxDistanceInDirection(g.getPosition(), game.getCells(), 2, f))))
                                     .map(Player::getUuid).forEach(selectableFlameTargets::add);
                         else game.getPlayers().stream().filter(e -> e.getPosition() != null &&
-                                    !e.getPosition().equals(game.getActualPlayer().getPosition()) &&
-                                    Stream.of(Bounds.Direction.values()).anyMatch(f -> game.getActualPlayer().isPointAtMaxDistanceInDirection(e.getPosition(), game.getCells(), 2, f)))
-                                    .map(Player::getUuid).forEach(selectableFlameTargets::add);
+                                !e.getPosition().equals(game.getActualPlayer().getPosition()) &&
+                                Stream.of(Bounds.Direction.values()).anyMatch(f -> game.getActualPlayer().isPointAtMaxDistanceInDirection(e.getPosition(), game.getCells(), 2, f)))
+                                .map(Player::getUuid).forEach(selectableFlameTargets::add);
                         System.out.println(Utils.getStrings("cli", "weapons_details", "flamethrower", "fire_details").get("select_target"));
                         printSelectableTargets(game, selectableFlameTargets);
                         simpleBasicTargetSelection(selectableFlameTargets);
                         if (basicTarget.size() < 2) doneQuestion();
-                    } while(basicTarget.size() < 2 && !done);
+                    } while (basicTarget.size() < 2 && !done);
                 }
                 break;
             case GRENADE_LAUNCHER:
@@ -801,7 +804,7 @@ public class ActionManager {
                         printSelectableTargets(game, selectableRailTargets);
                         simpleBasicTargetSelection(selectableRailTargets);
                         if (basicTarget.size() < 2) doneQuestion();
-                    } while(basicTarget.size() < 2 && !done);
+                    } while (basicTarget.size() < 2 && !done);
                 } else {
                     System.out.println(Utils.getStrings("cli", "weapons_details", "railgun", "fire_details").get("select_target_basic").getAsString());
                     printSelectableTargets(game, selectableRailTargets);
@@ -841,7 +844,7 @@ public class ActionManager {
                         System.out.println(Utils.getStrings("cli", "weapons_details", "zx2", "fire_details").get("select_target_basic").getAsString());
                         selectBasicVisibleTarget(game, basicTarget);
                         if (basicTarget.size() < 3) doneQuestion();
-                    } while(basicTarget.size() < 3 && !done);
+                    } while (basicTarget.size() < 3 && !done);
                 } else {
                     System.out.println(Utils.getStrings("cli", "weapons_details", "zx2", "fire_details").get("select_target_basic").getAsString());
                     selectBasicVisibleTarget(game, new ArrayList<>());
@@ -897,7 +900,7 @@ public class ActionManager {
                         printSelectableTargets(game, selectableGloveTargets);
                         simpleBasicTargetSelection(selectableGloveTargets);
                         if (basicTarget.size() < 2) doneQuestion();
-                    } while(basicTarget.size() < 2 && !done);
+                    } while (basicTarget.size() < 2 && !done);
                     //todo: ho barato
                     for (UUID tar : basicTarget) {
                         for (Player player : game.getPlayers()) {
@@ -946,7 +949,7 @@ public class ActionManager {
                         printSelectableTargets(game, selectableShockTargets);
                         simpleBasicTargetSelection(selectableShockTargets);
                         if (basicTarget.size() < 3) doneQuestion();
-                    } while(basicTarget.size() < 3 && !done);
+                    } while (basicTarget.size() < 3 && !done);
                 }
                 break;
             case SLEDGEHAMMER:
@@ -1091,7 +1094,8 @@ public class ActionManager {
             System.out.println("Non ci sono giocatori selezionabili");
         for (int i = 0; i < selectableTargets.size(); i++) {
             for (Player player : game.getPlayers()) {
-                if (player.getUuid().equals(selectableTargets.get(i))) System.out.println((i+1) + ". " + player.getBoardType().escape() + player.getNickname() + stdColor);
+                if (player.getUuid().equals(selectableTargets.get(i)))
+                    System.out.println((i + 1) + ". " + player.getBoardType().escape() + player.getNickname() + stdColor);
             }
         }
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
@@ -1099,7 +1103,7 @@ public class ActionManager {
 
     private void printSelectablePoints(@NotNull List<Point> selectablePoints) {
         for (int i = 0; i < selectablePoints.size(); i++)
-            System.out.println((i+1) + ". " + selectablePoints.get(i));
+            System.out.println((i + 1) + ". " + selectablePoints.get(i));
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
     }
 
@@ -1243,14 +1247,14 @@ public class ActionManager {
     private void selectColor(@NotNull Game game, @NotNull List<Cell.Color> selectableColor) throws InterruptedException {
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableColor.size())
-            for (int i = 0; i < game.MAX_Y; i++)
-                for (int j = 0; j < game.MAX_X; j++)
+            for (int i = 0; i < Game.MAX_Y; i++)
+                for (int j = 0; j < Game.MAX_X; j++)
                     if (game.getCell(new Point(i, j)) != null &&
                             game.getCell(new Point(i, j)).getColor().equals(selectableColor.get(Integer.parseInt(choice) - 1)))
                         basicTargetPoint = new Point(i, j);
-        else {
-            System.out.println(invalidChoice);
-            selectColor(game, selectableColor);
-        }
+                    else {
+                        System.out.println(invalidChoice);
+                        selectColor(game, selectableColor);
+                    }
     }
 }

@@ -146,9 +146,10 @@ class GameImplTest {
         assertEquals(3, game.getWeapons(Cell.Color.RED).size());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildAmmoCardGrabAction(new Point(0, 2))));
         assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(0, 2), game.getWeapons(Cell.Color.BLUE).get(0), null, null)));
-        for (AmmoCard.Color color: AmmoCard.Color.values())
+        for (AmmoCard.Color color : AmmoCard.Color.values())
             game.getActualPlayer().removeColoredCubes(color, game.getActualPlayer().getColoredCubes(color));
-        while (!game.getActualPlayer().getPowerUps().isEmpty()) game.getActualPlayer().removePowerUp(game.getActualPlayer().getPowerUps().get(0));
+        while (!game.getActualPlayer().getPowerUps().isEmpty())
+            game.getActualPlayer().removePowerUp(game.getActualPlayer().getPowerUps().get(0));
         AmmoCard ammoCard = game.getCell(new Point(0, 1)).getAmmoCard();
         assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildAmmoCardGrabAction(new Point(0, 1))));
         assertEquals(ammoCard.getType().equals(AmmoCard.Type.POWER_UP) ? 1 : 0, game.getActualPlayer().getPowerUps().size());

@@ -19,15 +19,13 @@ import static it.polimi.ingsw.client.others.Utils.applyColorToMask;
 
 public class PlayerBoard extends AbstractBoard {
     private @NotNull Player player;
-
+    private @Nullable Sprite weapon;
+    private @Nullable Sprite powerup;
     public PlayerBoard(@NotNull Game game, @NotNull Player player) throws IOException {
         super(game, player.getBackImage());
         this.player = player;
         setGame(game);
     }
-
-    private @Nullable Sprite weapon;
-    private @Nullable Sprite powerup;
 
     @Override
     public void setGame(@NotNull Game game) throws IOException {

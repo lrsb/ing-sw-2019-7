@@ -503,7 +503,8 @@ abstract class WeaponImpl {
 
             @Override
             boolean canBasicFire() {
-                if (basicTargetsPoint == null || game.getActualPlayer().getPosition().equals(basicTargetsPoint)) return false;
+                if (basicTargetsPoint == null || game.getActualPlayer().getPosition().equals(basicTargetsPoint))
+                    return false;
                 if (alternativeFire) return game.canMove(game.getActualPlayer().getPosition(), basicTargetsPoint, 1);
                 return Opt.of(game.getCell(game.getActualPlayer().getPosition())).e(Cell::getColor).get() != Opt.of(game.getCell(basicTargetsPoint)).e(Cell::getColor).get() &&
                         game.getActualPlayer().canSeeCell(basicTargetsPoint, game.getCells());
@@ -573,8 +574,9 @@ abstract class WeaponImpl {
                             (basicTargets.size() != 2 && !game.getActualPlayer().getPosition().equals(basicTargets.get(0).getPosition()) ||
                                     (basicTargets.stream().mapToDouble(e -> Opt.of(e.getPosition()).e(Point::getX).get()).reduce(1, (e, f) -> e * (f - game.getActualPlayer().getPosition().getX())) == 2) ||
                                     (basicTargets.stream().mapToDouble(e -> Opt.of(e.getPosition()).e(Point::getY).get()).reduce(1, (e, f) -> e * (f - game.getActualPlayer().getPosition().getY())) == 2));
-                else return alternativeFire && basicTargetsPoint != null && !game.getActualPlayer().getPosition().equals(basicTargetsPoint) &&
-                        Stream.of(Bounds.Direction.values()).anyMatch(e -> game.getActualPlayer().isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 2, e));
+                else
+                    return alternativeFire && basicTargetsPoint != null && !game.getActualPlayer().getPosition().equals(basicTargetsPoint) &&
+                            Stream.of(Bounds.Direction.values()).anyMatch(e -> game.getActualPlayer().isPointAtMaxDistanceInDirection(basicTargetsPoint, game.getCells(), 2, e));
             }
 
             @Override
@@ -748,7 +750,7 @@ abstract class WeaponImpl {
                         .get(false) && basicTargetsPoint != null)
                     mockPlayer.setPosition(basicTargetsPoint);
                 return Opt.of(mockPlayer.getPosition()).e(e -> e.equals(secondAdditionalTargets.get(0).getPosition()))
-                                .get(false) && !basicTargets.get(0).equals(secondAdditionalTargets.get(0));
+                        .get(false) && !basicTargets.get(0).equals(secondAdditionalTargets.get(0));
             }
 
             @Override

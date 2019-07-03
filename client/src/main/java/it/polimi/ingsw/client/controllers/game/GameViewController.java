@@ -98,7 +98,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         if (((Game) f).isCompleted()) navigationController.popViewController();
                     }
                     else if (f instanceof Message) {
-                        chatButton.setText("Chat (*)");
+                        if (!((Message) f).getFrom().getUuid().equals(Preferences.getUuid()))
+                            chatButton.setText("Chat (*)");
                         ChatViewController.messages.add((Message) f);
                     }
                 });
@@ -153,18 +154,40 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 reloadActionPanel();
             }
         });
+
         shootButton.addActionListener(e -> {
             if (yourTurn) {
+                if (game.getActualPlayer().getWeapons().parallelStream().anyMatch(f -> !game.getActualPlayer().isALoadedGun(f)))
+                    try {
+                        new WeaponSelectorViewController(null,
+                                game.getActualPlayer().getWeapons().parallelStream().filter(f -> !game.getActualPlayer().isALoadedGun(f)).collect(Collectors.toList()),
+                                (WeaponSelectorViewController.WeaponCallback) f -> {
+                                    if (JOptionPane.showConfirmDialog(null, "Vuoi pagare con powerup?", "Ricarica", YES_NO_OPTION) == YES_OPTION) {
+                                        try {
+                                            new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
+                                                    (PowerUpSelectorViewController.PowerCallback) c -> doAction(Action.Builder.create(game.getUuid()).buildReload(f, c))).setVisible(true);
+                                        } catch (IOException ex) {
+                                            ex.printStackTrace();
+                                        }
+                                    } else doAction(Action.Builder.create(game.getUuid()).buildReload(f, null));
+                                }).setVisible(true);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                else JOptionPane.showMessageDialog(null, "Non hai armi cariche");
+
                 type = Action.Type.FIRE;
                 reloadActionPanel();
             }
         });
+
         grabButton.addActionListener(e -> {
             if (yourTurn) {
                 type = game.getCell(game.getActualPlayer().getPosition()).isSpawnPoint() ? Action.Type.GRAB_WEAPON : Action.Type.GRAB_AMMOCARD;
                 reloadActionPanel();
             }
         });
+
         spawnButton.addActionListener(e -> {
             try {
                 if (JOptionPane.showConfirmDialog(null,
