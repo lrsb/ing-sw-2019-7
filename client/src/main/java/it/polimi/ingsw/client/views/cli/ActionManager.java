@@ -887,9 +887,8 @@ public class ActionManager {
                                         if (selectableGloveTargets.contains(player.getUuid()) && (player.getPosition().equals(tar.getPosition()) ||
                                                 Stream.of(Bounds.Direction.values()).noneMatch(d -> game.getActualPlayer()
                                                         .isPointAtMaxDistanceInDirection(player.getPosition(), game.getCells(), 2, d) &&
-                                                        game.getActualPlayer().isPointAtMaxDistanceInDirection(tar.getPosition(), game.getCells(), 2, d)))) {
+                                                        game.getActualPlayer().isPointAtMaxDistanceInDirection(tar.getPosition(), game.getCells(), 2, d))))
                                             selectableGloveTargets.remove(player.getUuid());
-                                        }
                                     }
                                 }
                             }
@@ -899,7 +898,18 @@ public class ActionManager {
                         simpleBasicTargetSelection(selectableGloveTargets);
                         if (basicTarget.size() < 2) doneQuestion();
                     } while(basicTarget.size() < 2 && !done);
-                    //todo: finire la posizione
+                    //todo: ho barato
+                    for (UUID tar : basicTarget) {
+                        for (Player player : game.getPlayers()) {
+                            if (player.getUuid().equals(tar) && Stream.of(Bounds.Direction.values())
+                                    .noneMatch(d -> game.getActualPlayer().isPointAtMaxDistanceInDirection(player.getPosition(), game.getCells(), 2, d)))
+                                basicTargetPoint = player.getPosition();
+                        }
+                    }
+                    if (basicTargetPoint == null)
+                        for (Player player : game.getPlayers())
+                            if (player.getUuid().equals(basicTarget.get(0)))
+                                basicTargetPoint = player.getPosition();
                     selectAlternativePayment(game);
                 } else {
                     game.getPlayers().stream().filter(e -> selectableGloveTargets.contains(e.getUuid()) &&
@@ -912,6 +922,19 @@ public class ActionManager {
                 break;
             case SHOCKWAVE:
                 //todo:
+                System.out.println(Utils.getStrings("cli", "weapons_details", "shockwave").get("fire_description").getAsString());
+                doubleChoice(game);
+                alternativeFire = options != 0;
+                options = 0;
+                if (alternativeFire) selectAlternativePayment(game);
+                else {
+                    List<UUID> selectableShockTargets = new ArrayList<>();
+                    do {
+                        if (!basicTarget.isEmpty())
+
+                        if (basicTarget.size() < 3) doneQuestion();
+                    } while(basicTarget.size() < 3 && !done);
+                }
                 break;
             case SLEDGEHAMMER:
                 //todo:
