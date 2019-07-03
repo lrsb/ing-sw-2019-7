@@ -503,7 +503,8 @@ abstract class WeaponImpl {
 
             @Override
             boolean canBasicFire() {
-                if (basicTargetsPoint == null || game.getActualPlayer().getPosition().equals(basicTargetsPoint))
+                if (basicTargetsPoint == null || game.getActualPlayer().getPosition() == null ||
+                        game.getActualPlayer().getPosition().equals(basicTargetsPoint))
                     return false;
                 if (alternativeFire) return game.canMove(game.getActualPlayer().getPosition(), basicTargetsPoint, 1);
                 return Opt.of(game.getCell(game.getActualPlayer().getPosition())).e(Cell::getColor).get() != Opt.of(game.getCell(basicTargetsPoint)).e(Cell::getColor).get() &&
@@ -568,6 +569,7 @@ abstract class WeaponImpl {
 
             @Override
             boolean canBasicFire() {
+                if (game.getActualPlayer().getPosition() == null || basicTargets.get(0).getPosition() == null) return false;
                 if (!alternativeFire && !basicTargets.isEmpty() && basicTargets.size() < 3)
                     return Stream.of(Bounds.Direction.values()).parallel().anyMatch(e ->
                             basicTargets.stream().allMatch(f -> Opt.of(f.getPosition()).e(g -> game.getActualPlayer().isPointAtMaxDistanceInDirection(g, game.getCells(), 2, e)).get(false))) &&

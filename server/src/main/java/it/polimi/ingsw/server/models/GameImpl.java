@@ -212,7 +212,7 @@ public class GameImpl extends Game implements Serializable {
 
     private void endGame() {
         finalPointsRedistribution();
-        //todo: cose per finire?
+        setCompleted(true);
     }
 
     /**
