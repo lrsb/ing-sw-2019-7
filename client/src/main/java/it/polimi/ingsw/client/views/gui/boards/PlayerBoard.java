@@ -97,11 +97,11 @@ public class PlayerBoard extends AbstractBoard {
         var rnd = new SecureRandom();
 
         for (var i = 0; i < player.getWeapons().size(); i++) {
-            var weaponImage = Weapon.values()[i].getFrontImage();
+            var weaponImage = player.getWeapons().get(i).getFrontImage();
             var x = 1035 - i * 170;
             var weapon = new Sprite(x, 770, 150, 250, weaponImage);
             weapon.setDraggable(false);
-            if (!player.isALoadedGun(Weapon.values()[i])) weapon.setFade(0.5);
+            if (!player.isALoadedGun(player.getWeapons().get(i))) weapon.setFade(0.8);
             weapon.setAssociatedObject(Weapon.values()[rnd.nextInt(Weapon.values().length)]);
             addSprite(weapon);
         }

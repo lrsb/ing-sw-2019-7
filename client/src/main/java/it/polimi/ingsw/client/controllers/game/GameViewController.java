@@ -21,8 +21,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static javax.swing.JOptionPane.*;
 
@@ -167,7 +167,9 @@ public class GameViewController extends BaseViewController implements GameBoardL
         reloadButton.addActionListener(e -> {
             if (yourTurn) {
                 try {
-                    new WeaponSelectorViewController(null, new ArrayList<>(java.util.List.of(Weapon.LOCK_RIFLE, Weapon.ELECTROSCYTHE)), (WeaponSelectorViewController.WeaponCallback) f -> { //game.getActualPlayer().getWeapons()
+                    new WeaponSelectorViewController(null,
+                            game.getActualPlayer().getWeapons().parallelStream().filter(f -> !game.getActualPlayer().isALoadedGun(f)).collect(Collectors.toList()),
+                            (WeaponSelectorViewController.WeaponCallback) f -> {
                         if (JOptionPane.showConfirmDialog(null, "Vuoi pagare con powerup?", "Ricarica", YES_NO_OPTION) == YES_OPTION) {
                             try {
                                 new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
@@ -182,6 +184,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 }
             }
         });
+        skipButton.addActionListener(e -> doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
 
         cancelButton.addActionListener(e -> {
             type = null;
@@ -232,7 +235,6 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 shootButton.setVisible(false);
                 grabButton.setVisible(false);
                 spawnButton.setVisible(false);
-                skipButton.setVisible(false);
                 powerupButton.setVisible(false);
                 reloadButton.setVisible(false);
                 rulesButton.setVisible(true);
@@ -257,9 +259,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     shootButton.setVisible(true);
                     grabButton.setVisible(true);
                     powerupButton.setVisible(true);
+                    reloadButton.setVisible(true);
                 }
-
-                grabButton.setVisible(game.getCell(game.getActualPlayer().getPosition()) != null);
                 cancelPanel.setVisible(false);
             }
         } else {
@@ -408,7 +409,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         powerupButton.setText("Usa powerup");
         actionPanel.add(powerupButton, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         reloadButton = new JButton();
-        reloadButton.setText("Ricarica");
+        reloadButton.setText(" Ricarica arma");
         actionPanel.add(reloadButton, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         cancelPanel = new JPanel();
         cancelPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));

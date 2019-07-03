@@ -160,7 +160,7 @@ public class GameBoard extends AbstractBoard {
     }
 
     private void populateWeapons(@NotNull Game game) throws IOException {
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < game.getWeapons(Cell.Color.YELLOW).size(); i++) {
             var yellowWeapon = new Sprite(1035, 480 + i * 121, 140, 210, game.getWeapons(Cell.Color.YELLOW).get(i).getFrontImage());
             yellowWeapon.setRotation(Sprite.Rotation.THREE_HALF_PI);
             yellowWeapon.setTag("p:1035" + "," + (480 + i * 121));
@@ -171,7 +171,7 @@ public class GameBoard extends AbstractBoard {
             addSprite(yellowWeapon);
         }
 
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < game.getWeapons(Cell.Color.RED).size(); i++) {
             var redWeapon = new Sprite(1, 308 + i * 121, 140, 210, game.getWeapons(Cell.Color.RED).get(i).getFrontImage());
             redWeapon.setRotation(Sprite.Rotation.HALF_PI);
             redWeapon.setTag("p:1" + "," + (308 + i * 121));
@@ -182,7 +182,7 @@ public class GameBoard extends AbstractBoard {
             addSprite(redWeapon);
         }
 
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < game.getWeapons(Cell.Color.BLUE).size(); i++) {
             var blueWeapon = new Sprite(634 + i * 131, 0, 140, 210, game.getWeapons(Cell.Color.BLUE).get(i).getFrontImage());
             blueWeapon.setRotation(Sprite.Rotation.PI);
             blueWeapon.setTag("p:" + (634 + i * 131) + ",0");
