@@ -39,6 +39,7 @@ class WeaponTest {
         ArrayList<UUID> secondTargets = new ArrayList<>();
         game.getPlayers().forEach(e -> e.setPosition(new Point(0, 0)));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.LOCK_RIFLE));
+        rechargingPlayers(game);
         //Turno 1, giocatore 1
         basicTargets.add(game.getPlayers().get(1).getUuid());
         firstTargets.add(game.getPlayers().get(2).getUuid());
@@ -145,6 +146,7 @@ class WeaponTest {
         ArrayList<UUID> secondTargets = new ArrayList<>();
         game.getPlayers().forEach(e -> e.setPosition(new Point(0, 3)));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.MACHINE_GUN));
+        rechargingPlayers(game);
         //Turno 1, giocatore 1
         basicTargets.add(game.getPlayers().get(1).getUuid());
         basicTargets.add(game.getPlayers().get(2).getUuid());
@@ -212,6 +214,7 @@ class WeaponTest {
         ArrayList<UUID> secondTargets = new ArrayList<>();
         game.getPlayers().forEach(e -> e.setPosition(new Point(2, 1)));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.THOR));
+        rechargingPlayers(game);
         //Turno 1, Giocatore 1
         game.getPlayers().get(1).setPosition(new Point(1, 2));
         game.getPlayers().get(2).setPosition(new Point(0, 1));
@@ -248,6 +251,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(1, 2));
         game.getPlayers().get(4).setPosition(new Point(1, 2));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.PLASMA_GUN));
+        rechargingPlayers(game);
         //Turno 1, G0
         basicTargets.add(game.getPlayers().get(2).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.PLASMA_GUN, game.getActualPlayer().getPosition(),
@@ -293,6 +297,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(1, 1));
         game.getPlayers().get(4).setPosition(new Point(1, 2));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.WHISPER));
+        rechargingPlayers(game);
         //Turno 1, G0
         basicTargets.add(game.getPlayers().get(1).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.WHISPER, game.getActualPlayer().getPosition(),
@@ -337,6 +342,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(0, 3));
         game.getPlayers().get(4).setPosition(new Point(0, 3));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.ELECTROSCYTHE));
+        rechargingPlayers(game);
         assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.ELECTROSCYTHE, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
                 secondTargets, secondTargetPoint)));
@@ -370,6 +376,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(0, 1));
         game.getPlayers().get(4).setPosition(new Point(1, 1));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.TRACTOR_BEAM));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(1).getUuid());
         assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.TRACTOR_BEAM, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
@@ -413,6 +420,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(2, 2));
         game.getPlayers().get(4).setPosition(new Point(1, 2));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.VORTEX_CANNON));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(1).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.VORTEX_CANNON, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
@@ -458,6 +466,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(1, 1));
         game.getPlayers().get(4).setPosition(new Point(1, 1));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.FURNACE));
+        rechargingPlayers(game);
         basicTargetPoint = new Point(2, 0);
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.FURNACE, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
@@ -501,6 +510,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(0, 0));
         game.getPlayers().get(4).setPosition(new Point(1, 1));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.HEATSEEKER));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(1).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.HEATSEEKER, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
@@ -549,6 +559,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(1, 2));
         game.getPlayers().get(4).setPosition(new Point(0, 2));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.HELLION));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(1).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.HELLION, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
@@ -598,6 +609,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(2, 2));
         game.getPlayers().get(4).setPosition(new Point(1, 2));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.FLAMETHROWER));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(1).getUuid());
         basicTargets.add(game.getPlayers().get(3).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.FLAMETHROWER, game.getActualPlayer().getPosition(),
@@ -653,6 +665,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(1, 0));
         game.getPlayers().get(4).setPosition(new Point(1, 0));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.GRENADE_LAUNCHER));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(1).getUuid());
         assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.GRENADE_LAUNCHER, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
@@ -701,6 +714,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(0, 0));
         game.getPlayers().get(4).setPosition(new Point(1, 0));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.ROCKET_LAUNCHER));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(4).getUuid());
         basicTargetPoint = new Point(0, 0);
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.ROCKET_LAUNCHER, game.getActualPlayer().getPosition(),
@@ -747,6 +761,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(0, 0));
         game.getPlayers().get(4).setPosition(new Point(2, 3));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.RAILGUN));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(4).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.RAILGUN, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
@@ -795,6 +810,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(0, 2));
         game.getPlayers().get(4).setPosition(new Point(0, 2));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.CYBERBLADE));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(2).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.CYBERBLADE, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
@@ -841,6 +857,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(1, 0));
         game.getPlayers().get(4).setPosition(new Point(0, 2));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.ZX2));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(4).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.ZX2, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
@@ -897,6 +914,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(2, 3));
         game.getPlayers().get(4).setPosition(new Point(1, 1));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.SHOTGUN));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(4).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.SHOTGUN, game.getActualPlayer().getPosition(),
                 null, true, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
@@ -941,6 +959,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(0, 2));
         game.getPlayers().get(4).setPosition(new Point(1, 2));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.POWER_GLOVE));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(2).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.POWER_GLOVE, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,
@@ -1001,6 +1020,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(2, 2));
         game.getPlayers().get(4).setPosition(new Point(2, 1));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.SHOCKWAVE));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(1).getUuid());
         basicTargets.add(game.getPlayers().get(2).getUuid());
         basicTargets.add(game.getPlayers().get(4).getUuid());
@@ -1046,6 +1066,7 @@ class WeaponTest {
         game.getPlayers().get(3).setPosition(new Point(2, 1));
         game.getPlayers().get(4).setPosition(new Point(2, 3));
         game.getPlayers().forEach(e -> e.addWeapon(Weapon.SLEDGEHAMMER));
+        rechargingPlayers(game);
         basicTargets.add(game.getPlayers().get(1).getUuid());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildFireAction(Weapon.SLEDGEHAMMER, game.getActualPlayer().getPosition(),
                 null, false, 0, basicTargets, basicTargetPoint, firstTargets, firstTargetPoint,

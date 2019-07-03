@@ -27,7 +27,7 @@ class PlayerTest {
             assertNotNull(player.getMarksTaken());
             assertFalse(player.isEasyBoard());
             for (AmmoCard.Color color : AmmoCard.Color.values()) {
-                assertEquals(3, player.getColoredCubes(color));
+                assertEquals(1, player.getColoredCubes(color));
                 for (PowerUp.Type type : PowerUp.Type.values()) assertFalse(player.hasPowerUp(new PowerUp(color, type)));
             }
             for (Weapon weapon : Weapon.values()) assertFalse(player.hasWeapon(weapon));
@@ -48,7 +48,7 @@ class PlayerTest {
         Game game = createGame(Game.Type.values()[new SecureRandom().nextInt(Game.Type.values().length)]);
         for (Player player : game.getPlayers()) {
             for (AmmoCard.Color color : AmmoCard.Color.values()) {
-                assertEquals(3, player.getColoredCubes(color));
+                assertEquals(1, player.getColoredCubes(color));
                 player.removeColoredCubes(color, 10);
                 assertEquals(0, player.getColoredCubes(color));
             }

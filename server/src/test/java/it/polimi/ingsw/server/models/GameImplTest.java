@@ -23,7 +23,7 @@ class GameImplTest {
         assert (gameImplTest.getPlayers().size() >= 3 && gameImplTest.getPlayers().size() <= 5) : "Wrong number of players";
         for (Player player : gameImplTest.getPlayers()) {
             for (AmmoCard.Color color : AmmoCard.Color.values()) {
-                assertEquals(3, player.getColoredCubes(color));
+                assertEquals(1, player.getColoredCubes(color));
                 assertNull(player.getPosition());
                 assertEquals(0, player.getPoints());
                 assertEquals(0, player.getDamagesTaken().size());
@@ -47,7 +47,7 @@ class GameImplTest {
         for (Player player : gameImpl.getPlayers()) {
             assertNull(player.getPosition());
             for (AmmoCard.Color color : AmmoCard.Color.values()) {
-                assertEquals(3, player.getColoredCubes(color));
+                assertEquals(1, player.getColoredCubes(color));
             }
             assertEquals(0, player.getWeapons().size());
             assertEquals(player.equals(gameImpl.getActualPlayer()) ? 2 : 0, player.getPowerUps().size());
@@ -74,6 +74,11 @@ class GameImplTest {
             player.removePowerUp(powerUp);
             assertEquals(0, player.getPowerUps().size());
         }
+        for (Player player : gameImpl.getPlayers())
+            for (AmmoCard.Color color : AmmoCard.Color.values()) {
+                while (player.getColoredCubes(color) < 3) player.removeColoredCubes(color, -1);
+                assertEquals(3, player.getColoredCubes(color));
+            }
         //Turno 1, giocatore 1
         assertEquals(2, gameImpl.getRemainedActions());
         gameImpl.getActualPlayer().addWeapon(Weapon.LOCK_RIFLE);
@@ -118,6 +123,11 @@ class GameImplTest {
     void testGrabItems() {
         GameImpl game = createGameImpl(Game.Type.FIVE_FIVE);
         game.getActualPlayer().setPosition(new Point(0, 0));
+        for (Player player : game.getPlayers())
+            for (AmmoCard.Color color : AmmoCard.Color.values()) {
+                while (player.getColoredCubes(color) < 3) player.removeColoredCubes(color, -1);
+                assertEquals(3, player.getColoredCubes(color));
+            }
         assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(1, 0), game.getWeapons(Cell.Color.RED).get(0), null, null)));
         assertEquals(2, game.getWeapons(Cell.Color.RED).size());
         assertEquals(1, game.getActualPlayer().getWeapons().size());
@@ -191,6 +201,11 @@ class GameImplTest {
             player.setPosition(new Point(2, 3));
             player.addWeapon(Weapon.LOCK_RIFLE);
         }
+        for (Player player : game.getPlayers())
+            for (AmmoCard.Color color : AmmoCard.Color.values()) {
+                while (player.getColoredCubes(color) < 3) player.removeColoredCubes(color, -1);
+                assertEquals(3, player.getColoredCubes(color));
+            }
         //Turno1
         easyFire(game, game.getPlayers().get(1));
         easyFire(game, game.getPlayers().get(4));
