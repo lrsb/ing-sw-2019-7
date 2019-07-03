@@ -869,7 +869,46 @@ public class ActionManager {
                 }
                 break;
             case POWER_GLOVE:
-                //todo:
+                System.out.println(Utils.getStrings("cli", "weapons_details", "power_glove").get("fire_description").getAsString());
+                doubleChoice(game);
+                alternativeFire = options != 0;
+                options = 0;
+                List<UUID> selectableGloveTargets = game.getPlayers().stream().filter(e -> e.getPosition() != null &&
+                        !e.getPosition().equals(game.getActualPlayer().getPosition()) &&
+                        Stream.of(Bounds.Direction.values()).anyMatch(d -> game.getActualPlayer().isPointAtMaxDistanceInDirection(e.getPosition(), game.getCells(), 2, d)))
+                        .map(Player::getUuid).collect(Collectors.toList());
+                if (alternativeFire) {
+                    do {
+                        if (!basicTarget.isEmpty()) {
+                            for (Player tar : game.getPlayers()) {
+                                if (tar.getUuid().equals(basicTarget.get(0))) {
+                                    selectableGloveTargets.remove(tar.getUuid());
+                                    for (Player player : game.getPlayers()) {
+                                        if (selectableGloveTargets.contains(player.getUuid()) && (player.getPosition().equals(tar.getPosition()) ||
+                                                Stream.of(Bounds.Direction.values()).noneMatch(d -> game.getActualPlayer()
+                                                        .isPointAtMaxDistanceInDirection(player.getPosition(), game.getCells(), 2, d) &&
+                                                        game.getActualPlayer().isPointAtMaxDistanceInDirection(tar.getPosition(), game.getCells(), 2, d)))) {
+                                            selectableGloveTargets.remove(player.getUuid());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        System.out.println(Utils.getStrings("cli", "weapons_details", "power_glove", "fire_details").get("select_targets_rocket_fist_mode").getAsString());
+                        printSelectableTargets(game, selectableGloveTargets);
+                        simpleBasicTargetSelection(selectableGloveTargets);
+                        if (basicTarget.size() < 2) doneQuestion();
+                    } while(basicTarget.size() < 2 && !done);
+                    //todo: finire la posizione
+                    selectAlternativePayment(game);
+                } else {
+                    game.getPlayers().stream().filter(e -> selectableGloveTargets.contains(e.getUuid()) &&
+                            Stream.of(Bounds.Direction.values()).noneMatch(d -> game.getActualPlayer().isPointAtMaxDistanceInDirection(e.getPosition(), game.getCells(), 1, d)))
+                            .map(Player::getUuid).forEach(selectableGloveTargets::remove);
+                    System.out.println(Utils.getStrings("cli", "weapons_details", "power_glove", "fire_details").get("select_target_basic").getAsString());
+                    printSelectableTargets(game, selectableGloveTargets);
+                    simpleBasicTargetSelection(selectableGloveTargets);
+                }
                 break;
             case SHOCKWAVE:
                 //todo:

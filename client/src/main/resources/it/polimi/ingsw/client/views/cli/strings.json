@@ -268,9 +268,9 @@
                 "reload_cost": "1 cubo giallo + 1 cubo blu\n",
                 "fire_description": "basic mode: scegli 1 bersaglio che si trova esattamente ad 1 passo da te, muoviti nella sua cella, infliggigli 1 danno e assegnagli 2 marchi\nrocket fist mode: scegli 1 cella che si trova ad 1 passo in una certa direzione, muoviti in quella cella e, se vuoi infliggi 2 danni a 1 giocatore in quella cella, ora, tenendo la stessa direzione, puo muoverti nella cella adiacente e, se vuoi, infliggi 2 danni ad 1 giocatore in quella cella (costo: 1 cubo blu)\n",
                 "fire_details": {
-                    "select_target_basic": "Seleziona il bersaglio del tuo attacco:\n",
+                    "select_target_basic": "Seleziona il bersaglio del tuo attacco):\n",
                     "select_targets_rocket_fist_mode": "Seleziona il/i bersaglio/i del tuo attacco:\n",
-                    "select_point_rocket_fist_mode": "Seleziona il punto in cui vuoi terminare il tuo attacco:\n"
+                    "select_point_basic": "Seleziona il punto in cui vuoi terminare il tuo attacco:\n"
                 }
             },
             "shockwave": {
