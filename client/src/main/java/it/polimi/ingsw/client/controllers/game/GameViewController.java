@@ -21,6 +21,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import static javax.swing.JOptionPane.*;
@@ -45,7 +46,6 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private JLabel moveLabel;
     private JPanel actionPanel;
     private JButton cancelButton;
-    private JLabel actionDescriptionLabel;
     private JPanel cancelPanel;
     private JButton spawnButton;
     private JButton skipButton;
@@ -79,7 +79,6 @@ public class GameViewController extends BaseViewController implements GameBoardL
         exitButton.setForeground(BACKGROUND_COLOR);
         moveLabel.setForeground(WHITE_ACCENT);
         cancelPanel.setBackground(BACKGROUND_COLOR);
-        actionDescriptionLabel.setForeground(WHITE_ACCENT);
         actualPlayerLabel.setForeground(WHITE_ACCENT);
 
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
@@ -103,14 +102,17 @@ public class GameViewController extends BaseViewController implements GameBoardL
         });
 
         playersBoardButton.addActionListener(e -> {
+            if (playersBoardsViewController != null) playersBoardsViewController.dispose();
+            playersBoardsViewController = new PlayersBoardsViewController(null, gameBoard.getGame());
+            playersBoardsViewController.setVisible(true);
+        });
+
+        rulesButton.addActionListener(e -> {
             try {
                 Utils.swingOpenRules();
             } catch (URISyntaxException | IOException ex) {
                 ex.printStackTrace();
             }
-            if (playersBoardsViewController != null) playersBoardsViewController.dispose();
-            playersBoardsViewController = new PlayersBoardsViewController(null, gameBoard.getGame());
-            playersBoardsViewController.setVisible(true);
         });
 
         exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
@@ -162,6 +164,24 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 ex.printStackTrace();
             }
         });
+        reloadButton.addActionListener(e -> {
+            if (yourTurn) {
+                try {
+                    new WeaponSelectorViewController(null, new ArrayList<>(java.util.List.of(Weapon.LOCK_RIFLE, Weapon.ELECTROSCYTHE)), (WeaponSelectorViewController.WeaponCallback) f -> { //game.getActualPlayer().getWeapons()
+                        if (JOptionPane.showConfirmDialog(null, "Vuoi pagare con powerup?", "Ricarica", YES_NO_OPTION) == YES_OPTION) {
+                            try {
+                                new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
+                                        (PowerUpSelectorViewController.PowerCallback) c -> doAction(Action.Builder.create(game.getUuid()).buildReload(f, c))).setVisible(true);
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                        } else doAction(Action.Builder.create(game.getUuid()).buildReload(f, null));
+                    }).setVisible(true);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
 
         cancelButton.addActionListener(e -> {
             type = null;
@@ -187,20 +207,17 @@ public class GameViewController extends BaseViewController implements GameBoardL
             if (type != null) {
                 switch (type) {
                     case MOVE:
-                        actionDescriptionLabel.setText("Muovi il tuo giocatore");
+                        JOptionPane.showMessageDialog(null, "Muovi il tuo giocatore");
                         break;
                     case GRAB_WEAPON:
-                        actionDescriptionLabel.setText("Scegli l'arma da raccogliere");
+                        JOptionPane.showMessageDialog(null, "Scegli l'arma da raccogliere");
                         break;
                     case GRAB_AMMOCARD:
-                        actionDescriptionLabel.setText("Scegli la tessera delle munizioni da raccogliere");
+                        JOptionPane.showMessageDialog(null, "Scegli la tessera delle munizioni da raccogliere");
                         break;
                     case FIRE:
                         break;
                     case USE_POWER_UP:
-                        break;
-                    case RELOAD:
-
                         break;
                     case NEXT_TURN:
                         break;
@@ -297,6 +314,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
     }
 
     private boolean doAction(@Nullable Action action) {
+        type = null;
+        reloadActionPanel();
         var token = Preferences.getTokenOrJumpBack(getNavigationController());
         if (action != null && token.isPresent()) try {
             return Client.API.doAction(token.get(), action);
@@ -392,16 +411,11 @@ public class GameViewController extends BaseViewController implements GameBoardL
         reloadButton.setText("Ricarica");
         actionPanel.add(reloadButton, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         cancelPanel = new JPanel();
-        cancelPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        cancelPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         buttonPanel.add(cancelPanel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         cancelButton = new JButton();
         cancelButton.setText("Annulla mossa");
-        cancelPanel.add(cancelButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        actionDescriptionLabel = new JLabel();
-        Font actionDescriptionLabelFont = this.$$$getFont$$$(null, -1, 20, actionDescriptionLabel.getFont());
-        if (actionDescriptionLabelFont != null) actionDescriptionLabel.setFont(actionDescriptionLabelFont);
-        actionDescriptionLabel.setText("Label");
-        cancelPanel.add(actionDescriptionLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        cancelPanel.add(cancelButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         rulesButton = new JButton();
         rulesButton.setText("Regole");
         buttonPanel.add(rulesButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
