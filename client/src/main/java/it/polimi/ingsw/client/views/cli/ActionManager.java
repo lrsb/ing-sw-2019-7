@@ -627,7 +627,6 @@ public class ActionManager {
                     simpleBasicTargetSelection(selectableTargets);
                     selectAlternativePayment(game);
                 } else {
-                    System.out.println(Utils.getStrings("cli", "weapons_details", "tractor_beam", "fire_details").get("select_point_basic").getAsString());
                     selectVisibleBasicPoint(game);
                     System.out.println(Utils.getStrings("cli", "weapons_details", "tractor_beam", "fire_details").get("select_target_basic").getAsString());
                     List<UUID> selectableTargets = game.getPlayers().parallelStream()
@@ -638,17 +637,75 @@ public class ActionManager {
                 }
                 break;
             case VORTEX_CANNON:
-                //todo:
-
+                System.out.println(Utils.getStrings("cli", "weapons_details", "vortex_cannon").get("fire_description").getAsString());
+                doubleChoice(game);
+                selectVisibleBasicPoint(game);
+                List<UUID> selectableTargets = game.getPlayers().parallelStream()
+                        .filter(e -> game.canMove(e.getPosition(), basicTargetPoint, 1))
+                        .map(Player::getUuid).collect(Collectors.toList());
+                System.out.println(Utils.getStrings("cli", "weapons_details", "vortex_cannon", "fire_details").get("select_target_basic").getAsString());
+                printSelectableTargets(game, selectableTargets);
+                simpleBasicTargetSelection(selectableTargets);
+                if (options == 1) {
+                    done = false;
+                    do {
+                        selectableTargets.clear();
+                        System.out.println(Utils.getStrings("cli", "weapons_details", "vortex_cannon", "fire_details").get("select_target_first").getAsString());
+                        selectableTargets = game.getPlayers().parallelStream()
+                                .filter(e -> !basicTarget.contains(e.getUuid()) && !firstAdditionalTarget.contains(e.getUuid()) &&
+                                        game.canMove(e.getPosition(), basicTargetPoint, 1))
+                                .map(Player::getUuid).collect(Collectors.toList());
+                        System.out.println(Utils.getStrings("cli", "weapons_details", "vortex_cannon", "fire_details").get("select_target_first").getAsString());
+                        printSelectableTargets(game, selectableTargets);
+                        simpleFirstTargetSelection(selectableTargets);
+                        if (firstAdditionalTarget.size() < 2) doneQuestion();
+                    } while (firstAdditionalTarget.size() < 2 && !done);
+                    selectAlternativePayment(game);
+                }
                 break;
             case FURNACE:
-                //todo:
+                System.out.println(Utils.getStrings("cli", "weapons_details", "furnace").get("fire_description").getAsString());
+                doubleChoice(game);
+                alternativeFire = options != 0;
+                options = 0;
+                if (alternativeFire) {
+                    List<Point> selectablePoints = new ArrayList<>();
+                    for (int i = 0; i < Game.MAX_Y; i++)
+                        for (int j = 0; j < Game.MAX_X; j++)
+                            if (game.getCell(new Point(i, j)) != null && !game.getActualPlayer().getPosition().equals(new Point(i, j)) &&
+                                    game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), 1))
+                                selectablePoints.add(new Point(i, j));
+                    System.out.println(Utils.getStrings("cli", "weapons_details", "furnace", "fire_details").get("select_square").getAsString());
+                    printSelectablePoints(game, selectablePoints);
+                    simpleBasicPointSelection(selectablePoints);
+                } else {
+                    List<Cell.Color> selectableColor = new ArrayList<>();
+                    for (int i = 0; i < Game.MAX_Y; i++)
+                        for (int j = 0; j < Game.MAX_X; j++)
+                            if (game.getCell(new Point(i, j)) != null && !game.getCell(new Point(i, j)).getColor().equals(game.getCell(game.getActualPlayer().getPosition()).getColor()) &&
+                                    game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), 1) && !selectableColor.contains(game.getCell(new Point(i, j)).getColor()))
+                                selectableColor.add(game.getCell(new Point(i, j)).getColor());
+                    System.out.println(Utils.getStrings("cli", "weapons_details", "furnace", "fire_details").get("select_chamber").getAsString());
+                    for (int i = 0; i < selectableColor.size(); i++)
+                        System.out.println((i+1) + ". " + selectableColor.get(i).escape() + "Stanza " +
+                                selectableColor.get(i).name() + stdColor);
+                    System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+                    selectColor(game, selectableColor);
+                }
                 break;
             case HEATSEEKER:
-                //todo:
+                System.out.println(Utils.getStrings("cli", "weapons_details", "heatseeker").get("fire_description").getAsString());
+                alternativeFire = false;
+                options = 0;
+                System.out.println(Utils.getStrings("cli", "weapons_details", "heatseeker", "fire_details").get("select_target_basic").getAsString());
+                List<UUID> selectableHeatTargets = game.getPlayers().parallelStream().filter(e -> !e.equals(game.getActualPlayer()) &&
+                        !game.getActualPlayer().canSeeNotSame(e, game.getCells())).map(Player::getUuid).collect(Collectors.toList());
+                printSelectableTargets(game, selectableHeatTargets);
+                simpleBasicTargetSelection(selectableHeatTargets);
                 break;
             case HELLION:
                 //todo:
+
                 break;
             case FLAMETHROWER:
                 //todo:
@@ -804,9 +861,15 @@ public class ActionManager {
             System.out.println("Non ci sono giocatori selezionabili");
         for (int i = 0; i < selectableTargets.size(); i++) {
             for (Player player : game.getPlayers()) {
-                if (player.getUuid().equals(selectableTargets.get(i))) System.out.println((i+1) + player.getBoardType().escape() + player.getNickname() + stdColor);
+                if (player.getUuid().equals(selectableTargets.get(i))) System.out.println((i+1) + ". " + player.getBoardType().escape() + player.getNickname() + stdColor);
             }
         }
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+    }
+
+    private void printSelectablePoints(@NotNull Game game, @NotNull List<Point> selectablePoints) {
+        for (int i = 0; i < selectablePoints.size(); i++)
+            System.out.println((i+1) + ". " + selectablePoints.get(i));
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
     }
 
@@ -876,6 +939,40 @@ public class ActionManager {
         else {
             System.out.println(invalidChoice);
             simpleBasicTargetSelection(selectableTargets);
+        }
+    }
+
+    private void simpleBasicPointSelection(@NotNull List<Point> selectablePoints) throws InterruptedException {
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectablePoints.size())
+            basicTargetPoint = selectablePoints.get(Integer.parseInt(choice) - 1);
+        else {
+            System.out.println(invalidChoice);
+            simpleBasicPointSelection(selectablePoints);
+        }
+    }
+
+    private void simpleFirstTargetSelection(@NotNull List<UUID> selectableTargets) throws InterruptedException {
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableTargets.size())
+            firstAdditionalTarget.add(selectableTargets.get(Integer.parseInt(choice) - 1));
+        else {
+            System.out.println(invalidChoice);
+            simpleFirstTargetSelection(selectableTargets);
+        }
+    }
+
+    private void selectColor(@NotNull Game game, @NotNull List<Cell.Color> selectableColor) throws InterruptedException {
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableColor.size())
+            for (int i = 0; i < game.MAX_Y; i++)
+                for (int j = 0; j < game.MAX_X; j++)
+                    if (game.getCell(new Point(i, j)) != null &&
+                            game.getCell(new Point(i, j)).getColor().equals(selectableColor.get(Integer.parseInt(choice) - 1)))
+                        basicTargetPoint = new Point(i, j);
+        else {
+            System.out.println(invalidChoice);
+            selectColor(game, selectableColor);
         }
     }
 }

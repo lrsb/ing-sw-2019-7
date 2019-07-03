@@ -169,9 +169,9 @@
                 "reload_cost": " 1 cubo rosso + 1 cub blu\n",
                 "fire_description": "basic effect: scegli 1 casella che puoi vedere, questa sarà \"il vortice\", scegli 1 bersaglio nel vortice o ad 1 passo da esso, muovilo nel vortice e infliggigli 2 danni\nwith black hole: scegli fino ad altri 2 bersagli (differenti da quello scelto per il \"basic effect\") che si trovano nel vortice o ad 1 passo da esso, muovili nel vortice e infliggi ad ognuno 1 danno (costo: 1 cubo rosso)\n",
                 "fire_details": {
-                    "select_the_vortex": "Seleziona \"il vortice\":\n",
-                    "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
-                    "select_targets_black_hole": "Seleziona il/i bersaglio/i del \"black hole\":\n"
+                    "select_point_basic": "Seleziona \"il vortice\":\n",
+                    "select_target_basic": "Seleziona il bersaglio del \"basic effect\":\n",
+                    "select_target_first": "Seleziona il/i bersaglio/i del \"black hole\":\n"
                 }
             },
             "furnace": {
@@ -188,7 +188,7 @@
                 "reload_cost": "2 cubi rossi + 1 cubo giallo\n",
                 "fire_description": "effect: scegli 1 bersaglio che non puoi vedere e infliggigli 3 danni\n",
                 "fire_details": {
-                    "select_target_effect": "Seleziona il bersaglio dell' \"effect\":\n"
+                    "select_target_basic": "Seleziona il bersaglio dell' \"effect\":\n"
                 }
             },
             "hellion": {
