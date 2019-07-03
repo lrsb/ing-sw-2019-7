@@ -62,7 +62,7 @@ public class GameBoard extends AbstractBoard {
         if (position != null) {
             if (getGameBoardListener() != null) {
                 if (getGameBoardListener().spriteMoved(sprite.getAssociatedObject(), position))
-                    sprite.moveTo(new LinearPointInterpolator(sprite.getPosition(), new Point(250 + position.x * 220, 210 + position.y * 190), 250) {
+                    sprite.moveTo(new LinearPointInterpolator(sprite.getPosition(), new Point(250 + position.y * 220, 210 + position.x * 190), 250) {
                     });
                 else super.onSpriteDragged(sprite);
             } else super.onSpriteDragged(sprite);
