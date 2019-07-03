@@ -60,10 +60,9 @@ public class AdrenalinePacket implements Serializable {
         START_GAME,
         QUIT_GAME,
         DO_ACTION,
-        GAME_UPDATE,
-        ROOM_UPDATE,
-        REMOVE_GAME_UPDATES,
-        REMOVE_ROOM_UPDATES,
+        SEND_MESSAGE,
+        UPDATE,
+        REMOVE_UPDATE,
         REMOTE_EXCEPTION,
         USER_REMOTE_EXCEPTION
     }

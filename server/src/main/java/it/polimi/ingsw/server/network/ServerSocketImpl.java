@@ -3,6 +3,7 @@ package it.polimi.ingsw.server.network;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.common.models.Action;
+import it.polimi.ingsw.common.models.Message;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import it.polimi.ingsw.common.network.socket.AdrenalinePacket;
@@ -65,18 +66,15 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                 case DO_ACTION:
                     Server.controller.doAction(token, packet.getAssociatedObject(Action.class));
                     break;
-                case GAME_UPDATE:
-                    Server.controller.addGameListener(token, packet.getAssociatedObject(UUID.class), (e, message) ->
-                            socket.send(new AdrenalinePacket(AdrenalinePacket.Type.GAME_UPDATE, null, List.of(new Gson().toJson(e), new Gson().toJson(message)))));
+                case SEND_MESSAGE:
+                    Server.controller.sendMessage(token, packet.getAssociatedObject(Message.class));
                     break;
-                case ROOM_UPDATE:
-                    Server.controller.addRoomListener(token, packet.getAssociatedObject(UUID.class), e -> socket.send(new AdrenalinePacket(AdrenalinePacket.Type.ROOM_UPDATE, null, e)));
+                case UPDATE:
+                    Server.controller.addListener(token, (object) ->
+                            socket.send(new AdrenalinePacket(AdrenalinePacket.Type.UPDATE, null, List.of(object.getClass().getCanonicalName(), new Gson().toJson(object)))));
                     break;
-                case REMOVE_GAME_UPDATES:
-                    Server.controller.removeGameListener(token, packet.getAssociatedObject(UUID.class));
-                    break;
-                case REMOVE_ROOM_UPDATES:
-                    Server.controller.removeRoomListener(token, packet.getAssociatedObject(UUID.class));
+                case REMOVE_UPDATE:
+                    Server.controller.removeListener(token);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + packet.getType());

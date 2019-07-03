@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoWSD;
 import it.polimi.ingsw.common.models.Action;
+import it.polimi.ingsw.common.models.Message;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import it.polimi.ingsw.server.Server;
@@ -95,8 +96,14 @@ public class ServerRestImpl extends NanoWSD {
                         session.parseBody(map);
                         return newJsonResponse(Server.controller.doAction(token, new Gson().fromJson(map.get("postData"), Action.class)));
                     }
-
                     break;
+                case "/sendMessage":
+                    if (method == Method.POST) {
+                        var map = new HashMap<String, String>();
+                        session.parseBody(map);
+                        Server.controller.sendMessage(token, new Gson().fromJson(map.get("postData"), Message.class));
+                        return newJsonResponse("ok");
+                    } else break;
                 default:
                     return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
             }
@@ -121,32 +128,17 @@ public class ServerRestImpl extends NanoWSD {
         @Override
         protected void onOpen() {
             try {
-                switch (getHandshakeRequest().getUri()) {
-                    case "/gameUpdate":
-                        Server.controller.addGameListener(getHandshakeRequest().getHeaders().get("auth-token"),
-                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)), (game, message) -> {
-                                    try {
-                                        sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(List.of(new Gson().toJson(game), new Gson().toJson(message)))));
-                                    } catch (IOException e) {
-                                        logger.log(Level.WARNING, e.getMessage(), e);
-                                    }
-                                });
-                        schedulePing();
-                        break;
-                    case "/roomUpdate":
-                        Server.controller.addRoomListener(getHandshakeRequest().getHeaders().get("auth-token"),
-                                UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)), update -> {
-                                    try {
-                                        sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true, new Gson().toJson(update)));
-                                    } catch (IOException e) {
-                                        logger.log(Level.WARNING, e.getMessage(), e);
-                                    }
-                                });
-                        schedulePing();
-                        break;
-                    default:
-                        close(WebSocketFrame.CloseCode.UnsupportedData, "Endpoint not valid!", true);
-                }
+                if (getHandshakeRequest().getUri().equals("/update")) {
+                    Server.controller.addListener(getHandshakeRequest().getHeaders().get("auth-token"), (object) -> {
+                        try {
+                            sendFrame(new WebSocketFrame(WebSocketFrame.OpCode.Text, true,
+                                    new Gson().toJson(List.of(object.getClass().getCanonicalName(), new Gson().toJson(object)))));
+                        } catch (IOException e) {
+                            logger.log(Level.WARNING, e.getMessage(), e);
+                        }
+                    });
+                    schedulePing();
+                } else close(WebSocketFrame.CloseCode.UnsupportedData, "Endpoint not valid!", true);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -196,13 +188,8 @@ public class ServerRestImpl extends NanoWSD {
 
         private void close() {
             try {
-                String uri = getHandshakeRequest().getUri();
-                if ("/gameUpdate".equals(uri)) {
-                    Server.controller.removeGameListener(getHandshakeRequest().getHeaders().get("auth-token"),
-                            UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)));
-                } else if ("/roomUpdate".equals(uri)) {
-                    Server.controller.removeRoomListener(getHandshakeRequest().getHeaders().get("auth-token"),
-                            UUID.fromString(getHandshakeRequest().getParameters().get("uuid").get(0)));
+                if (getHandshakeRequest().getUri().equals("/removeUpdate")) {
+                    Server.controller.removeListener(getHandshakeRequest().getHeaders().get("auth-token"));
                 }
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);

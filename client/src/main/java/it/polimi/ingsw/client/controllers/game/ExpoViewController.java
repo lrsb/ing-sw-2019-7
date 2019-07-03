@@ -67,7 +67,7 @@ public class ExpoViewController extends BaseViewController {
                 info = Utils.getStrings("cli", "weapons_details", ((Weapon) params[0]).name().toLowerCase()).get("fire_description").getAsString();
             else if (params[0] instanceof PowerUp)
                 info = Utils.getStrings("cli", "power_ups_details").get(((PowerUp) params[0]).getType().name().toLowerCase()).getAsString();
-            JOptionPane.showMessageDialog(this, "<html><body><p style='width: 200px;'>" + info.replaceAll("\n", " ") + "</p></body></html>", "Info", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "<html><body><p style='width: 200px;'>" + info.replaceAll("\n", " | ") + "</p></body></html>", "Info", JOptionPane.INFORMATION_MESSAGE);
         });
     }
 

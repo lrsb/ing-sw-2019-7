@@ -60,11 +60,14 @@ public class RoomViewController extends BaseViewController {
         roomUuid = room.getUuid();
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                Client.API.addRoomListener(e, room.getUuid(), f -> {
-                    update(f);
-                    if (f.isGameCreated() && getNavigationController() != null) {
-                        game = true;
-                        getNavigationController().presentViewController(true, GameViewController.class, Client.API.getActiveGame(e));
+                Client.API.addListener(e, f -> {
+                    if (f instanceof Room && ((Room) f).getUuid().equals(roomUuid)) {
+                        var updatedRoom = (Room) f;
+                        update(updatedRoom);
+                        if (updatedRoom.isGameCreated() && getNavigationController() != null) {
+                            game = true;
+                            getNavigationController().presentViewController(true, GameViewController.class, Client.API.getActiveGame(e));
+                        }
                     }
                 });
             } catch (UserRemoteException ex) {
@@ -121,7 +124,7 @@ public class RoomViewController extends BaseViewController {
     private void quit() {
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                Client.API.removeRoomListener(e, roomUuid);
+                Client.API.removeListener(e);
                 Client.API.quitRoom(e, roomUuid);
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();

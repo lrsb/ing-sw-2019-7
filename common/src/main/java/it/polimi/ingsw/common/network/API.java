@@ -1,9 +1,6 @@
 package it.polimi.ingsw.common.network;
 
-import it.polimi.ingsw.common.models.Action;
-import it.polimi.ingsw.common.models.Game;
-import it.polimi.ingsw.common.models.Room;
-import it.polimi.ingsw.common.models.User;
+import it.polimi.ingsw.common.models.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.rmi.Remote;
@@ -32,11 +29,9 @@ public interface API extends Remote {
 
     boolean doAction(@NotNull String token, @NotNull Action action) throws RemoteException;
 
-    void addGameListener(@NotNull String token, @NotNull UUID gameUuid, @NotNull GameListener gameListener) throws RemoteException;
+    void sendMessage(@NotNull String token, @NotNull Message message) throws RemoteException;
 
-    void addRoomListener(@NotNull String token, @NotNull UUID roomUuid, @NotNull RoomListener roomListener) throws RemoteException;
+    void addListener(@NotNull String token, @NotNull Listener listener) throws RemoteException;
 
-    void removeGameListener(@NotNull String token, @NotNull UUID gameUuid) throws RemoteException;
-
-    void removeRoomListener(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
+    void removeListener(@NotNull String token) throws RemoteException;
 }

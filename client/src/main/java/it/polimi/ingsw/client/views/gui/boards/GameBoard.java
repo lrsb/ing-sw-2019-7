@@ -70,6 +70,13 @@ public class GameBoard extends AbstractBoard {
     }
 
     private void insertStaticSprites() throws IOException {
+        var cugolino = new Sprite(1046, 228, 141, 235, Utils.readJpgImage(Weapon.class, "cugolino"));
+        cugolino.setClickable(false);
+        cugolino.setTag("p:1046,228;static");
+        cugolino.fade(new LinearFadeInterpolator(0, 1, 1000) {
+        });
+        addSprite(cugolino);
+
         var weapon = new Sprite(1044, 227, 143, 237, Utils.readPngImage(Weapon.class, "back"));
         weapon.setDraggable(true);
         weapon.setTag("p:1044,227;static");

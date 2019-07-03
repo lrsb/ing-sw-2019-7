@@ -5,8 +5,7 @@ import com.mongodb.client.MongoCollection;
 import it.polimi.ingsw.common.models.*;
 import it.polimi.ingsw.common.models.wrappers.Opt;
 import it.polimi.ingsw.common.network.API;
-import it.polimi.ingsw.common.network.GameListener;
-import it.polimi.ingsw.common.network.RoomListener;
+import it.polimi.ingsw.common.network.Listener;
 import it.polimi.ingsw.server.Server;
 import it.polimi.ingsw.server.models.GameImpl;
 import org.bson.Document;
@@ -23,9 +22,9 @@ import static com.mongodb.client.model.Filters.eq;
 public class ServerController implements API {
     private static final @NotNull MongoCollection<Document> rooms = Server.mongoDatabase.getCollection("rooms");
     private static final @NotNull MongoCollection<Document> games = Server.mongoDatabase.getCollection("games");
-    private final @NotNull HashMap<UUID, HashMap<UUID, GameListener>> gameListeners = new HashMap<>();
-    private final @NotNull HashMap<UUID, HashMap<UUID, RoomListener>> roomListeners = new HashMap<>();
+    private final @NotNull HashMap<UUID, Listener> listeners = new HashMap<>();
     private final @NotNull HashMap<UUID, Timer> roomTimers = new HashMap<>();
+    private final @NotNull HashMap<UUID, Timer> gameTimers = new HashMap<>();
 
     @Override
     public @NotNull User.Auth authUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
@@ -169,7 +168,8 @@ public class ServerController implements API {
                 //games.deleteOne(eq("uuid", gameUuid.toString()));
                 game.setCompleted(true);
             } //else games.replaceOne(eq("uuid", gameUuid.toString()), Document.parse(new Gson().toJson(game)));
-            informGamePlayers(game, user.getNickname() + " left the game." + (game.isCompleted() ? "\nNot enough players." : ""));
+            sendBroadcastToGame(game, user.getNickname() + " left the game." + (game.isCompleted() ? "\nNot enough players." : ""));
+            informGamePlayers(game);
         } catch (Exception ignored) {
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
@@ -185,7 +185,7 @@ public class ServerController implements API {
             var value = game.doAction(action);
             if (value)
                 games.replaceOne(eq("uuid", action.getGameUuid().toString()), Document.parse(new Gson().toJson(game)));
-            informGamePlayers(game, null);
+            informGamePlayers(game);
             return value;
         } catch (Exception ignored) {
             throw new RemoteException("Something went wrong, sometimes it happens!!");
@@ -194,61 +194,71 @@ public class ServerController implements API {
     }
 
     @Override
-    public void addGameListener(@Nullable String token, @Nullable UUID gameUuid, @Nullable GameListener listener) throws RemoteException {
+    public void sendMessage(@Nullable String token, @Nullable Message message) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (gameUuid == null || listener == null) throw new RemoteException("What the heck?!?!");
-        var hashMap = gameListeners.getOrDefault(user.getUuid(), new HashMap<>());
-        hashMap.put(gameUuid, listener);
-        gameListeners.put(user.getUuid(), hashMap);
+        if (message != null) try {
+            var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", message.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
+            if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid()))) return;
+            sendMessageToGame(game, new Message(user, message.getGameUuid(), message.getMessage(), System.currentTimeMillis()));
+        } catch (Exception e) {
+            throw new RemoteException("Something went wrong, sometimes it happens!!");
+        }
+        else throw new RemoteException("Is null!!");
     }
 
     @Override
-    public void removeGameListener(@Nullable String token, @Nullable UUID gameUuid) throws RemoteException {
+    public void addListener(@Nullable String token, @Nullable Listener listener) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (gameUuid == null) throw new RemoteException("What the heck?!?!");
-        var hashMap = gameListeners.getOrDefault(user.getUuid(), new HashMap<>());
-        hashMap.remove(gameUuid);
-        gameListeners.put(user.getUuid(), hashMap);
+        if (listener == null) throw new RemoteException("What the heck?!?!");
+        listeners.put(user.getUuid(), listener);
     }
 
     @Override
-    public void addRoomListener(@Nullable String token, @Nullable UUID roomUuid, @Nullable RoomListener listener) throws RemoteException {
+    public void removeListener(@Nullable String token) throws RemoteException {
         var user = SecureUserController.getUser(token);
-        if (roomUuid == null || listener == null) throw new RemoteException("What the heck?!?!");
-        var hashMap = roomListeners.getOrDefault(user.getUuid(), new HashMap<>());
-        hashMap.put(roomUuid, listener);
-        roomListeners.put(user.getUuid(), hashMap);
+        listeners.remove(user.getUuid());
     }
 
-    @Override
-    public void removeRoomListener(@Nullable String token, @Nullable UUID roomUuid) throws RemoteException {
-        var user = SecureUserController.getUser(token);
-        if (roomUuid == null) throw new RemoteException("What the heck?!?!");
-        var hashMap = roomListeners.getOrDefault(user.getUuid(), new HashMap<>());
-        hashMap.remove(roomUuid);
-        roomListeners.put(user.getUuid(), hashMap);
-    }
-
-    private void informGamePlayers(@NotNull Game game, @Nullable String message) {
-        game.getPlayers().parallelStream().map(Player::getUuid).map(gameListeners::get).filter(Objects::nonNull).forEach(e -> {
+    private void informGamePlayers(@NotNull Game game) {
+        game.getPlayers().parallelStream().map(Player::getUuid).forEach(e -> {
             try {
-                e.getOrDefault(game.getUuid(), (f, m) -> {
-                }).onGameUpdate(game, message);
-            } catch (RemoteException ex) {
+                listeners.get(e).onUpdate(game);
+            } catch (Exception ex) {
                 ex.printStackTrace();
-                e.remove(game.getUuid());
+                listeners.remove(e);
+            }
+        });
+    }
+
+    private void sendBroadcastToGame(@NotNull Game game, @NotNull String message) {
+        game.getPlayers().parallelStream().map(Player::getUuid).forEach(e -> {
+            try {
+                listeners.get(e).onUpdate(message);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                listeners.remove(e);
+            }
+        });
+    }
+
+    private void sendMessageToGame(@NotNull Game game, @NotNull Message message) {
+        game.getPlayers().parallelStream().map(Player::getUuid).forEach(e -> {
+            try {
+                listeners.get(e).onUpdate(message);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                listeners.remove(e);
             }
         });
     }
 
     private void informRoomUsers(@NotNull Room room) {
-        room.getUsers().parallelStream().map(User::getUuid).map(roomListeners::get).filter(Objects::nonNull).forEach(e -> {
+        room.getUsers().parallelStream().map(User::getUuid).forEach(e -> {
             try {
-                e.getOrDefault(room.getUuid(), f -> {
-                }).onRoomUpdate(room);
-            } catch (RemoteException ex) {
+                listeners.get(e).onUpdate(room);
+            } catch (Exception ex) {
                 ex.printStackTrace();
-                e.remove(room.getUuid());
+                listeners.remove(e);
             }
         });
     }

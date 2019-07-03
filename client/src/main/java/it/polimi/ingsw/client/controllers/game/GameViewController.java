@@ -52,8 +52,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private JButton powerupButton;
     private JButton reloadButton;
     private JButton rulesButton;
+    private JButton chatButton;
 
     private @Nullable PlayersBoardsViewController playersBoardsViewController;
+    private @Nullable ChatViewController chatViewController;
 
     private Game game;
     private boolean yourTurn;
@@ -83,14 +85,16 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                Client.API.addGameListener(e, game.getUuid(), (f, message) -> {
-                    if (message != null) JOptionPane.showMessageDialog(null, message);
-                    try {
-                        updateBoards(f);
+                Client.API.addListener(e, f -> {
+                    if (f instanceof String) JOptionPane.showMessageDialog(null, f);
+                    else if (f instanceof Game && ((Game) f).getUuid().equals(game.getUuid())) try {
+                        updateBoards((Game) f);
                     } catch (IOException ex) {
                         ex.printStackTrace();
+                    } finally {
+                        if (((Game) f).isCompleted()) navigationController.popViewController();
                     }
-                    if (f.isCompleted()) navigationController.popViewController();
+                    else if (f instanceof Message) ChatViewController.messages.add((Message) f);
                 });
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
@@ -105,6 +109,12 @@ public class GameViewController extends BaseViewController implements GameBoardL
             if (playersBoardsViewController != null) playersBoardsViewController.dispose();
             playersBoardsViewController = new PlayersBoardsViewController(null, gameBoard.getGame());
             playersBoardsViewController.setVisible(true);
+        });
+
+        chatButton.addActionListener(e -> {
+            if (chatViewController != null) chatViewController.dispose();
+            chatViewController = new ChatViewController(null, game.getUuid());
+            chatViewController.setVisible(true);
         });
 
         rulesButton.addActionListener(e -> {
@@ -170,15 +180,15 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     new WeaponSelectorViewController(null,
                             game.getActualPlayer().getWeapons().parallelStream().filter(f -> !game.getActualPlayer().isALoadedGun(f)).collect(Collectors.toList()),
                             (WeaponSelectorViewController.WeaponCallback) f -> {
-                        if (JOptionPane.showConfirmDialog(null, "Vuoi pagare con powerup?", "Ricarica", YES_NO_OPTION) == YES_OPTION) {
-                            try {
-                                new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
-                                        (PowerUpSelectorViewController.PowerCallback) c -> doAction(Action.Builder.create(game.getUuid()).buildReload(f, c))).setVisible(true);
-                            } catch (IOException ex) {
-                                ex.printStackTrace();
-                            }
-                        } else doAction(Action.Builder.create(game.getUuid()).buildReload(f, null));
-                    }).setVisible(true);
+                                if (JOptionPane.showConfirmDialog(null, "Vuoi pagare con powerup?", "Ricarica", YES_NO_OPTION) == YES_OPTION) {
+                                    try {
+                                        new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
+                                                (PowerUpSelectorViewController.PowerCallback) c -> doAction(Action.Builder.create(game.getUuid()).buildReload(f, c))).setVisible(true);
+                                    } catch (IOException ex) {
+                                        ex.printStackTrace();
+                                    }
+                                } else doAction(Action.Builder.create(game.getUuid()).buildReload(f, null));
+                            }).setVisible(true);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -334,7 +344,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
     protected void controllerPopped() {
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                Client.API.removeGameListener(e, game.getUuid());
+                Client.API.removeListener(e);
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
                 Utils.jumpBackToLogin(getNavigationController());
@@ -367,7 +377,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         panel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(gameBoard, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayoutManager(9, 1, new Insets(0, 0, 0, 0), -1, -1));
+        buttonPanel.setLayout(new GridLayoutManager(10, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(buttonPanel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         actualPlayerLabel = new JLabel();
         Font actualPlayerLabelFont = this.$$$getFont$$$(null, -1, 28, actualPlayerLabel.getFont());
@@ -376,10 +386,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
         buttonPanel.add(actualPlayerLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         playersBoardButton = new JButton();
         playersBoardButton.setText("Visualizza plance");
-        buttonPanel.add(playersBoardButton, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPanel.add(playersBoardButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         exitButton = new JButton();
         exitButton.setText("Esci");
-        buttonPanel.add(exitButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPanel.add(exitButton, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         buttonPanel.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         moveLabel = new JLabel();
@@ -419,7 +429,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
         cancelPanel.add(cancelButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         rulesButton = new JButton();
         rulesButton.setText("Regole");
-        buttonPanel.add(rulesButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPanel.add(rulesButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        chatButton = new JButton();
+        chatButton.setText("Chat");
+        buttonPanel.add(chatButton, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 import static it.polimi.ingsw.common.models.Cell.Color.*;
 
-@SuppressWarnings("UnusedReturnValue")
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public class GameCli {
     private static @Nullable Game game;
 
@@ -250,10 +250,12 @@ public class GameCli {
         GameCli.game = game;
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
         try {
-            Client.API.addGameListener(Preferences.getOptionalToken().get(), game.getUuid(), (f, message) -> {
-                GameCli.game = f;
-                printGame(f);
-                System.out.println(message);
+            Client.API.addListener(Preferences.getOptionalToken().get(), f -> {
+                if (f instanceof String) System.out.println((String) f);
+                else if (f instanceof Game && ((Game) f).getUuid().equals(game.getUuid())) {
+                    GameCli.game = (Game) f;
+                    printGame((Game) f);
+                }
             });
         } catch (UserRemoteException ex) {
             ex.printStackTrace();
@@ -268,7 +270,7 @@ public class GameCli {
     public static @NotNull Segue postGame() {
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
         try {
-            Client.API.removeGameListener(Preferences.getOptionalToken().get(), game.getUuid());
+            Client.API.removeListener(Preferences.getOptionalToken().get());
             return Segue.of("mainMenu", PregameCli.class);
         } catch (UserRemoteException ex) {
             ex.printStackTrace();
