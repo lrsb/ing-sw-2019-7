@@ -126,7 +126,7 @@
                 "fire_details": {
                     "select_target_basic": "Seleziona il bersaglio del \"basic effect\":\n",
                     "select_target_first": "Seleziona il bersaglio del \"chain reaction\":\n",
-                    "select_target_second": "Seleziona il/i bersaglio/i dell' \"high voltage\":\n"
+                    "select_target_second": "Seleziona il bersaglio dell' \"high voltage\":\n"
                 },
                 "fire_messages": {
                     "basic_effect_bn": " colpisce col \"basic effect\" ",
@@ -139,7 +139,7 @@
                 "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio che puoi vedere\nwith phase glide: effettua fino a 2 passi prima o dopo aver usato il \"basic effect\" (costo: gratuito)\nwith charged shot: infliggi 1 danno addizionale al bersaglio del \"basic effect\" (costo: 1 cubo blu)\n",
                 "fire_details": {
                     "select_target_basic": "Seleziona il bersaglio del \"basic effect\":\n",
-                    "select_point_phase_glide": "Seleziona una cella in cui spostarti prima o dopo il fuoco:\n"
+                    "select_point_basic": "Seleziona una cella in cui spostarti prima o dopo il fuoco:\n"
                 }
             },
             "whisper": {

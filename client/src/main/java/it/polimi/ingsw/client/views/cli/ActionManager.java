@@ -14,9 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ActionManager {
 
+    private boolean done = false;
     private final String stdColor = "\u001b[0m";
     private final String invalidChoice = "Scelta non valida";
     private @Nullable Weapon weapon;
@@ -24,17 +26,17 @@ public class ActionManager {
     private @Nullable Point destination;
     private @Nullable PowerUp.Type powerUpType;
     private @Nullable AmmoCard.Color color;
-    private @Nullable ArrayList<PowerUp> powerUpPayment;
+    private @NotNull ArrayList<PowerUp> powerUpPayment = new ArrayList<>();
 
-    private boolean alternativeFire;
-    private int options;
-    private @Nullable ArrayList<UUID> basicTarget;
+    private boolean alternativeFire = false;
+    private int options = 0;
+    private @NotNull ArrayList<UUID> basicTarget = new ArrayList<>();
     private @Nullable Point basicTargetPoint;
 
-    private @Nullable ArrayList<UUID> firstAdditionalTarget;
+    private @NotNull ArrayList<UUID> firstAdditionalTarget = new ArrayList<>();
     private @Nullable Point firstAdditionalTargetPoint;
 
-    private @Nullable ArrayList<UUID> secondAdditionalTarget;
+    private @NotNull ArrayList<UUID> secondAdditionalTarget = new ArrayList<>();
     private @Nullable Point secondAdditionalTargetPoint;
 
     private @Nullable UUID target;
@@ -116,8 +118,9 @@ public class ActionManager {
     }
 
     private void selectAlternativePayment(@NotNull Game game) throws InterruptedException, FileNotFoundException {
+        System.out.println("Inserisci pagamento alternativo (se vuoi)");
         List<PowerUp> selectablePowerUps = new ArrayList<>(game.getActualPlayer().getPowerUps());
-        if (powerUpPayment != null) powerUpPayment.forEach(selectablePowerUps::remove);
+        powerUpPayment.forEach(selectablePowerUps::remove);
         if (selectablePowerUps.isEmpty()) return;
         for (int i = 0; i < selectablePowerUps.size(); i++)
             System.out.println((1+i) + ". " + selectablePowerUps.get(i).getAmmoColor().escape() +
@@ -192,7 +195,10 @@ public class ActionManager {
                         selectMyDestination(game, 1);
                     } else destination = game.getActualPlayer().getPosition();
                     buildFireAction(game);
-                    //todo: manda azione
+                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                            .buildFireAction(weapon, destination, powerUpPayment, alternativeFire, options,
+                                    basicTarget, basicTargetPoint, firstAdditionalTarget, firstAdditionalTargetPoint,
+                                    secondAdditionalTarget, secondAdditionalTargetPoint));
                     break;
                 case 5:
                     buildUsePowerUp(game);
@@ -261,7 +267,10 @@ public class ActionManager {
                     System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_move_square").getAsString());
                     selectMyDestination(game, 2);
                     buildFireAction(game);
-                    //todo: manda azione
+                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                            .buildFireAction(weapon, destination, powerUpPayment, alternativeFire, options,
+                                    basicTarget, basicTargetPoint, firstAdditionalTarget, firstAdditionalTargetPoint,
+                                    secondAdditionalTarget, secondAdditionalTargetPoint));
                     break;
                 case 4:
                     buildUsePowerUp(game);
@@ -278,10 +287,7 @@ public class ActionManager {
 
     private void selectMyDestination(@NotNull Game game, int step) throws RemoteException, InterruptedException, FileNotFoundException {
         List<Point> possibleDestination = new ArrayList<>();
-        for (int i = 0; i < Game.MAX_Y; i++)
-            for (int j = 0; j < Game.MAX_X; j++)
-                if (game.getCell(new Point(i, j)) != null && game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), step))
-                    possibleDestination.add(new Point(i, j));
+        selectMovementPoint(game, possibleDestination, step);
         printDestinations(game, possibleDestination);
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestination.size())
@@ -545,16 +551,60 @@ public class ActionManager {
                 }
                 break;
             case MACHINE_GUN:
-                //todo: machinegun
+                System.out.println(Utils.getStrings("cli", "weapons_details", "machine_gun").get("fire_description").getAsString());
+                alternativeFire = false;
+                quadrupleChoice(game);
+                done = false;
+                do {
+                    selectBasicVisibleTarget(game, basicTarget);
+                    if (basicTarget.size() < 2)
+                        doneQuestion();
+                } while (basicTarget.size() < 2 && !done);
+                if (options == 1 || options == 3)
+                    selectFirstVisibleTarget(game, game.getPlayers().stream().map(Player::getUuid)
+                            .filter(e -> !basicTarget.contains(e)).collect(Collectors.toList()));
+                if (options == 2 || options == 3) {
+                    done = false;
+                    do {
+                        List<UUID> unselectable = new ArrayList<>(secondAdditionalTarget);
+                        unselectable.addAll(firstAdditionalTarget);
+                        if (basicTarget.stream().anyMatch(secondAdditionalTarget::contains)) unselectable.addAll(basicTarget);
+                        else if (!unselectable.isEmpty()) game.getPlayers().stream().map(Player::getUuid).filter(e -> !basicTarget.contains(e)).forEach(unselectable::add);
+                        selectSecondVisibleTarget(game, unselectable);
+                        if (secondAdditionalTarget.size() < 2)
+                            doneQuestion();
+                    } while (secondAdditionalTarget.size() < 2 && !done);
+                }
+                if (options > 0) selectAlternativePayment(game);
                 break;
             case THOR:
-                //todo: thor
+                System.out.println(Utils.getStrings("cli", "weapons_details", "thor").get("fire_description").getAsString());
+                alternativeFire = false;
+                tripleChoice(game);
+                if (options == 2) options = 3;
+                selectBasicVisibleTarget(game, new ArrayList<>());
+                if (options == 1 || options == 3) selectFirstThorTarget(game);
+                if (options == 3) selectSecondThorTarget(game);
+                if (options > 0) selectAlternativePayment(game);
                 break;
             case PLASMA_GUN:
-                //todo:
+                System.out.println(Utils.getStrings("cli", "weapons_details", "plasma_gun").get("fire_description").getAsString());
+                alternativeFire = false;
+                doubleChoice(game);
+                selectBasicMovementPoint(game, 2);
+                selectBasicVisibleTarget(game, new ArrayList<>());
+                if (options == 1) {
+                    options = 2;
+                    selectAlternativePayment(game);
+                }
                 break;
             case WHISPER:
-                //todo:
+                System.out.println(Utils.getStrings("cli", "weapons_details", "whisper").get("fire_description").getAsString());
+                alternativeFire = false;
+                options = 0;
+                selectBasicVisibleTarget(game, new ArrayList<>(game.getPlayers().parallelStream()
+                        .filter(e -> game.canMove(game.getActualPlayer().getPosition(), e.getPosition(), 1))
+                        .map(Player::getUuid).collect(Collectors.toList())));
                 break;
             case ELECTROSCYTHE:
                 //todo:
@@ -607,10 +657,14 @@ public class ActionManager {
         }
     }
 
-    private void doubleChoice(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void printChoiceMessage() {
         System.out.println(Utils.getStrings("cli", "actions", "fire_action", "select_fire_mode").get("standard_message").getAsString());
         System.out.println(Utils.getStrings("cli", "actions", "fire_action", "select_fire_mode").get(weapon.name().toLowerCase()).getAsString());
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+    }
+
+    private void doubleChoice(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        printChoiceMessage();
         String choice = getLine();
         if (Integer.parseInt(choice) == 1 || Integer.parseInt(choice) == 2)
             options = Integer.parseInt(choice) - 1;
@@ -620,13 +674,34 @@ public class ActionManager {
         }
     }
 
+    private void tripleChoice(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        printChoiceMessage();
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 4)
+            options = Integer.parseInt(choice) - 1;
+        else {
+            System.out.println(invalidChoice);
+            tripleChoice(game);
+        }
+    }
+
+    private void quadrupleChoice(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        printChoiceMessage();
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 5)
+            options = Integer.parseInt(choice) - 1;
+        else {
+            System.out.println(invalidChoice);
+            quadrupleChoice(game);
+        }
+    }
+
     private void selectBasicVisibleTarget(@NotNull Game game, @NotNull List<UUID> unselectable) throws FileNotFoundException, InterruptedException {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_basic"));
-        if (basicTarget == null) basicTarget = new ArrayList<>();
         List<UUID> selectableTargets = new ArrayList<>();
         selection(game, selectableTargets, unselectable);
         String choice = getLine();
-        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < selectableTargets.size())
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableTargets.size())
             basicTarget.add(selectableTargets.get(Integer.parseInt(choice) - 1));
         else {
             System.out.println(invalidChoice);
@@ -636,15 +711,59 @@ public class ActionManager {
 
     private void selectFirstVisibleTarget(@NotNull Game game, @NotNull List<UUID> unselectable) throws InterruptedException {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_first"));
-        if (firstAdditionalTarget == null) firstAdditionalTarget = new ArrayList<>();
         List<UUID> selectableTargets = new ArrayList<>();
         selection(game, selectableTargets, unselectable);
         String choice = getLine();
-        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < selectableTargets.size())
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableTargets.size())
             firstAdditionalTarget.add(selectableTargets.get(Integer.parseInt(choice) - 1));
         else {
             System.out.println(invalidChoice);
             selectFirstVisibleTarget(game, unselectable);
+        }
+    }
+
+    private void selectFirstThorTarget(@NotNull Game game) throws InterruptedException {
+        System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_first"));
+        List<UUID> selectableTargets = new ArrayList<>();
+        Player bTarget = game.getPlayers().stream().filter(e -> e.getUuid().equals(basicTarget.get(0))).findFirst().get();
+        game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && !e.getUuid().equals(basicTarget.get(0)) &&
+                bTarget.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);
+        printSelectableTargets(game, selectableTargets);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableTargets.size())
+            firstAdditionalTarget.add(selectableTargets.get(Integer.parseInt(choice) - 1));
+        else {
+            System.out.println(invalidChoice);
+            selectFirstThorTarget(game);
+        }
+    }
+
+    private void selectSecondVisibleTarget(@NotNull Game game, @NotNull List<UUID> unselectable) throws InterruptedException {
+        System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_second"));
+        List<UUID> selectableTargets = new ArrayList<>();
+        selection(game, selectableTargets, unselectable);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableTargets.size())
+            secondAdditionalTarget.add(selectableTargets.get(Integer.parseInt(choice) - 1));
+        else {
+            System.out.println(invalidChoice);
+            selectSecondVisibleTarget(game, unselectable);
+        }
+    }
+
+    private void selectSecondThorTarget(@NotNull Game game) throws InterruptedException {
+        System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_second"));
+        List<UUID> selectableTargets = new ArrayList<>();
+        Player fTarget = game.getPlayers().stream().filter(e -> e.getUuid().equals(firstAdditionalTarget.get(0))).findFirst().get();
+        game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && !e.getUuid().equals(basicTarget.get(0)) && !e.equals(fTarget) &&
+                fTarget.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);
+        printSelectableTargets(game, selectableTargets);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableTargets.size())
+            secondAdditionalTarget.add(selectableTargets.get(Integer.parseInt(choice) - 1));
+        else {
+            System.out.println(invalidChoice);
+            selectSecondThorTarget(game);
         }
     }
 
@@ -672,5 +791,38 @@ public class ActionManager {
 
     private void removeUnselectable(@NotNull List<UUID> selectableTargets, @NotNull List<UUID> unselectableTargets) {
         unselectableTargets.stream().filter(selectableTargets::contains).forEach(selectableTargets::remove);
+    }
+
+    private void selectBasicMovementPoint(@NotNull Game game, int step) throws FileNotFoundException, InterruptedException {
+        System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_point_basic"));
+        List<Point> selectablePoints = new ArrayList<>();
+        selectMovementPoint(game, selectablePoints, step);
+        printDestinations(game, selectablePoints);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectablePoints.size())
+            basicTargetPoint = selectablePoints.get(Integer.parseInt(choice) - 1);
+        else {
+            System.out.println(invalidChoice);
+            selectBasicMovementPoint(game, step);
+        }
+    }
+
+    private void doneQuestion() throws InterruptedException {
+        System.out.println("Vuoi selezionare altri bersagli per questo effetto? [y/n]");
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+        String choice = getLine();
+        if (choice.charAt(0) == 'y' || choice.charAt(0) == 'Y') done = false;
+        else if (choice.charAt(0) == 'n' || choice.charAt(0) == 'N') done = true;
+        else {
+            System.out.println(invalidChoice);
+            doneQuestion();
+        }
+    }
+
+    private void selectMovementPoint(@NotNull Game game, @NotNull List<Point> selectablePoints, int step) {
+        for (int i = 0; i < Game.MAX_Y; i++)
+            for (int j = 0; j < Game.MAX_X; j++)
+                if (game.getCell(new Point(i, j)) != null && game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), step))
+                    selectablePoints.add(new Point(i, j));
     }
 }
