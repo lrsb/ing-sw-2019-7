@@ -8,4 +8,6 @@ public interface GameBoardListener {
     void spriteSelected(@Nullable Object data, @Nullable Point point);
 
     boolean spriteMoved(@Nullable Object data, @Nullable Point point);
+
+    void boardClicked(@Nullable Point point);
 }

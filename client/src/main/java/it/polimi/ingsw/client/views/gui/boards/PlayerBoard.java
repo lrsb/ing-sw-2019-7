@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,7 +93,6 @@ public class PlayerBoard extends AbstractBoard {
             }
         }
 
-        var rnd = new SecureRandom();
 
         for (var i = 0; i < player.getWeapons().size(); i++) {
             var weaponImage = player.getWeapons().get(i).getFrontImage();
@@ -102,7 +100,7 @@ public class PlayerBoard extends AbstractBoard {
             var weapon = new Sprite(x, 770, 150, 250, weaponImage);
             weapon.setDraggable(false);
             if (!player.isALoadedGun(player.getWeapons().get(i))) weapon.setFade(0.8);
-            weapon.setAssociatedObject(Weapon.values()[rnd.nextInt(Weapon.values().length)]);
+            weapon.setAssociatedObject(player.getWeapons().get(i));
             addSprite(weapon);
         }
 

@@ -29,6 +29,16 @@ public class GameBoard extends AbstractBoard {
                 sprite.getY() > 175 && sprite.getY() + sprite.getDimension().getHeight() / 2 < 744) {
             var x = (int) ((sprite.getX() + sprite.getDimension().getWidth() / 2 - 205) / 220);
             var y = (int) ((sprite.getY() + sprite.getDimension().getWidth() / 2 - 175) / 190);
+            //noinspection SuspiciousNameCombination
+            return new Point(y, x);
+        } else return null;
+    }
+
+    private static @Nullable Point convertPosition(@NotNull Point point) {
+        if (point.getX() > 205 && point.getX() < 994 && point.getY() > 175 && point.getY() < 744) {
+            var x = (int) ((point.getX() - 205) / 220);
+            var y = (int) ((point.getY() - 175) / 190);
+            //noinspection SuspiciousNameCombination
             return new Point(y, x);
         } else return null;
     }
@@ -67,6 +77,11 @@ public class GameBoard extends AbstractBoard {
                 else super.onSpriteDragged(sprite);
             } else super.onSpriteDragged(sprite);
         } else super.onSpriteDragged(sprite);
+    }
+
+    @Override
+    public void onBoardClicked(@NotNull Point point) {
+        if (getGameBoardListener() != null) getGameBoardListener().boardClicked(convertPosition(point));
     }
 
     private void insertStaticSprites() throws IOException {

@@ -206,9 +206,11 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
 
         @Override
         public void mouseClicked(MouseEvent event) {
-            if (boardListener != null)
-                sprites.parallelStream().filter(e -> !e.isHidden() && e.isClickable()).filter(f -> contained(f, event)).findFirst()
-                        .ifPresent(g -> boardListener.onSpriteClicked(g));
+            if (boardListener != null) {
+                var sprite = sprites.parallelStream().filter(e -> !e.isHidden() && e.isClickable()).filter(f -> contained(f, event)).findFirst();
+                if (sprite.isPresent()) boardListener.onSpriteClicked(sprite.get());
+                else boardListener.onBoardClicked(reverseTransformPoint(event.getPoint()));
+            }
         }
 
         @Override

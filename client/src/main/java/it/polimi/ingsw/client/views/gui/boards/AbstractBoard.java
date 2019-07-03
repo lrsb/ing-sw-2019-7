@@ -50,6 +50,11 @@ public abstract class AbstractBoard extends SpriteBoard implements SpriteBoardLi
     public void onSpriteHovered(@NotNull List<Sprite> sprites) {
     }
 
+    @Override
+    public void onBoardClicked(@NotNull Point point) {
+
+    }
+
     public void setBoardListener(@Nullable GameBoardListener boardListener) {
         this.gameBoardListener = boardListener;
     }

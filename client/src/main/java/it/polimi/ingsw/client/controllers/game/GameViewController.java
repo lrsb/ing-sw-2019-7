@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static javax.swing.JOptionPane.*;
@@ -60,6 +61,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private Game game;
     private boolean yourTurn;
     private @Nullable Action.Type type;
+    private @Nullable PowerUp powerUp;
+    private UUID target;
 
     public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) throws IOException {
         super("Gioca", 1100, 700, navigationController);
@@ -178,6 +181,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 ex.printStackTrace();
             }
         });
+
         reloadButton.addActionListener(e -> {
             if (yourTurn) {
                 try {
@@ -198,12 +202,51 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 }
             }
         });
+
         skipButton.addActionListener(e -> doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
 
         cancelButton.addActionListener(e -> {
             type = null;
             reloadActionPanel();
         });
+
+        powerupButton.addActionListener(e -> {
+            if (yourTurn) {
+                if (game.getActualPlayer().getPowerUps().size() != 0) {
+                    try {
+
+                        new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() != PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), (PowerUpSelectorViewController.PowerCallback) f -> {
+                            if (f.size() == 1) {
+                                type = Action.Type.USE_POWER_UP;
+                                powerUp = f.get(0);
+                                reloadActionPanel();
+                            } else if (f.size() > 1) JOptionPane.showMessageDialog(null, "Scegli un solo powerup!");
+                            else JOptionPane.showMessageDialog(null, "Scegli un powerup!");
+                        }).setVisible(true);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                } else JOptionPane.showMessageDialog(null, "non hai powerup a disposizione!");
+            } else {
+                if (game.getActualPlayer().getPowerUps().parallelStream().filter(l -> l.getType() == PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()).size() > 0 && game.isATagbackResponse()) {
+                    try {
+                        new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() == PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), (PowerUpSelectorViewController.PowerCallback) f -> {
+                            if (f.size() == 1) {
+                                doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(f.get(0).getType(), f.get(0).getAmmoColor(), null, null));
+                                reloadActionPanel();
+                            } else if (f.size() < 1) JOptionPane.showMessageDialog(null, "Scegli un powerup!");
+                            else JOptionPane.showMessageDialog(null, "scegli un solo powerup!");
+                        }).setVisible(true);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
+
+            }
+        });
+
+
     }
 
     private void updateBoards(@NotNull Game game) throws IOException {
@@ -254,11 +297,11 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 rulesButton.setVisible(true);
 
                 if (game.getActualPlayer().getPosition() == null) { // non è mai spawnato
-                    spawnButton.setText("Spawna");
+                    spawnButton.setText("Nasci");
                     spawnButton.setVisible(true);
 
                 } else if (game.isAReborn()) {
-                    spawnButton.setText("Respawna");
+                    spawnButton.setText("Rinasci");
                     spawnButton.setVisible(true);
 
                 } else if (game.isATagbackResponse()) {
@@ -286,6 +329,16 @@ public class GameViewController extends BaseViewController implements GameBoardL
     @Override
     public void spriteSelected(@Nullable Object data, @Nullable Point point) {
         @Nullable Action todo = null;
+
+        if (data instanceof Player) {
+            if (type == Action.Type.USE_POWER_UP && powerUp.getType() == PowerUp.Type.NEWTON) {
+                target = ((Player) data).getUuid();
+                JOptionPane.showMessageDialog(null, "Ora scegli dove vuoi muovere");
+                reloadActionPanel();
+            } else if (type == Action.Type.USE_POWER_UP && powerUp.getType() == PowerUp.Type.TARGETING_SCOPE) {
+                doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), null, ((Player) data).getUuid()));
+            }
+        }
 
         if (data instanceof Weapon) {
             if (type == Action.Type.GRAB_WEAPON) {
@@ -326,6 +379,19 @@ public class GameViewController extends BaseViewController implements GameBoardL
             } else JOptionPane.showMessageDialog(null, "Muovi il tuo giocatore");
 
         return doAction(todo);
+    }
+
+    @Override
+    public void boardClicked(@Nullable Point point) { // se null ha cliccato fuori dalla mappa
+        if (point != null) {
+            if (type == Action.Type.USE_POWER_UP) {
+                if ((powerUp != null ? powerUp.getType() : null) == PowerUp.Type.TELEPORTER) {
+                    doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), point, null));
+                } else if ((powerUp != null ? powerUp.getType() : null) == PowerUp.Type.NEWTON) {
+                    doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), point, target));
+                }
+            }
+        }
     }
 
     private boolean doAction(@Nullable Action action) {
