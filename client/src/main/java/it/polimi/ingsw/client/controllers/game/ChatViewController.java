@@ -50,11 +50,18 @@ public class ChatViewController extends BaseViewController {
             if (Preferences.getOptionalToken().isPresent()) {
                 try {
                     Client.API.sendMessage(Preferences.getOptionalToken().get(), new Message(new User(""), (UUID) args[0], messageField.getText(), 0));
+                    messageField.setText("");
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
             } else dispose();
         });
+    }
+
+    @Override
+    public void dispose() {
+        messages.removeListener(listener);
+        super.dispose();
     }
 
     private void update(UUID gameUuid) {
@@ -69,7 +76,7 @@ public class ChatViewController extends BaseViewController {
         tableModel.addColumn("Da");
         tableModel.addColumn("Alle");
         var formatter = new SimpleDateFormat("HH:mm:ss");
-        messages.parallelStream()
+        messages.stream()
                 .filter(e -> e.getGameUuid().equals(gameUuid))
                 .sorted().map(e -> new Object[]{e.getMessage(),
                 Preferences.getUuid().equals(e.getFrom().getUuid()) ? "TE" : e.getFrom().getNickname(),
@@ -77,12 +84,9 @@ public class ChatViewController extends BaseViewController {
                 .forEachOrdered(tableModel::addRow);
         messagesTable.setModel(tableModel);
         messagesTable.scrollRectToVisible(messagesTable.getCellRect(messagesTable.getRowCount() - 1, 0, true));
-    }
-
-    @Override
-    public void dispose() {
-        messages.removeListener(listener);
-        super.dispose();
+        messagesTable.getColumnModel().getColumn(0).setPreferredWidth(400);
+        messagesTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+        messagesTable.getColumnModel().getColumn(2).setPreferredWidth(100);
     }
 
     /**
@@ -104,8 +108,12 @@ public class ChatViewController extends BaseViewController {
         sendButton = new JButton();
         sendButton.setText("Invia");
         panel1.add(sendButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        panel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         messagesTable = new JTable();
-        panel.add(messagesTable, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        messagesTable.setAutoResizeMode(4);
+        messagesTable.setCellSelectionEnabled(false);
+        scrollPane1.setViewportView(messagesTable);
     }
 
     /**
@@ -114,4 +122,5 @@ public class ChatViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
+
 }

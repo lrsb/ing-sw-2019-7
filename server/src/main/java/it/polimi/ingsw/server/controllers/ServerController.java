@@ -222,9 +222,9 @@ public class ServerController implements API {
     private void informGamePlayers(@NotNull Game game) {
         game.getPlayers().parallelStream().map(Player::getUuid).forEach(e -> {
             try {
-                listeners.get(e).onUpdate(game);
+                listeners.getOrDefault(e, f -> {
+                }).onUpdate(game);
             } catch (Exception ex) {
-                ex.printStackTrace();
                 listeners.remove(e);
             }
         });
@@ -233,9 +233,9 @@ public class ServerController implements API {
     private void sendBroadcastToGame(@NotNull Game game, @NotNull String message) {
         game.getPlayers().parallelStream().map(Player::getUuid).forEach(e -> {
             try {
-                listeners.get(e).onUpdate(message);
+                listeners.getOrDefault(e, f -> {
+                }).onUpdate(message);
             } catch (Exception ex) {
-                ex.printStackTrace();
                 listeners.remove(e);
             }
         });
@@ -244,9 +244,9 @@ public class ServerController implements API {
     private void sendMessageToGame(@NotNull Game game, @NotNull Message message) {
         game.getPlayers().parallelStream().map(Player::getUuid).forEach(e -> {
             try {
-                listeners.get(e).onUpdate(message);
+                listeners.getOrDefault(e, f -> {
+                }).onUpdate(message);
             } catch (Exception ex) {
-                ex.printStackTrace();
                 listeners.remove(e);
             }
         });
@@ -255,9 +255,9 @@ public class ServerController implements API {
     private void informRoomUsers(@NotNull Room room) {
         room.getUsers().parallelStream().map(User::getUuid).forEach(e -> {
             try {
-                listeners.get(e).onUpdate(room);
+                listeners.getOrDefault(e, f -> {
+                }).onUpdate(room);
             } catch (Exception ex) {
-                ex.printStackTrace();
                 listeners.remove(e);
             }
         });

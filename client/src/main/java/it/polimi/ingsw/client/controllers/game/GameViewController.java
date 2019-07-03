@@ -94,7 +94,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     } finally {
                         if (((Game) f).isCompleted()) navigationController.popViewController();
                     }
-                    else if (f instanceof Message) ChatViewController.messages.add((Message) f);
+                    else if (f instanceof Message) {
+                        chatButton.setText("Chat (*)");
+                        ChatViewController.messages.add((Message) f);
+                    }
                 });
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
@@ -112,6 +115,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         });
 
         chatButton.addActionListener(e -> {
+            chatButton.setText("Chat");
             if (chatViewController != null) chatViewController.dispose();
             chatViewController = new ChatViewController(null, game.getUuid());
             chatViewController.setVisible(true);
