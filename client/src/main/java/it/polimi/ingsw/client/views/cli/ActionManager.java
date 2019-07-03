@@ -191,7 +191,8 @@ public class ActionManager {
                         System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_move_square").getAsString());
                         selectMyDestination(game, 1);
                     } else destination = game.getActualPlayer().getPosition();
-                    //todo fuoco con armi
+                    buildFireAction(game);
+                    //todo: manda azione
                     break;
                 case 5:
                     buildUsePowerUp(game);
@@ -259,7 +260,8 @@ public class ActionManager {
                     selectMyFireWeapon(game);
                     System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_move_square").getAsString());
                     selectMyDestination(game, 2);
-                    //todo fuoco con armi
+                    buildFireAction(game);
+                    //todo: manda azione
                     break;
                 case 4:
                     buildUsePowerUp(game);
@@ -528,5 +530,117 @@ public class ActionManager {
                             e.getBoardType().escape() + e.getNickname() + stdColor));
         }
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+    }
+
+    private void buildFireAction(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        switch (weapon) {
+            case LOCK_RIFLE:
+                //todo: lockrifle
+                System.out.println(Utils.getStrings("cli", "weapons_details", "lock_rifle").get("fire_description").getAsString());
+                alternativeFire = false;
+                doubleChoice(game);
+                selectBasicVisibleTarget(game, new ArrayList<>());
+                if (options == 1) selectFirstVisibleTarget(game, basicTarget);
+                break;
+            case MACHINE_GUN:
+                //todo: machinegun
+                break;
+            case THOR:
+                //todo: thor
+                break;
+            case PLASMA_GUN:
+                //todo:
+                break;
+            case WHISPER:
+                //todo:
+                break;
+            case ELECTROSCYTHE:
+                //todo:
+                break;
+            case TRACTOR_BEAM:
+                //todo:
+                break;
+            case VORTEX_CANNON:
+                //todo:
+                break;
+            case FURNACE:
+                //todo:
+                break;
+            case HEATSEEKER:
+                //todo:
+                break;
+            case HELLION:
+                //todo:
+                break;
+            case FLAMETHROWER:
+                //todo:
+                break;
+            case GRENADE_LAUNCHER:
+                //todo:
+                break;
+            case ROCKET_LAUNCHER:
+                //todo:
+                break;
+            case RAILGUN:
+                //todo:
+                break;
+            case CYBERBLADE:
+                //todo:
+                break;
+            case ZX2:
+                //todo:
+                break;
+            case SHOTGUN:
+                //todo:
+                break;
+            case POWER_GLOVE:
+                //todo:
+                break;
+            case SHOCKWAVE:
+                //todo:
+                break;
+            case SLEDGEHAMMER:
+                //todo:
+                break;
+        }
+    }
+
+    private void doubleChoice(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        System.out.println(Utils.getStrings("cli", "actions", "fire_action", "select_fire_mode").get("standard_message").getAsString());
+        System.out.println(Utils.getStrings("cli", "actions", "fire_action", "select_fire_mode").get(weapon.name().toLowerCase()).getAsString());
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+        String choice = getLine();
+        if (Integer.parseInt(choice) == 1 || Integer.parseInt(choice) == 2)
+            options = Integer.parseInt(choice) - 1;
+        else {
+            System.out.println(invalidChoice);
+            doubleChoice(game);
+        }
+    }
+
+    private void selectBasicVisibleTarget(@NotNull Game game, @NotNull List<UUID> unselectable) throws FileNotFoundException, InterruptedException {
+        System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_basic"));
+        if (basicTarget == null) basicTarget = new ArrayList<>();
+        List<UUID> selectableTargets = new ArrayList<>();
+        game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer())).map(Player::getUuid).filter(e -> !unselectable.contains(e)).forEach(selectableTargets::add);
+        if (selectableTargets.isEmpty())
+            System.out.println("Non ci sono giocatori selezionabili");
+        for (int i = 0; i < selectableTargets.size(); i++) {
+            for (Player player : game.getPlayers()) {
+                if (player.getUuid().equals(selectableTargets.get(i))) System.out.println((i+1) + player.getBoardType().escape() + player.getNickname() + stdColor);
+            }
+        }
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < selectableTargets.size())
+            basicTarget.add(selectableTargets.get(Integer.parseInt(choice) - 1));
+        else {
+            System.out.println(invalidChoice);
+            selectBasicVisibleTarget(game, unselectable);
+        }
+    }
+
+    private void selectFirstVisibleTarget(@NotNull Game game, @NotNull List<UUID> unselectable) {
+
     }
 }

@@ -31,7 +31,7 @@ public class Player implements Displayable, Serializable {
     private @NotNull ArrayList<UUID> marksTaken = new ArrayList<>();
     private int deaths = 0;
     private int points = 0;
-    private @NotNull int[] cubes = {3, 3, 3};
+    private @NotNull int[] cubes = {1, 1, 1};
     private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();
     private @NotNull HashMap<Weapon, Boolean> weapons = new HashMap<>();
     private boolean easyBoard = false;

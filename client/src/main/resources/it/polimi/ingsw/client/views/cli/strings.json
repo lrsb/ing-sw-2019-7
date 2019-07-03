@@ -94,8 +94,8 @@
                 "reload_cost": "2 cubi blu\n",
                 "fire_description": "basic effect: infliggi 2 danni e assegna 1 marchio a 1 bersaglio che puoi vedere.\nwith second lock: assegna 1 marchio a 1 bersaglio (differente dal bersaglio scelto per il \"basic effect\") che puoi vedere (costo: 1 cubo rosso)\n",
                 "fire_details": {
-                    "select_target_basic_effect": "Seleziona 1 bersaglio per il \"basic effect\":\n",
-                    "select_target_second_lock": "Seleziona 1 bersaglio per il \"second lock\":\n"
+                    "select_target_basic": "Seleziona 1 bersaglio per il \"basic effect\":\n",
+                    "select_target_first": "Seleziona 1 bersaglio per il \"second lock\":\n"
                 },
                 "fire_messages": {
                     "basic_effect_bn": " colpisce col \"basic effect\" ",
@@ -108,9 +108,9 @@
                 "reload_cost": "1 cubo rosso + 1 cubo blu\n",
                 "fire_description": "basic effect: scegli fino a 2 bersagli che puoi vedere, infliggi a ciascuno 1 danno.\nwith focus shoot: scegli uno dei due bersagli scelti per il \"basic effect\" e infliggigli 1 danno addizionale (costo: 1 cubo giallo).\nwith turret tripod: scegli un bersaglio tra quelli scelti per il \"basic effect\" (se usi il \"with focus shot\" non puoi scegliere lo stesso bersaglio) e/o un altro bersaglio che puoi vedere (differente da quelli già selezionati), infliggi a ciascun bersaglio scelto per questo effetto 1 danno addizionale (costo: 1 cubo blu)\n",
                 "fire_details": {
-                    "select_targets_basic_effect": "Seleziona il/i bersaglio/i del \"basic effect\":\n",
-                    "select_target_focus_shot": "Seleziona il bersaglio del \"focus shot\":\n",
-                    "select_targets_turret_tripod": "Seleziona il/i bersaglio/i del \"tripod turret\":\n"
+                    "select_target_basic": "Seleziona il/i bersaglio/i del \"basic effect\":\n",
+                    "select_target_first": "Seleziona il bersaglio del \"focus shot\":\n",
+                    "select_target_second": "Seleziona il/i bersaglio/i del \"tripod turret\":\n"
                 },
                 "fire_messages": {
                     "basic_effect_bn": " colpisce col \"basic effect\" ",
@@ -124,9 +124,9 @@
                 "reload_cost": "1 cubo rosso + 1 cubo blu\n",
                 "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio che puoi vedere\nwith chain reaction: infliggi 1 danno a un bersaglio visibile al bersaglio del \"basic effect\" (costo: 1 cubo blu)\nwith high voltage: infliggi 2 danni a un bersaglio visibile al bersaglio del \"with chain reaction\" (non può essere il bersaglio del \"basic effect\") (costo: 1 cubo blu)\nNota: non puoi usare l'effetto \"high voltage\" senza usare l'effetto \"chain reaction\"\n",
                 "fire_details": {
-                    "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
-                    "select_target_chain_reaction": "Seleziona il bersaglio del \"chain reaction\":\n",
-                    "select_target_high_voltage": "Seleziona il/i bersaglio/i dell' \"high voltage\":\n"
+                    "select_target_basic": "Seleziona il bersaglio del \"basic effect\":\n",
+                    "select_target_first": "Seleziona il bersaglio del \"chain reaction\":\n",
+                    "select_target_second": "Seleziona il/i bersaglio/i dell' \"high voltage\":\n"
                 },
                 "fire_messages": {
                     "basic_effect_bn": " colpisce col \"basic effect\" ",
@@ -138,7 +138,7 @@
                 "reload_cost": "1 cubo giallo + 1 cubo blu\n",
                 "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio che puoi vedere\nwith phase glide: effettua fino a 2 passi prima o dopo aver usato il \"basic effect\" (costo: gratuito)\nwith charged shot: infliggi 1 danno addizionale al bersaglio del \"basic effect\" (costo: 1 cubo blu)\n",
                 "fire_details": {
-                    "select_target_basic_effect": "Seleziona il bersaglio del \"basic effect\":\n",
+                    "select_target_basic": "Seleziona il bersaglio del \"basic effect\":\n",
                     "select_point_phase_glide": "Seleziona una cella in cui spostarti prima o dopo il fuoco:\n"
                 }
             },
