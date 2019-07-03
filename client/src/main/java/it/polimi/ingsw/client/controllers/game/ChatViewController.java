@@ -40,7 +40,7 @@ public class ChatViewController extends BaseViewController {
         $$$setupUI$$$();
     }
 
-    ChatViewController(@Nullable NavigationController navigationController, @NotNull Object... args) {
+    public ChatViewController(@Nullable NavigationController navigationController, @NotNull Object... args) {
         super("Chat", 600, 500, navigationController);
         setContentPane(panel);
         listener = o -> update((UUID) args[0]);
@@ -76,8 +76,8 @@ public class ChatViewController extends BaseViewController {
         tableModel.addColumn("Da");
         tableModel.addColumn("Alle");
         var formatter = new SimpleDateFormat("HH:mm:ss");
-        messages.stream()
-                .filter(e -> e.getGameUuid().equals(gameUuid))
+        messages.parallelStream()
+                .filter(e -> e.getUuid().equals(gameUuid))
                 .sorted().map(e -> new Object[]{e.getMessage(),
                 Preferences.getUuid().equals(e.getFrom().getUuid()) ? "TE" : e.getFrom().getNickname(),
                 formatter.format(new Date(e.getTimestamp()))})

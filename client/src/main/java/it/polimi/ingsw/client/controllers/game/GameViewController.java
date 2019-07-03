@@ -30,10 +30,6 @@ import static javax.swing.JOptionPane.*;
 @SuppressWarnings("RedundantSuppression")
 public class GameViewController extends BaseViewController implements GameBoardListener {
     private static final @NotNull Color BACKGROUND_COLOR = Objects.requireNonNull(Utils.hexToColor("1F1E1A"));
-    private static final @NotNull Color PURPLE_ACCENT = Objects.requireNonNull(Utils.hexToColor("98155E"));
-    private static final @NotNull Color WHITE_ACCENT = Objects.requireNonNull(Utils.hexToColor("F9F7FB"));
-    private static final @NotNull Color YELLOW_ACCENT = Objects.requireNonNull(Utils.hexToColor("F1E380"));
-    private static final @NotNull Color RED_ACCENT = Objects.requireNonNull(Utils.hexToColor("BD151A"));
 
     private JPanel panel;
     private GameBoard gameBoard;
@@ -79,12 +75,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
         gameBoard.setBackground(BACKGROUND_COLOR);
         buttonPanel.setBackground(BACKGROUND_COLOR);
         playersBoardButton.setBackground(BACKGROUND_COLOR);
-        playersBoardButton.setForeground(BACKGROUND_COLOR);
         exitButton.setBackground(BACKGROUND_COLOR);
-        exitButton.setForeground(BACKGROUND_COLOR);
-        moveLabel.setForeground(WHITE_ACCENT);
         cancelPanel.setBackground(BACKGROUND_COLOR);
-        actualPlayerLabel.setForeground(WHITE_ACCENT);
 
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
@@ -157,7 +149,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
         shootButton.addActionListener(e -> {
             if (yourTurn) {
-                if (game.getActualPlayer().getWeapons().parallelStream().anyMatch(f -> !game.getActualPlayer().isALoadedGun(f)))
+                if (game.getActualPlayer().getWeapons().parallelStream().anyMatch(f -> game.getActualPlayer().isALoadedGun(f)))
                     try {
                         new WeaponSelectorViewController(null,
                                 game.getActualPlayer().getWeapons().parallelStream().filter(f -> !game.getActualPlayer().isALoadedGun(f)).collect(Collectors.toList()),
@@ -251,7 +243,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     }
                 } else JOptionPane.showMessageDialog(null, "non hai powerup a disposizione!");
             } else {
-                if (game.getActualPlayer().getPowerUps().parallelStream().filter(l -> l.getType() == PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()).size() > 0 && game.isATagbackResponse()) {
+                if (game.getActualPlayer().getPowerUps().parallelStream().anyMatch(l -> l.getType() == PowerUp.Type.TAGBACK_GRENADE) && game.isATagbackResponse()) {
                     try {
                         new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() == PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), (PowerUpSelectorViewController.PowerCallback) f -> {
                             if (f.size() == 1) {
@@ -435,6 +427,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
     @Override
     protected void controllerPopped() {
+        ChatViewController.messages.clear();
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
                 Client.API.removeListener(e);

@@ -260,7 +260,7 @@ public class Player implements Displayable, Serializable {
      * @return true if the point is attainable from the position of this player with at most "maxDistance" steps,
      * in "direction" direction, false otherwise
      */
-    public boolean isPointAtMaxDistanceInDirection(@NotNull Point point, @NotNull Cell[][] cells, int maxDistance, @NotNull Bounds.Direction direction) {
+    public boolean isPointAtMaxDistanceInDirection(@Nullable Point point, @NotNull Cell[][] cells, int maxDistance, @NotNull Bounds.Direction direction) {
         if (position == null) return false;
         int countDistance = 0, x = (int) position.getX(), y = (int) position.getY();
         while (countDistance < maxDistance) {

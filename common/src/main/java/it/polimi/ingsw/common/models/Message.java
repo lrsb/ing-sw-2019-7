@@ -10,7 +10,7 @@ import java.util.UUID;
  */
 public class Message implements Comparable<Message> {
     private @NotNull User from;
-    private @NotNull UUID gameUuid;
+    private @NotNull UUID uuid;
     private @NotNull String message;
     private long timestamp;
 
@@ -18,14 +18,14 @@ public class Message implements Comparable<Message> {
      * Instantiates a new Message.
      *
      * @param from      the from
-     * @param gameUuid  the game uuid
+     * @param uuid   room or game uuid
      * @param message   the message
      * @param timestamp the timestamp
      */
     @Contract(pure = true)
-    public Message(@NotNull User from, @NotNull UUID gameUuid, @NotNull String message, long timestamp) {
+    public Message(@NotNull User from, @NotNull UUID uuid, @NotNull String message, long timestamp) {
         this.from = from;
-        this.gameUuid = gameUuid;
+        this.uuid = uuid;
         this.message = message;
         this.timestamp = timestamp;
     }
@@ -40,12 +40,12 @@ public class Message implements Comparable<Message> {
     }
 
     /**
-     * Gets game uuid.
+     * Gets room or game uuid.
      *
-     * @return the game uuid
+     * @return the room or game uuid
      */
-    public @NotNull UUID getGameUuid() {
-        return gameUuid;
+    public @NotNull UUID getUuid() {
+        return uuid;
     }
 
     /**

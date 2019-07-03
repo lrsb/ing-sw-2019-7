@@ -223,7 +223,8 @@ public class Game implements Displayable, Serializable {
                 canMoveImpl(new Point(from.x + e.getdX(), from.y + e.getdY()), to, step + 1, maxStep));
     }
 
-    public @NotNull List<Player> getPlayersAtPosition(@NotNull Point point) {
+    public @NotNull List<Player> getPlayersAtPosition(@Nullable Point point) {
+        if (point == null) return new ArrayList<>();
         return players.parallelStream().filter(e -> e.getPosition() != null).filter(e -> e.getPosition().equals(point)).collect(Collectors.toList());
     }
 

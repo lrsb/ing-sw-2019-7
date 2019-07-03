@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ActionManager {
-
     private final String stdColor = "\u001b[0m";
     private final String invalidChoice = "Scelta non valida";
     private boolean done = false;
@@ -118,7 +117,7 @@ public class ActionManager {
         }
     }
 
-    private void selectAlternativePayment(@NotNull Game game) throws InterruptedException, FileNotFoundException {
+    private void selectAlternativePayment(@NotNull Game game) throws InterruptedException {
         System.out.println("Inserisci pagamento alternativo (se vuoi)");
         List<PowerUp> selectablePowerUps = new ArrayList<>(game.getActualPlayer().getPowerUps());
         powerUpPayment.forEach(selectablePowerUps::remove);
@@ -287,7 +286,7 @@ public class ActionManager {
         }
     }
 
-    private void selectMyDestination(@NotNull Game game, int step) throws RemoteException, InterruptedException, FileNotFoundException {
+    private void selectMyDestination(@NotNull Game game, int step) throws InterruptedException {
         List<Point> possibleDestination = new ArrayList<>();
         addMovementPoint(game, possibleDestination, step);
         printDestinations(game, possibleDestination);
@@ -300,7 +299,7 @@ public class ActionManager {
         }
     }
 
-    private void selectGrabAmmoDestination(@NotNull Game game, int step) throws RemoteException, InterruptedException, FileNotFoundException {
+    private void selectGrabAmmoDestination(@NotNull Game game, int step) throws RemoteException, InterruptedException {
         List<Point> possibleDestination = new ArrayList<>();
         for (int i = 0; i < Game.MAX_Y; i++)
             for (int j = 0; j < Game.MAX_X; j++)
@@ -318,7 +317,7 @@ public class ActionManager {
         }
     }
 
-    private void selectGrabWeaponDestination(@NotNull Game game, int step) throws FileNotFoundException, InterruptedException {
+    private void selectGrabWeaponDestination(@NotNull Game game, int step) throws InterruptedException {
         List<Point> possibleDestination = new ArrayList<>();
         for (int i = 0; i < Game.MAX_Y; i++)
             for (int j = 0; j < Game.MAX_X; j++)
@@ -335,7 +334,7 @@ public class ActionManager {
         }
     }
 
-    private void selectSPWeapon(@NotNull Game game) throws FileNotFoundException, RemoteException, InterruptedException {
+    private void selectSPWeapon(@NotNull Game game) throws InterruptedException {
         for (int i = 0; i < game.getWeapons(game.getCell(destination).getColor()).size(); i++)
             System.out.println((i + 1) + ". " + game.getWeapons(game.getCell(destination).getColor()).get(i).getColor().escape() +
                     game.getWeapons(game.getCell(destination).getColor()).get(i).name() + "\u001b[0m" + " " +
@@ -350,7 +349,7 @@ public class ActionManager {
         }
     }
 
-    private void selectMyDiscardWeapon(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void selectMyDiscardWeapon(@NotNull Game game) throws InterruptedException {
         List<Weapon> selectableWeapon = new ArrayList<>(game.getActualPlayer().getWeapons());
         for (int i = 0; i < selectableWeapon.size(); i++)
             System.out.println((i + 1) + ". " + selectableWeapon.get(i).getColor().escape() +
@@ -365,7 +364,7 @@ public class ActionManager {
         }
     }
 
-    private void selectMyFireWeapon(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void selectMyFireWeapon(@NotNull Game game) throws InterruptedException {
         List<Weapon> selectableWeapon = new ArrayList<>();
         if (game.getSkulls() != 0)
             game.getActualPlayer().getWeapons().parallelStream()
@@ -387,7 +386,7 @@ public class ActionManager {
         }
     }
 
-    private void buildUsePowerUp(@NotNull Game game) throws FileNotFoundException, InterruptedException, RemoteException {
+    private void buildUsePowerUp(@NotNull Game game) throws InterruptedException, RemoteException {
         System.out.println(Utils.getStrings("cli", "actions", "use_power_up_action").get("select_power_up").getAsString());
         selectPowerUpToUse(game);
         switch (powerUpType) {
@@ -413,7 +412,7 @@ public class ActionManager {
         }
     }
 
-    private void selectPowerUpToUse(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void selectPowerUpToUse(@NotNull Game game) throws InterruptedException {
         List<PowerUp> usablePowerUps = new ArrayList<>();
         game.getActualPlayer().getPowerUps().stream().filter(e -> !e.getType().equals(PowerUp.Type.TAGBACK_GRENADE))
                 .forEach(usablePowerUps::add);
@@ -432,7 +431,7 @@ public class ActionManager {
         }
     }
 
-    private void selectTargetingScopeTarget(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void selectTargetingScopeTarget(@NotNull Game game) throws InterruptedException {
         List<UUID> possibleTargets = new ArrayList<>(game.getLastsDamaged());
         if (possibleTargets.isEmpty()) System.out.println("Non hai bersagli validi");
         printTargets(game, possibleTargets);
@@ -445,7 +444,7 @@ public class ActionManager {
         }
     }
 
-    private void selectNewtonTarget(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void selectNewtonTarget(@NotNull Game game) throws InterruptedException {
         List<UUID> possibleTargets = new ArrayList<>();
         game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer())).map(Player::getUuid)
                 .forEach(possibleTargets::add);
@@ -459,7 +458,7 @@ public class ActionManager {
         }
     }
 
-    private void selectNewtonDestination(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void selectNewtonDestination(@NotNull Game game) throws InterruptedException {
         List<Point> possibleDestinations = new ArrayList<>();
         for (int i = 0; i < Game.MAX_Y; i++)
             for (int j = 0; j < Game.MAX_X; j++) {
@@ -481,7 +480,7 @@ public class ActionManager {
         }
     }
 
-    private void selectTeleporterDestination(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void selectTeleporterDestination(@NotNull Game game) throws InterruptedException {
         List<Point> possibleDestinations = new ArrayList<>();
         for (int i = 0; i < Game.MAX_Y; i++)
             for (int j = 0; j < Game.MAX_X; j++)
@@ -497,7 +496,7 @@ public class ActionManager {
         }
     }
 
-    private void selectMyReloadWeapon(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void selectMyReloadWeapon(@NotNull Game game) throws InterruptedException {
         List<Weapon> selectableWeapons = new ArrayList<>();
         game.getActualPlayer().getWeapons().parallelStream()
                 .filter(e -> !game.getActualPlayer().isALoadedGun(e)).forEach(selectableWeapons::add);
@@ -523,14 +522,14 @@ public class ActionManager {
         return line;
     }
 
-    private void printDestinations(@NotNull Game game, @NotNull List<Point> possibleDestination) throws FileNotFoundException {
+    private void printDestinations(@NotNull Game game, @NotNull List<Point> possibleDestination) {
         for (int i = 0; i < possibleDestination.size(); i++)
             System.out.println((i + 1) + ". " + (possibleDestination.get(i).equals(game.getActualPlayer().getPosition()) ?
                     "Rimani fermo" : possibleDestination.get(i)));
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
     }
 
-    private void printTargets(@NotNull Game game, @NotNull List<UUID> possibleTargets) throws FileNotFoundException {
+    private void printTargets(@NotNull Game game, @NotNull List<UUID> possibleTargets) {
         for (int i = 0; i < possibleTargets.size(); i++) {
             var uuid = possibleTargets.get(i);
             game.getPlayers().stream().filter(e -> e.getUuid().equals(uuid))
@@ -677,7 +676,7 @@ public class ActionManager {
                     List<Point> selectablePoints = new ArrayList<>();
                     for (int i = 0; i < Game.MAX_Y; i++)
                         for (int j = 0; j < Game.MAX_X; j++)
-                            if (game.getCell(new Point(i, j)) != null && !game.getActualPlayer().getPosition().equals(new Point(i, j)) &&
+                            if (game.getCell(new Point(i, j)) != null && !new Point(i, j).equals(game.getActualPlayer().getPosition()) &&
                                     game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), 1))
                                 selectablePoints.add(new Point(i, j));
                     System.out.println(Utils.getStrings("cli", "weapons_details", "furnace", "fire_details").get("select_square").getAsString());
@@ -977,7 +976,7 @@ public class ActionManager {
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
     }
 
-    private void doubleChoice(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void doubleChoice(@NotNull Game game) throws InterruptedException {
         printChoiceMessage();
         String choice = getLine();
         if (Integer.parseInt(choice) == 1 || Integer.parseInt(choice) == 2)
@@ -988,7 +987,7 @@ public class ActionManager {
         }
     }
 
-    private void tripleChoice(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void tripleChoice(@NotNull Game game) throws InterruptedException {
         printChoiceMessage();
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 4)
@@ -999,7 +998,7 @@ public class ActionManager {
         }
     }
 
-    private void quadrupleChoice(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void quadrupleChoice(@NotNull Game game) throws InterruptedException {
         printChoiceMessage();
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 5)
@@ -1010,7 +1009,7 @@ public class ActionManager {
         }
     }
 
-    private void selectBasicVisibleTarget(@NotNull Game game, @NotNull List<UUID> unselectable) throws FileNotFoundException, InterruptedException {
+    private void selectBasicVisibleTarget(@NotNull Game game, @NotNull List<UUID> unselectable) throws InterruptedException {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_basic"));
         List<UUID> selectableTargets = new ArrayList<>();
         selection(game, selectableTargets, unselectable);
@@ -1157,7 +1156,7 @@ public class ActionManager {
         }
     }
 
-    private void selectVisibleBasicPoint(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void selectVisibleBasicPoint(@NotNull Game game) throws InterruptedException {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_point_basic"));
         List<Point> selectablePoints = new ArrayList<>();
         addVisiblePoint(game, selectablePoints);
@@ -1171,7 +1170,7 @@ public class ActionManager {
         }
     }
 
-    private void selectVisibleFirstPoint(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void selectVisibleFirstPoint(@NotNull Game game) throws InterruptedException {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_point_first"));
         List<Point> selectablePoints = new ArrayList<>();
         addVisiblePoint(game, selectablePoints);

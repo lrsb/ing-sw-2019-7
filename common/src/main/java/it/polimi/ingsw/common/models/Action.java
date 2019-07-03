@@ -225,7 +225,7 @@ public class Action implements Serializable {
          * Call this method to construct an Action in order to use a Power Up's effect
          *
          * @param powerUpType the type of power up a player wants to use
-         * @param color       the color of the power up a plater wants to use
+         * @param color       the color of the power up a player wants to use
          * @param destination fit this param with a point of the map if the specific power up needs it
          * @param target      fit this param with a player if the specific power up needs it
          * @return the constructed action to use a power up

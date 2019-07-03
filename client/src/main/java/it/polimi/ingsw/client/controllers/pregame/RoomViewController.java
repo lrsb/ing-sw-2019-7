@@ -5,6 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
 import it.polimi.ingsw.client.controllers.base.NavigationController;
+import it.polimi.ingsw.client.controllers.game.ChatViewController;
 import it.polimi.ingsw.client.controllers.game.GameViewController;
 import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.common.models.Room;
@@ -22,6 +23,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,10 +39,13 @@ public class RoomViewController extends BaseViewController {
     private JLabel timeoutLabel;
     private JButton startButton;
     private JButton exitButton;
+    private JButton chatButton;
 
     private @NotNull UUID roomUuid;
     private @Nullable Clip clip;
     private Timer timer;
+
+    private @Nullable ChatViewController chatViewController;
 
     private boolean game = false;
 
@@ -85,6 +90,14 @@ public class RoomViewController extends BaseViewController {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
+
+        chatButton.addActionListener(e -> {
+            chatButton.setText("Chat");
+            if (chatViewController != null) chatViewController.dispose();
+            chatViewController = new ChatViewController(null, room.getUuid());
+            chatViewController.setVisible(true);
+        });
+
         startButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             try {
                 Client.API.startGame(f, roomUuid);
@@ -96,10 +109,12 @@ public class RoomViewController extends BaseViewController {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         }));
+
         exitButton.addActionListener(e -> Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
             if (JOptionPane.showConfirmDialog(null, "Vuoi uscire dalla stanza?", "Esci", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION && getNavigationController() != null)
                 getNavigationController().popViewController();
         }));
+
         if (clip != null) try {
             var audioInputStream = AudioSystem.getAudioInputStream(Utils.getUrl(getClass(), "follettina", "wav"));
             clip.open(audioInputStream);
@@ -129,6 +144,9 @@ public class RoomViewController extends BaseViewController {
     }
 
     private void quit() {
+        ChatViewController.messages.clear();
+        Optional.ofNullable(chatViewController).ifPresent(ChatViewController::dispose);
+        if (clip != null) clip.stop();
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
                 Client.API.removeListener(e);
@@ -141,7 +159,6 @@ public class RoomViewController extends BaseViewController {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
-        if (clip != null) clip.stop();
     }
 
     @Override

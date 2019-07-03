@@ -199,9 +199,14 @@ public class ServerController implements API {
     public void sendMessage(@Nullable String token, @Nullable Message message) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (message != null) try {
-            var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", message.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
-            if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid()))) return;
-            sendMessageToGame(game, new Message(user, message.getGameUuid(), message.getMessage(), System.currentTimeMillis()));
+            var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", message.getUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
+            if (game.getPlayers().parallelStream().anyMatch(e -> e.getUuid().equals(user.getUuid())))
+                sendMessageToGame(game, new Message(user, message.getUuid(), message.getMessage(), System.currentTimeMillis()));
+            else {
+                var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", message.getUuid().toString())).first()).e(Document::toJson).get(""), Room.class);
+                if (room.getUsers().parallelStream().anyMatch(e -> e.getUuid().equals(user.getUuid())))
+                    sendMessageToRoom(room, new Message(user, message.getUuid(), message.getMessage(), System.currentTimeMillis()));
+            }
         } catch (Exception e) {
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
@@ -245,6 +250,17 @@ public class ServerController implements API {
 
     private void sendMessageToGame(@NotNull Game game, @NotNull Message message) {
         game.getPlayers().parallelStream().map(Player::getUuid).forEach(e -> {
+            try {
+                listeners.getOrDefault(e, f -> {
+                }).onUpdate(message);
+            } catch (Exception ex) {
+                listeners.remove(e);
+            }
+        });
+    }
+
+    private void sendMessageToRoom(@NotNull Room room, @NotNull Message message) {
+        room.getUsers().parallelStream().map(User::getUuid).forEach(e -> {
             try {
                 listeners.getOrDefault(e, f -> {
                 }).onUpdate(message);
