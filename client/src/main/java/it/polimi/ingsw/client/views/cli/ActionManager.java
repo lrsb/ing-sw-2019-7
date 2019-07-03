@@ -535,12 +535,14 @@ public class ActionManager {
     private void buildFireAction(@NotNull Game game) throws FileNotFoundException, InterruptedException {
         switch (weapon) {
             case LOCK_RIFLE:
-                //todo: lockrifle
                 System.out.println(Utils.getStrings("cli", "weapons_details", "lock_rifle").get("fire_description").getAsString());
                 alternativeFire = false;
                 doubleChoice(game);
                 selectBasicVisibleTarget(game, new ArrayList<>());
-                if (options == 1) selectFirstVisibleTarget(game, basicTarget);
+                if (options == 1) {
+                    selectFirstVisibleTarget(game, basicTarget);
+                    selectAlternativePayment(game);
+                }
                 break;
             case MACHINE_GUN:
                 //todo: machinegun
@@ -622,15 +624,7 @@ public class ActionManager {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_basic"));
         if (basicTarget == null) basicTarget = new ArrayList<>();
         List<UUID> selectableTargets = new ArrayList<>();
-        game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer())).map(Player::getUuid).filter(e -> !unselectable.contains(e)).forEach(selectableTargets::add);
-        if (selectableTargets.isEmpty())
-            System.out.println("Non ci sono giocatori selezionabili");
-        for (int i = 0; i < selectableTargets.size(); i++) {
-            for (Player player : game.getPlayers()) {
-                if (player.getUuid().equals(selectableTargets.get(i))) System.out.println((i+1) + player.getBoardType().escape() + player.getNickname() + stdColor);
-            }
-        }
-        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+        selection(game, selectableTargets, unselectable);
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < selectableTargets.size())
             basicTarget.add(selectableTargets.get(Integer.parseInt(choice) - 1));
@@ -640,7 +634,43 @@ public class ActionManager {
         }
     }
 
-    private void selectFirstVisibleTarget(@NotNull Game game, @NotNull List<UUID> unselectable) {
+    private void selectFirstVisibleTarget(@NotNull Game game, @NotNull List<UUID> unselectable) throws InterruptedException {
+        System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_first"));
+        if (firstAdditionalTarget == null) firstAdditionalTarget = new ArrayList<>();
+        List<UUID> selectableTargets = new ArrayList<>();
+        selection(game, selectableTargets, unselectable);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < selectableTargets.size())
+            firstAdditionalTarget.add(selectableTargets.get(Integer.parseInt(choice) - 1));
+        else {
+            System.out.println(invalidChoice);
+            selectFirstVisibleTarget(game, unselectable);
+        }
+    }
 
+    private void selection(@NotNull Game game, @NotNull List<UUID> selectableTargets, @NotNull List<UUID> unselectable) {
+        addVisibleTarget(game, selectableTargets);
+        removeUnselectable(selectableTargets, unselectable);
+        printSelectableTargets(game, selectableTargets);
+    }
+
+    private void printSelectableTargets(@NotNull Game game, @NotNull List<UUID> selectableTargets) {
+        if (selectableTargets.isEmpty())
+            System.out.println("Non ci sono giocatori selezionabili");
+        for (int i = 0; i < selectableTargets.size(); i++) {
+            for (Player player : game.getPlayers()) {
+                if (player.getUuid().equals(selectableTargets.get(i))) System.out.println((i+1) + player.getBoardType().escape() + player.getNickname() + stdColor);
+            }
+        }
+        System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
+    }
+
+    private void addVisibleTarget(@NotNull Game game, @NotNull List<UUID> selectableTargets) {
+        game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && game.getActualPlayer().canSeeNotSame(e, game.getCells()))
+                .map(Player::getUuid).forEach(selectableTargets::add);
+    }
+
+    private void removeUnselectable(@NotNull List<UUID> selectableTargets, @NotNull List<UUID> unselectableTargets) {
+        unselectableTargets.stream().filter(selectableTargets::contains).forEach(selectableTargets::remove);
     }
 }
