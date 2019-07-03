@@ -607,13 +607,39 @@ public class ActionManager {
                         .map(Player::getUuid).collect(Collectors.toList())));
                 break;
             case ELECTROSCYTHE:
-                //todo:
+                System.out.println(Utils.getStrings("cli", "weapons_details", "electroscythe").get("fire_description").getAsString());
+                doubleChoice(game);
+                alternativeFire = options != 0;
+                options = 0;
+                if (alternativeFire) selectAlternativePayment(game);
                 break;
             case TRACTOR_BEAM:
-                //todo:
+                System.out.println(Utils.getStrings("cli", "weapons_details", "tractor_beam").get("fire_description").getAsString());
+                doubleChoice(game);
+                alternativeFire = options != 0;
+                options = 0;
+                if (alternativeFire) {
+                    System.out.println(Utils.getStrings("cli", "weapons_details", "tractor_beam", "fire_details").get("select_target_basic").getAsString());
+                    List<UUID> selectableTargets = game.getPlayers().parallelStream()
+                            .filter(e -> game.canMove(e.getPosition(), game.getActualPlayer().getPosition(), 3))
+                            .map(Player::getUuid).collect(Collectors.toList());
+                    printSelectableTargets(game, selectableTargets);
+                    simpleBasicTargetSelection(selectableTargets);
+                    selectAlternativePayment(game);
+                } else {
+                    System.out.println(Utils.getStrings("cli", "weapons_details", "tractor_beam", "fire_details").get("select_point_basic").getAsString());
+                    selectVisibleBasicPoint(game);
+                    System.out.println(Utils.getStrings("cli", "weapons_details", "tractor_beam", "fire_details").get("select_target_basic").getAsString());
+                    List<UUID> selectableTargets = game.getPlayers().parallelStream()
+                            .filter(e -> game.canMove(e.getPosition(), basicTargetPoint, 3))
+                            .map(Player::getUuid).collect(Collectors.toList());
+                    printSelectableTargets(game, selectableTargets);
+                    simpleBasicTargetSelection(selectableTargets);
+                }
                 break;
             case VORTEX_CANNON:
                 //todo:
+
                 break;
             case FURNACE:
                 //todo:
@@ -807,6 +833,23 @@ public class ActionManager {
         }
     }
 
+    private void selectVisibleBasicPoint(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_point_basic"));
+        List<Point> selectablePoints = new ArrayList<>();
+        for (int i = 0; i < Game.MAX_Y; i++)
+            for (int j = 0; j < Game.MAX_X; j++)
+                if (game.getActualPlayer().canSeeCell(new Point(i, j), game.getCells()))
+                    selectablePoints.add(new Point(i, j));
+        printDestinations(game, selectablePoints);
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectablePoints.size())
+            basicTargetPoint = selectablePoints.get(Integer.parseInt(choice) - 1);
+        else {
+            System.out.println(invalidChoice);
+            selectVisibleBasicPoint(game);
+        }
+    }
+
     private void doneQuestion() throws InterruptedException {
         System.out.println("Vuoi selezionare altri bersagli per questo effetto? [y/n]");
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
@@ -824,5 +867,15 @@ public class ActionManager {
             for (int j = 0; j < Game.MAX_X; j++)
                 if (game.getCell(new Point(i, j)) != null && game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), step))
                     selectablePoints.add(new Point(i, j));
+    }
+
+    private void simpleBasicTargetSelection(@NotNull List<UUID> selectableTargets) throws InterruptedException {
+        String choice = getLine();
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableTargets.size())
+            basicTarget.add(selectableTargets.get(Integer.parseInt(choice) - 1));
+        else {
+            System.out.println(invalidChoice);
+            simpleBasicTargetSelection(selectableTargets);
+        }
     }
 }

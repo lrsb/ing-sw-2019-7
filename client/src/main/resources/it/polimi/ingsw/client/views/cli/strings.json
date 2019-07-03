@@ -143,11 +143,11 @@
                 }
             },
             "whisper": {
-                "grab cost": "1 cubo giallo + 1 cubo blu\n",
-                "reload cost": "1 cubo giallo + 2 cubi blu\n",
+                "grab_cost": "1 cubo giallo + 1 cubo blu\n",
+                "reload_cost": "1 cubo giallo + 2 cubi blu\n",
                 "fire_description": "effect: infliggi 3 danni e assegna 1 marchio a 1 bersaglio che puoi vedere, ma almeno a 2 passi da te\n",
                 "fire_details": {
-                    "select_target_effect": "Seleziona il bersaglio dell' \"effect\":\n"
+                    "select_target_basic": "Seleziona il bersaglio dell' \"effect\":\n"
                 }
             },
             "electroscythe": {
@@ -160,8 +160,8 @@
                 "reload_cost": "1 cubo blu\n",
                 "fire_description": "basic mode: muovi un bersaglio di 0,1 o 2 passi e infliggigli 1 danno (funziona solo se dopo lo spostamento puoi vederlo)\npunisher mode: scegli un bersaglio che può raggiungere la tua posizione con 0,1 o 2 passi, muovilo nella tua cella e infliggigli 3 danni (costo: 1 cubo rosso + 1 cubo giallo)\n",
                 "fire_details": {
-                    "select_target": "Seleziona il tuo bersaglio:\n",
-                    "select_point_basic_mode": "Seleziona la cella nella quale vuoi spostare il tuo bersaglio:\n"
+                    "select_target_basic": "Seleziona il tuo bersaglio:\n",
+                    "select_point_basic": "Seleziona la cella nella quale vuoi spostare il tuo bersaglio:\n"
                 }
             },
             "vortex_cannon": {
