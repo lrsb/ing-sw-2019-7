@@ -204,7 +204,7 @@
                 "reload_cost": "1 cubo rosso\n",
                 "fire_description": "basic mode: scegli fino a 2 bersagli che rispetto a te si trovino nella stessa direzione (senza muri tra te e i bersagli), non nella tua stessa cella e, se più d'uno, non tra di loro nella stessa cella, ma al massimo a due passi da te, infliggi ai bersagli 1 danno ciascuno\nbarbecue mode: scegli 1 o 2 celle rispetto a te nella stessa direzione, non la tua stessa cella e non a più di 2 passi da te, ogni bersaglio che si trovi nella cella da te selezionata ad un passo di distanza subisce 2 danni, mentre ogni bersaglio si trovi a 2 passi da te subisce 1 danno (costo: 2 cubi gialli)\n",
                 "fire_details": {
-                    "select_targets": "Seleziona 1 o 2 bersagli per la \"basic mode\":\n",
+                    "select_target": "Seleziona 1 bersaglio (alla volta) per la \"basic mode\":\n",
                     "select_point": "Seleziona la cella fino alla quale desideri incenerire i tuoi avversari:\n"
                 }
             },

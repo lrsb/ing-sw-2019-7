@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ActionManager {
 
@@ -704,14 +705,56 @@ public class ActionManager {
                 simpleBasicTargetSelection(selectableHeatTargets);
                 break;
             case HELLION:
-                //todo:
-
+                System.out.println(Utils.getStrings("cli", "weapons_details", "hellion").get("fire_description").getAsString());
+                doubleChoice(game);
+                alternativeFire = options != 0;
+                options = 0;
+                selectBasicVisibleTarget(game, game.getPlayers().stream().filter(e -> e.getPosition() == null ||
+                        e.getPosition().equals(game.getActualPlayer().getPosition())).map(Player::getUuid).collect(Collectors.toList()));
+                if (alternativeFire) selectAlternativePayment(game);
                 break;
             case FLAMETHROWER:
-                //todo:
+                System.out.println(Utils.getStrings("cli", "weapons_details", "flamethrower").get("fire_description").getAsString());
+                doubleChoice(game);
+                alternativeFire = options != 0;
+                options = 0;
+                if (alternativeFire) {
+                    List<Point> selectablePoints = new ArrayList<>();
+                    for (int i = 0; i < Game.MAX_Y; i++)
+                        for (int j = 0; j < Game.MAX_X; j++)
+                            for (Bounds.Direction dir : Bounds.Direction.values()) {
+                                if (game.getActualPlayer().isPointAtMaxDistanceInDirection(new Point(i, j), game.getCells(), 2, dir))
+                                    selectablePoints.add(new Point(i, j));
+                            }
+                    System.out.println(Utils.getStrings("cli", "weapons_details", "flamethrower", "fire_details").get("select_point"));
+                    printSelectablePoints(game, selectablePoints);
+                    simpleBasicPointSelection(selectablePoints);
+                    selectAlternativePayment(game);
+                } else {
+                    do {
+                        List<UUID> selectableFlameTargets = new ArrayList<>();
+                        if (basicTarget.size() == 1)
+                            game.getPlayers().stream().filter(e -> e.getPosition() != null &&
+                                    !e.getPosition().equals(game.getActualPlayer().getPosition()) &&
+                                    game.getPlayers().stream().noneMatch(f -> e.getPosition().equals(f.getPosition()) && f.getUuid().equals(basicTarget.get(0))) &&
+                                    Stream.of(Bounds.Direction.values()).anyMatch(f -> game.getActualPlayer().isPointAtMaxDistanceInDirection(e.getPosition(), game.getCells(), 2, f) &&
+                                            game.getPlayers().stream().anyMatch(g -> g.getUuid().equals(basicTarget.get(0)) && g.getPosition() != null &&
+                                                    game.getActualPlayer().isPointAtMaxDistanceInDirection(g.getPosition(), game.getCells(), 2, f))))
+                                    .map(Player::getUuid).forEach(selectableFlameTargets::add);
+                        else game.getPlayers().stream().filter(e -> e.getPosition() != null &&
+                                    !e.getPosition().equals(game.getActualPlayer().getPosition()) &&
+                                    Stream.of(Bounds.Direction.values()).anyMatch(f -> game.getActualPlayer().isPointAtMaxDistanceInDirection(e.getPosition(), game.getCells(), 2, f)))
+                                    .map(Player::getUuid).forEach(selectableFlameTargets::add);
+                        System.out.println(Utils.getStrings("cli", "weapons_details", "flamethrower", "fire_details").get("select_target"));
+                        printSelectableTargets(game, selectableFlameTargets);
+                        simpleBasicTargetSelection(selectableFlameTargets);
+                        if (basicTarget.size() < 2) doneQuestion();
+                    } while(basicTarget.size() < 2 && !done);
+                }
                 break;
             case GRENADE_LAUNCHER:
                 //todo:
+
                 break;
             case ROCKET_LAUNCHER:
                 //todo:
