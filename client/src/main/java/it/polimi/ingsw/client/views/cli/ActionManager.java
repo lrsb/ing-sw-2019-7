@@ -88,6 +88,7 @@ public class ActionManager {
     }
 
     private void selectReborningPowerUp(@NotNull Game game) throws InterruptedException {
+        if (Preferences.getToken() == null) throw new InterruptedException();
         if (game.getActualPlayer().getPowerUps().size() == 1) {
             try {
                 System.out.println("Ops...non hai molta scelta");
@@ -137,6 +138,7 @@ public class ActionManager {
     }
 
     private void selectTagbackResponse(@NotNull Game game) throws InterruptedException, RemoteException {
+        if (Preferences.getToken() == null) throw new InterruptedException();
         List<PowerUp> selectableTagbackGrenade = new ArrayList<>();
         game.getActualPlayer().getPowerUps().stream().filter(e -> e.getType().equals(PowerUp.Type.TAGBACK_GRENADE)).forEach(selectableTagbackGrenade::add);
         for (int i = 0; i < selectableTagbackGrenade.size(); i++)
@@ -156,6 +158,7 @@ public class ActionManager {
     }
 
     private void selectStandardAction(@NotNull Game game) throws InterruptedException, FileNotFoundException, RemoteException {
+        if (Preferences.getToken() == null) throw new InterruptedException();
         if (game.getSkulls() > 0)
             System.out.println(Utils.getStrings("cli", "possible_actions").get(game.getActualPlayer().getDamagesTaken().size() < 3 ?
                     "standard_actions" : game.getActualPlayer().getDamagesTaken().size() < 6 ? "standard_actions_plus1" :
@@ -214,6 +217,7 @@ public class ActionManager {
     }
 
     private void selectLastAction(@NotNull Game game) throws FileNotFoundException, InterruptedException, RemoteException {
+        if (Preferences.getToken() == null) throw new InterruptedException();
         System.out.println(Utils.getStrings("cli", "possible_actions").get("last_standard_actions").getAsString());
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 4) {
@@ -239,6 +243,7 @@ public class ActionManager {
     }
 
     private void selectUltimateAction(@NotNull Game game) throws FileNotFoundException, InterruptedException, RemoteException {
+        if (Preferences.getToken() == null) throw new InterruptedException();
         System.out.println(Utils.getStrings("cli", "possible_actions").get("last_turn_actions").getAsString());
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 6) {
@@ -299,12 +304,15 @@ public class ActionManager {
     }
 
     private void selectGrabAmmoDestination(@NotNull Game game, int step) throws RemoteException, InterruptedException {
+        if (Preferences.getToken() == null) throw new InterruptedException();
         List<Point> possibleDestination = new ArrayList<>();
         for (int i = 0; i < Game.MAX_Y; i++)
-            for (int j = 0; j < Game.MAX_X; j++)
-                if (game.getCell(new Point(i, j)) != null && game.getCell(new Point(i, j)).getAmmoCard() != null &&
+            for (int j = 0; j < Game.MAX_X; j++) {
+                var cell = game.getCell(new Point(i, j));
+                if (cell != null && cell.getAmmoCard() != null &&
                         game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), step))
                     possibleDestination.add(new Point(i, j));
+            }
         printDestinations(game, possibleDestination);
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestination.size())
@@ -319,10 +327,12 @@ public class ActionManager {
     private void selectGrabWeaponDestination(@NotNull Game game, int step) throws InterruptedException {
         List<Point> possibleDestination = new ArrayList<>();
         for (int i = 0; i < Game.MAX_Y; i++)
-            for (int j = 0; j < Game.MAX_X; j++)
-                if (game.getCell(new Point(i, j)) != null && game.getCell(new Point(i, j)).isSpawnPoint() &&
+            for (int j = 0; j < Game.MAX_X; j++) {
+                var cell = game.getCell(new Point(i, j));
+                if (cell != null && cell.isSpawnPoint() &&
                         game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), step))
                     possibleDestination.add(new Point(i, j));
+            }
         printDestinations(game, possibleDestination);
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestination.size())
@@ -334,14 +344,17 @@ public class ActionManager {
     }
 
     private void selectSPWeapon(@NotNull Game game) throws InterruptedException {
+        if (destination == null) throw new InterruptedException();
+        var cell = game.getCell(destination);
+        if (cell == null) throw new InterruptedException();
         for (int i = 0; i < game.getWeapons(game.getCell(destination).getColor()).size(); i++)
             System.out.println((i + 1) + ". " + game.getWeapons(game.getCell(destination).getColor()).get(i).getColor().escape() +
                     game.getWeapons(game.getCell(destination).getColor()).get(i).name() + "\u001b[0m" + " " +
                     Utils.getStrings("cli", "weapons_details", game.getWeapons(game.getCell(destination).getColor()).get(i).name().toLowerCase()).get("grab_cost").getAsString());
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
         String choice = getLine();
-        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= game.getWeapons(game.getCell(destination).getColor()).size()) {
-            weapon = game.getWeapons(game.getCell(destination).getColor()).get(Integer.parseInt(choice) - 1);
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= game.getWeapons(cell.getColor()).size()) {
+            weapon = game.getWeapons(cell.getColor()).get(Integer.parseInt(choice) - 1);
         } else {
             System.out.println(invalidChoice);
             selectSPWeapon(game);
@@ -386,6 +399,7 @@ public class ActionManager {
     }
 
     private void buildUsePowerUp(@NotNull Game game) throws InterruptedException, RemoteException {
+        if (Preferences.getToken() == null) throw new InterruptedException();
         System.out.println(Utils.getStrings("cli", "actions", "use_power_up_action").get("select_power_up").getAsString());
         selectPowerUpToUse(game);
         switch (powerUpType) {
@@ -539,6 +553,8 @@ public class ActionManager {
     }
 
     private void buildFireAction(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+        if (game.getActualPlayer().getPosition() == null ||
+                game.getCell(game.getActualPlayer().getPosition()) == null) throw new InterruptedException();
         switch (weapon) {
             case LOCK_RIFLE:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "lock_rifle").get("fire_description").getAsString());
@@ -689,10 +705,12 @@ public class ActionManager {
                 } else {
                     List<Cell.Color> selectableColor = new ArrayList<>();
                     for (int i = 0; i < Game.MAX_Y; i++)
-                        for (int j = 0; j < Game.MAX_X; j++)
-                            if (game.getCell(new Point(i, j)) != null && !game.getCell(new Point(i, j)).getColor().equals(game.getCell(game.getActualPlayer().getPosition()).getColor()) &&
-                                    game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), 1) && !selectableColor.contains(game.getCell(new Point(i, j)).getColor()))
-                                selectableColor.add(game.getCell(new Point(i, j)).getColor());
+                        for (int j = 0; j < Game.MAX_X; j++) {
+                            var cell = game.getCell(new Point(i, j));
+                            if (cell != null && !cell.getColor().equals(game.getCell(game.getActualPlayer().getPosition()).getColor()) &&
+                                    game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), 1) && !selectableColor.contains(cell.getColor()))
+                                selectableColor.add(cell.getColor());
+                        }
                     System.out.println(Utils.getStrings("cli", "weapons_details", "furnace", "fire_details").get("select_chamber").getAsString());
                     for (int i = 0; i < selectableColor.size(); i++)
                         System.out.println((i + 1) + ". " + selectableColor.get(i).escape() + "Stanza " +
@@ -1255,13 +1273,14 @@ public class ActionManager {
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableColor.size())
             for (int i = 0; i < Game.MAX_Y; i++)
-                for (int j = 0; j < Game.MAX_X; j++)
-                    if (game.getCell(new Point(i, j)) != null &&
-                            game.getCell(new Point(i, j)).getColor().equals(selectableColor.get(Integer.parseInt(choice) - 1)))
+                for (int j = 0; j < Game.MAX_X; j++) {
+                    var cell = game.getCell(new Point(i, j));
+                    if (cell != null && cell.getColor().equals(selectableColor.get(Integer.parseInt(choice) - 1)))
                         basicTargetPoint = new Point(i, j);
                     else {
                         System.out.println(invalidChoice);
                         selectColor(game, selectableColor);
                     }
+                }
     }
 }
