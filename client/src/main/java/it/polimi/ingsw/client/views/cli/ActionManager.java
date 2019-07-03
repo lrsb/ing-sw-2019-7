@@ -175,7 +175,7 @@ public class ActionManager {
                     selectGrabWeaponDestination(game, game.getActualPlayer().getDamagesTaken().size() > 2 || game.getSkulls() == 0 ? 2 : 1);
                     System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("select_weapon").getAsString());
                     selectSPWeapon(game);
-                    if (game.getActualPlayer().getWeaponsSize() > 2) {
+                    if (game.getActualPlayer().getWeapons().size() > 2) {
                         System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("discard_weapon").getAsString());
                         selectMyDiscardWeapon(game);
                     }
@@ -245,7 +245,7 @@ public class ActionManager {
                     selectGrabWeaponDestination(game, 3);
                     System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("select_weapon").getAsString());
                     selectSPWeapon(game);
-                    if (game.getActualPlayer().getWeaponsSize() > 2) {
+                    if (game.getActualPlayer().getWeapons().size() > 2) {
                         System.out.println(Utils.getStrings("cli", "actions", "grab_action", "grab_weapon").get("discard_weapon").getAsString());
                         selectMyDiscardWeapon(game);
                     }

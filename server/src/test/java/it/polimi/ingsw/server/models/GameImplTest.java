@@ -49,7 +49,7 @@ class GameImplTest {
             for (AmmoCard.Color color : AmmoCard.Color.values()) {
                 assertEquals(3, player.getColoredCubes(color));
             }
-            assertEquals(0, player.getWeaponsSize());
+            assertEquals(0, player.getWeapons().size());
             assertEquals(player.equals(gameImpl.getActualPlayer()) ? 2 : 0, player.getPowerUps().size());
         }
         for (int i = 0; i < gameImpl.getPlayers().size(); i++) {
@@ -120,14 +120,14 @@ class GameImplTest {
         game.getActualPlayer().setPosition(new Point(0, 0));
         assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(1, 0), game.getWeapons(Cell.Color.RED).get(0), null, null)));
         assertEquals(2, game.getWeapons(Cell.Color.RED).size());
-        assertEquals(1, game.getActualPlayer().getWeaponsSize());
+        assertEquals(1, game.getActualPlayer().getWeapons().size());
         for (AmmoCard.Color color : AmmoCard.Color.values())
             assertEquals(3 - game.getActualPlayer().getWeapons().get(0).getGrabCost(color), game.getActualPlayer().getColoredCubes(color));
         assertEquals(new Point(1, 0), game.getActualPlayer().getPosition());
         assertFalse(game.doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(1, 0), game.getWeapons(Cell.Color.BLUE).get(0), null, null)));
         assertEquals(2, game.getWeapons(Cell.Color.RED).size());
         assertEquals(3, game.getWeapons(Cell.Color.BLUE).size());
-        assertEquals(1, game.getActualPlayer().getWeaponsSize());
+        assertEquals(1, game.getActualPlayer().getWeapons().size());
         assertEquals(new Point(1, 0), game.getActualPlayer().getPosition());
         for (AmmoCard.Color color : AmmoCard.Color.values())
             assertEquals(3 - game.getActualPlayer().getWeapons().get(0).getGrabCost(color), game.getActualPlayer().getColoredCubes(color));

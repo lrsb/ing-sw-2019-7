@@ -53,10 +53,14 @@ public class Utils {
         return masked;
     }
 
-    public static JsonObject getStrings(@NotNull String... args) throws FileNotFoundException {
-        var json = new JsonParser().parse(new JsonReader(new FileReader(new File(GameCli.class.getResource("strings.json").getFile())))).getAsJsonObject();
-        for (var arg : args) json = json.get(arg).getAsJsonObject();
-        return json;
+    public static JsonObject getStrings(@NotNull String... args) {
+        try {
+            var json = new JsonParser().parse(new JsonReader(new FileReader(new File(GameCli.class.getResource("strings.json").getFile())))).getAsJsonObject();
+            for (var arg : args) json = json.get(arg).getAsJsonObject();
+            return json;
+        } catch (FileNotFoundException e) {
+            return new JsonObject();
+        }
     }
 
     public static boolean isRetina() {

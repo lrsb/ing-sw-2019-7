@@ -3,14 +3,17 @@ package it.polimi.ingsw.client.controllers.game;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import it.polimi.ingsw.client.controllers.base.BaseViewController;
+import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.common.models.PowerUp;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
+@SuppressWarnings("RedundantSuppression")
 public class PowerUpSelectorViewController extends BaseViewController {
     private JPanel panel;
     private JCheckBox checkBox1;
@@ -28,8 +31,8 @@ public class PowerUpSelectorViewController extends BaseViewController {
     private JPanel panel3;
     private JPanel panel4;
 
-    PowerUpSelectorViewController(@NotNull Object... args) throws IOException {
-        super("Scegli", 500, 500, null);
+    PowerUpSelectorViewController(@Nullable NavigationController navigationController, @NotNull Object... args) throws IOException {
+        super("Scegli", 500, 500, navigationController);
         setContentPane(panel);
         //noinspection unchecked
         var powerList = (ArrayList<PowerUp>) args[0];

@@ -55,13 +55,13 @@ public class GameImpl extends Game implements Serializable {
                 canMove(getActualPlayer().getPosition(), to, 2)) && !(lastTurn &&
                 canMove(getActualPlayer().getPosition(), to, 3)) ||
                 !cell.isSpawnPoint() || !getWeapons(cell.getColor()).contains(weapon) ||
-                getActualPlayer().getWeaponsSize() > 2 && (discardedWeaponName == null ||
+                getActualPlayer().getWeapons().size() > 2 && (discardedWeaponName == null ||
                         !getActualPlayer().hasWeapon(discardedWeaponName))) return false;
         if (canPayWeaponAndPay(weapon, powerUpPayment)) {
             getActualPlayer().setPosition(to);
             getActualPlayer().addWeapon(weapon);
             removeWeapon(cell.getColor(), weapon);
-            if (getActualPlayer().getWeaponsSize() > 3 && discardedWeaponName != null) {
+            if (getActualPlayer().getWeapons().size() > 3 && discardedWeaponName != null) {
                 getActualPlayer().removeWeapon(discardedWeaponName);
                 addWeapon(cell.getColor(), discardedWeaponName);
             }

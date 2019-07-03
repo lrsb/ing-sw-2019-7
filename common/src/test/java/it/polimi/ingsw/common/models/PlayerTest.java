@@ -36,7 +36,7 @@ class PlayerTest {
             assertEquals(0, player.getPowerUps().size());
             assertEquals(0, player.getDamagesTaken().size());
             assertNotNull(player.getNickname());
-            assertEquals(0, player.getWeaponsSize());
+            assertEquals(0, player.getWeapons().size());
             player.setEasyBoard();
             assertTrue(player.isEasyBoard());
             assertEquals(2, player.getMaximumPoints());
@@ -117,7 +117,7 @@ class PlayerTest {
                 else assertEquals(redCubes + addedRed, player.getColoredCubes(AmmoCard.Color.RED));
             }
             int numberOfWeapons = new SecureRandom().nextInt(4);
-            while (player.getWeaponsSize() < numberOfWeapons) {
+            while (player.getWeapons().size() < numberOfWeapons) {
                 Weapon weapon = Weapon.values()[new SecureRandom().nextInt(Weapon.values().length)];
                 if (game.getPlayers().parallelStream().noneMatch(e -> e.hasWeapon(weapon))) {
                     player.addWeapon(weapon);

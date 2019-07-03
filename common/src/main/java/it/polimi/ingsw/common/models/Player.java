@@ -202,10 +202,6 @@ public class Player implements Displayable, Serializable {
         weapons.remove(weapon);
     }
 
-    public int getWeaponsSize() {
-        return weapons.size();
-    }
-
     public void ammoCardRecharging(@NotNull AmmoCard ammoCard, @Nullable PowerUp powerUp) {
         switch (ammoCard.getType()) {
             case POWER_UP:

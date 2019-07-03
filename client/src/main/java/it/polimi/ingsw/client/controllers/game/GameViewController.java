@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import static javax.swing.JOptionPane.*;
 
+@SuppressWarnings("RedundantSuppression")
 public class GameViewController extends BaseViewController implements GameBoardListener {
     private static final @NotNull Color BACKGROUND_COLOR = Objects.requireNonNull(Utils.hexToColor("1F1E1A"));
     private static final @NotNull Color PURPLE_ACCENT = Objects.requireNonNull(Utils.hexToColor("98155E"));
@@ -108,7 +109,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 ex.printStackTrace();
             }
             if (playersBoardsViewController != null) playersBoardsViewController.dispose();
-            playersBoardsViewController = new PlayersBoardsViewController(gameBoard.getGame());
+            playersBoardsViewController = new PlayersBoardsViewController(null, gameBoard.getGame());
             playersBoardsViewController.setVisible(true);
         });
 
@@ -150,7 +151,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 if (JOptionPane.showConfirmDialog(null,
                         Utils.getStrings("cli", "actions").get("borning_action").getAsString(),
                         game.getActualPlayer().getPosition() == null ? "Nasci" : "Rinasci", OK_CANCEL_OPTION) == OK_OPTION) {
-                    new PowerUpSelectorViewController(game.getActualPlayer().getPowerUps(), (PowerUpSelectorViewController.PowerCallback) powerUps -> {
+                    new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(), (PowerUpSelectorViewController.PowerCallback) powerUps -> {
                         if (powerUps.size() == 1)
                             doAction(Action.Builder.create(game.getUuid()).buildReborn(powerUps.get(0).getType(), powerUps.get(0).getAmmoColor()));
                         else if (powerUps.size() > 1) JOptionPane.showMessageDialog(null, "Scegli solo un powerup!");
@@ -199,6 +200,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     case USE_POWER_UP:
                         break;
                     case RELOAD:
+
                         break;
                     case NEXT_TURN:
                         break;
@@ -255,7 +257,21 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
         if (data instanceof Weapon) {
             if (type == Action.Type.GRAB_WEAPON) {
-                //todo = Action.Builder.create(game.getUuid()).buildWeaponGrabAction()
+                //TODO da finire
+                if (game.getActualPlayer().getWeapons().size() == 3) ; //TODO scegliere arma da scartare
+                Weapon discardedWeapon = null;
+                if (JOptionPane.showConfirmDialog(null, "Vuoi usare delle PowerUp?", "Raccogli", YES_NO_OPTION) == YES_OPTION) {
+                    try {
+                        new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
+                                (PowerUpSelectorViewController.PowerCallback) powerUps ->
+                                        doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(null, (Weapon) data, discardedWeapon, powerUps)))
+                                .setVisible(true);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    todo = Action.Builder.create(game.getUuid()).buildWeaponGrabAction(null, (Weapon) data, discardedWeapon, null);
+                }
             } else new ExpoViewController(null, data).setVisible(true);
         }
         if (data instanceof AmmoCard && type == Action.Type.GRAB_AMMOCARD) {
@@ -272,10 +288,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
         if (data instanceof Player && type == Action.Type.MOVE)
             if (Preferences.getUuid().equals(((Player) data).getUuid())) {
-            if (point != null && game.canMove(game.getActualPlayer().getPosition(), point, 2))
-                todo = Action.Builder.create(game.getUuid()).buildMoveAction(point);
-            else JOptionPane.showMessageDialog(null, "Non ti puoi muovere lì");
-        } else JOptionPane.showMessageDialog(null, "Muovi il tuo giocatore");
+                if (point != null && game.canMove(game.getActualPlayer().getPosition(), point, 2))
+                    todo = Action.Builder.create(game.getUuid()).buildMoveAction(point);
+                else JOptionPane.showMessageDialog(null, "Non ti puoi muovere lì");
+            } else JOptionPane.showMessageDialog(null, "Muovi il tuo giocatore");
 
         return doAction(todo);
     }
