@@ -278,7 +278,7 @@
                 "reload_cost": "1 cubo giallo\n",
                 "fire_description": "basic mode: scegli fino a 3 giocatori, che si trovino ad 1 passo di distanza dalla tua cella e che siano tutti in celle diverse tra loro, infliggi a ciascun bersaglio selezionato 1 danno\ntsunami mode: infliggi 1 danno a tutti i giocatori che si trovino esattamente ad 1 passo di distanza da te (costo: 1 cubo giallo)\n",
                 "fire_details": {
-                    "select_targets_shockwave": "Seleziona il/i bersaglio/i del tuo attacco:\n"
+                    "select_target_basic": "Seleziona il/i bersaglio/i del tuo attacco (1 per volta):\n"
                 }
             },
             "sledgehammer": {
@@ -286,8 +286,8 @@
                 "reload_cost": "1 cubo giallo\n",
                 "fire_description": "basic mode: infliggi 2 danni ad 1 bersaglio nella tua cella\npulverize mode: infliggi 3 danni ad 1 bersaglio nella tua cella, poi puoi muoverlo dii 0,1 o 2 passi in una stessa direzione (costo: 1 cubo rosso)\n",
                 "fire_details": {
-                    "select_target": "Scegli un bersaglio da prendere a martellate:\n",
-                    "select_point_pulverize_mode": "Scegli la cella in cui spedire il tuo bersaglio:\n"
+                    "select_target_basic": "Scegli un bersaglio da prendere a martellate:\n",
+                    "select_point_basic": "Scegli la cella in cui spedire il tuo bersaglio:\n"
                 }
             }
         },

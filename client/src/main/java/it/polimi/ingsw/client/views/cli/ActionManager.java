@@ -48,14 +48,14 @@ public class ActionManager {
         destination = null;
         powerUpType = null;
         color = null;
-        powerUpPayment = null;
+        powerUpPayment.clear();
         alternativeFire = false;
         options = 0;
-        basicTarget = null;
+        basicTarget.clear();
         basicTargetPoint = null;
-        firstAdditionalTarget = null;
+        firstAdditionalTarget.clear();
         firstAdditionalTargetPoint = null;
-        secondAdditionalTarget = null;
+        secondAdditionalTarget.clear();
         secondAdditionalTargetPoint = null;
         target = null;
     }
@@ -678,7 +678,7 @@ public class ActionManager {
                                     game.canMove(game.getActualPlayer().getPosition(), new Point(i, j), 1))
                                 selectablePoints.add(new Point(i, j));
                     System.out.println(Utils.getStrings("cli", "weapons_details", "furnace", "fire_details").get("select_square").getAsString());
-                    printSelectablePoints(game, selectablePoints);
+                    printSelectablePoints(selectablePoints);
                     simpleBasicPointSelection(selectablePoints);
                 } else {
                     List<Cell.Color> selectableColor = new ArrayList<>();
@@ -728,7 +728,7 @@ public class ActionManager {
                                     selectablePoints.add(new Point(i, j));
                             }
                     System.out.println(Utils.getStrings("cli", "weapons_details", "flamethrower", "fire_details").get("select_point"));
-                    printSelectablePoints(game, selectablePoints);
+                    printSelectablePoints(selectablePoints);
                     simpleBasicPointSelection(selectablePoints);
                     selectAlternativePayment(game);
                 } else {
@@ -921,23 +921,49 @@ public class ActionManager {
                 }
                 break;
             case SHOCKWAVE:
-                //todo:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "shockwave").get("fire_description").getAsString());
                 doubleChoice(game);
                 alternativeFire = options != 0;
                 options = 0;
                 if (alternativeFire) selectAlternativePayment(game);
                 else {
-                    List<UUID> selectableShockTargets = new ArrayList<>();
+                    List<UUID> selectableShockTargets = game.getPlayers().stream().filter(e -> e.getPosition() != null &&
+                            !e.getPosition().equals(game.getActualPlayer().getPosition()) &&
+                            Stream.of(Bounds.Direction.values()).anyMatch(d -> game.getActualPlayer().isPointAtMaxDistanceInDirection(e.getPosition(), game.getCells(), 1, d)))
+                            .map(Player::getUuid).collect(Collectors.toList());
                     do {
                         if (!basicTarget.isEmpty())
-
+                            for (Player tar : game.getPlayers()) {
+                                if (tar.getUuid().equals(basicTarget.get(basicTarget.size() - 1))) {
+                                    for (Player player : game.getPlayers()) {
+                                        if (selectableShockTargets.contains(player.getUuid()) &&
+                                                tar.getPosition().equals(player.getPosition()))
+                                            selectableShockTargets.remove(player.getUuid());
+                                    }
+                                }
+                            }
+                        System.out.println(Utils.getStrings("cli", "weapons_details", "shockwave", "fire_details").get("select_target_basic").getAsString());
+                        printSelectableTargets(game, selectableShockTargets);
+                        simpleBasicTargetSelection(selectableShockTargets);
                         if (basicTarget.size() < 3) doneQuestion();
                     } while(basicTarget.size() < 3 && !done);
                 }
                 break;
             case SLEDGEHAMMER:
-                //todo:
+                System.out.println(Utils.getStrings("cli", "weapons_details", "sledgehammer").get("fire_description").getAsString());
+                doubleChoice(game);
+                alternativeFire = options != 0;
+                options = 0;
+                List<UUID> selectableSledgeTargets = game.getPlayersAtPosition(game.getActualPlayer().getPosition()).stream()
+                        .filter(e -> !e.equals(game.getActualPlayer())).map(Player::getUuid).collect(Collectors.toList());
+                System.out.println(Utils.getStrings("cli", "weapons_details", "sledgehammer", "fire_details").get("select_target_basic").getAsString());
+                printSelectableTargets(game, selectableSledgeTargets);
+                simpleBasicTargetSelection(selectableSledgeTargets);
+                if (alternativeFire) {
+                    System.out.println(Utils.getStrings("cli", "weapons_details", "sledgehammer", "fire_details").get("select_point_basic").getAsString());
+                    selectBasicTargetMovementInDirection(game, 2);
+                    selectAlternativePayment(game);
+                }
                 break;
         }
     }
@@ -1010,6 +1036,7 @@ public class ActionManager {
     private void selectFirstThorTarget(@NotNull Game game) throws InterruptedException {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_first"));
         List<UUID> selectableTargets = new ArrayList<>();
+        //todo: controllare
         Player bTarget = game.getPlayers().stream().filter(e -> e.getUuid().equals(basicTarget.get(0))).findFirst().get();
         game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && !e.getUuid().equals(basicTarget.get(0)) &&
                 bTarget.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);
@@ -1039,6 +1066,7 @@ public class ActionManager {
     private void selectSecondThorTarget(@NotNull Game game) throws InterruptedException {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_second"));
         List<UUID> selectableTargets = new ArrayList<>();
+        //todo: controllare
         Player fTarget = game.getPlayers().stream().filter(e -> e.getUuid().equals(firstAdditionalTarget.get(0))).findFirst().get();
         game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && !e.getUuid().equals(basicTarget.get(0)) && !e.equals(fTarget) &&
                 fTarget.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);
@@ -1069,7 +1097,7 @@ public class ActionManager {
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
     }
 
-    private void printSelectablePoints(@NotNull Game game, @NotNull List<Point> selectablePoints) {
+    private void printSelectablePoints(@NotNull List<Point> selectablePoints) {
         for (int i = 0; i < selectablePoints.size(); i++)
             System.out.println((i+1) + ". " + selectablePoints.get(i));
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
@@ -1115,7 +1143,7 @@ public class ActionManager {
                         Stream.of(Bounds.Direction.values()).anyMatch(d -> e.isPointAtMaxDistanceInDirection(point, game.getCells(), step, d))))
                     selectablePoints.add(point);
             }
-        printSelectablePoints(game, selectablePoints);
+        printSelectablePoints(selectablePoints);
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectablePoints.size())
             basicTargetPoint = selectablePoints.get(Integer.parseInt(choice) - 1);
