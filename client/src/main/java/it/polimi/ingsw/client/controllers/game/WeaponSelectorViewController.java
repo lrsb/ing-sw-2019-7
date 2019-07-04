@@ -28,7 +28,7 @@ public class WeaponSelectorViewController extends BaseViewController {
     private JPanel panel1;
 
     public WeaponSelectorViewController(@Nullable NavigationController navigationController, @NotNull Object... args) throws IOException {
-        super("Scegli", 500, 500, navigationController);
+        super("Scegli", 800, 500, navigationController);
         setContentPane(panel);
         //noinspection unchecked
         var weapons = (ArrayList<Weapon>) args[0];

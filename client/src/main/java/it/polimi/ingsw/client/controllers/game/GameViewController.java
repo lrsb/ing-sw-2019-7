@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static javax.swing.JOptionPane.*;
 
@@ -58,7 +59,6 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private boolean yourTurn;
     private @Nullable Action.Type type;
     private @Nullable PowerUp powerUp;
-    private Weapon discardedWeapon = null;
 
     public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) throws IOException {
         super("Gioca", 1100, 700, navigationController);
@@ -78,6 +78,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         exitButton.setBackground(BACKGROUND_COLOR);
         cancelPanel.setBackground(BACKGROUND_COLOR);
         moveLabel.setForeground(WHITE_ACCENT);
+        actualPlayerLabel.setForeground(WHITE_ACCENT);
 
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
@@ -177,7 +178,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
         grabButton.addActionListener(e -> {
             if (yourTurn) {
-                type = game.getCell(game.getActualPlayer().getPosition()).isSpawnPoint() ? Action.Type.GRAB_WEAPON : Action.Type.GRAB_AMMOCARD;
+                type = Action.Type.GRAB_WEAPON;
                 reloadActionPanel();
             }
         });
@@ -229,7 +230,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
         powerupButton.addActionListener(e -> {
             if (yourTurn) {
-                if (game.getActualPlayer().getPowerUps().size() != 0) {
+                if (game.getActualPlayer().getPowerUps().size() != 0 && !game.isATagbackResponse()) {
                     try {
                         new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() != PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), (PowerUpSelectorViewController.PowerCallback) f -> {
                             if (f.size() == 1) {
@@ -254,7 +255,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         ex.printStackTrace();
                     }
                 } else JOptionPane.showMessageDialog(null, "non hai powerup a disposizione!");
-            } else {
+
                 if (game.getActualPlayer().getPowerUps().parallelStream().anyMatch(l -> l.getType() == PowerUp.Type.TAGBACK_GRENADE) && game.isATagbackResponse()) {
                     try {
                         new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() == PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), (PowerUpSelectorViewController.PowerCallback) f -> {
@@ -269,7 +270,6 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     }
 
                 }
-
             }
         });
 
@@ -297,10 +297,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         JOptionPane.showMessageDialog(null, "Muovi il tuo giocatore");
                         break;
                     case GRAB_WEAPON:
-                        JOptionPane.showMessageDialog(null, "Scegli l'arma da raccogliere");
-                        break;
                     case GRAB_AMMOCARD:
-                        JOptionPane.showMessageDialog(null, "Scegli la tessera delle munizioni da raccogliere");
+                        JOptionPane.showMessageDialog(null, "Scegli la tessera delle munizioni o l'arma da raccogliere");
                         break;
                     case FIRE:
                         break;
@@ -368,38 +366,58 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
         if (data instanceof Weapon) {
             if (type == Action.Type.GRAB_WEAPON) {
-                //TODO da finire
-                if (game.canMove(game.getActualPlayer().getPosition(), point, 1)) {
-                    if (game.getActualPlayer().getWeapons().size() == 3)
-                        ; //TODO scegliere arma da scartare ( forse fatto )
-                    try {
-                        new WeaponSelectorViewController(null,
-                                game.getActualPlayer().getWeapons().parallelStream().collect(Collectors.toList()),
-                                (WeaponSelectorViewController.WeaponCallback) f -> {
-                                    if (JOptionPane.showConfirmDialog(null, "Vuoi scartare questa arma?", "Conferma", YES_NO_OPTION) == YES_OPTION) {
-                                        discardedWeapon = f;
+                var cellColor = Stream.of(Cell.Color.values()).filter(f -> game.getWeapons(f).contains(data)).findAny().get();
+                for (var ref = new Object() {
+                    int i = 0;
+                    int j = 0;
+                }; ref.i < Game.MAX_Y; ref.i++)
+                    for (ref.j = 0; ref.j < Game.MAX_X; ref.j++)
+                        if (game.getCell(new Point(ref.i, ref.j)) != null && game.getCell(new Point(ref.i, ref.j)).isSpawnPoint() && game.getCell(new Point(ref.i, ref.j)).getColor() == cellColor) {
+                            if (game.canMove(game.getActualPlayer().getPosition(), new Point(ref.i, ref.j), 1)) {
+                                var temp = NO_OPTION;
+                                if (game.getActualPlayer().getPowerUps().size() == 0) temp = NO_OPTION;
+                                else
+                                    temp = JOptionPane.showConfirmDialog(null, "Vuoi pagare con delle PowerUp?", "Raccogli", YES_NO_OPTION);
+                                if (game.getActualPlayer().getWeapons().size() == 3)//TODO scegliere arma da scartare ( forse fatto )
+                                    try {
+                                        int finalTemp = temp;
+                                        new WeaponSelectorViewController(null,
+                                                game.getActualPlayer().getWeapons().parallelStream().collect(Collectors.toList()),
+                                                (WeaponSelectorViewController.WeaponCallback) f -> {
+                                                    if (JOptionPane.showConfirmDialog(null, "Vuoi scartare questa arma?", "Conferma", YES_NO_OPTION) == YES_OPTION) {
+                                                        if (finalTemp == YES_OPTION) {
+                                                            try {
+                                                                new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
+                                                                        (PowerUpSelectorViewController.PowerCallback) powerUps ->
+                                                                                doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(ref.i, ref.j), (Weapon) data, f, powerUps)))
+                                                                        .setVisible(true);
+                                                            } catch (IOException e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        } else
+                                                            doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(ref.i, ref.j), (Weapon) data, f, null)); //TODO da vedere su server
+                                                    }
+                                                }).setVisible(true);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
                                     }
-                                }).setVisible(true);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    if (JOptionPane.showConfirmDialog(null, "Vuoi usare delle PowerUp?", "Raccogli", YES_NO_OPTION) == YES_OPTION) {
-                        try {
-                            new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
-                                    (PowerUpSelectorViewController.PowerCallback) powerUps ->
-                                            doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(null, (Weapon) data, discardedWeapon, powerUps)))
-                                    .setVisible(true);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                                if (temp == YES_OPTION) {
+                                    try {
+                                        new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
+                                                (PowerUpSelectorViewController.PowerCallback) powerUps ->
+                                                        doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(ref.i, ref.j), (Weapon) data, null, powerUps)))
+                                                .setVisible(true);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    todo = Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(ref.i, ref.j), (Weapon) data, null, null);
+                                }
+                            } else JOptionPane.showMessageDialog(null, "arma troppo lontana!");
                         }
-                    } else {
-                        todo = Action.Builder.create(game.getUuid()).buildWeaponGrabAction(null, (Weapon) data, discardedWeapon, null);
-                    }
-                } else new ExpoViewController(null, data).setVisible(true);
-            }
-
+            } else new ExpoViewController(null, data).setVisible(true);
         }
-        if (data instanceof AmmoCard && type == Action.Type.GRAB_AMMOCARD) {
+        if (data instanceof AmmoCard && type == Action.Type.GRAB_WEAPON) {
             if (game.canMove(game.getActualPlayer().getPosition(), point, 1)) {
                 todo = Action.Builder.create(game.getUuid()).buildAmmoCardGrabAction(point);
             } else JOptionPane.showMessageDialog(null, "Troppo lontana!");
