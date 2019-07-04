@@ -316,7 +316,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 printMessage("select_target_basic");
                 getTarget(e -> {
                     weaponAction.addBasicTarget(e);
-                    if (yesOrNo("Vuoi selezionare altri bersagli per l'effetto base?")) {
+                    if (yesOrNo("Vuoi selezionare un altro bersaglio per l'effetto base?")) {
                         getTarget(f -> {
                             weaponAction.addBasicTarget(f);
                             if (finalOption == 1 || finalOption == 3) {
@@ -327,7 +327,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                         printMessage("select_target_second");
                                         getTarget(h -> {
                                             weaponAction.addSecondAdditionalTarget(h);
-                                            if (yesOrNo("Vuoi selezionare un second bersaglio per il \"tripod turret\"?")) {
+                                            if (yesOrNo("Vuoi selezionare un secondo bersaglio per il \"tripod turret\"?")) {
                                                 getTarget(i -> {
                                                     weaponAction.addSecondAdditionalTarget(i);
                                                     getPowerup(game.getActualPlayer().getPowerUps(),
@@ -350,7 +350,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                 printMessage("select_target_second");
                                 getTarget(h -> {
                                     weaponAction.addSecondAdditionalTarget(h);
-                                    if (yesOrNo("Vuoi selezionare un second bersaglio per il \"tripod turret\"?")) {
+                                    if (yesOrNo("Vuoi selezionare un altro bersaglio per il \"tripod turret\"?")) {
                                         getTarget(i -> {
                                             weaponAction.addSecondAdditionalTarget(i);
                                             getPowerup(game.getActualPlayer().getPowerUps(),
@@ -374,7 +374,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                     printMessage("select_target_second");
                                     getTarget(h -> {
                                         weaponAction.addSecondAdditionalTarget(h);
-                                        if (yesOrNo("Vuoi selezionare un second bersaglio per il \"tripod turret\"?")) {
+                                        if (yesOrNo("Vuoi selezionare un ulteriore bersaglio per il \"tripod turret\"?")) {
                                             getTarget(i -> {
                                                 weaponAction.addSecondAdditionalTarget(i);
                                                 getPowerup(game.getActualPlayer().getPowerUps(),
@@ -397,7 +397,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                             printMessage("select_target_second");
                             getTarget(h -> {
                                 weaponAction.addSecondAdditionalTarget(h);
-                                if (yesOrNo("Vuoi selezionare un second bersaglio per il \"tripod turret\"?")) {
+                                if (yesOrNo("Vuoi selezionare un bersaglio aggiuntivo per il \"tripod turret\"?")) {
                                     getTarget(i -> {
                                         weaponAction.addSecondAdditionalTarget(i);
                                         getPowerup(game.getActualPlayer().getPowerUps(),
@@ -442,7 +442,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 });
                 break;
             case PLASMA_GUN:
-                if (yesOrNo("Vuoi selezionare un punto in cui muoverti?")) {
+                if (yesOrNo("Vuoi selezionare un punto in cui muoverti (phase glide)?")) {
                     printMessage("select_point_basic");
                     getPoint(e -> {
                         weaponAction.setBasicTargetPoint(e);
@@ -564,10 +564,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         doAction(weaponAction);
                     });
                 } else {
-                    getPowerup(game.getActualPlayer().getPowerUps(), p -> {
-                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
-                        getTarget(e -> {
-                            weaponAction.addBasicTarget(e);
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                            p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
                             doAction(weaponAction);
                         });
                     });
@@ -634,21 +634,43 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 printMessage("select_target_basic");
                 getTarget(e -> {
                     weaponAction.addBasicTarget(e);
-                    if (finalOption == 1 || finalOption == 3) {
-                        printMessage("select_point_first");
+                    if (yesOrNo("Vuoi spostare il tuo bersaglio dopo l'attacco?")) {
+                        printMessage("select_point_basic");
                         getPoint(f -> {
-                            weaponAction.setFirstAdditionalTargetPoint(f);
+                            weaponAction.setBasicTargetPoint(f);
+                            if (finalOption == 1 || finalOption == 3) {
+                                printMessage("select_point_first");
+                                getPoint(g -> {
+                                    weaponAction.setFirstAdditionalTargetPoint(g);
+                                    getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                        doAction(weaponAction);
+                                    });
+                                });
+                            } else if (finalOption == 2) {
+                                getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                    doAction(weaponAction);
+                                });
+                            } else doAction(weaponAction);
+                        });
+                    } else {
+                        if (finalOption == 1 || finalOption == 3) {
+                            printMessage("select_point_first");
+                            getPoint(g -> {
+                                weaponAction.setFirstAdditionalTargetPoint(g);
+                                getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                    doAction(weaponAction);
+                                });
+                            });
+                        } else if (finalOption == 2) {
                             getPowerup(game.getActualPlayer().getPowerUps(), p -> {
                                 p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
                                 doAction(weaponAction);
                             });
-                        });
-                    } else if (finalOption == 2) {
-                        getPowerup(game.getActualPlayer().getPowerUps(), p -> {
-                            p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
-                            doAction(weaponAction);
-                        });
-                    } else doAction(weaponAction);
+                        } else doAction(weaponAction);
+                    }
                 });
                 break;
             case RAILGUN:
@@ -736,6 +758,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     getTarget(e -> {
                         weaponAction.addBasicTarget(e);
                         if (yesOrNo("Vuoi muovere il target?")) {
+                            printMessage("select_point_basic");
                             getPoint(f -> {
                                 weaponAction.setBasicTargetPoint(f);
                                 doAction(weaponAction);
@@ -817,15 +840,22 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 printMessage("select_target_basic");
                 getTarget(e -> {
                     weaponAction.addBasicTarget(e);
-                    if (finalOption == 1) {
-                        printMessage("select_point_basic");
-                        getPoint(f -> {
-                            weaponAction.setBasicTargetPoint(f);
+                    if (weaponAction.getAlternativeFire()) {
+                        if (yesOrNo("Vuoi spostare il bersaglio in seguito all'attacco?")) {
+                            printMessage("select_point_basic");
+                            getPoint(f -> {
+                                weaponAction.setBasicTargetPoint(f);
+                                getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                    doAction(weaponAction);
+                                });
+                            });
+                        } else {
                             getPowerup(game.getActualPlayer().getPowerUps(), p -> {
                                 p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
                                 doAction(weaponAction);
                             });
-                        });
+                        }
                     } else doAction(weaponAction);
                 });
                 break;

@@ -224,6 +224,7 @@
                 "fire_description": "basic effect: infliggi 2 danni a 1 bersaglio che puoi vedere, ma che non ha la tua stessa posizione, poi puoi spostarlo di 1 passo\nwith rocket jump: muoviti fino a 2 passi, prima o dopo il \"basic effect\" (costo: 1 cubo blu)\nwith fragmenting warhead: infliggi 1 danno aggiuntivo al bersaglio del \"basic effect\" e 1 danno a tutti i giocatori presenti nella cella originaria del bersaglio del \"basic effect\" (costo: 1 cubo giallo)\n",
                 "fire_details": {
                     "select_target_basic": "Seleziona il bersaglio del \"basic effect\":\n",
+                    "select_point_basic": "Seleziona la cella in cui desideri lanciare il bersaglio del \"basic effect\"",
                     "select_point_first": "Seleziona il punto in cui vuoi spostarti prima o dopo il \"basic_effect\":\n"
                 }
             },
