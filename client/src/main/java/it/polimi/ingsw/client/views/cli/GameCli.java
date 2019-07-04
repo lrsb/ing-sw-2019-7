@@ -343,7 +343,7 @@ public class GameCli {
             System.out.println();
             System.out.print("MARCHI: ");
             e.getMarksTaken().forEach(f -> game.getPlayers().parallelStream().filter(g -> g.getUuid().equals(f))
-                    .forEach(g -> System.out.println(g.getBoardType().escape() + "■ " + "\u001b[0m")));
+                    .forEach(g -> System.out.print(g.getBoardType().escape() + "■ " + "\u001b[0m")));
             System.out.println("\n________________________________________________________________________");
         });
     }
