@@ -21,7 +21,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -59,6 +61,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private boolean yourTurn;
     private @Nullable Action.Type type;
     private @Nullable PowerUp powerUp;
+    private Action weaponAction;
 
     public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) throws IOException {
         super("Gioca", 1100, 700, navigationController);
@@ -151,25 +154,24 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
         shootButton.addActionListener(e -> {
             if (yourTurn) {
-                if (game.getActualPlayer().getWeapons().parallelStream().anyMatch(f -> game.getActualPlayer().isALoadedGun(f)))
+                if (game.getActualPlayer().getWeapons().parallelStream().anyMatch(f -> game.getActualPlayer().isALoadedGun(f) || game.getSkulls() == 0))
                     try {
                         new WeaponSelectorViewController(null,
-                                game.getActualPlayer().getWeapons().parallelStream().filter(f -> !game.getActualPlayer().isALoadedGun(f)).collect(Collectors.toList()),
+                                game.getActualPlayer().getWeapons().parallelStream().filter(f -> game.getActualPlayer().isALoadedGun(f) || game.getSkulls() == 0).collect(Collectors.toList()),
                                 (WeaponSelectorViewController.WeaponCallback) f -> {
-                                    if (JOptionPane.showConfirmDialog(null, "Vuoi pagare con powerup?", "Ricarica", YES_NO_OPTION) == YES_OPTION) {
-                                        try {
-                                            new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
-                                                    (PowerUpSelectorViewController.PowerCallback) c -> doAction(Action.Builder.create(game.getUuid()).buildReload(f, c))).setVisible(true);
-                                        } catch (IOException ex) {
-                                            ex.printStackTrace();
-                                        }
-                                    } else doAction(Action.Builder.create(game.getUuid()).buildReload(f, null));
+                                    weaponAction = Action.Builder.create(game.getUuid())
+                                            .buildFireAction(f, null, null, false,
+                                                    0, new ArrayList<>(), null, new ArrayList<>(),
+                                                    null, new ArrayList<>(), null);
+                                    if (game.getActualPlayer().getDamagesTaken().size() > 5 || game.getSkulls() == 0) {
+                                        type = Action.Type.MOVE;
+                                    } else continueBuildWeapon();
                                 }).setVisible(true);
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
                 else
-                    JOptionPane.showMessageDialog(null, (game.getActualPlayer().getWeapons().size() == 0) ? "non hai armi!" : "Non hai armi cariche");
+                    JOptionPane.showMessageDialog(null, (game.getActualPlayer().getWeapons().size() == 0) ? "Non hai armi!" : "Non hai armi cariche");
 
                 type = Action.Type.FIRE;
                 reloadActionPanel();
@@ -223,10 +225,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
         skipButton.addActionListener(e -> doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
 
-        cancelButton.addActionListener(e -> {
-            type = null;
-            reloadActionPanel();
-        });
+        cancelButton.addActionListener(e -> reset());
 
         powerupButton.addActionListener(e -> {
             if (yourTurn) {
@@ -270,8 +269,6 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 } else JOptionPane.showMessageDialog(null, "non hai powerup a disposizione!");
             }
         });
-
-
     }
 
     private void updateBoards(@NotNull Game game) throws IOException {
@@ -287,6 +284,158 @@ public class GameViewController extends BaseViewController implements GameBoardL
         actualPlayerLabel.setText(yourTurn ? "TE" : game.getActualPlayer().getNickname());
     }
 
+    private void continueBuildWeapon() {
+        var fireModes = Utils.getStrings("cli", "actions", "fire_action", "select_fire_mode").get(weaponAction.getWeapon().name().toLowerCase()).getAsString().split("\n");
+        //noinspection unchecked
+        if (fireModes.length == 1) ; //TODO: gia scelta
+        var list = new JList(fireModes);
+        JOptionPane.showMessageDialog(null, list, "Scegli la modalità di fuoco", JOptionPane.PLAIN_MESSAGE);
+        var index = list.getSelectedIndices();
+        if (index.length > 0) {
+            if (index[0] != 0) switch (weaponAction.getWeapon()) {
+                case ELECTROSCYTHE:
+                case TRACTOR_BEAM:
+                case FURNACE:
+                case HELLION:
+                case FLAMETHROWER:
+                case RAILGUN:
+                case ZX2:
+                case SHOTGUN:
+                case POWER_GLOVE:
+                case SHOCKWAVE:
+                case SLEDGEHAMMER:
+                    weaponAction.setAlternativeFire(true);
+            }
+            var option = index[0];
+            switch (weaponAction.getWeapon()) {
+                case THOR:
+                    if (option == 2) option++;
+                    break;
+                case PLASMA_GUN:
+                case CYBERBLADE:
+                    if (option == 1) option++;
+                    break;
+            }
+            var players = 0;
+
+            var names = playersNicknames();
+            //noinspection unchecked
+            var namesList = new JList(names.toArray());
+            switch (weaponAction.getWeapon()) {
+                case LOCK_RIFLE:
+                    JOptionPane.showMessageDialog(null, namesList,
+                            Utils.getStrings("cli", "weapons_details", "lock_rifle", "fire_details").get("select_target_basic").getAsString(),
+                            JOptionPane.PLAIN_MESSAGE);
+                    index = list.getSelectedIndices();
+                    if (index.length == 1) {
+                        weaponAction.addBasicTarget(nicknameToUuid(names.remove(index[0])));
+                    } else reset();
+                    if (option == 1) {
+                        JOptionPane.showMessageDialog(null, namesList,
+                                Utils.getStrings("cli", "weapons_details", "lock_rifle", "fire_details").get("select_target_first").getAsString(),
+                                JOptionPane.PLAIN_MESSAGE);
+                        index = list.getSelectedIndices();
+                        if (index.length == 1) {
+                            weaponAction.addFirstAdditionalTarget(nicknameToUuid(names.get(index[0])));
+                        } else reset();
+                    }
+                    break;
+                case MACHINE_GUN:
+                    JOptionPane.showMessageDialog(null, namesList,
+                            Utils.getStrings("cli", "weapons_details", "machine_gun", "fire_details").get("select_target_basic").getAsString(),
+                            JOptionPane.PLAIN_MESSAGE);
+                    index = list.getSelectedIndices();
+                    if (index.length > 0 && index.length < 3) {
+                        for (var i : index) weaponAction.addBasicTarget(nicknameToUuid(names.get(i)));
+                    } else reset();
+                    if (option == 1 || option == 3) {
+                        //noinspection unchecked
+                        namesList = new JList(weaponAction.getBasicTarget().parallelStream().map(this::uuidToNickname).toArray());
+                        JOptionPane.showMessageDialog(null, namesList,
+                                Utils.getStrings("cli", "weapons_details", "machine_gun", "fire_details").get("select_target_first").getAsString(),
+                                JOptionPane.PLAIN_MESSAGE);
+                        index = list.getSelectedIndices();
+                        if (index.length == 1) {
+                            weaponAction.addFirstAdditionalTarget(nicknameToUuid(names.get(index[0])));
+                        } else reset();
+                    }
+                    if (option == 2 || option == 3) {
+                        //noinspection unchecked
+                        namesList = new JList(playersNicknames().toArray());
+                        JOptionPane.showMessageDialog(null, namesList,
+                                Utils.getStrings("cli", "weapons_details", "machine_gun", "fire_details").get("select_target_second").getAsString(),
+                                JOptionPane.PLAIN_MESSAGE);
+                        index = list.getSelectedIndices();
+                        if (index.length > 0 && index.length < 3) {
+                            for (var i : index) weaponAction.addSecondAdditionalTarget(nicknameToUuid(names.get(i)));
+                        } else reset();
+                    }
+                    break;
+                case THOR:
+                    JOptionPane.showMessageDialog(null, namesList,
+                            Utils.getStrings("cli", "weapons_details", "thor", "fire_details").get("select_target_basic").getAsString(),
+                            JOptionPane.PLAIN_MESSAGE);
+                    index = list.getSelectedIndices();
+                    //if (option == 0 || option == 1) if (index.length )
+                    break;
+                case PLASMA_GUN:
+                    break;
+                case WHISPER:
+                    break;
+                case ELECTROSCYTHE:
+                    break;
+                case TRACTOR_BEAM:
+                    break;
+                case VORTEX_CANNON:
+                    break;
+                case FURNACE:
+                    break;
+                case HEATSEEKER:
+                    break;
+                case HELLION:
+                    break;
+                case FLAMETHROWER:
+                    break;
+                case GRENADE_LAUNCHER:
+                    break;
+                case ROCKET_LAUNCHER:
+                    break;
+                case RAILGUN:
+                    break;
+                case CYBERBLADE:
+                    break;
+                case ZX2:
+                    break;
+                case SHOTGUN:
+                    break;
+                case POWER_GLOVE:
+                    break;
+                case SHOCKWAVE:
+                    break;
+                case SLEDGEHAMMER:
+                    break;
+            }
+        } else reset();
+    }
+
+    private void reset() {
+        type = null;
+        weaponAction = null;
+        reloadActionPanel();
+    }
+
+    private @NotNull UUID nicknameToUuid(String nickname) {
+        return game.getPlayers().parallelStream().filter(e -> e.getNickname().equals(nickname)).findAny().get().getUuid();
+    }
+
+    private @NotNull String uuidToNickname(UUID uuid) {
+        return game.getPlayers().parallelStream().filter(e -> e.getUuid().equals(uuid)).findAny().get().getNickname();
+    }
+
+    private ArrayList<String> playersNicknames() {
+        return game.getPlayers().stream().filter(e -> !e.getUuid().equals(Preferences.getUuid())).map(Player::getNickname).collect(Collectors.toCollection(ArrayList::new));
+    }
+
     private void reloadActionPanel() {
         if (yourTurn) {
             if (type != null) {
@@ -299,6 +448,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         JOptionPane.showMessageDialog(null, "Scegli la tessera delle munizioni o l'arma da raccogliere");
                         break;
                     case FIRE:
+                        JOptionPane.showMessageDialog(null, "Stai per sparare");
                         break;
                     case USE_POWER_UP:
                         break;
@@ -435,9 +585,13 @@ public class GameViewController extends BaseViewController implements GameBoardL
         if (data instanceof Player && type == Action.Type.MOVE)
             if (Preferences.getUuid().equals(((Player) data).getUuid())) {
                 var nMosse = 0;
-                if (game.getSkulls() == 0 && !game.isLastTurn()) nMosse = 4;
+                if (weaponAction != null) nMosse = game.isLastTurn() ? 2 : 1;
+                else if (game.getSkulls() == 0 && !game.isLastTurn()) nMosse = 4;
                 else if (!game.isLastTurn()) nMosse = 3;
-                if (point != null && game.canMove(game.getActualPlayer().getPosition(), point, nMosse))
+                if (weaponAction != null) {
+                    weaponAction.setDestination(point);
+                    continueBuildWeapon();
+                } else if (point != null && game.canMove(game.getActualPlayer().getPosition(), point, nMosse))
                     todo = Action.Builder.create(game.getUuid()).buildMoveAction(point);
                 else JOptionPane.showMessageDialog(null, "Non ti puoi muovere lì");
             } else JOptionPane.showMessageDialog(null, "Muovi il tuo giocatore");

@@ -27,13 +27,13 @@ public class Action implements Serializable {
 
     private boolean alternativeFire;
     private int options;
-    private @Nullable ArrayList<UUID> basicTarget;
+    private @NotNull ArrayList<UUID> basicTarget = new ArrayList<>();
     private @Nullable Point basicTargetPoint;
 
-    private @Nullable ArrayList<UUID> firstAdditionalTarget;
+    private @NotNull ArrayList<UUID> firstAdditionalTarget = new ArrayList<>();
     private @Nullable Point firstAdditionalTargetPoint;
 
-    private @Nullable ArrayList<UUID> secondAdditionalTarget;
+    private @NotNull ArrayList<UUID> secondAdditionalTarget = new ArrayList<>();
     private @Nullable Point secondAdditionalTargetPoint;
 
     private @Nullable UUID target;
@@ -214,6 +214,42 @@ public class Action implements Serializable {
      */
     public @Nullable UUID getTarget() {
         return target;
+    }
+
+    public void setAlternativeFire(boolean alternativeFire) {
+        this.alternativeFire = alternativeFire;
+    }
+
+    public void setOptions(int options) {
+        this.options = options;
+    }
+
+    public void addBasicTarget(UUID basicTarget) {
+        this.basicTarget.add(basicTarget);
+    }
+
+    public void setBasicTargetPoint(@Nullable Point basicTargetPoint) {
+        this.basicTargetPoint = basicTargetPoint;
+    }
+
+    public void setDestination(@Nullable Point destination) {
+        this.destination = destination;
+    }
+
+    public void addFirstAdditionalTarget(UUID firstAdditionalTarget) {
+        this.firstAdditionalTarget.add(firstAdditionalTarget);
+    }
+
+    public void setFirstAdditionalTargetPoint(@Nullable Point firstAdditionalTargetPoint) {
+        this.firstAdditionalTargetPoint = firstAdditionalTargetPoint;
+    }
+
+    public void addSecondAdditionalTarget(UUID secondAdditionalTarget) {
+        this.secondAdditionalTarget.add(secondAdditionalTarget);
+    }
+
+    public void setSecondAdditionalTargetPoint(@Nullable Point secondAdditionalTargetPoint) {
+        this.secondAdditionalTargetPoint = secondAdditionalTargetPoint;
     }
 
     /**
