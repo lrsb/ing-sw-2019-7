@@ -47,8 +47,6 @@ public class RoomViewController extends BaseViewController {
 
     private @Nullable ChatViewController chatViewController;
 
-    private boolean game = false;
-
     {
         try {
             clip = AudioSystem.getClip();
@@ -70,7 +68,6 @@ public class RoomViewController extends BaseViewController {
                         var updatedRoom = (Room) f;
                         update(updatedRoom);
                         if (updatedRoom.isGameCreated() && getNavigationController() != null) {
-                            game = true;
                             getNavigationController().presentViewController(true, GameViewController.class, Client.API.getActiveGame(e));
                         }
                     }

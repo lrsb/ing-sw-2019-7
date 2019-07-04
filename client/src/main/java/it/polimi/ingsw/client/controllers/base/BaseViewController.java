@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public abstract class BaseViewController extends JFrame {
-    protected static @Nullable BufferedImage ICON = null;
+    private static @Nullable BufferedImage ICON = null;
 
     static {
         try {
@@ -76,7 +76,7 @@ public abstract class BaseViewController extends JFrame {
     protected void controllerPopped() {
     }
 
-    protected void setEnableFullscreen(boolean value) {
+    protected void setEnableFullscreen(@SuppressWarnings("SameParameterValue") boolean value) {
         getRootPane().putClientProperty("apple.awt.fullscreenable", value);
     }
 }
