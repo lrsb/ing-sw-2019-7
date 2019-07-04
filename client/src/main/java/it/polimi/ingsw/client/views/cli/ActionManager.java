@@ -940,7 +940,6 @@ class ActionManager {
                         simpleBasicTargetSelection(selectableGloveTargets);
                         if (basicTarget.size() < 2) doneQuestion();
                     } while (basicTarget.size() < 2 && !done);
-                    //todo: ho barato
                     for (UUID tar : basicTarget) {
                         for (Player player : game.getPlayers()) {
                             if (player.getUuid().equals(tar) && Stream.of(Bounds.Direction.values())
