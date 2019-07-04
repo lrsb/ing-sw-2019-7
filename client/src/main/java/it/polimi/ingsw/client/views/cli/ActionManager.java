@@ -1291,10 +1291,10 @@ class ActionManager {
                     var cell = game.getCell(new Point(i, j));
                     if (cell != null && cell.getColor().equals(selectableColor.get(Integer.parseInt(choice) - 1)))
                         basicTargetPoint = new Point(i, j);
-                    else {
-                        System.out.println(invalidChoice);
-                        selectColor(game, selectableColor);
-                    }
                 }
+        else {
+            System.out.println(invalidChoice);
+            selectColor(game, selectableColor);
+        }
     }
 }
