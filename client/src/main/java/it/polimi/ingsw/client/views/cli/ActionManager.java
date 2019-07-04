@@ -146,7 +146,7 @@ class ActionManager {
                     selectableTagbackGrenade.get(i).getType().name() + stdColor);
         System.out.println((selectableTagbackGrenade.size() + 1) + ". Non rispondere");
         String choice = getLine();
-        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < selectableTagbackGrenade.size() + 1)
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableTagbackGrenade.size())
             if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(selectableTagbackGrenade.get(Integer.parseInt(choice) - 1).getType(),
                     selectableTagbackGrenade.get(Integer.parseInt(choice) - 1).getAmmoColor(), destination, target)))
                 throw new InterruptedException();
@@ -474,8 +474,8 @@ class ActionManager {
 
     private void selectNewtonTarget(@NotNull Game game) throws InterruptedException {
         List<UUID> possibleTargets = new ArrayList<>();
-        game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer())).map(Player::getUuid)
-                .forEach(possibleTargets::add);
+        game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && e.getPosition() != null)
+                .map(Player::getUuid).forEach(possibleTargets::add);
         printTargets(game, possibleTargets);
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleTargets.size())
@@ -493,7 +493,8 @@ class ActionManager {
                 var point = new Point(i, j);
                 for (Bounds.Direction dir : Bounds.Direction.values())
                     if (game.getPlayers().stream().filter(e -> e.getUuid().equals(target))
-                            .allMatch(e -> e.isPointAtMaxDistanceInDirection(point, game.getCells(), 2, dir)))
+                            .allMatch(e -> !e.getPosition().equals(point) &&
+                                    e.isPointAtMaxDistanceInDirection(point, game.getCells(), 2, dir)))
                         possibleDestinations.add(point);
             }
         for (int i = 0; i < possibleDestinations.size(); i++)
@@ -603,8 +604,7 @@ class ActionManager {
                         else if (!unselectable.isEmpty())
                             game.getPlayers().stream().map(Player::getUuid).filter(e -> !basicTarget.contains(e)).forEach(unselectable::add);
                         selectSecondVisibleTarget(game, unselectable);
-                        if (secondAdditionalTarget.size() < 2)
-                            doneQuestion();
+                        if (secondAdditionalTarget.size() < 2) doneQuestion();
                     } while (secondAdditionalTarget.size() < 2 && !done);
                 }
                 if (options > 0) selectAlternativePayment(game);
