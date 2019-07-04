@@ -23,7 +23,6 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -284,116 +283,103 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private void continueBuildWeapon() {
         var fireModes = Utils.getStrings("cli", "actions", "fire_action", "select_fire_mode").get(weaponAction.getWeapon().name().toLowerCase()).getAsString().split("\n");
         //noinspection unchecked
-        if (fireModes.length == 1) ; //TODO: gia scelta
-        var list = new JList(fireModes);
-        JOptionPane.showMessageDialog(null, list, "Scegli la modalità di fuoco", JOptionPane.PLAIN_MESSAGE);
-        var index = list.getSelectedIndices();
-        if (index.length > 0) {
-            var option = index[0];
-            if (index[0] == 1) switch (weaponAction.getWeapon()) {
-                case ELECTROSCYTHE:
-                case TRACTOR_BEAM:
-                case FURNACE:
-                case HELLION:
-                case FLAMETHROWER:
-                case RAILGUN:
-                case ZX2:
-                case SHOTGUN:
-                case POWER_GLOVE:
-                case SHOCKWAVE:
-                case SLEDGEHAMMER:
-                    weaponAction.setAlternativeFire(true);
-                    option--;
-            }
-            switch (weaponAction.getWeapon()) {
-                case THOR:
-                    if (option == 2) option++;
-                    break;
-                case PLASMA_GUN:
-                case CYBERBLADE:
-                    if (option == 1) option++;
-                    break;
-            }
-            var players = 0;
-            JOptionPane.showMessageDialog(null, "Utils");
-
-            int finalOption = option;
-            var names = playersNicknames();
+        var option = 0;
+        if (fireModes.length != 1) {
             //noinspection unchecked
-            var namesList = new JList(names.toArray());
-            switch (weaponAction.getWeapon()) {
-                case LOCK_RIFLE:
-                    printMessage("select_target_basic");
-                    getTarget(e -> {
-                        weaponAction.addBasicTarget(e);
-                        if (finalOption == 1) {
-                            printMessage("select_target_first");
-                            getTarget(f -> {
-                                weaponAction.addFirstAdditionalTarget(f);
-                                getPowerup(game.getActualPlayer().getPowerUps(),
-                                        p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
-                            });
-                        }
-                    });
-                    break;
-                case MACHINE_GUN:
-                    printMessage("select_target_basic");
-                    getTarget(e -> {
-                        weaponAction.addBasicTarget(e);
-                        if (yesOrNo("Vuoi selezionare altri bersagli per l'effetto base?")) {
-                            getTarget(f -> {
-                                weaponAction.addBasicTarget(f);
-                                //todo
-                            });
-                        } else {
-
-                        }
-                    });
-                    break;
-                case THOR:
-                    printMessage("select_target_basic");
-                    getTarget(e -> {
-                        weaponAction.addBasicTarget(e);
-                        if (finalOption > 0) {
-                            printMessage("select_target_first");
-                            getTarget(f -> {
-                                weaponAction.addFirstAdditionalTarget(f);
-                                if (finalOption > 1) {
-                                    printMessage("select_target_second");
-                                    getTarget(g -> {
-                                        weaponAction.addSecondAdditionalTarget(g);
-                                        getPowerup(game.getActualPlayer().getPowerUps(), p -> {
-                                            p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
-                                            doAction(weaponAction);
-                                        });
-                                    });
-                                } else {
-                                    getPowerup(game.getActualPlayer().getPowerUps(), p -> {
-                                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
-                                        doAction(weaponAction);
-                                    });
-                                }
-                            });
-                        } else doAction(weaponAction);
-                    });
-                    break;
-                case PLASMA_GUN:
-                    if (JOptionPane.showConfirmDialog(null, "Vuoi selezionare un punto in cui muoverti?", "", YES_NO_OPTION) == YES_OPTION) {
-                        printMessage("select_point_basic");
-                        getPoint(e -> {
-                            weaponAction.setBasicTargetPoint(e);
-                            printMessage("select_target_basic");
-                            getTarget(f -> {
-                                weaponAction.addBasicTarget(f);
-                                if (finalOption > 0) {
-                                    getPowerup(game.getActualPlayer().getPowerUps(), p -> {
-                                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
-                                        doAction(weaponAction);
-                                    });
-                                } else doAction(weaponAction);
-                            });
+            var list = new JList(fireModes);
+            JOptionPane.showMessageDialog(null, list, "Scegli la modalità di fuoco", JOptionPane.PLAIN_MESSAGE);
+            if (list.getSelectedIndices().length == 1) option = list.getSelectedIndices()[0];
+            else {
+                reset();
+                return;
+            }
+        }
+        if (option == 1) switch (weaponAction.getWeapon()) {
+            case ELECTROSCYTHE:
+            case TRACTOR_BEAM:
+            case FURNACE:
+            case HELLION:
+            case FLAMETHROWER:
+            case RAILGUN:
+            case ZX2:
+            case SHOTGUN:
+            case POWER_GLOVE:
+            case SHOCKWAVE:
+            case SLEDGEHAMMER:
+                weaponAction.setAlternativeFire(true);
+                option--;
+        }
+        switch (weaponAction.getWeapon()) {
+            case THOR:
+                if (option == 2) option++;
+                break;
+            case PLASMA_GUN:
+            case CYBERBLADE:
+                if (option == 1) option++;
+                break;
+        }
+        int finalOption = option;
+        switch (weaponAction.getWeapon()) {
+            case LOCK_RIFLE:
+                printMessage("select_target_basic");
+                getTarget(e -> {
+                    weaponAction.addBasicTarget(e);
+                    if (finalOption == 1) {
+                        printMessage("select_target_first");
+                        getTarget(f -> {
+                            weaponAction.addFirstAdditionalTarget(f);
+                            getPowerup(game.getActualPlayer().getPowerUps(),
+                                    p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                        });
+                    }
+                });
+                break;
+            case MACHINE_GUN:
+                printMessage("select_target_basic");
+                getTarget(e -> {
+                    weaponAction.addBasicTarget(e);
+                    if (yesOrNo("Vuoi selezionare altri bersagli per l'effetto base?")) {
+                        getTarget(f -> {
+                            weaponAction.addBasicTarget(f);
+                            //todo
                         });
                     } else {
+
+                    }
+                });
+                break;
+            case THOR:
+                printMessage("select_target_basic");
+                getTarget(e -> {
+                    weaponAction.addBasicTarget(e);
+                    if (finalOption > 0) {
+                        printMessage("select_target_first");
+                        getTarget(f -> {
+                            weaponAction.addFirstAdditionalTarget(f);
+                            if (finalOption > 1) {
+                                printMessage("select_target_second");
+                                getTarget(g -> {
+                                    weaponAction.addSecondAdditionalTarget(g);
+                                    getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                        doAction(weaponAction);
+                                    });
+                                });
+                            } else {
+                                getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                    doAction(weaponAction);
+                                });
+                            }
+                        });
+                    } else doAction(weaponAction);
+                });
+                break;
+            case PLASMA_GUN:
+                if (JOptionPane.showConfirmDialog(null, "Vuoi selezionare un punto in cui muoverti?", "", YES_NO_OPTION) == YES_OPTION) {
+                    printMessage("select_point_basic");
+                    getPoint(e -> {
+                        weaponAction.setBasicTargetPoint(e);
                         printMessage("select_target_basic");
                         getTarget(f -> {
                             weaponAction.addBasicTarget(f);
@@ -404,176 +390,219 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                 });
                             } else doAction(weaponAction);
                         });
-                    }
-                    break;
-                case WHISPER:
+                    });
+                } else {
                     printMessage("select_target_basic");
-                    getTarget(e -> {
-                        weaponAction.addBasicTarget(e);
+                    getTarget(f -> {
+                        weaponAction.addBasicTarget(f);
+                        if (finalOption > 0) {
+                            getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                doAction(weaponAction);
+                            });
+                        } else doAction(weaponAction);
+                    });
+                }
+                break;
+            case WHISPER:
+                printMessage("select_target_basic");
+                getTarget(e -> {
+                    weaponAction.addBasicTarget(e);
+                    doAction(weaponAction);
+                });
+                break;
+            case ELECTROSCYTHE:
+                if (weaponAction.getAlternativeFire()) {
+                    getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
                         doAction(weaponAction);
                     });
-                    break;
-                case ELECTROSCYTHE:
+                } else doAction(weaponAction);
+                break;
+            case TRACTOR_BEAM:
+                printMessage("select_target_basic");
+                getTarget(e -> {
+                    weaponAction.addBasicTarget(e);
                     if (weaponAction.getAlternativeFire()) {
                         getPowerup(game.getActualPlayer().getPowerUps(), p -> {
                             p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
                             doAction(weaponAction);
                         });
-                    } else doAction(weaponAction);
-                    break;
-                case TRACTOR_BEAM:
-                    printMessage("select_target_basic");
+                    } else if (yesOrNo("Vuoi spostare il bersaglio prima di sparargli?")) {
+                            printMessage("");
+                        //todo
+                        } else doAction(weaponAction);
+                });
+                break;
+            case VORTEX_CANNON:
+                break;
+            case FURNACE:
+                if (!weaponAction.getAlternativeFire()) {
+                    getPoint(e -> {
+                        weaponAction.setBasicTargetPoint(e);
+                        doAction(weaponAction);
+                    });
+                } else {
+                    getPoint(e -> {
+                        weaponAction.setBasicTargetPoint(e);
+                        doAction(weaponAction);
+                    });
+                }
+                break;
+            case HEATSEEKER:
+                break;
+            case HELLION:
+                if (!weaponAction.getAlternativeFire()) {
                     getTarget(e -> {
                         weaponAction.addBasicTarget(e);
-                        if (weaponAction.getAlternativeFire()) {
-                            getPowerup(game.getActualPlayer().getPowerUps(), p -> {
-                                p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
-                                doAction(weaponAction);
-                            });
-                        } else if (yesOrNo("Vuoi spostare il bersaglio prima di sparargli?")) {
-                            printMessage("");
-                            //todo
-                        } else doAction(weaponAction);
+                        doAction(weaponAction);
                     });
-                    break;
-                case VORTEX_CANNON:
-                    break;
-                case FURNACE:
-                    break;
-                case HEATSEEKER:
-                    break;
-                case HELLION:
-                    break;
-                case FLAMETHROWER:
-                    break;
-                case GRENADE_LAUNCHER:
-                    break;
-                case ROCKET_LAUNCHER:
-                    break;
-                case RAILGUN:
-                    break;
-                case CYBERBLADE:
-                    break;
-                case ZX2:
-
-                    break;
-                case SHOTGUN:
-                    if (!weaponAction.getAlternativeFire()) {
-                        getTarget(e -> {
-                            weaponAction.addBasicTarget(e);
-                            if (yesOrNo("Vuoi muovere il target?")) {
-                                getPoint(f -> {
-                                    weaponAction.setBasicTargetPoint(f);
-                                    doAction(weaponAction);
-                                });
-                            } else doAction(weaponAction);
-                        });
-                    } else {
+                } else {
+                    getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
                         getTarget(e -> {
                             weaponAction.addBasicTarget(e);
                             doAction(weaponAction);
                         });
-                    }
-                    break;
-                case POWER_GLOVE:
-                    if (!weaponAction.getAlternativeFire()) getTarget(e -> {
+                    });
+                }
+                break;
+            case FLAMETHROWER:
+                break;
+            case GRENADE_LAUNCHER:
+                break;
+            case ROCKET_LAUNCHER:
+                break;
+            case RAILGUN:
+                break;
+            case CYBERBLADE:
+
+                break;
+            case ZX2:
+                if (!weaponAction.getAlternativeFire()) {
+                    getTarget(e -> {
                         weaponAction.addBasicTarget(e);
                         doAction(weaponAction);
                     });
-                    else getPowerup(game.getActualPlayer().getPowerUps(), p -> {
-                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
-                        if (yesOrNo("Vuoi selezionare un bersaglio o punto?")) {
-                            getTarget(e -> {
-                                weaponAction.addBasicTarget(e);
-                                if (yesOrNo("Vuoi selezionare un altro bersaglio?")) {
-                                    if (yesOrNo("Vuoi selezionare un bersaglio o punto?")) {
-                                        getTarget(f -> {
-                                            weaponAction.addBasicTarget(f);
-                                            doAction(weaponAction);
-                                        });
-                                    } else {
-                                        getPoint(f -> {
-                                            weaponAction.setBasicTargetPoint(f);
-                                            doAction(weaponAction);
-                                        });
-                                    }
-                                } else doAction(weaponAction);
-                            });
-                        } else {
-                            getPoint(e -> {
-                                weaponAction.setBasicTargetPoint(e);
-                                if (yesOrNo("Vuoi selezionare un altro bersaglio?")) {
-                                    if (yesOrNo("Vuoi selezionare un bersaglio o punto?")) {
-                                        getTarget(f -> {
-                                            weaponAction.addBasicTarget(f);
-                                            doAction(weaponAction);
-                                        });
-                                    } else {
-                                        getPoint(f -> {
-                                            weaponAction.setBasicTargetPoint(f);
-                                            doAction(weaponAction);
-                                        });
-                                    }
-                                } else doAction(weaponAction);
-                            });
-                        }
-                    });
-                    break;
-                case SHOCKWAVE:
-                    if (!weaponAction.getAlternativeFire()) {
-                        getTarget(e -> {
-                            weaponAction.addBasicTarget(e);
-                            if (yesOrNo("Vuoi selezionare un altro bersaglio?")) getTarget(f -> {
-                                weaponAction.addBasicTarget(f);
-                                if (yesOrNo("Vuoi selezionare un altro bersaglio?")) getTarget(g -> {
-                                    weaponAction.addBasicTarget(g);
-                                    doAction(weaponAction);
-                                });
-                                else doAction(weaponAction);
+                } else {
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        if (yesOrNo("Vuoi selezionare un altro bersaglio?")) getTarget(f -> {
+                            weaponAction.addBasicTarget(f);
+                            if (yesOrNo("Vuoi selezionare un altro bersaglio?")) getTarget(g -> {
+                                weaponAction.addBasicTarget(g);
+                                doAction(weaponAction);
                             });
                             else doAction(weaponAction);
                         });
-                    } else getPowerup(game.getActualPlayer().getPowerUps(), p -> {
-                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
-                        doAction(weaponAction);
+                        else doAction(weaponAction);
                     });
-                    break;
-                case SLEDGEHAMMER:
-                    printMessage("select_target_basic");
+                }
+                break;
+            case SHOTGUN:
+                if (!weaponAction.getAlternativeFire()) {
                     getTarget(e -> {
                         weaponAction.addBasicTarget(e);
-                        if (finalOption == 1) {
-                            printMessage("select_point_basic");
+                        if (yesOrNo("Vuoi muovere il target?")) {
                             getPoint(f -> {
                                 weaponAction.setBasicTargetPoint(f);
-                                getPowerup(game.getActualPlayer().getPowerUps(), p -> {
-                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
-                                    doAction(weaponAction);
-                                });
+                                doAction(weaponAction);
                             });
                         } else doAction(weaponAction);
                     });
-                    break;
-            }
-        } else reset();
+                } else {
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        doAction(weaponAction);
+                    });
+                }
+                break;
+            case POWER_GLOVE:
+                if (!weaponAction.getAlternativeFire()) getTarget(e -> {
+                    weaponAction.addBasicTarget(e);
+                    doAction(weaponAction);
+                });
+                else getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                    if (yesOrNo("Vuoi selezionare un bersaglio o punto?")) {
+                        getTarget(e -> {
+                            weaponAction.addBasicTarget(e);
+                            if (yesOrNo("Vuoi selezionare un altro bersaglio?")) {
+                                if (yesOrNo("Vuoi selezionare un bersaglio o punto?")) {
+                                    getTarget(f -> {
+                                        weaponAction.addBasicTarget(f);
+                                        doAction(weaponAction);
+                                    });
+                                } else {
+                                    getPoint(f -> {
+                                        weaponAction.setBasicTargetPoint(f);
+                                        doAction(weaponAction);
+                                    });
+                                }
+                            } else doAction(weaponAction);
+                        });
+                    } else {
+                        getPoint(e -> {
+                            weaponAction.setBasicTargetPoint(e);
+                            if (yesOrNo("Vuoi selezionare un altro bersaglio?")) {
+                                if (yesOrNo("Vuoi selezionare un bersaglio o punto?")) {
+                                    getTarget(f -> {
+                                        weaponAction.addBasicTarget(f);
+                                        doAction(weaponAction);
+                                    });
+                                } else {
+                                    getPoint(f -> {
+                                        weaponAction.setBasicTargetPoint(f);
+                                        doAction(weaponAction);
+                                    });
+                                }
+                            } else doAction(weaponAction);
+                        });
+                    }
+                });
+                break;
+            case SHOCKWAVE:
+                if (!weaponAction.getAlternativeFire()) {
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        if (yesOrNo("Vuoi selezionare un altro bersaglio?")) getTarget(f -> {
+                            weaponAction.addBasicTarget(f);
+                            if (yesOrNo("Vuoi selezionare un altro bersaglio?")) getTarget(g -> {
+                                weaponAction.addBasicTarget(g);
+                                doAction(weaponAction);
+                            });
+                            else doAction(weaponAction);
+                        });
+                        else doAction(weaponAction);
+                    });
+                } else getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                    doAction(weaponAction);
+                });
+                break;
+            case SLEDGEHAMMER:
+                printMessage("select_target_basic");
+                getTarget(e -> {
+                    weaponAction.addBasicTarget(e);
+                    if (finalOption == 1) {
+                        printMessage("select_point_basic");
+                        getPoint(f -> {
+                            weaponAction.setBasicTargetPoint(f);
+                            getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                doAction(weaponAction);
+                            });
+                        });
+                    } else doAction(weaponAction);
+                });
+                break;
+        }
     }
 
     private void reset() {
         type = null;
         weaponAction = null;
         reloadActionPanel();
-    }
-
-    private @NotNull UUID nicknameToUuid(String nickname) {
-        return game.getPlayers().parallelStream().filter(e -> e.getNickname().equals(nickname)).findAny().get().getUuid();
-    }
-
-    private @NotNull String uuidToNickname(UUID uuid) {
-        return game.getPlayers().parallelStream().filter(e -> e.getUuid().equals(uuid)).findAny().get().getNickname();
-    }
-
-    private ArrayList<String> playersNicknames() {
-        return game.getPlayers().stream().filter(e -> !e.getUuid().equals(Preferences.getUuid())).map(Player::getNickname).collect(Collectors.toCollection(ArrayList::new));
     }
 
     private void reloadActionPanel() {
