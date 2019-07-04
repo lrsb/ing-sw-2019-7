@@ -526,14 +526,13 @@ public class ActionManager {
     }
 
     private void selectMyReloadWeapon(@NotNull Game game) throws InterruptedException {
-        List<Weapon> selectableWeapons = new ArrayList<>();
-        game.getActualPlayer().getWeapons().parallelStream()
-                .filter(e -> !game.getActualPlayer().isALoadedGun(e)).forEach(selectableWeapons::add);
+        List<Weapon> selectableWeapons = game.getActualPlayer().getWeapons().parallelStream()
+                .filter(e -> !game.getActualPlayer().isALoadedGun(e)).collect(Collectors.toList());
         if (selectableWeapons.isEmpty())
             System.out.println("Non hai armi da ricaricare");
         for (int i = 0; i < selectableWeapons.size(); i++)
             System.out.println((i + 1) + ". " + selectableWeapons.get(i).getColor().escape() +
-                    selectableWeapons.get(i).name() + "\u001b[0m" +
+                    selectableWeapons.get(i).name() + "\u001b[0m" + " " +
                     Utils.getStrings("cli", "weapons_details", selectableWeapons.get(i).name().toLowerCase()).get("reload_cost").getAsString());
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
         String choice = getLine();

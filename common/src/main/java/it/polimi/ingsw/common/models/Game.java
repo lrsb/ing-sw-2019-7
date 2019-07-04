@@ -59,42 +59,78 @@ public class Game implements Displayable, Serializable {
         this.startingSkulls = this.skulls = skulls;
     }
 
+    /**
+     * create a random game
+     */
     public Game() {
         uuid = UUID.randomUUID();
         cells = new Cell[MAX_Y][MAX_X];
         type = Type.values()[new SecureRandom().nextInt(Type.values().length)];
     }
 
+    /**
+     *
+     * @return the number of action a player can still do
+     */
     public int getRemainedActions() {
         return remainedActions;
     }
 
+    /**
+     *
+     * @return the ranking of the match
+     */
     public @Nullable List<ArrayList<UUID>> getFinalRanking() {
         return finalRanking;
     }
 
+    /**
+     *
+     * @return the initial number of skulls
+     */
     public int getStartingSkulls() {
         return startingSkulls;
     }
 
+    /**
+     *
+     * @return the identifier of the match
+     */
     public @NotNull UUID getUuid() {
         return uuid;
     }
 
+    /**
+     *
+     * @return the board as bi-dimensional array of cell
+     */
     public @NotNull Cell[][] getCells() {
         return cells;
     }
 
+    /**
+     *
+     * @param point coordinates of a cell in the board
+     * @return the cell corresponding to the coordinates
+     */
     public @Nullable Cell getCell(@Nullable Point point) {
         if (point == null || point.x < 0 || point.x >= cells.length || point.y < 0 || point.y >= cells[point.x].length)
             return null;
         return cells[point.x][point.y];
     }
 
+    /**
+     *
+     * @return the setting of the board
+     */
     public @NotNull Type getType() {
         return type;
     }
 
+    /**
+     *
+     * @return a list of the game's players
+     */
     public @NotNull List<Player> getPlayers() {
         return players;
     }
@@ -112,23 +148,30 @@ public class Game implements Displayable, Serializable {
         throw new PlayerNotFoundException();
     }
 
+    /**
+     *
+     * @return true if the current is the last the turn
+     */
     public boolean isLastTurn() {
         return lastTurn;
     }
 
+    /**
+     *
+     * @return list of identifiers of the players that achieved killshots
+     */
     public @NotNull List<UUID> getKillshotsTrack() {
         return new ArrayList<>(arrayKillshotsTrack);
     }
 
-    /**
-     * Add the player to a list when this takes a damage and the list doesn't already contains the player
-     *
-     * @param player the player just hit
-     */
     void addToLastsDamaged(@NotNull Player player) {
         if (!lastsDamaged.contains(player.getUuid())) lastsDamaged.add(player.getUuid());
     }
 
+    /**
+     *
+     * @return a list of identifiers of the players damaged in the last action
+     */
     public @NotNull List<UUID> getLastsDamaged() {
         return lastsDamaged;
     }
@@ -142,13 +185,14 @@ public class Game implements Displayable, Serializable {
         return players.get(seqPlay % players.size());
     }
 
+    /**
+     *
+     * @return true if game finished, false otherwise
+     */
     public boolean isCompleted() {
         return isCompleted;
     }
 
-    /**
-     * @return an ArrayList with UUID of the players hit with a tagback grenade
-     */
     protected @NotNull List<UUID> getTagbackPlayers() {
         ArrayList<UUID> tagbackPlayers = new ArrayList<>();
         getLastsDamaged().parallelStream().filter(e -> players.parallelStream().anyMatch(f -> f.getUuid().equals(e) &&
@@ -172,10 +216,18 @@ public class Game implements Displayable, Serializable {
         return !isATagbackResponse() && responsivePlayers.contains(getActualPlayer().getUuid()) && reborningTime;
     }
 
+    /**
+     *
+     * @return the number of deaths needed to achieved the frenzy actions
+     */
     public int getSkulls() {
         return skulls;
     }
 
+    /**
+     *
+     * @return a string which says which number of turn the current is
+     */
     public @NotNull String getTurn() {
         String finalFrenzy = skulls == 0 ? "\nFRENESIA FINALE ATTIVA" : "";
         return lastTurn ? "ULTIMO TURNO" : "TURNO " + (seqPlay / getPlayers().size() + 1) + finalFrenzy;
@@ -223,6 +275,11 @@ public class Game implements Displayable, Serializable {
                 canMoveImpl(new Point(from.x + e.getdX(), from.y + e.getdY()), to, step + 1, maxStep));
     }
 
+    /**
+     *
+     * @param point coordinates of a cell in the board
+     * @return list of players that are in the cell of coordinates @point
+     */
     public @NotNull List<Player> getPlayersAtPosition(@Nullable Point point) {
         if (point == null) return new ArrayList<>();
         return players.parallelStream().filter(e -> e.getPosition() != null).filter(e -> e.getPosition().equals(point)).collect(Collectors.toList());

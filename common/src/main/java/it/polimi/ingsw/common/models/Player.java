@@ -36,28 +36,53 @@ public class Player implements Displayable, Serializable {
     private @NotNull HashMap<Weapon, Boolean> weapons = new HashMap<>();
     private boolean easyBoard = false;
 
+    /**
+     *
+     * @param user the user
+     * @param boardType the player board
+     */
     public Player(@NotNull User user, @NotNull BoardType boardType) {
         this.uuid = user.getUuid();
         this.nickname = user.getNickname();
         this.boardType = boardType;
     }
 
+    /**
+     *
+     * @return the board of the player
+     */
     public @NotNull BoardType getBoardType() {
         return boardType;
     }
 
+    /**
+     *
+     * @return the identifier of the player
+     */
     public @NotNull UUID getUuid() {
         return uuid;
     }
 
+    /**
+     *
+     * @return the nickname of the player
+     */
     public @NotNull String getNickname() {
         return nickname;
     }
 
+    /**
+     *
+     * @return a list of the weapons owned by the player
+     */
     public @NotNull List<Weapon> getWeapons() {
         return new ArrayList<>(weapons.keySet());
     }
 
+    /**
+     *
+     * @return a list of identifiers of players that damaged this player
+     */
     public @NotNull List<UUID> getDamagesTaken() {
         return damagesTaken;
     }
@@ -74,10 +99,18 @@ public class Player implements Displayable, Serializable {
         }).collect(Collectors.toList());
     }
 
+    /**
+     *
+     * @return a list of identifiers of the players that gave a mark to this player
+     */
     public @NotNull List<UUID> getMarksTaken() {
         return marksTaken;
     }
 
+    /**
+     *
+     * @return number of deaths of this player till now
+     */
     public int getDeaths() {
         return deaths;
     }
@@ -89,6 +122,10 @@ public class Player implements Displayable, Serializable {
         if (getDamagesTaken().isEmpty()) easyBoard = true;
     }
 
+    /**
+     *
+     * @return true if he has the "easy board", false otherwise
+     */
     public boolean isEasyBoard() {
         return easyBoard;
     }
@@ -101,37 +138,74 @@ public class Player implements Displayable, Serializable {
         else return 2 * deaths >= 8 ? 1 : 8 - 2 * deaths;
     }
 
+    /**
+     * increments of 1 the number of deaths and clear the damages taken
+     */
     public void manageDeath() {
         deaths++;
         damagesTaken.clear();
     }
 
+    /**
+     * add points to this player
+     *
+     * @param pointsAdded the number of points to add
+     */
     public void addPoints(int pointsAdded) {
         points += pointsAdded;
     }
 
+    /**
+     *
+     * @return points achieved by this player till now
+     */
     public int getPoints() {
         return points;
     }
 
+    /**
+     *
+     * @param powerUp a generic power up
+     * @return true if this player has @powerUp, false otherwise
+     */
     public boolean hasPowerUp(@NotNull PowerUp powerUp) {
         return powerUps.contains(powerUp);
     }
 
+    /**
+     *
+     * @param weapon a generic weapon
+     * @return true if this player has @weapon, false otherwise
+     */
     public boolean hasWeapon(@Nullable Weapon weapon) {
         return weapons.get(weapon) != null;
     }
 
+    /**
+     *
+     * @param weapon a generic weapon
+     * @return true if this player has this @weapon and it's reloaded
+     */
     public boolean isALoadedGun(@Nullable Weapon weapon) {
         return hasWeapon(weapon) && weapons.get(weapon);
     }
 
+    /**
+     * unload @weapon, if owned by the player, nothing otherwise
+     *
+     * @param weapon a generic weapon
+     */
     public void unloadWeapon(@Nullable Weapon weapon) {
-        weapons.put(weapon, false);
+        if (hasWeapon(weapon)) weapons.put(weapon, false);
     }
 
+    /**
+     * reload @weapon, if owned by the player, nothing otherwise
+     *
+     * @param weapon a generic weapon
+     */
     public void reloadWeapon(@Nullable Weapon weapon) {
-        weapons.put(weapon, true);
+        if (hasWeapon(weapon)) weapons.put(weapon, true);
     }
 
     /**
@@ -168,6 +242,11 @@ public class Player implements Displayable, Serializable {
         if (damagesTaken.size() < 12) damagesTaken.add(hitter.getUuid());
     }
 
+    /**
+     * give a mark of @avenger to this player
+     *
+     * @param avenger a player
+     */
     public void addMark(@NotNull Player avenger) {
         if (marksTaken.parallelStream().filter(e -> e.equals(avenger.getUuid())).count() < 3)
             marksTaken.add(avenger.getUuid());
