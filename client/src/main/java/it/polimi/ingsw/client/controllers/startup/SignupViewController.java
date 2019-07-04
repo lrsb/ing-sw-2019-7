@@ -27,8 +27,10 @@ public class SignupViewController extends BaseViewController {
         registratiButton.addActionListener(e -> {
             try {
                 Preferences.setToken(Client.API.createUser(nicknameField.getText(), String.valueOf(passwordField.getPassword())));
-                getNavigationController().popToRootViewController();
-                getNavigationController().presentViewController(true, MainViewController.class);
+                if (getNavigationController() != null) {
+                    getNavigationController().popToRootViewController();
+                    getNavigationController().presentViewController(true, MainViewController.class);
+                }
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Nickname già esistente!!");
@@ -37,7 +39,9 @@ public class SignupViewController extends BaseViewController {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
-        indietroButton.addActionListener(e -> getNavigationController().popToRootViewController());
+        indietroButton.addActionListener(e -> {
+            if (getNavigationController() != null) getNavigationController().popToRootViewController();
+        });
     }
 
     {

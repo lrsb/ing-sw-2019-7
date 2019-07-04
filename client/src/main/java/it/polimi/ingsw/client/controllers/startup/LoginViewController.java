@@ -27,7 +27,8 @@ public class LoginViewController extends BaseViewController {
         loginButton.addActionListener(e -> {
             try {
                 Preferences.setToken(Client.API.authUser(nicknameField.getText(), String.valueOf(passwordField.getPassword())));
-                getNavigationController().presentViewController(true, MainViewController.class);
+                if (getNavigationController() != null)
+                    getNavigationController().presentViewController(true, MainViewController.class);
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
                 passwordField.setText("");
@@ -37,7 +38,10 @@ public class LoginViewController extends BaseViewController {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
-        registratiButton.addActionListener(e -> getNavigationController().presentViewController(SignupViewController.class));
+        registratiButton.addActionListener(e -> {
+            if (getNavigationController() != null)
+                getNavigationController().presentViewController(SignupViewController.class);
+        });
     }
 
     {

@@ -17,13 +17,14 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class GamePickerViewController extends BaseViewController implements GameBoardListener {
-    private final Game game;
     private JPanel panel;
     private GameBoard gameBoard;
+
+    private final Game game;
     private BoardPlayerPickerCallback playerPickerCallback;
     private BoardPointPickerCallback pointPickerCallback;
 
-    public GamePickerViewController(@Nullable NavigationController navigationController, @NotNull Object... args) {
+    GamePickerViewController(@Nullable NavigationController navigationController, @NotNull Object... args) {
         super((String) args[0], 800, 600, navigationController);
         game = (Game) args[1];
         $$$setupUI$$$();

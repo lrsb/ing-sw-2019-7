@@ -235,7 +235,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         if (f.size() == 1) {
                             doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(f.get(0).getType(), f.get(0).getAmmoColor(), null, null));
                             reloadActionPanel();
-                        } else if (f.size() < 1) showMessage("Scegli un powerup!");
+                        } else if (f.isEmpty()) showMessage("Scegli un powerup!");
                         else showMessage("scegli un solo powerup!");
                     });
                 } else showMessage("non hai powerup a disposizione!");
