@@ -137,7 +137,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
             if (yesOrNo("Vuoi uscire dal gioco?")) {
                 try {
                     Client.API.quitGame(f, game.getUuid());
-                    getNavigationController().popViewController();
+                    System.exit(0);
+                    //getNavigationController().popViewController();
                 } catch (UserRemoteException ex) {
                     ex.printStackTrace();
                     Utils.jumpBackToLogin(getNavigationController());

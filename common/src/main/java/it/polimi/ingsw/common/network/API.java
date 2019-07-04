@@ -98,7 +98,7 @@ public interface API extends Remote {
     void startGame(@NotNull String token, @NotNull UUID roomUuid) throws RemoteException;
 
     /**
-     * Quit a game. TODO
+     * Quit a game.
      *
      * @param token    the token
      * @param gameUuid the game uuid
@@ -108,7 +108,7 @@ public interface API extends Remote {
     void quitGame(@NotNull String token, @NotNull UUID gameUuid) throws RemoteException;
 
     /**
-     * Do action. TODO
+     * Do an action.
      *
      * @param token  the token
      * @param action the action
@@ -119,7 +119,7 @@ public interface API extends Remote {
     boolean doAction(@NotNull String token, @NotNull Action action) throws RemoteException;
 
     /**
-     * Sends in game message
+     * Sends message
      *
      * @param token   the token
      * @param message the message. Fields gameUuid, message are mandatory, others are ignored.

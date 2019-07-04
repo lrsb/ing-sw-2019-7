@@ -107,6 +107,7 @@ public class NavigationController {
     public void close() {
         for (var i = 0; i < viewControllers.size(); i++) disposeViewController(viewControllers.get(i));
         viewControllers.clear();
+        System.exit(0);
     }
 
     private void disposeViewController(@NotNull BaseViewController viewController) {
