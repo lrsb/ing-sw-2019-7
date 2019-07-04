@@ -177,15 +177,15 @@ public class GameImpl extends Game implements Serializable {
         ArrayList<Player> deadPlayers = new ArrayList<>();
         players.parallelStream().filter(e -> getDeadPlayers().contains(e.getUuid())).forEachOrdered(deadPlayers::add);
         getActualPlayer().addPoints(deadPlayers.size() > 1 ? 1 : 0);
-        deadPlayers.forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream().filter(g -> g.getUuid() == f)
+        deadPlayers.forEach(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream().filter(g -> g.getUuid().equals(f))
                 .forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
-                    g.addPoints(e.getDamagesTaken().get(0) == f ? 1 : 0);
-                    if (e.getDamagesTaken().size() == 12 && f == e.getDamagesTaken().get(11)) {
+                    g.addPoints(e.getDamagesTaken().get(0).equals(f) ? 1 : 0);
+                    if (e.getDamagesTaken().size() == 12 && f.equals(e.getDamagesTaken().get(11))) {
                         g.addMark(e);
                         addToKillshotsTrack(f);
                     }
-                    if (f == e.getDamagesTaken().get(10)) addToKillshotsTrack(f);
+                    if (f.equals(e.getDamagesTaken().get(10))) addToKillshotsTrack(f);
                 })));
         addReborningPlayers();
         for (Player deadPlayer : deadPlayers) {
