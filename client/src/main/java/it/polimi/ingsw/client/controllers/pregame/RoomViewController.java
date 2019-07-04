@@ -63,30 +63,8 @@ public class RoomViewController extends BaseViewController {
         startLabel.setText("");
         var room = (Room) params[0];
         roomUuid = room.getUuid();
-        Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
-            try {
-                Client.API.addListener(e, f -> {
-                    if (f instanceof Room && ((Room) f).getUuid().equals(roomUuid)) {
-                        var updatedRoom = (Room) f;
-                        update(updatedRoom);
-                        if (updatedRoom.isGameCreated() && getNavigationController() != null) {
-                            game = false;
-                            getNavigationController().presentViewController(true, GameViewController.class, Client.API.getActiveGame(e));
-                        }
-                    } else if (f instanceof Message) {
-                        if (!((Message) f).getFrom().getUuid().equals(Preferences.getUuid()))
-                            chatButton.setText("Chat (*)");
-                        ChatViewController.messages.add((Message) f);
-                    }
-                });
-            } catch (UserRemoteException ex) {
-                ex.printStackTrace();
-                jumpBackToLogin(getNavigationController());
-            } catch (RemoteException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, ex.getMessage());
-            }
-        });
+
+        connect();
 
         chatButton.addActionListener(e -> {
             chatButton.setText("Chat");
@@ -123,10 +101,40 @@ public class RoomViewController extends BaseViewController {
         update(room);
     }
 
+    private void connect() {
+        Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
+            try {
+                Client.API.addListener(e, f -> {
+                    if (f instanceof Room && ((Room) f).getUuid().equals(roomUuid)) {
+                        var updatedRoom = (Room) f;
+                        update(updatedRoom);
+                        if (updatedRoom.isGameCreated() && getNavigationController() != null) {
+                            game = false;
+                            getNavigationController().presentViewController(true, GameViewController.class, Client.API.getActiveGame(e));
+                        }
+                    } else if (f instanceof Message) {
+                        if (!((Message) f).getFrom().getUuid().equals(Preferences.getUuid()))
+                            chatButton.setText("Chat (*)");
+                        ChatViewController.messages.add((Message) f);
+                    }
+                });
+            } catch (UserRemoteException ex) {
+                ex.printStackTrace();
+                jumpBackToLogin(getNavigationController());
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+        });
+    }
+
     private void update(@NotNull Room room) {
         if (timer != null) timer.stop();
         timer = new Timer(1000, e -> {
-            if (room.getStartTime() - System.currentTimeMillis() <= 0) startLabel.setText("");
+            if (room.getStartTime() - System.currentTimeMillis() <= 0) {
+                startLabel.setText("");
+                if (room.getStartTime() - System.currentTimeMillis() <= 1500) connect();
+            }
             else
                 startLabel.setText("Partenza tra: " + (room.getStartTime() - System.currentTimeMillis()) / 1000 + " sec");
         });

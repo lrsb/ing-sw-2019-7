@@ -42,15 +42,16 @@ public class ServerController implements API {
         try {
             var game = findGame(user.getUuid());
             if (game == null) throw new RemoteException("No active game!!");
-            return game;
+            updateGameTimer(game);
+            return new Gson().fromJson(new Gson().toJson(game), Game.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RemoteException("No active game!!");
         }
     }
 
-    private @Nullable Game findGame(@NotNull UUID userUuid) {
-        return new Gson().fromJson(Opt.of(games.find(eq("players.uuid", userUuid.toString())).first()).e(Document::toJson).get(""), Game.class);
+    private @Nullable GameImpl findGame(@NotNull UUID userUuid) {
+        return new Gson().fromJson(Opt.of(games.find(eq("players.uuid", userUuid.toString())).first()).e(Document::toJson).get(""), GameImpl.class);
     }
 
     @Override
@@ -192,6 +193,7 @@ public class ServerController implements API {
     public boolean doAction(@Nullable String token, @Nullable Action action) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (action != null) try {
+            System.out.println(action);
             var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
             if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid())) &&
                     !game.getActualPlayer().getUuid().equals(user.getUuid())) return false;
@@ -205,7 +207,7 @@ public class ServerController implements API {
 
     private boolean doAction(@NotNull GameImpl game, @NotNull Action action) {
         var message = game.getActualPlayer().getNickname() +
-                (action.getActionType() != Action.Type.NEXT_TURN ? " ha fatto: " + action.getActionType().name() + " " : "ha passato il turno");
+                (action.getActionType() != Action.Type.NEXT_TURN ? " ha fatto: " + action.getActionType().name() + " " : " ha passato il turno");
         var value = game.doAction(action);
         if (value) {
             updateGameTimer(game);

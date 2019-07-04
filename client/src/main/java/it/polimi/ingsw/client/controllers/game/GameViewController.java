@@ -86,6 +86,12 @@ public class GameViewController extends BaseViewController implements GameBoardL
         timerLabel.setForeground(WHITE_ACCENT);
         actualPlayerLabel.setForeground(WHITE_ACCENT);
 
+        connect();
+
+        setupButtons();
+    }
+
+    private void connect() {
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
                 Client.API.addListener(e, f -> {
@@ -95,7 +101,9 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     } finally {
-                        if (((Game) f).isCompleted()) navigationController.popViewController();
+                        if (((Game) f).isCompleted() && getNavigationController() != null) {
+                            getNavigationController().presentViewController(true, LeaderBoardViewController.class, (Game) f);
+                        }
                     }
                     else if (f instanceof Message) {
                         if (!((Message) f).getFrom().getUuid().equals(Preferences.getUuid()))
@@ -111,16 +119,20 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
-
-        setupButtons();
     }
 
     private void updateTimer() {
         if (timer != null) timer.stop();
         timer = new Timer(1000, e -> {
-            if (game.getNextActionTime() - System.currentTimeMillis() <= 0) timerLabel.setText("");
-            else
+            if (game.getNextActionTime() - System.currentTimeMillis() <= 0) {
+                timerLabel.setText("");
+                if (game.getNextActionTime() - System.currentTimeMillis() <= 1500) connect();
+            } else {
+                if ((game.getNextActionTime() - System.currentTimeMillis()) / 1000 < 10)
+                    timerLabel.setForeground(Color.RED);
+                else timerLabel.setForeground(WHITE_ACCENT);
                 timerLabel.setText((game.getNextActionTime() - System.currentTimeMillis()) / 1000 + " sec");
+            }
         });
         timer.start();
     }
@@ -1098,7 +1110,9 @@ public class GameViewController extends BaseViewController implements GameBoardL
         reset();
         var token = Preferences.getTokenOrJumpBack(getNavigationController());
         if (action != null && token.isPresent()) try {
-            return Client.API.doAction(token.get(), action);
+            var ok = Client.API.doAction(token.get(), action);
+            if (!ok) showMessage("Mossa non valida!");
+            return ok;
         } catch (UserRemoteException ex) {
             ex.printStackTrace();
             Utils.jumpBackToLogin(getNavigationController());
@@ -1110,7 +1124,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
     }
 
     @Override
-    protected void controllerPopped() {
+    public void dispose() {
+        super.dispose();
         ChatViewController.messages.clear();
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {

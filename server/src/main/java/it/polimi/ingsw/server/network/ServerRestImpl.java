@@ -11,6 +11,7 @@ import it.polimi.ingsw.server.Server;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
@@ -114,7 +115,7 @@ public class ServerRestImpl extends NanoWSD {
             logger.log(Level.WARNING, e.getMessage(), e);
             return newFixedLengthResponse(Response.Status.NOT_ACCEPTABLE, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
         } catch (Exception e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
+            if (!(e instanceof SocketException)) logger.log(Level.WARNING, e.getMessage(), e);
             return newFixedLengthResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "Something wrong happened!");
         }
         return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Not found!!");
