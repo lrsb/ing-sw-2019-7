@@ -488,6 +488,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     });
                 break;
             case HELLION:
+                printMessage("select_target_basic");
                 if (!weaponAction.getAlternativeFire()) {
                     getTarget(e -> {
                         weaponAction.addBasicTarget(e);
@@ -504,6 +505,19 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 }
                 break;
             case FLAMETHROWER:
+                if (weaponAction.getAlternativeFire()) {
+                    printMessage("select_point_basic");
+                    getPoint(e -> {
+                        weaponAction.setBasicTargetPoint(e);
+                        getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                            p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                            doAction(weaponAction);
+                        });
+                    });
+                } else {
+                    printMessage("select_target_basic");
+
+                }
                 break;
             case GRENADE_LAUNCHER:
                 break;
