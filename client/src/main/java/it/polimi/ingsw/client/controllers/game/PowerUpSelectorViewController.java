@@ -35,7 +35,7 @@ public class PowerUpSelectorViewController extends BaseViewController {
         super("Scegli", 800, 800, navigationController);
         setContentPane(panel);
         //noinspection unchecked
-        var powerList = (ArrayList<PowerUp>) args[0];
+        var powerList = (java.util.List<PowerUp>) args[0];
         okButton.addActionListener(l -> {
             var list = new ArrayList<PowerUp>();
             if (checkBox1.isSelected()) list.add(powerList.get(0));

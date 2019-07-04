@@ -305,66 +305,33 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     break;
             }
             var players = 0;
+            JOptionPane.showMessageDialog(null, "Utils");
 
             var names = playersNicknames();
             //noinspection unchecked
             var namesList = new JList(names.toArray());
             switch (weaponAction.getWeapon()) {
                 case LOCK_RIFLE:
-                    JOptionPane.showMessageDialog(null, namesList,
-                            Utils.getStrings("cli", "weapons_details", "lock_rifle", "fire_details").get("select_target_basic").getAsString(),
-                            JOptionPane.PLAIN_MESSAGE);
-                    index = list.getSelectedIndices();
-                    if (index.length == 1) {
-                        weaponAction.addBasicTarget(nicknameToUuid(names.remove(index[0])));
-                    } else reset();
-                    if (option == 1) {
-                        JOptionPane.showMessageDialog(null, namesList,
-                                Utils.getStrings("cli", "weapons_details", "lock_rifle", "fire_details").get("select_target_first").getAsString(),
-                                JOptionPane.PLAIN_MESSAGE);
-                        index = list.getSelectedIndices();
-                        if (index.length == 1) {
-                            weaponAction.addFirstAdditionalTarget(nicknameToUuid(names.get(index[0])));
-                        } else reset();
-                    }
+                    printMessage("select_target_basic");
+                    int finalOption = option;
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        if (finalOption == 1) {
+                            printMessage("select_target_first");
+                            getTarget(f -> {
+                                weaponAction.addFirstAdditionalTarget(f);
+                                getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                });
+                            });
+                        }
+                    });
                     break;
                 case MACHINE_GUN:
-                    JOptionPane.showMessageDialog(null, namesList,
-                            Utils.getStrings("cli", "weapons_details", "machine_gun", "fire_details").get("select_target_basic").getAsString(),
-                            JOptionPane.PLAIN_MESSAGE);
-                    index = list.getSelectedIndices();
-                    if (index.length > 0 && index.length < 3) {
-                        for (var i : index) weaponAction.addBasicTarget(nicknameToUuid(names.get(i)));
-                    } else reset();
-                    if (option == 1 || option == 3) {
-                        //noinspection unchecked
-                        namesList = new JList(weaponAction.getBasicTarget().parallelStream().map(this::uuidToNickname).toArray());
-                        JOptionPane.showMessageDialog(null, namesList,
-                                Utils.getStrings("cli", "weapons_details", "machine_gun", "fire_details").get("select_target_first").getAsString(),
-                                JOptionPane.PLAIN_MESSAGE);
-                        index = list.getSelectedIndices();
-                        if (index.length == 1) {
-                            weaponAction.addFirstAdditionalTarget(nicknameToUuid(names.get(index[0])));
-                        } else reset();
-                    }
-                    if (option == 2 || option == 3) {
-                        //noinspection unchecked
-                        namesList = new JList(playersNicknames().toArray());
-                        JOptionPane.showMessageDialog(null, namesList,
-                                Utils.getStrings("cli", "weapons_details", "machine_gun", "fire_details").get("select_target_second").getAsString(),
-                                JOptionPane.PLAIN_MESSAGE);
-                        index = list.getSelectedIndices();
-                        if (index.length > 0 && index.length < 3) {
-                            for (var i : index) weaponAction.addSecondAdditionalTarget(nicknameToUuid(names.get(i)));
-                        } else reset();
-                    }
+
                     break;
                 case THOR:
-                    JOptionPane.showMessageDialog(null, namesList,
-                            Utils.getStrings("cli", "weapons_details", "thor", "fire_details").get("select_target_basic").getAsString(),
-                            JOptionPane.PLAIN_MESSAGE);
-                    index = list.getSelectedIndices();
-                    //if (option == 0 || option == 1) if (index.length )
+
                     break;
                 case PLASMA_GUN:
                     break;
@@ -495,7 +462,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         new GamePickerViewController(null, "Scegli un obiettivo", game, callback).setVisible(true);
     }
 
-    private void getPowerup(ArrayList<PowerUp> powerUps, PowerUpSelectorViewController.PowerCallback callback) {
+    private void getPowerup(java.util.List<PowerUp> powerUps, PowerUpSelectorViewController.PowerCallback callback) {
         new PowerUpSelectorViewController(null, powerUps, callback).setVisible(true);
     }
 
@@ -651,6 +618,11 @@ public class GameViewController extends BaseViewController implements GameBoardL
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void printMessage(@NotNull String mex) {
+        JOptionPane.showMessageDialog(null,
+                Utils.getStrings("cli", "weapons_details", weaponAction.getWeapon().name().toLowerCase(), "fire_details").get(mex));
     }
 
     /**

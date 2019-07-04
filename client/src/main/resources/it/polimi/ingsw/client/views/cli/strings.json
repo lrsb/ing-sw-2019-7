@@ -196,7 +196,7 @@
                 "reload_cost": "1 cubo rosso + 1 cubo giallo\n",
                 "fire_description": "basic mode: infliggi 1 danno e assegna 1 marchio a 1 bersaglio che puoi vedere, ma non nella tua stessa posizione\nnano-tracer mode: scegli 1 bersaglio che puoi vedere, ma non nella tua stessa posizione, infliggigli 1 danno, poi assegna 2 marchi a tutti i giocatori che si trovano nella stessa cella del bersaglio di cui sopra, compreso il bersaglio principale stesso (costo: 1 cubo rosso)\n",
                 "fire_details": {
-                    "select_target": "Seleziona il bersaglio del tuo attacco:\n"
+                    "select_target_basic": "Seleziona il bersaglio del tuo attacco:\n"
                 }
             },
             "flamethrower": {
@@ -204,8 +204,8 @@
                 "reload_cost": "1 cubo rosso\n",
                 "fire_description": "basic mode: scegli fino a 2 bersagli che rispetto a te si trovino nella stessa direzione (senza muri tra te e i bersagli), non nella tua stessa cella e, se più d'uno, non tra di loro nella stessa cella, ma al massimo a due passi da te, infliggi ai bersagli 1 danno ciascuno\nbarbecue mode: scegli 1 o 2 celle rispetto a te nella stessa direzione, non la tua stessa cella e non a più di 2 passi da te, ogni bersaglio che si trovi nella cella da te selezionata ad un passo di distanza subisce 2 danni, mentre ogni bersaglio si trovi a 2 passi da te subisce 1 danno (costo: 2 cubi gialli)\n",
                 "fire_details": {
-                    "select_target": "Seleziona 1 bersaglio (alla volta) per la \"basic mode\":\n",
-                    "select_point": "Seleziona la cella fino alla quale desideri incenerire i tuoi avversari:\n"
+                    "select_target_basic": "Seleziona 1 bersaglio (alla volta) per la \"basic mode\":\n",
+                    "select_point_basic": "Seleziona la cella fino alla quale desideri incenerire i tuoi avversari:\n"
                 }
             },
             "grenade_launcher": {
