@@ -99,10 +99,11 @@ public class GameImpl extends Game implements Serializable {
     private boolean grabAmmoCard(@NotNull Point to) {
         var cell = getCell(to);
         if (cell == null) return false;
+        int step = 1;
+        if (getActualPlayer().getDamagesTaken().size() > 2 || getSkulls() == 0) step = 2;
+        if (isLastTurn()) step = 3;
         if (cell.isSpawnPoint() || cell.getAmmoCard() == null ||
-                !canMove(getActualPlayer().getPosition(), to, 1) && !(skulls == 0 &&
-                        canMove(getActualPlayer().getPosition(), to, 2)) && !(lastTurn &&
-                        canMove(getActualPlayer().getPosition(), to, 3))) return false;
+                !canMove(getActualPlayer().getPosition(), to, step)) return false;
         getActualPlayer().setPosition(to);
         getActualPlayer().ammoCardRecharging(cell.getAmmoCard(),
                 cell.getAmmoCard().getType() == AmmoCard.Type.POWER_UP &&

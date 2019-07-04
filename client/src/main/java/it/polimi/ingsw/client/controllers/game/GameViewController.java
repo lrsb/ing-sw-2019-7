@@ -307,13 +307,13 @@ public class GameViewController extends BaseViewController implements GameBoardL
             var players = 0;
             JOptionPane.showMessageDialog(null, "Utils");
 
+            int finalOption = option;
             var names = playersNicknames();
             //noinspection unchecked
             var namesList = new JList(names.toArray());
             switch (weaponAction.getWeapon()) {
                 case LOCK_RIFLE:
                     printMessage("select_target_basic");
-                    int finalOption = option;
                     getTarget(e -> {
                         weaponAction.addBasicTarget(e);
                         if (finalOption == 1) {
@@ -328,7 +328,16 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     });
                     break;
                 case MACHINE_GUN:
+                    printMessage("select_target_basic");
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        if (JOptionPane.showConfirmDialog(null, "Vuoi selezioanre un altro bersaglio per l'effetto base?", "", YES_NO_OPTION) == YES_OPTION) {
+                            getTarget(f -> {
+                                weaponAction.addBasicTarget(f);
+                            });
+                        }
 
+                    });
                     break;
                 case THOR:
 
