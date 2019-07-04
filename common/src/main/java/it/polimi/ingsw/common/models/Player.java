@@ -256,31 +256,69 @@ public class Player implements Displayable, Serializable {
         if (cubes[color.getIndex()] < 3) cubes[color.getIndex()]++;
     }
 
+    /**
+     *
+     * @param color one of the cubes color
+     * @return the number of cubes fo the color @color owned by the player
+     */
     public int getColoredCubes(@NotNull AmmoCard.Color color) {
         return cubes[color.getIndex()];
     }
 
+    /**
+     * removes @number cubes of color @color from player
+     *
+     * @param color one of the cubes color
+     * @param number a integer
+     */
     public void removeColoredCubes(@NotNull AmmoCard.Color color, int number) {
         if (number <= cubes[color.getIndex()]) cubes[color.getIndex()] -= number;
         else cubes[color.getIndex()] = 0;
     }
 
+    /**
+     * if this player own this @powerUp, removes it
+     *
+     * @param powerUp a power up
+     */
     public void removePowerUp(@NotNull PowerUp powerUp) {
         powerUps.remove(powerUp);
     }
 
+    /**
+     * add @powerUp to this player
+     *
+     * @param powerUp  a power up
+     */
     public void addPowerUp(@NotNull PowerUp powerUp) {
         powerUps.add(powerUp);
     }
 
+    /**
+     * add @weapon to this player
+     *
+     * @param weapon a weapon
+     */
     public void addWeapon(Weapon weapon) {
         weapons.put(weapon, true);
     }
 
+    /**
+     * takes away @weapon from this player
+     *
+     * @param weapon a weapon
+     */
     public void removeWeapon(Weapon weapon) {
         weapons.remove(weapon);
     }
 
+    /**
+     * recharge this player with elements of the tile @ammoCard
+     *
+     * @param ammoCard a tile
+     * @param powerUp a power up, if tile contains it and player does not have 3,
+     *                 null otherwise
+     */
     public void ammoCardRecharging(@NotNull AmmoCard ammoCard, @Nullable PowerUp powerUp) {
         switch (ammoCard.getType()) {
             case POWER_UP:
@@ -300,14 +338,27 @@ public class Player implements Displayable, Serializable {
         addCube(ammoCard.getLeft());
     }
 
+    /**
+     *
+     * @return a list of power ups owned by this player
+     */
     public @NotNull List<PowerUp> getPowerUps() {
         return powerUps;
     }
 
+    /**
+     *
+     * @return coordinates of this player in the board, null if he does not have played his first turn
+     */
     public @Nullable Point getPosition() {
         return position;
     }
 
+    /**
+     * moves player in @position
+     *
+     * @param position coordinates in the board
+     */
     public void setPosition(@Nullable Point position) {
         this.position = position;
     }
@@ -399,11 +450,19 @@ public class Player implements Displayable, Serializable {
             this.escape = escape;
         }
 
+        /**
+         *
+         * @return the color of the player board
+         */
         @Contract(pure = true)
         public @NotNull Color getColor() {
             return color;
         }
 
+        /**
+         *
+         * @return string that represents the color of the player board
+         */
         @Contract(pure = true)
         public @NotNull String escape() {
             return escape;
