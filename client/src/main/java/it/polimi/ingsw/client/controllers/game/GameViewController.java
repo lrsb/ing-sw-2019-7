@@ -451,25 +451,28 @@ public class GameViewController extends BaseViewController implements GameBoardL
                             } else doAction(weaponAction);
                         });
                     });
-                    break;
-                case FURNACE:
+                break;
+            case FURNACE:
                 if (!weaponAction.getAlternativeFire()) {
+                    printMessage("select_chamber");
                     getPoint(e -> {
                         weaponAction.setBasicTargetPoint(e);
                         doAction(weaponAction);
                     });
                 } else {
+                    printMessage("select_square");
                     getPoint(e -> {
                         weaponAction.setBasicTargetPoint(e);
                         doAction(weaponAction);
                     });
-                }    break;
-                case HEATSEEKER:
-                    printMessage("select_target_basic");
-                    getTarget(e -> {
-                        weaponAction.addBasicTarget(e);
-                        doAction(weaponAction);
-                    });
+                }
+                break;
+            case HEATSEEKER:
+                printMessage("select_target_basic");
+                getTarget(e -> {
+                    weaponAction.addBasicTarget(e);
+                    doAction(weaponAction);
+                });
                 break;
             case HELLION:
                 printMessage("select_target_basic");
@@ -500,7 +503,15 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     });
                 } else {
                     printMessage("select_target_basic");
-
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        if (yesOrNo("Vuoi selezionare un altro bersaglio per la \"basic mode\"?")) {
+                            getTarget(f -> {
+                                weaponAction.addBasicTarget(f);
+                                doAction(weaponAction);
+                            });
+                        } doAction(weaponAction);
+                    });
                 }
                 break;
             case GRENADE_LAUNCHER:
