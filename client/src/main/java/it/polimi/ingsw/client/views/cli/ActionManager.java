@@ -150,13 +150,13 @@ class ActionManager {
             if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(selectableTagbackGrenade.get(Integer.parseInt(choice) - 1).getType(),
                     selectableTagbackGrenade.get(Integer.parseInt(choice) - 1).getAmmoColor(), destination, target)))
                 throw new InterruptedException();
-        else if (Integer.parseInt(choice) == selectableTagbackGrenade.size() + 1)
+            else if (Integer.parseInt(choice) == selectableTagbackGrenade.size() + 1)
                 if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn()))
                     throw new InterruptedException();
-        else {
-            System.out.println(invalidChoice);
-            selectTagbackResponse(game);
-        }
+                else {
+                    System.out.println(invalidChoice);
+                    selectTagbackResponse(game);
+                }
     }
 
     private void selectStandardAction(@NotNull Game game) throws InterruptedException, RemoteException {
@@ -330,10 +330,10 @@ class ActionManager {
             if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
                     .buildAmmoCardGrabAction(possibleDestination.get(Integer.parseInt(choice) - 1))))
                 throw new InterruptedException();
-        else {
-            System.out.println(invalidChoice);
-            selectGrabAmmoDestination(game, step);
-        }
+            else {
+                System.out.println(invalidChoice);
+                selectGrabAmmoDestination(game, step);
+            }
     }
 
     private void selectGrabWeaponDestination(@NotNull Game game, int step) throws InterruptedException {
@@ -964,7 +964,7 @@ class ActionManager {
                             for (Player player : game.getPlayers())
                                 if (player.getUuid().equals(basicTarget.get(0)))
                                     basicTargetPoint = player.getPosition();
-                        else chooseGloveStop(game);
+                                else chooseGloveStop(game);
                     }
                     selectAlternativePayment(game);
                 } else {
@@ -1319,9 +1319,9 @@ class ActionManager {
             for (Player player : game.getPlayers())
                 if (player.getUuid().equals(basicTarget.get(0)))
                     basicTargetPoint = player.getPosition();
-        else if (Integer.parseInt(choice) != 2) {
+                else if (Integer.parseInt(choice) != 2) {
                     System.out.println(invalidChoice);
                     chooseGloveStop(game);
-        }
+                }
     }
 }

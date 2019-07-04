@@ -17,10 +17,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class GamePickerViewController extends BaseViewController implements GameBoardListener {
+    private final Game game;
     private JPanel panel;
     private GameBoard gameBoard;
-
-    private final Game game;
     private BoardPlayerPickerCallback playerPickerCallback;
     private BoardPointPickerCallback pointPickerCallback;
 

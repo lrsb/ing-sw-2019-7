@@ -21,6 +21,7 @@ public class PlayerBoard extends AbstractBoard {
     private @NotNull Player player;
     private @Nullable Sprite weapon;
     private @Nullable Sprite powerup;
+
     public PlayerBoard(@NotNull Game game, @NotNull Player player) throws IOException {
         super(game, player.getBackImage());
         this.player = player;
