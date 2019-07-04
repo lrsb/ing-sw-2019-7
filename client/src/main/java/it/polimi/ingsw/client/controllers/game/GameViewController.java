@@ -339,13 +339,14 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     printMessage("select_target_basic");
                     getTarget(e -> {
                         weaponAction.addBasicTarget(e);
-                        if (JOptionPane.showConfirmDialog(null, "Vuoi selezioanre un altro bersaglio?", "", YES_NO_OPTION) == YES_OPTION) {
+                        if (otherTarget()) {
                             getTarget(f -> {
                                 weaponAction.addBasicTarget(f);
                                 //todo
                             });
+                        } else {
+
                         }
-                        //todo
                     });
                     break;
                 case THOR:
@@ -376,8 +377,36 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     });
                     break;
                 case PLASMA_GUN:
+                    if (JOptionPane.showConfirmDialog(null, "Vuoi selezionare un punto in cui muoverti?", "", YES_NO_OPTION) == YES_OPTION) {
+                        printMessage("select_point_basic");
+                        getPoint(e -> {
+                            weaponAction.setBasicTargetPoint(e);
+                            printMessage("select_target_basic");
+                            getTarget(f -> {
+                                weaponAction.addBasicTarget(f);
+                                if (finalOption > 0) {
+                                    getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                        doAction(weaponAction);
+                                    });
+                                } else doAction(weaponAction);
+                            });
+                        });
+                    } else {
+                        printMessage("select_target_basic");
+                        getTarget(f -> {
+                            weaponAction.addBasicTarget(f);
+                            if (finalOption > 0) {
+                                getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                    doAction(weaponAction);
+                                });
+                            } else doAction(weaponAction);
+                        });
+                    }
                     break;
                 case WHISPER:
+
                     break;
                 case ELECTROSCYTHE:
                     break;
