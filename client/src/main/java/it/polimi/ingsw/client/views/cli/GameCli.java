@@ -12,7 +12,6 @@ import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -364,7 +363,7 @@ public class GameCli {
         if (game.getActualPlayer().getUuid().equals(Preferences.getUuid())) {
             try {
                 new ActionManager().actionMenu(game);
-            } catch (FileNotFoundException | RemoteException e) {
+            } catch (RemoteException e) {
                 e.printStackTrace();
             }
         } else
