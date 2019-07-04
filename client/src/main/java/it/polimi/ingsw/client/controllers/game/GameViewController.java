@@ -406,11 +406,33 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     }
                     break;
                 case WHISPER:
-
+                    printMessage("select_target_basic");
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        doAction(weaponAction);
+                    });
                     break;
                 case ELECTROSCYTHE:
+                    if (weaponAction.getAlternativeFire()) {
+                        getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                            p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                            doAction(weaponAction);
+                        });
+                    } else doAction(weaponAction);
                     break;
                 case TRACTOR_BEAM:
+                    printMessage("select_target_basic");
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        if (weaponAction.getAlternativeFire()) {
+                            getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                doAction(weaponAction);
+                            });
+                        } else {
+
+                        }
+                    });
                     break;
                 case VORTEX_CANNON:
                     break;
