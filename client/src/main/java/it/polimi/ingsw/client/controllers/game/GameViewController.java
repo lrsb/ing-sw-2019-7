@@ -481,7 +481,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     powerupButton.setVisible(true);
 
                 } else if (game.getRemainedActions() == 0) {
-                    if (game.getActualPlayer().getWeapons().parallelStream().anyMatch(e -> !game.getActualPlayer().isALoadedGun(e)))
+                    if (game.getActualPlayer().getWeapons().parallelStream().anyMatch(e -> !game.getActualPlayer().isALoadedGun(e)) && game.getSkulls() != 0)
                         reloadButton.setVisible(true);
                     powerupButton.setVisible(true);
 
@@ -512,7 +512,11 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 }
             }
         }
-
+        var availableMovement = 1;
+        if (game.getSkulls() == 0 || game.getActualPlayer().getDamagesTaken().size() > 2) {
+            if (game.isLastTurn()) availableMovement = 3;
+            else availableMovement = 2;
+        }
         if (data instanceof Weapon) {
             if (type == Action.Type.GRAB_WEAPON) {
                 var cellColor = Stream.of(Cell.Color.values()).filter(f -> game.getWeapons(f).contains(data)).findAny().get();
@@ -522,7 +526,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 }; ref.i < Game.MAX_Y; ref.i++)
                     for (ref.j = 0; ref.j < Game.MAX_X; ref.j++)
                         if (game.getCell(new Point(ref.i, ref.j)) != null && game.getCell(new Point(ref.i, ref.j)).isSpawnPoint() && game.getCell(new Point(ref.i, ref.j)).getColor() == cellColor) {
-                            if (game.canMove(game.getActualPlayer().getPosition(), new Point(ref.i, ref.j), 1)) {
+                            if (game.canMove(game.getActualPlayer().getPosition(), new Point(ref.i, ref.j), availableMovement)) {
                                 int i = ref.i;
                                 int j = ref.j;
                                 var temp = NO_OPTION;
@@ -546,7 +550,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                                                 e.printStackTrace();
                                                             }
                                                         } else
-                                                            doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, f, null)); //TODO da vedere su server
+                                                            doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, f, null));
                                                     }
                                                 }).setVisible(true);
                                     } catch (IOException e) {
@@ -569,7 +573,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
             } else new ExpoViewController(null, data).setVisible(true);
         }
         if (data instanceof AmmoCard && type == Action.Type.GRAB_WEAPON) {
-            if (game.canMove(game.getActualPlayer().getPosition(), point, 1)) {
+            if (game.canMove(game.getActualPlayer().getPosition(), point, availableMovement)) {
                 todo = Action.Builder.create(game.getUuid()).buildAmmoCardGrabAction(point);
             } else JOptionPane.showMessageDialog(null, "Troppo lontana!");
         }
@@ -597,12 +601,18 @@ public class GameViewController extends BaseViewController implements GameBoardL
             } else JOptionPane.showMessageDialog(null, "Muovi il tuo giocatore");
 
         if (data instanceof Player && type == Action.Type.USE_POWER_UP && powerUp != null && powerUp.getType() == PowerUp.Type.NEWTON) {
-            if ((((Player) data).getPosition().getX() == point.getX() || ((Player) data).getPosition().getY() == point.getY())) {
-                if ((((Player) data).getPosition().getX() == point.getX() && ((Player) data).getPosition().getY() == point.getY()))
-                    JOptionPane.showMessageDialog(null, "non ha senso non muovere il giocatore!");
-                else
-                    doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), point, ((Player) data).getUuid()));
-            } else JOptionPane.showMessageDialog(null, "non puoi spostare lì " + ((Player) data).getNickname() + "!");
+            if (!game.getActualPlayer().getUuid().equals(((Player) data).getUuid())) {
+                if (game.canMove(((Player) data).getPosition(), point, 2)) {
+                    if ((((Player) data).getPosition().getX() == point.getX() || ((Player) data).getPosition().getY() == point.getY())) {
+                        if ((((Player) data).getPosition().getX() == point.getX() && ((Player) data).getPosition().getY() == point.getY()))
+                            JOptionPane.showMessageDialog(null, "non ha senso non muovere il giocatore!");
+                        else
+                            doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), point, ((Player) data).getUuid()));
+                    } else
+                        JOptionPane.showMessageDialog(null, "non puoi spostare lì " + ((Player) data).getNickname() + "!");
+                } else
+                    JOptionPane.showMessageDialog(null, "non puoi spostare " + ((Player) data).getNickname() + " così lontano!");
+            } else JOptionPane.showMessageDialog(null, "non puoi spostare te stesso!");
         }
 
         return doAction(todo);
