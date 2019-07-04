@@ -330,20 +330,87 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                             if (yesOrNo("Vuoi selezionare un second bersaglio per il \"tripod turret\"?")) {
                                                 getTarget(i -> {
                                                     weaponAction.addSecondAdditionalTarget(i);
-
+                                                    getPowerup(game.getActualPlayer().getPowerUps(),
+                                                            p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                                                    doAction(weaponAction);
                                                 });
                                             } else {
-
+                                                getPowerup(game.getActualPlayer().getPowerUps(),
+                                                        p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                                                doAction(weaponAction);
                                             }
                                         });
+                                    } else {
+                                        getPowerup(game.getActualPlayer().getPowerUps(),
+                                                p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                                        doAction(weaponAction);
                                     }
                                 });
                             } else if (finalOption == 2) {
-
+                                printMessage("select_target_second");
+                                getTarget(h -> {
+                                    weaponAction.addSecondAdditionalTarget(h);
+                                    if (yesOrNo("Vuoi selezionare un second bersaglio per il \"tripod turret\"?")) {
+                                        getTarget(i -> {
+                                            weaponAction.addSecondAdditionalTarget(i);
+                                            getPowerup(game.getActualPlayer().getPowerUps(),
+                                                    p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                                            doAction(weaponAction);
+                                        });
+                                    } else {
+                                        getPowerup(game.getActualPlayer().getPowerUps(),
+                                                p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                                        doAction(weaponAction);
+                                    }
+                                });
                             } else doAction(weaponAction);
                         });
                     } else {
-
+                        if (finalOption == 1 || finalOption == 3) {
+                            printMessage("select_target_first");
+                            getTarget(g -> {
+                                weaponAction.addFirstAdditionalTarget(g);
+                                if (finalOption == 3) {
+                                    printMessage("select_target_second");
+                                    getTarget(h -> {
+                                        weaponAction.addSecondAdditionalTarget(h);
+                                        if (yesOrNo("Vuoi selezionare un second bersaglio per il \"tripod turret\"?")) {
+                                            getTarget(i -> {
+                                                weaponAction.addSecondAdditionalTarget(i);
+                                                getPowerup(game.getActualPlayer().getPowerUps(),
+                                                        p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                                                doAction(weaponAction);
+                                            });
+                                        } else {
+                                            getPowerup(game.getActualPlayer().getPowerUps(),
+                                                    p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                                            doAction(weaponAction);
+                                        }
+                                    });
+                                } else {
+                                    getPowerup(game.getActualPlayer().getPowerUps(),
+                                            p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                                    doAction(weaponAction);
+                                }
+                            });
+                        } else if (finalOption == 2) {
+                            printMessage("select_target_second");
+                            getTarget(h -> {
+                                weaponAction.addSecondAdditionalTarget(h);
+                                if (yesOrNo("Vuoi selezionare un second bersaglio per il \"tripod turret\"?")) {
+                                    getTarget(i -> {
+                                        weaponAction.addSecondAdditionalTarget(i);
+                                        getPowerup(game.getActualPlayer().getPowerUps(),
+                                                p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                                        doAction(weaponAction);
+                                    });
+                                } else {
+                                    getPowerup(game.getActualPlayer().getPowerUps(),
+                                            p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                                    doAction(weaponAction);
+                                }
+                            });
+                        } else doAction(weaponAction);
                     }
                 });
                 break;
