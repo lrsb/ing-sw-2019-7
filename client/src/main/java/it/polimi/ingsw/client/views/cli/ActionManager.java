@@ -58,8 +58,7 @@ public class ActionManager {
         target = null;
     }
 
-    private void actionMenu(@NotNull Game game) throws FileNotFoundException, RemoteException {
-        clearAll();
+    void actionMenu(@NotNull Game game) throws FileNotFoundException, RemoteException {
         try {
             if (game.getActualPlayer().getPosition() == null) {
                 System.out.println(game.getActualPlayer().getNickname() + " è la tua prima mossa: scegli " +
@@ -92,8 +91,9 @@ public class ActionManager {
         if (game.getActualPlayer().getPowerUps().size() == 1) {
             try {
                 System.out.println("Ops...non hai molta scelta");
-                Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
-                        .buildReborn(game.getActualPlayer().getPowerUps().get(0).getType(), game.getActualPlayer().getPowerUps().get(0).getAmmoColor()));
+                if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                        .buildReborn(game.getActualPlayer().getPowerUps().get(0).getType(), game.getActualPlayer().getPowerUps().get(0).getAmmoColor())))
+                    throw new InterruptedException();
                 return;
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -105,9 +105,10 @@ public class ActionManager {
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= game.getActualPlayer().getPowerUps().size()) {
             try {
-                Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
                         .buildReborn(game.getActualPlayer().getPowerUps().get(Integer.parseInt(choice) - 1).getType(),
-                                game.getActualPlayer().getPowerUps().get(Integer.parseInt(choice) - 1).getAmmoColor()));
+                                game.getActualPlayer().getPowerUps().get(Integer.parseInt(choice) - 1).getAmmoColor())))
+                    throw new InterruptedException();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -147,10 +148,12 @@ public class ActionManager {
         System.out.println((selectableTagbackGrenade.size() + 1) + ". Non rispondere");
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < selectableTagbackGrenade.size() + 1)
-            Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(selectableTagbackGrenade.get(Integer.parseInt(choice) - 1).getType(),
-                    selectableTagbackGrenade.get(Integer.parseInt(choice) - 1).getAmmoColor(), destination, target));
+            if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(selectableTagbackGrenade.get(Integer.parseInt(choice) - 1).getType(),
+                    selectableTagbackGrenade.get(Integer.parseInt(choice) - 1).getAmmoColor(), destination, target)))
+                throw new InterruptedException();
         else if (Integer.parseInt(choice) == selectableTagbackGrenade.size() + 1)
-            Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn());
+                if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn()))
+                    throw new InterruptedException();
         else {
             System.out.println(invalidChoice);
             selectTagbackResponse(game);
@@ -170,7 +173,8 @@ public class ActionManager {
                 case 1:
                     System.out.println(Utils.getStrings("cli", "actions", "move_action").get("select_square").getAsString());
                     selectMyDestination(game, game.getSkulls() > 0 ? 3 : 4);
-                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildMoveAction(destination));
+                    if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildMoveAction(destination)))
+                        throw new InterruptedException();
                     break;
                 case 2:
                     System.out.println(Utils.getStrings("cli", "actions", "grab_action").get("grab_ammo_square").getAsString());
@@ -187,8 +191,9 @@ public class ActionManager {
                     }
                     System.out.println(Utils.getStrings("cli", "actions").get("alternative_payment").getAsString());
                     selectAlternativePayment(game);
-                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
-                            .buildWeaponGrabAction(destination, weapon, discardedWeapon, powerUpPayment));
+                    if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                            .buildWeaponGrabAction(destination, weapon, discardedWeapon, powerUpPayment)))
+                        throw new InterruptedException();
                     break;
                 case 4:
                     System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_weapon").getAsString());
@@ -198,16 +203,18 @@ public class ActionManager {
                         selectMyDestination(game, 1);
                     } else destination = game.getActualPlayer().getPosition();
                     buildFireAction(game);
-                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                    if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
                             .buildFireAction(weapon, destination, powerUpPayment, alternativeFire, options,
                                     basicTarget, basicTargetPoint, firstAdditionalTarget, firstAdditionalTargetPoint,
-                                    secondAdditionalTarget, secondAdditionalTargetPoint));
+                                    secondAdditionalTarget, secondAdditionalTargetPoint)))
+                        throw new InterruptedException();
                     break;
                 case 5:
                     buildUsePowerUp(game);
                     break;
                 case 6:
-                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn());
+                    if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn()))
+                        throw new InterruptedException();
                     break;
             }
         } else {
@@ -230,10 +237,12 @@ public class ActionManager {
                     selectMyReloadWeapon(game);
                     System.out.println(Utils.getStrings("cli", "actions").get("alternative_payment").getAsString());
                     selectAlternativePayment(game);
-                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildReload(weapon, powerUpPayment));
+                    if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildReload(weapon, powerUpPayment)))
+                        throw new InterruptedException();
                     break;
                 case 3:
-                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn());
+                    if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn()))
+                        throw new InterruptedException();
                     break;
             }
         } else {
@@ -263,8 +272,9 @@ public class ActionManager {
                     }
                     System.out.println(Utils.getStrings("cli", "actions").get("alternative_payment").getAsString());
                     selectAlternativePayment(game);
-                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
-                            .buildWeaponGrabAction(destination, weapon, discardedWeapon, powerUpPayment));
+                    if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                            .buildWeaponGrabAction(destination, weapon, discardedWeapon, powerUpPayment)))
+                        throw new InterruptedException();
                     break;
                 case 3:
                     System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_weapon").getAsString());
@@ -272,16 +282,18 @@ public class ActionManager {
                     System.out.println(Utils.getStrings("cli", "actions", "fire_action").get("select_move_square").getAsString());
                     selectMyDestination(game, 2);
                     buildFireAction(game);
-                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                    if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
                             .buildFireAction(weapon, destination, powerUpPayment, alternativeFire, options,
                                     basicTarget, basicTargetPoint, firstAdditionalTarget, firstAdditionalTargetPoint,
-                                    secondAdditionalTarget, secondAdditionalTargetPoint));
+                                    secondAdditionalTarget, secondAdditionalTargetPoint)))
+                        throw new InterruptedException();
                     break;
                 case 4:
                     buildUsePowerUp(game);
                     break;
                 case 5:
-                    Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn());
+                    if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildNextTurn()))
+                        throw new InterruptedException();
                     break;
             }
         } else {
@@ -316,8 +328,9 @@ public class ActionManager {
         printDestinations(game, possibleDestination);
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestination.size())
-            Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
-                    .buildAmmoCardGrabAction(possibleDestination.get(Integer.parseInt(choice) - 1)));
+            if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                    .buildAmmoCardGrabAction(possibleDestination.get(Integer.parseInt(choice) - 1))))
+                throw new InterruptedException();
         else if (choice.charAt(0) != '*') {
             System.out.println(invalidChoice);
             selectGrabAmmoDestination(game, step);
@@ -406,19 +419,22 @@ public class ActionManager {
             case TARGETING_SCOPE:
                 System.out.println(Utils.getStrings("cli", "actions", "use_power_up_action", "targeting_scope").get("select_target").getAsString());
                 selectTargetingScopeTarget(game);
-                Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUpType, color, destination, target));
+                if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUpType, color, destination, target)))
+                    throw new InterruptedException();
                 break;
             case NEWTON:
                 System.out.println(Utils.getStrings("cli", "actions", "use_power_up_action", "newton").get("select_target").getAsString());
                 selectNewtonTarget(game);
                 System.out.println(Utils.getStrings("cli", "actions", "use_power_up_action", "newton").get("select_square").getAsString());
                 selectNewtonDestination(game);
-                Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUpType, color, destination, target));
+                if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUpType, color, destination, target)))
+                    throw new InterruptedException();
                 break;
             case TELEPORTER:
                 System.out.println(Utils.getStrings("cli", "actions", "use_power_up_action", "teleporter").get("select_square").getAsString());
                 selectTeleporterDestination(game);
-                Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUpType, color, destination, target));
+                if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUpType, color, destination, target)))
+                    throw new InterruptedException();
                 break;
             default:
                 break;

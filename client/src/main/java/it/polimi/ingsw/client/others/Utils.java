@@ -14,10 +14,8 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -54,13 +52,9 @@ public class Utils {
     }
 
     public static JsonObject getStrings(@NotNull String... args) {
-        try {
-            var json = new JsonParser().parse(new JsonReader(new FileReader(new File(GameCli.class.getResource("strings.json").getFile())))).getAsJsonObject();
-            for (var arg : args) json = json.get(arg).getAsJsonObject();
-            return json;
-        } catch (FileNotFoundException e) {
-            return new JsonObject();
-        }
+        var json = new JsonParser().parse(new JsonReader(new InputStreamReader(GameCli.class.getResourceAsStream("strings.json")))).getAsJsonObject();
+        for (var arg : args) json = json.get(arg).getAsJsonObject();
+        return json;
     }
 
     public static boolean isRetina() {

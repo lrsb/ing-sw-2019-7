@@ -4,13 +4,15 @@ import it.polimi.ingsw.client.Client;
 import it.polimi.ingsw.client.others.Preferences;
 import it.polimi.ingsw.client.views.cli.base.Segue;
 import it.polimi.ingsw.client.views.cli.base.TypeCell;
-import it.polimi.ingsw.common.models.*;
+import it.polimi.ingsw.common.models.AmmoCard;
+import it.polimi.ingsw.common.models.Bounds;
+import it.polimi.ingsw.common.models.Cell;
+import it.polimi.ingsw.common.models.Game;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
-import it.polimi.ingsw.server.models.GameImpl;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,7 @@ import static it.polimi.ingsw.common.models.Cell.Color.*;
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public class GameCli {
-    private static @Nullable Game game;
+    public static Game game;
 
     private static TypeCell[][] buildBoard(@NotNull Game game) {
         var cells = game.getCells();
@@ -253,7 +255,6 @@ public class GameCli {
     }
 
     public static @NotNull Segue preGame(@NotNull Game game) {
-        //TODO: add timer reprint
         GameCli.game = game;
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
         try {
@@ -261,7 +262,6 @@ public class GameCli {
                 if (f instanceof String) System.out.println((String) f);
                 else if (f instanceof Game && ((Game) f).getUuid().equals(game.getUuid())) {
                     GameCli.game = (Game) f;
-                    printGame((Game) f);
                 }
             });
         } catch (UserRemoteException ex) {
@@ -270,8 +270,20 @@ public class GameCli {
         } catch (RemoteException ex) {
             System.out.println(ex.getMessage());
         }
-        printGame(game);
-        return null;
+        while (!game.isCompleted()) {
+            var segue = printGame();
+            if (segue != null) return segue;
+            GameCli.game = null;
+
+            while (GameCli.game == null) try {
+                Thread.onSpinWait();
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Thread.currentThread().interrupt();
+            }
+        }
+        return Segue.of("postGame");
     }
 
     public static @NotNull Segue postGame() {
@@ -288,7 +300,7 @@ public class GameCli {
         }
     }
 
-    private static void boardInfo(Game game) {
+    private static void boardInfo(@NotNull Game game) {
         System.out.println("_____________________________________________________________________________");
         System.out.println();
         System.out.println(game.getTurn());
@@ -335,11 +347,7 @@ public class GameCli {
         });
     }
 
-    public static void printGameImpl(@NotNull GameImpl game) {
-        printGame(game);
-    }
-
-    public static void printGame(@NotNull Game game) {
+    public static @Nullable Segue printGame() {
         var board = buildBoard(game);
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < board.length; i++) {
@@ -353,26 +361,16 @@ public class GameCli {
         boardInfo(game);
         playerInfo(game);
         if (game.getActualPlayer().getUuid().equals(Preferences.getUuid())) {
-            //TODO
+            try {
+                new ActionManager().actionMenu(game);
+            } catch (FileNotFoundException | RemoteException e) {
+                e.printStackTrace();
+            }
         } else
             System.out.println(game.getActualPlayer().getBoardType().escape() + game.getActualPlayer().getNickname() +
                     "\u001b[0m" + " sta facendo la sua mossa...");
-    }
-
-    @Contract(pure = true)
-    public static @NotNull Segue start() {
-        String gameName = "NomePartita";
-        User creator = new User("God");
-        ArrayList<User> possibleUserPlayer = new ArrayList<>();
-        possibleUserPlayer.add(new User("Luca"));
-        possibleUserPlayer.add(new User("Federico"));
-        possibleUserPlayer.add(new User("Lore"));
-        possibleUserPlayer.add(new User("Tia"));
-        Room room = new Room(gameName, creator);
-        room.setGameType(Game.Type.FIVE_FIVE);
-        room.setSkulls(5);
-        while (room.getUsers().size() < 5) room.addUser(possibleUserPlayer.get(room.getUsers().size() - 1));
-        return Segue.of("printGameImpl", GameImpl.Creator.newGame(room));
+        //TODO if (exited) return Segue.of(PregameCli.class, "mainMenu");
+        return null;
     }
 
     private void printRanking(@NotNull Game game) {

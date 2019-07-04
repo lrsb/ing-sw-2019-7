@@ -8,9 +8,12 @@ import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 /**
@@ -189,12 +192,13 @@ public class PregameCli {
      * @param room the actual room
      * @return The next view
      */
-    public static @NotNull Segue preLobby(@NotNull Room room) {
+    public static @NotNull Segue preLobby(@NotNull Room room) throws IOException {
         PregameCli.room = room;
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
         try {
             Client.API.addListener(Preferences.getOptionalToken().get(), f -> {
                 if (f instanceof Room && ((Room) f).getUuid().equals(room.getUuid())) PregameCli.room = (Room) f;
+                PregameCli.room.notifyAll();
             });
         } catch (UserRemoteException ex) {
             ex.printStackTrace();
@@ -202,7 +206,20 @@ public class PregameCli {
         } catch (RemoteException ex) {
             System.out.println(ex.getMessage());
         }
-        return Segue.of("lobby");
+        while (!room.isGameCreated()) {
+            var segue = lobby();
+            if (segue != null) return segue;
+            PregameCli.room = null;
+
+            while (PregameCli.room == null) try {
+                Thread.onSpinWait();
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Thread.currentThread().interrupt();
+            }
+        }
+        return Segue.of("postLobby");
     }
 
     /**
@@ -226,10 +243,8 @@ public class PregameCli {
 
     /**
      * The cli lobby
-     *
-     * @return The next view
      */
-    public static @NotNull Segue lobby() throws IOException, InterruptedException {
+    private static @Nullable Segue lobby() throws IOException {
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
         System.out.println("LOBBY");
         System.out.println();
@@ -238,27 +253,25 @@ public class PregameCli {
         System.out.println("tipo di mappa: " + room.getGameType().toString());
         System.out.println("Timeout turno: " + room.getActionTimeout());
         System.out.println("Giocatori nella partita: " + room.getUsers().parallelStream().map(User::getNickname).collect(Collectors.joining(", ")));
-        if (room.getStartTime() - System.currentTimeMillis() > 0)
-            System.out.println("secondi all' avvio:  " + (room.getStartTime() - System.currentTimeMillis()) / 1000);
-        if (System.currentTimeMillis() == -1)
+        var formatter = new SimpleDateFormat("HH:mm:ss");
+        if (room.getStartTime() == -1)
             System.out.println("numero di giocatori insufficienti per creare la partita");
+        else System.out.println("inizio alle " + formatter.format(new Date(room.getStartTime())));
         System.out.println("scrivi * per abbandonare la lobby o attendi la partenza della partita");
         if (System.in.available() > 0) {
             if (StartupCli.in.nextLine().equals("*")) {
                 try {
                     Client.API.quitRoom(Preferences.getOptionalToken().get(), room.getUuid());
+                    return Segue.of("mainMenu");
                 } catch (UserRemoteException e) {
                     System.out.println("Errore nell'autenticazione, ritorni al login");
                     return Segue.of("login", StartupCli.class);
                 } catch (RemoteException e) {
                     System.out.println(e.getMessage());
                 }
-                return Segue.of("joinGame");
             }
         }
-        if (room.isGameCreated()) return Segue.of("postLobby");
-        Thread.sleep(1000);
-        return Segue.of("lobby");
+        return null;
     }
 
 }

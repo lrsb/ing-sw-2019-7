@@ -22,7 +22,8 @@ public class GameCliTest {
                 game.getPlayers().get(2).setPosition(new Point(2, 1));
                 game.getPlayers().get(3).setPosition(new Point(1, 1));
                 game.getPlayers().get(4).setPosition(new Point(1, 0));
-                GameCli.printGame(game);
+                GameCli.game = game;
+                GameCli.printGame();
             }
         } catch (Exception ignored) {
         }
