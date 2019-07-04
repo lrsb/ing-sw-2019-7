@@ -626,8 +626,8 @@ class ActionManager {
                 selectBasicMovementPoint(game, 2);
                 var mockPlayer = new Player(new User(""), game.getActualPlayer().getBoardType());
                 mockPlayer.setPosition(basicTargetPoint);
-                List<UUID> selectablePlasmaTargets = game.getPlayers().stream().filter(e -> game.getActualPlayer().canSeeNotSame(e, game.getCells()) ||
-                        mockPlayer.canSeeNotSame(e, game.getCells())).map(Player::getUuid).collect(Collectors.toList());
+                List<UUID> selectablePlasmaTargets = game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && (game.getActualPlayer().canSeeNotSame(e, game.getCells()) ||
+                        mockPlayer.canSeeNotSame(e, game.getCells()))).map(Player::getUuid).collect(Collectors.toList());
                 System.out.println(Utils.getStrings("cli", "weapons_details", "plasma_gun", "fire_details").get("select_target_basic").getAsString());
                 printSelectableTargets(game, selectablePlasmaTargets);
                 simpleBasicTargetSelection(selectablePlasmaTargets);
