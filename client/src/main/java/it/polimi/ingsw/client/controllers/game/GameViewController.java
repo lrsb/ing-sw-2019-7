@@ -307,8 +307,9 @@ public class GameViewController extends BaseViewController implements GameBoardL
                             weaponAction.addFirstAdditionalTarget(f);
                             getPowerup(game.getActualPlayer().getPowerUps(),
                                     p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
+                            doAction(weaponAction);
                         });
-                    }
+                    } else doAction(weaponAction);
                 });
                 break;
             case MACHINE_GUN:
@@ -325,7 +326,15 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                     if (finalOption == 3) {
                                         printMessage("select_target_second");
                                         getTarget(h -> {
+                                            weaponAction.addSecondAdditionalTarget(h);
+                                            if (yesOrNo("Vuoi selezionare un second bersaglio per il \"tripod turret\"?")) {
+                                                getTarget(i -> {
+                                                    weaponAction.addSecondAdditionalTarget(i);
 
+                                                });
+                                            } else {
+
+                                            }
                                         });
                                     }
                                 });
