@@ -109,6 +109,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
             }
         });
 
+        setupButtons();
+    }
+
+    private void setupButtons() {
         playersBoardButton.addActionListener(e -> {
             if (playersBoardsViewController != null) playersBoardsViewController.dispose();
             playersBoardsViewController = new PlayersBoardsViewController(null, gameBoard.getGame());
@@ -134,7 +138,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
             if (JOptionPane.showConfirmDialog(null, "Vuoi uscire dal gioco?", "Esci", YES_NO_OPTION) == YES_OPTION) {
                 try {
                     Client.API.quitGame(f, game.getUuid());
-                    navigationController.popViewController();
+                    getNavigationController().popViewController();
                 } catch (UserRemoteException ex) {
                     ex.printStackTrace();
                     Utils.jumpBackToLogin(getNavigationController());
@@ -499,6 +503,14 @@ public class GameViewController extends BaseViewController implements GameBoardL
         }
     }
 
+    private void getPoint(GamePickerViewController.BoardPointPickerCallback callback) {
+        new GamePickerViewController(null, "Scegli un punto", game, callback).setVisible(true);
+    }
+
+    private void getTarget(GamePickerViewController.BoardPlayerPickerCallback callback) {
+        new GamePickerViewController(null, "Scegli un obeittivo", game, callback).setVisible(true);
+    }
+
     @Override
     public void spriteSelected(@Nullable Object data, @Nullable Point point) {
         @Nullable Action todo = null;
@@ -597,7 +609,9 @@ public class GameViewController extends BaseViewController implements GameBoardL
             } else JOptionPane.showMessageDialog(null, "Muovi il tuo giocatore");
 
         if (data instanceof Player && type == Action.Type.USE_POWER_UP && powerUp != null && powerUp.getType() == PowerUp.Type.NEWTON) {
+
             if ((((Player) data).getPosition().getX() == point.getX() || ((Player) data).getPosition().getY() == point.getY())) {
+
                 if ((((Player) data).getPosition().getX() == point.getX() && ((Player) data).getPosition().getY() == point.getY()))
                     JOptionPane.showMessageDialog(null, "non ha senso non muovere il giocatore!");
                 else
@@ -620,8 +634,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
     }
 
     private boolean doAction(@Nullable Action action) {
-        type = null;
-        reloadActionPanel();
+        reset();
         var token = Preferences.getTokenOrJumpBack(getNavigationController());
         if (action != null && token.isPresent()) try {
             return Client.API.doAction(token.get(), action);
