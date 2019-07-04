@@ -7,7 +7,6 @@ import it.polimi.ingsw.common.models.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ActionManager {
+class ActionManager {
     private final String stdColor = "\u001b[0m";
     private final String invalidChoice = "Scelta non valida";
     private boolean done = false;
@@ -58,7 +57,7 @@ public class ActionManager {
         target = null;
     }
 
-    void actionMenu(@NotNull Game game) throws FileNotFoundException, RemoteException {
+    void actionMenu(@NotNull Game game) throws RemoteException {
         try {
             if (game.getActualPlayer().getPosition() == null) {
                 System.out.println(game.getActualPlayer().getNickname() + " è la tua prima mossa: scegli " +
@@ -160,7 +159,7 @@ public class ActionManager {
         }
     }
 
-    private void selectStandardAction(@NotNull Game game) throws InterruptedException, FileNotFoundException, RemoteException {
+    private void selectStandardAction(@NotNull Game game) throws InterruptedException, RemoteException {
         if (Preferences.getToken() == null) throw new InterruptedException();
         if (game.getSkulls() > 0)
             System.out.println(Utils.getStrings("cli", "possible_actions").get(game.getActualPlayer().getDamagesTaken().size() < 3 ?
@@ -223,7 +222,7 @@ public class ActionManager {
         }
     }
 
-    private void selectLastAction(@NotNull Game game) throws FileNotFoundException, InterruptedException, RemoteException {
+    private void selectLastAction(@NotNull Game game) throws InterruptedException, RemoteException {
         if (Preferences.getToken() == null) throw new InterruptedException();
         System.out.println(Utils.getStrings("cli", "possible_actions").get("last_standard_actions").getAsString());
         String choice = getLine();
@@ -251,7 +250,7 @@ public class ActionManager {
         }
     }
 
-    private void selectUltimateAction(@NotNull Game game) throws FileNotFoundException, InterruptedException, RemoteException {
+    private void selectUltimateAction(@NotNull Game game) throws InterruptedException, RemoteException {
         if (Preferences.getToken() == null) throw new InterruptedException();
         System.out.println(Utils.getStrings("cli", "possible_actions").get("last_turn_actions").getAsString());
         String choice = getLine();
@@ -309,7 +308,7 @@ public class ActionManager {
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestination.size())
             destination = possibleDestination.get(Integer.parseInt(choice) - 1);
-        else if (choice.charAt(0) != '*') {
+        else {
             System.out.println(invalidChoice);
             selectMyDestination(game, step);
         }
@@ -360,10 +359,10 @@ public class ActionManager {
         if (destination == null) throw new InterruptedException();
         var cell = game.getCell(destination);
         if (cell == null) throw new InterruptedException();
-        for (int i = 0; i < game.getWeapons(game.getCell(destination).getColor()).size(); i++)
-            System.out.println((i + 1) + ". " + game.getWeapons(game.getCell(destination).getColor()).get(i).getColor().escape() +
-                    game.getWeapons(game.getCell(destination).getColor()).get(i).name() + "\u001b[0m" + " " +
-                    Utils.getStrings("cli", "weapons_details", game.getWeapons(game.getCell(destination).getColor()).get(i).name().toLowerCase()).get("grab_cost").getAsString());
+        for (int i = 0; i < game.getWeapons(cell.getColor()).size(); i++)
+            System.out.println((i + 1) + ". " + game.getWeapons(cell.getColor()).get(i).getColor().escape() +
+                    game.getWeapons(cell.getColor()).get(i).name() + "\u001b[0m" + " " +
+                    Utils.getStrings("cli", "weapons_details", game.getWeapons(cell.getColor()).get(i).name().toLowerCase()).get("grab_cost").getAsString());
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= game.getWeapons(cell.getColor()).size()) {
@@ -381,7 +380,7 @@ public class ActionManager {
                     selectableWeapon.get(i).name() + "\u001b[0m");
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
         String choice = getLine();
-        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= game.getWeapons(game.getCell(destination).getColor()).size()) {
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableWeapon.size()) {
             discardedWeapon = selectableWeapon.get(Integer.parseInt(choice) - 1);
         } else {
             System.out.println(invalidChoice);
@@ -567,14 +566,14 @@ public class ActionManager {
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
     }
 
-    private void buildFireAction(@NotNull Game game) throws FileNotFoundException, InterruptedException {
+    private void buildFireAction(@NotNull Game game) throws InterruptedException {
         if (game.getActualPlayer().getPosition() == null ||
                 game.getCell(game.getActualPlayer().getPosition()) == null) throw new InterruptedException();
         switch (weapon) {
             case LOCK_RIFLE:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "lock_rifle").get("fire_description").getAsString());
                 alternativeFire = false;
-                doubleChoice(game);
+                doubleChoice();
                 selectBasicVisibleTarget(game, new ArrayList<>());
                 if (options == 1) {
                     selectFirstVisibleTarget(game, basicTarget);
@@ -584,7 +583,7 @@ public class ActionManager {
             case MACHINE_GUN:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "machine_gun").get("fire_description").getAsString());
                 alternativeFire = false;
-                quadrupleChoice(game);
+                quadrupleChoice();
                 done = false;
                 do {
                     selectBasicVisibleTarget(game, basicTarget);
@@ -613,7 +612,7 @@ public class ActionManager {
             case THOR:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "thor").get("fire_description").getAsString());
                 alternativeFire = false;
-                tripleChoice(game);
+                tripleChoice();
                 if (options == 2) options = 3;
                 selectBasicVisibleTarget(game, new ArrayList<>());
                 if (options == 1 || options == 3) selectFirstThorTarget(game);
@@ -623,7 +622,7 @@ public class ActionManager {
             case PLASMA_GUN:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "plasma_gun").get("fire_description").getAsString());
                 alternativeFire = false;
-                doubleChoice(game);
+                doubleChoice();
                 selectBasicMovementPoint(game, 2);
                 var mockPlayer = new Player(new User(""), game.getActualPlayer().getBoardType());
                 mockPlayer.setPosition(basicTargetPoint);
@@ -647,14 +646,14 @@ public class ActionManager {
                 break;
             case ELECTROSCYTHE:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "electroscythe").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 alternativeFire = options != 0;
                 options = 0;
                 if (alternativeFire) selectAlternativePayment(game);
                 break;
             case TRACTOR_BEAM:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "tractor_beam").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 alternativeFire = options != 0;
                 options = 0;
                 if (alternativeFire) {
@@ -677,7 +676,7 @@ public class ActionManager {
                 break;
             case VORTEX_CANNON:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "vortex_cannon").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 selectVisibleBasicPoint(game);
                 List<UUID> selectableTargets = game.getPlayers().parallelStream()
                         .filter(e -> game.canMove(e.getPosition(), basicTargetPoint, 1))
@@ -704,7 +703,7 @@ public class ActionManager {
                 break;
             case FURNACE:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "furnace").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 alternativeFire = options != 0;
                 options = 0;
                 if (alternativeFire) {
@@ -746,7 +745,7 @@ public class ActionManager {
                 break;
             case HELLION:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "hellion").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 alternativeFire = options != 0;
                 options = 0;
                 selectBasicVisibleTarget(game, game.getPlayers().stream().filter(e -> e.getPosition() == null ||
@@ -755,7 +754,7 @@ public class ActionManager {
                 break;
             case FLAMETHROWER:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "flamethrower").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 alternativeFire = options != 0;
                 options = 0;
                 if (alternativeFire) {
@@ -794,7 +793,7 @@ public class ActionManager {
                 break;
             case GRENADE_LAUNCHER:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "grenade_launcher").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 selectBasicVisibleTarget(game, new ArrayList<>());
                 selectBasicTargetMovementInDirection(game, 1);
                 if (options == 1) {
@@ -804,7 +803,7 @@ public class ActionManager {
                 break;
             case ROCKET_LAUNCHER:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "rocket_launcher").get("fire_description").getAsString());
-                quadrupleChoice(game);
+                quadrupleChoice();
                 if (options == 1 || options == 3) {
                     List<Point> selectablePoints = new ArrayList<>();
                     addMovementPoint(game, selectablePoints, 2);
@@ -822,7 +821,7 @@ public class ActionManager {
                 break;
             case RAILGUN:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "railgun").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 alternativeFire = options != 0;
                 options = 0;
                 List<UUID> selectableRailTargets = game.getPlayers().parallelStream().filter(e -> e.getPosition() != null &&
@@ -853,7 +852,7 @@ public class ActionManager {
                 break;
             case CYBERBLADE:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "cyberblade").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 selectBasicMovementPoint(game, 1);
                 List<UUID> selectableBladeTargets = game.getPlayers().stream().filter(e -> e.getPosition() != null &&
                         (e.getPosition().equals(game.getActualPlayer().getPosition()) || e.getPosition().equals(basicTargetPoint)))
@@ -876,7 +875,7 @@ public class ActionManager {
                 break;
             case ZX2:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "zx2").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 alternativeFire = options != 0;
                 options = 0;
                 if (alternativeFire) {
@@ -892,7 +891,7 @@ public class ActionManager {
                 break;
             case SHOTGUN:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "shotgun").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 alternativeFire = options != 0;
                 options = 0;
                 List<UUID> selectableShotgunTargets = new ArrayList<>();
@@ -913,7 +912,7 @@ public class ActionManager {
                 break;
             case POWER_GLOVE:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "power_glove").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 alternativeFire = options != 0;
                 options = 0;
                 List<UUID> selectableGloveTargets = game.getPlayers().stream().filter(e -> e.getPosition() != null &&
@@ -965,7 +964,7 @@ public class ActionManager {
                 break;
             case SHOCKWAVE:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "shockwave").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 alternativeFire = options != 0;
                 options = 0;
                 if (alternativeFire) selectAlternativePayment(game);
@@ -994,7 +993,7 @@ public class ActionManager {
                 break;
             case SLEDGEHAMMER:
                 System.out.println(Utils.getStrings("cli", "weapons_details", "sledgehammer").get("fire_description").getAsString());
-                doubleChoice(game);
+                doubleChoice();
                 alternativeFire = options != 0;
                 options = 0;
                 List<UUID> selectableSledgeTargets = game.getPlayersAtPosition(game.getActualPlayer().getPosition()).stream()
@@ -1017,36 +1016,36 @@ public class ActionManager {
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
     }
 
-    private void doubleChoice(@NotNull Game game) throws InterruptedException {
+    private void doubleChoice() throws InterruptedException {
         printChoiceMessage();
         String choice = getLine();
         if (Integer.parseInt(choice) == 1 || Integer.parseInt(choice) == 2)
             options = Integer.parseInt(choice) - 1;
         else {
             System.out.println(invalidChoice);
-            doubleChoice(game);
+            doubleChoice();
         }
     }
 
-    private void tripleChoice(@NotNull Game game) throws InterruptedException {
+    private void tripleChoice() throws InterruptedException {
         printChoiceMessage();
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 4)
             options = Integer.parseInt(choice) - 1;
         else {
             System.out.println(invalidChoice);
-            tripleChoice(game);
+            tripleChoice();
         }
     }
 
-    private void quadrupleChoice(@NotNull Game game) throws InterruptedException {
+    private void quadrupleChoice() throws InterruptedException {
         printChoiceMessage();
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 5)
             options = Integer.parseInt(choice) - 1;
         else {
             System.out.println(invalidChoice);
-            quadrupleChoice(game);
+            quadrupleChoice();
         }
     }
 
@@ -1163,7 +1162,7 @@ public class ActionManager {
         unselectableTargets.stream().filter(selectableTargets::contains).forEach(selectableTargets::remove);
     }
 
-    private void selectBasicMovementPoint(@NotNull Game game, int step) throws FileNotFoundException, InterruptedException {
+    private void selectBasicMovementPoint(@NotNull Game game, int step) throws InterruptedException {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_point_basic"));
         List<Point> selectablePoints = new ArrayList<>();
         addMovementPoint(game, selectablePoints, step);
