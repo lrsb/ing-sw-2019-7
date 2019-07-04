@@ -331,7 +331,7 @@ public class ActionManager {
             if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
                     .buildAmmoCardGrabAction(possibleDestination.get(Integer.parseInt(choice) - 1))))
                 throw new InterruptedException();
-        else if (choice.charAt(0) != '*') {
+        else {
             System.out.println(invalidChoice);
             selectGrabAmmoDestination(game, step);
         }
