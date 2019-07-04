@@ -8,6 +8,7 @@ import it.polimi.ingsw.client.controllers.base.NavigationController;
 import it.polimi.ingsw.client.controllers.game.ChatViewController;
 import it.polimi.ingsw.client.controllers.game.GameViewController;
 import it.polimi.ingsw.client.others.Preferences;
+import it.polimi.ingsw.common.models.Message;
 import it.polimi.ingsw.common.models.Room;
 import it.polimi.ingsw.common.models.User;
 import it.polimi.ingsw.common.network.exceptions.UserRemoteException;
@@ -70,6 +71,10 @@ public class RoomViewController extends BaseViewController {
                         if (updatedRoom.isGameCreated() && getNavigationController() != null) {
                             getNavigationController().presentViewController(true, GameViewController.class, Client.API.getActiveGame(e));
                         }
+                    } else if (f instanceof Message) {
+                        if (!((Message) f).getFrom().getUuid().equals(Preferences.getUuid()))
+                            chatButton.setText("Chat (*)");
+                        ChatViewController.messages.add((Message) f);
                     }
                 });
             } catch (UserRemoteException ex) {

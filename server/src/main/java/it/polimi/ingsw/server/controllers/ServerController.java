@@ -43,7 +43,8 @@ public class ServerController implements API {
             var game = findGame(user.getUuid());
             if (game == null) throw new RemoteException("No active game!!");
             return game;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new RemoteException("No active game!!");
         }
     }
@@ -87,8 +88,10 @@ public class ServerController implements API {
             informRoomUsers(room);
             return room;
         } catch (RemoteException e) {
+            e.printStackTrace();
             throw e;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
         else throw new RemoteException("The UUID!!");
@@ -107,8 +110,10 @@ public class ServerController implements API {
             rooms.insertOne(Document.parse(new Gson().toJson(room)));
             return room;
         } catch (RemoteException e) {
+            e.printStackTrace();
             throw e;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
         else throw new RemoteException("The parameters!!");
@@ -124,7 +129,8 @@ public class ServerController implements API {
             if (room.getUsers().isEmpty()) rooms.deleteOne(eq("uuid", roomUuid.toString()));
             else rooms.replaceOne(eq("uuid", roomUuid.toString()), Document.parse(new Gson().toJson(room)));
             informRoomUsers(room);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
         else throw new RemoteException("The UUID!!");
@@ -139,8 +145,10 @@ public class ServerController implements API {
                 throw new RemoteException("You can't do this!");
             startGame(room.getUuid());
         } catch (RemoteException e) {
+            e.printStackTrace();
             throw e;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
         else throw new RemoteException("The UUID!!");
@@ -172,7 +180,8 @@ public class ServerController implements API {
             } else games.replaceOne(eq("uuid", gameUuid.toString()), Document.parse(new Gson().toJson(game)));*/
             sendBroadcastToGame(game, user.getNickname() + " left the game." + (game.isCompleted() ? "\nNot enough players." : ""));
             informGamePlayers(game);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
         else throw new RemoteException("The action is not valid!!");
@@ -186,7 +195,8 @@ public class ServerController implements API {
             if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid())) &&
                     !game.getActualPlayer().getUuid().equals(user.getUuid())) return false;
             return doAction(game, action);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
         else throw new RemoteException("The action is not valid!!");
@@ -249,6 +259,7 @@ public class ServerController implements API {
                     sendMessageToRoom(room, new Message(user, message.getUuid(), message.getMessage(), System.currentTimeMillis()));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
         else throw new RemoteException("Is null!!");
