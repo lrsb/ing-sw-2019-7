@@ -165,11 +165,10 @@ public class ServerController implements API {
             var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", gameUuid.toString())).first()).e(Document::toJson).get(""), GameImpl.class);
             if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid()))) return;
             game.getPlayers().remove(new Player(user, Player.BoardType.BANSHEE));
-            if (game.getPlayers().size() < 3) {
-                //TODO
-                //games.deleteOne(eq("uuid", gameUuid.toString()));
-                game.setCompleted(true);
-            } //else games.replaceOne(eq("uuid", gameUuid.toString()), Document.parse(new Gson().toJson(game)));
+            /*if (game.getPlayers().size() < 3) {
+                games.deleteOne(eq("uuid", gameUuid.toString()));
+                game.endGame();
+            } else games.replaceOne(eq("uuid", gameUuid.toString()), Document.parse(new Gson().toJson(game)));*/
             sendBroadcastToGame(game, user.getNickname() + " left the game." + (game.isCompleted() ? "\nNot enough players." : ""));
             informGamePlayers(game);
         } catch (Exception ignored) {
@@ -183,16 +182,55 @@ public class ServerController implements API {
         var user = SecureUserController.getUser(token);
         if (action != null) try {
             var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
-            if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid()))) return false;
-            var value = game.doAction(action);
-            if (value)
-                games.replaceOne(eq("uuid", action.getGameUuid().toString()), Document.parse(new Gson().toJson(game)));
-            informGamePlayers(game);
-            return value;
+            if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid())) &&
+                    !game.getActualPlayer().getUuid().equals(user.getUuid())) return false;
+            return doAction(game, action);
         } catch (Exception ignored) {
             throw new RemoteException("Something went wrong, sometimes it happens!!");
         }
         else throw new RemoteException("The action is not valid!!");
+    }
+
+    private boolean doAction(@NotNull GameImpl game, @NotNull Action action) {
+        var message = game.getActualPlayer().getNickname() +
+                (action.getActionType() != Action.Type.NEXT_TURN ? " ha fatto: " + action.getActionType().name() + " " : "ha passato il turno");
+        var value = game.doAction(action);
+        if (value) {
+            var timeout = game.getActionTimeout();
+            game.setNextActionTime(System.currentTimeMillis() + timeout * 1000);
+            var timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    doAction(game, Action.Builder.create(game.getUuid()).buildNextTurn());
+                }
+            }, timeout * 1000);
+            Optional.ofNullable(gameTimers.put(game.getUuid(), timer)).ifPresent(Timer::cancel);
+            games.replaceOne(eq("uuid", action.getGameUuid().toString()), Document.parse(new Gson().toJson(game)));
+            switch (action.getActionType()) {
+                case MOVE:
+                    message += "in " + action.getDestination();
+                    break;
+                case GRAB_WEAPON:
+                    message += "e ha raccolto: " + action.getWeapon();
+                    break;
+                case GRAB_AMMOCARD:
+                    message += "in " + game.getActualPlayer().getPosition();
+                    break;
+                case FIRE:
+                    message += "con " + action.getWeapon().name();
+                    break;
+                case USE_POWER_UP:
+                    message += ": " + action.getPowerUpType().name();
+                    break;
+                case RELOAD:
+                    message += "di " + action.getWeapon().name();
+                    break;
+            }
+            sendBroadcastToGame(game, message);
+        }
+        informGamePlayers(game);
+        return value;
     }
 
     @Override

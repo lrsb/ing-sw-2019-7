@@ -121,7 +121,6 @@ public class Room implements Serializable {
         gameCreated = true;
     }
 
-
     /**
      * Gets action timeout. Is the max delay between actions in game.
      *

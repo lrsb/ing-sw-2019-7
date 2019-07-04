@@ -75,7 +75,7 @@ public class PlayerBoard extends AbstractBoard {
         for (var i = 0; i < marks.size(); i++) {
             var x = 575 + i * 28;
             var marksSprite = new Sprite(x, 30, 24, 36, applyColorToMask(mask, marks.get(i).getColor()));
-            marksSprite.setTag("p:" + x + ",368");
+            marksSprite.setTag("p:" + x + ",30");
             marksSprite.setClickable(false);
             marksSprite.setDraggable(true);
             addSprite(marksSprite);

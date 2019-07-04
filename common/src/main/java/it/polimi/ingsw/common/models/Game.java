@@ -23,8 +23,6 @@ import java.util.stream.Stream;
  * This class contains the information that a player needs to know the state of the game
  */
 public class Game implements Displayable, Serializable {
-    public static final int MAX_PLAYERS = 5;
-    public static final int MIN_PLAYERS = 3;
     public static final int MAX_X = 4;
     public static final int MAX_Y = 3;
     private static final long serialVersionUID = 1;
@@ -49,14 +47,16 @@ public class Game implements Displayable, Serializable {
     protected ArrayList<Weapon> blueWeapons = new ArrayList<>();
     protected ArrayList<Weapon> yellowWeapons = new ArrayList<>();
     protected int remainedActions = 2;
+    protected String nextActionTime;
+    protected int actionTimeout;
 
-
-    protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
+    protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls, int actionTimeout) {
         this.uuid = uuid;
         this.type = type;
         this.cells = cells;
         this.players.addAll(players);
         this.startingSkulls = this.skulls = skulls;
+        this.actionTimeout = actionTimeout;
     }
 
     /**
@@ -117,6 +117,34 @@ public class Game implements Displayable, Serializable {
         if (point == null || point.x < 0 || point.x >= cells.length || point.y < 0 || point.y >= cells[point.x].length)
             return null;
         return cells[point.x][point.y];
+    }
+
+    /**
+     * Get the timestamp when the next action starts.
+     *
+     * @return The timestamp when the next action starts.
+     */
+    public long getNextActionTime() {
+        return Long.parseLong(nextActionTime);
+    }
+
+    /**
+     * Set the timestamp when the next action starts.
+     *
+     * @param nextActionTime The timestamp when the next action starts.
+     */
+    public void setNextActionTime(long nextActionTime) {
+        if (nextActionTime >= 0) this.nextActionTime = Long.toString(nextActionTime);
+        else this.nextActionTime = Long.toString(1);
+    }
+
+    /**
+     * Gets action timeout.
+     *
+     * @return the action timeout
+     */
+    public int getActionTimeout() {
+        return actionTimeout;
     }
 
     /**

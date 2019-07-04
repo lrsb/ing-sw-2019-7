@@ -23,8 +23,8 @@ public class GameImpl extends Game implements Serializable {
     private @NotNull Deck<PowerUp> powerUpsDeck = Deck.Creator.newPowerUpsDeck();
     private @NotNull Deck<Weapon> weaponsDeck = Deck.Creator.newWeaponsDeck();
 
-    private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls) {
-        super(uuid, type, cells, players, skulls);
+    private GameImpl(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls, int actionTimeout) {
+        super(uuid, type, cells, players, skulls, actionTimeout);
         redWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         blueWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
         yellowWeapons = new ArrayList<>(weaponsDeck.exitCards(3));
@@ -212,8 +212,9 @@ public class GameImpl extends Game implements Serializable {
         }
     }
 
-    private void endGame() {
+    public void endGame() {
         finalPointsRedistribution();
+        getRanking();
         setCompleted(true);
     }
 
@@ -561,7 +562,7 @@ public class GameImpl extends Game implements Serializable {
             var boards = new ArrayList<>(List.of(Player.BoardType.values()));
             Collections.shuffle(boards);
             return new GameImpl(room.getUuid(), room.getGameType(), cells, room.getUsers().stream()
-                    .map(e -> new Player(e, boards.remove(0))).collect(Collectors.toList()), room.getSkulls());
+                    .map(e -> new Player(e, boards.remove(0))).collect(Collectors.toList()), room.getSkulls(), room.getActionTimeout());
         }
     }
 }

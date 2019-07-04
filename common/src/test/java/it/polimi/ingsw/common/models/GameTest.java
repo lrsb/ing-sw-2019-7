@@ -82,7 +82,7 @@ class GameTest {
         assertNotNull(gameTest.getUuid());
         assertNotNull(gameTest.getType());
         assertFalse(gameTest.isCompleted());
-        gameTest = new Game(UUID.randomUUID(), type, cells, players, new SecureRandom().nextInt(4) + 5);
+        gameTest = new Game(UUID.randomUUID(), type, cells, players, new SecureRandom().nextInt(4) + 5, 60);
         assertTrue(gameTest.getSkulls() >= 5 && gameTest.getSkulls() <= 8);
         assertTrue(gameTest.getTagbackPlayers().isEmpty());
         assertThrows(SelfResponseException.class , gameTest::getTagbackedPlayer);
@@ -208,6 +208,6 @@ class GameTest {
                 cells[2][3] = Cell.Creator.withBounds(" __ ").color(Cell.Color.YELLOW).spawnPoint().create();
                 break;
         }
-        return new Game(UUID.randomUUID(), type, cells, createPlayers(), new SecureRandom().nextInt(4) + 5);
+        return new Game(UUID.randomUUID(), type, cells, createPlayers(), new SecureRandom().nextInt(4) + 5, 60);
     }
 }

@@ -52,6 +52,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private JButton reloadButton;
     private JButton rulesButton;
     private JButton chatButton;
+    private JLabel timerLabel;
 
     private @Nullable PlayersBoardsViewController playersBoardsViewController;
     private @Nullable ChatViewController chatViewController;
@@ -61,6 +62,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
     private @Nullable Action.Type type;
     private @Nullable PowerUp powerUp;
     private Action weaponAction;
+
+    private Timer timer;
 
     public GameViewController(@NotNull NavigationController navigationController, @NotNull Object... params) throws IOException {
         super("Gioca", 1100, 700, navigationController);
@@ -80,12 +83,13 @@ public class GameViewController extends BaseViewController implements GameBoardL
         exitButton.setBackground(BACKGROUND_COLOR);
         cancelPanel.setBackground(BACKGROUND_COLOR);
         moveLabel.setForeground(WHITE_ACCENT);
+        timerLabel.setForeground(WHITE_ACCENT);
         actualPlayerLabel.setForeground(WHITE_ACCENT);
 
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
                 Client.API.addListener(e, f -> {
-                    if (f instanceof String) JOptionPane.showMessageDialog(null, f);
+                    if (f instanceof String) JOptionPane.showMessageDialog(GameViewController.this, f);
                     else if (f instanceof Game && ((Game) f).getUuid().equals(game.getUuid())) try {
                         updateBoards((Game) f);
                     } catch (IOException ex) {
@@ -109,6 +113,16 @@ public class GameViewController extends BaseViewController implements GameBoardL
         });
 
         setupButtons();
+    }
+
+    private void updateTimer() {
+        if (timer != null) timer.stop();
+        timer = new Timer(1000, e -> {
+            if (game.getNextActionTime() - System.currentTimeMillis() <= 0) timerLabel.setText("");
+            else
+                timerLabel.setText((game.getNextActionTime() - System.currentTimeMillis()) / 1000 + " sec");
+        });
+        timer.start();
     }
 
     private void setupButtons() {
@@ -252,6 +266,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
             playersBoardsViewController = null;
         }
         yourTurn = Preferences.getUuid().equals(game.getActualPlayer().getUuid());
+        updateTimer();
         reloadActionPanel();
 
         actualPlayerLabel.setText(yourTurn ? "TE" : game.getActualPlayer().getNickname());
@@ -1128,7 +1143,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         panel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(gameBoard, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayoutManager(10, 1, new Insets(0, 0, 0, 0), -1, -1));
+        buttonPanel.setLayout(new GridLayoutManager(11, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(buttonPanel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         actualPlayerLabel = new JLabel();
         Font actualPlayerLabelFont = this.$$$getFont$$$(null, -1, 28, actualPlayerLabel.getFont());
@@ -1137,10 +1152,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
         buttonPanel.add(actualPlayerLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         playersBoardButton = new JButton();
         playersBoardButton.setText("Visualizza plance");
-        buttonPanel.add(playersBoardButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPanel.add(playersBoardButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         exitButton = new JButton();
         exitButton.setText("Esci");
-        buttonPanel.add(exitButton, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPanel.add(exitButton, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         buttonPanel.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         moveLabel = new JLabel();
@@ -1150,7 +1165,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         buttonPanel.add(moveLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         actionPanel = new JPanel();
         actionPanel.setLayout(new GridLayoutManager(8, 1, new Insets(0, 0, 0, 0), -1, -1));
-        buttonPanel.add(actionPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonPanel.add(actionPanel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         moveButton = new JButton();
         moveButton.setText("Muovi");
         actionPanel.add(moveButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -1174,16 +1189,19 @@ public class GameViewController extends BaseViewController implements GameBoardL
         actionPanel.add(reloadButton, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         cancelPanel = new JPanel();
         cancelPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        buttonPanel.add(cancelPanel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonPanel.add(cancelPanel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         cancelButton = new JButton();
         cancelButton.setText("Annulla mossa");
         cancelPanel.add(cancelButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         rulesButton = new JButton();
         rulesButton.setText("Regole");
-        buttonPanel.add(rulesButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPanel.add(rulesButton, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         chatButton = new JButton();
         chatButton.setText("Chat");
-        buttonPanel.add(chatButton, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonPanel.add(chatButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        timerLabel = new JLabel();
+        timerLabel.setText("Label");
+        buttonPanel.add(timerLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
