@@ -819,7 +819,7 @@ public class ActionManager {
                         System.out.println(Utils.getStrings("cli", "weapons_details", "railgun", "fire_details").get("select_target_basic_alt").getAsString());
                         if (!basicTarget.isEmpty()) {
                             selectableRailTargets.clear();
-                            game.getPlayers().stream().filter(e -> e.getPosition() != null && !e.getUuid().equals(basicTarget.get(0)) &&
+                            game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && e.getPosition() != null && !e.getUuid().equals(basicTarget.get(0)) &&
                                     (e.getPosition().equals(game.getActualPlayer().getPosition()) ||
                                             game.getPlayers().parallelStream().anyMatch(f -> f.getUuid().equals(basicTarget.get(0)) &&
                                                     (e.getPosition().x == f.getPosition().x && (game.getActualPlayer().getPosition().y - e.getPosition().y) * (game.getActualPlayer().getPosition().y - f.getPosition().y) >= 0 ||

@@ -44,76 +44,180 @@ public class Action implements Serializable {
         this.gameUuid = gameUuid;
     }
 
+    /**
+     *
+     * @return the type of action that a player is trying to make
+     */
     public @NotNull Type getActionType() {
         return actionType;
     }
 
+    /**
+     *
+     * @return the identifier of the game which this action is referred to
+     */
     public @NotNull UUID getGameUuid() {
         return gameUuid;
     }
 
+    /**
+     * an action can contain a weapon, its meaning depends on action type:
+     * -GRAB WEAPON: it's the weapon a player wants to grab;
+     * -FIRE: it's the weapon a player wants to use to fire
+     * -RELOAD: it's the weapon a player wants to reload
+     *
+     * @return the weapon
+     */
     public @Nullable Weapon getWeapon() {
         return weapon;
     }
 
+    /**
+     * this field is needed when a player wants to grab a weapon,
+     * but he already has got 3 weapons; this weapon will be drop
+     * where @getWeapon() it will be grabbed
+     *
+     * @return the weapon
+     */
     public @Nullable Weapon getDiscardedWeapon() {
         return discardedWeapon;
     }
 
+    /**
+     * the meaning of the point depends on action type:
+     * - MOVE: the destination of the player;
+     * - GRAB_AMMOCARD: the point where a player wants to grab the tile;
+     * - GRAB_WEAPON: the point where a player wants to grab a weapon;
+     * - USE_POWER_UP: depends on type of using power up;
+     * - FIRE: if player can move before shooting, this point represents
+     *          the position that he wants to reach before shooting
+     *
+     * @return a point of the board
+     */
     public @Nullable Point getDestination() {
         return destination;
     }
 
+    /**
+     * this field is used for two types of action:
+     * - USE_POWER_UP: the type of the using power up;
+     * - REBORN: the type of the power up used to spawn.
+     *
+     * @return the type of the using power up
+     */
     public @Nullable PowerUp.Type getPowerUpType() {
         return powerUpType;
     }
 
+    /**
+     * this field is used when a power up is used and
+     * represents its color
+     *
+     * @return the color of the power up
+     */
     public @Nullable AmmoCard.Color getColor() {
         return color;
     }
 
+    /**
+     * when a player has to pay for his action he can
+     * use some of his power ups to pay
+     *
+     * @return the power ups the player wants to use to pay
+     */
     public @Nullable List<PowerUp> getPowerUpPayment() {
         return powerUpPayment;
     }
 
+    /**
+     * when a player wants to fire, depending on the using weapon,
+     * maybe he has to choose which effect wants to use
+     *
+     * @return true if he wants to use the alternative effect of the weapon,
+     *          false otherwise
+     */
     public boolean getAlternativeFire() {
         return alternativeFire;
     }
 
+    /**
+     * indicates modes of fire (depends on the specific weapon):
+     * 0 -> only basic effect;
+     * 1 -> basic effect + first additional effect
+     * 2 -> basic effect + second additional effect
+     * 3 -> basic effect + first + second additional effect
+     *
+     * @return modes of fire
+     */
     public int getOptions() {
         return options;
     }
 
+    /**
+     * if action is FIRE, gets the targets of the basic effect
+     *
+     * @return targets of basic effect
+     */
     public @Nullable List<UUID> getBasicTarget() {
         return basicTarget;
     }
 
+    /**
+     * if action is FIRE, gets a point, which meaning depends on the specific weapon
+     *
+     * @return a point
+     */
     public @Nullable Point getBasicTargetPoint() {
         return basicTargetPoint;
     }
 
+    /**
+     * if action is FIRE, gets the targets of the first additional effect
+     *
+     * @return targets of first additional effect
+     */
     public @Nullable List<UUID> getFirstAdditionalTarget() {
         return firstAdditionalTarget;
     }
 
+    /**
+     * if action is FIRE, gets a point, which meaning depends on the specific weapon
+     *
+     * @return a point
+     */
     public @Nullable Point getFirstAdditionalTargetPoint() {
         return firstAdditionalTargetPoint;
     }
 
+    /**
+     * if action is FIRE, gets the targets of the second additional effect
+     *
+     * @return targets of second additional effect
+     */
     public @Nullable List<UUID> getSecondAdditionalTarget() {
         return secondAdditionalTarget;
     }
 
+    /**
+     * if action is FIRE, gets a point, which meaning depends on the specific weapon
+     *
+     * @return a point
+     */
     public @Nullable Point getSecondAdditionalTargetPoint() {
         return secondAdditionalTargetPoint;
     }
 
+    /**
+     * if action is USE_POWER_UP..
+     *
+     * @return the target of the power up
+     */
     public @Nullable UUID getTarget() {
         return target;
     }
 
     /**
-     * Each type of this enum represents a specific action that a player can do
+     * Each type of this enum represents a specific action that a player can do in the game
      */
     public enum Type implements Serializable {
         MOVE, GRAB_WEAPON, GRAB_AMMOCARD, FIRE, USE_POWER_UP, RELOAD, NEXT_TURN, REBORN
