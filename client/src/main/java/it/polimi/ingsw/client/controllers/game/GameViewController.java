@@ -167,9 +167,18 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                             .buildFireAction(f, null, null, false,
                                                     0, new ArrayList<>(), null, new ArrayList<>(),
                                                     null, new ArrayList<>(), null);
-                                    if (game.getActualPlayer().getDamagesTaken().size() > 5 || game.getSkulls() == 0) {
-                                        type = Action.Type.MOVE;
-                                    } else continueBuildWeapon();
+                                    if (!game.getActualPlayer().isALoadedGun(f))
+                                        getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                            p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                            if (game.getActualPlayer().getDamagesTaken().size() > 5 || game.getSkulls() == 0) {
+                                                type = Action.Type.MOVE;
+                                            } else continueBuildWeapon();
+                                        });
+                                    else {
+                                        if (game.getActualPlayer().getDamagesTaken().size() > 5 || game.getSkulls() == 0) {
+                                            type = Action.Type.MOVE;
+                                        } else continueBuildWeapon();
+                                    }
                                 }).setVisible(true);
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -320,9 +329,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
                             printMessage("select_target_first");
                             getTarget(f -> {
                                 weaponAction.addFirstAdditionalTarget(f);
-                                getPowerup(game.getActualPlayer().getPowerUps(), p -> {
-                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
-                                });
+                                getPowerup(game.getActualPlayer().getPowerUps(),
+                                        p -> p.forEach(pp -> weaponAction.addPowerUpPayment(pp)));
                             });
                         }
                     });
@@ -331,7 +339,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     printMessage("select_target_basic");
                     getTarget(e -> {
                         weaponAction.addBasicTarget(e);
-                        if (JOptionPane.showConfirmDialog(null, "Vuoi selezioanre un altro bersaglio per l'effetto base?", "", YES_NO_OPTION) == YES_OPTION) {
+                        if (JOptionPane.showConfirmDialog(null, "Vuoi selezioanre un altro bersaglio?", "", YES_NO_OPTION) == YES_OPTION) {
                             getTarget(f -> {
                                 weaponAction.addBasicTarget(f);
                                 //todo
@@ -400,8 +408,39 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 case POWER_GLOVE:
                     break;
                 case SHOCKWAVE:
+                    if (option == 0) {
+                        getTarget(e -> {
+                            weaponAction.addBasicTarget(e);
+                            if (otherTarget()) getTarget(f -> {
+                                weaponAction.addBasicTarget(f);
+                                if (otherTarget()) getTarget(g -> {
+                                    weaponAction.addBasicTarget(g);
+                                    doAction(weaponAction);
+                                });
+                                else doAction(weaponAction);
+                            });
+                            else doAction(weaponAction);
+                        });
+                    } else getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                        doAction(weaponAction);
+                    });
                     break;
                 case SLEDGEHAMMER:
+                    printMessage("select_target_basic");
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        if (finalOption == 1) {
+                            printMessage("select_point_basic");
+                            getPoint(f -> {
+                                weaponAction.setBasicTargetPoint(f);
+                                getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                    doAction(weaponAction);
+                                });
+                            });
+                        } else doAction(weaponAction);
+                    });
                     break;
             }
         } else reset();
@@ -497,7 +536,13 @@ public class GameViewController extends BaseViewController implements GameBoardL
     }
 
     private void getPowerup(java.util.List<PowerUp> powerUps, PowerUpSelectorViewController.PowerCallback callback) {
-        new PowerUpSelectorViewController(null, powerUps, callback).setVisible(true);
+        if (JOptionPane.showConfirmDialog(null, "Vuoi usare powerup?", "Pagamento alternativo", YES_NO_OPTION) == YES_OPTION)
+            new PowerUpSelectorViewController(null, powerUps, callback).setVisible(true);
+        else callback.userDidSelect(new ArrayList<>());
+    }
+
+    private boolean otherTarget() {
+        return JOptionPane.showConfirmDialog(null, "Vuoi selezionare un altro bersaglio?", "", YES_NO_OPTION) == YES_OPTION;
     }
 
     @Override

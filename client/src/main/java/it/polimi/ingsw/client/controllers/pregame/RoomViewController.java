@@ -136,7 +136,9 @@ public class RoomViewController extends BaseViewController {
         usersList.setModel(listModel);
     }
 
-    private void quit() {
+    @Override
+    public void dispose() {
+        super.dispose();
         ChatViewController.messages.clear();
         Optional.ofNullable(chatViewController).ifPresent(ChatViewController::dispose);
         if (clip != null) clip.stop();
@@ -152,11 +154,6 @@ public class RoomViewController extends BaseViewController {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
-    }
-
-    @Override
-    protected void controllerPopped() {
-        if (!game) quit();
     }
 
     {
