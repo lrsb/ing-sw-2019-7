@@ -52,8 +52,7 @@ public class Room implements Serializable {
      * @param startType The timestamp when the game starts.
      */
     public void setStartTime(long startType) {
-        if (startType >= 0) this.startTime = Long.toString(startType);
-        else this.startTime = Long.toString(1);
+        this.startTime = Long.toString(startType);
     }
 
     /**

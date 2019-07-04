@@ -162,6 +162,7 @@ public class ServerController implements API {
             throw new RemoteException("Too much players!");
         var game = GameImpl.Creator.newGame(room);
         rooms.deleteOne(eq("uuid", roomUuid.toString()));
+        updateGameTimer(game);
         games.insertOne(Document.parse(new Gson().toJson(game)));
         room.setGameCreated();
         informRoomUsers(room);
@@ -207,16 +208,7 @@ public class ServerController implements API {
                 (action.getActionType() != Action.Type.NEXT_TURN ? " ha fatto: " + action.getActionType().name() + " " : "ha passato il turno");
         var value = game.doAction(action);
         if (value) {
-            var timeout = game.getActionTimeout();
-            game.setNextActionTime(System.currentTimeMillis() + timeout * 1000);
-            var timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    doAction(game, Action.Builder.create(game.getUuid()).buildNextTurn());
-                }
-            }, timeout * 1000);
-            Optional.ofNullable(gameTimers.put(game.getUuid(), timer)).ifPresent(Timer::cancel);
+            updateGameTimer(game);
             games.replaceOne(eq("uuid", action.getGameUuid().toString()), Document.parse(new Gson().toJson(game)));
             switch (action.getActionType()) {
                 case MOVE:
@@ -242,6 +234,19 @@ public class ServerController implements API {
         }
         informGamePlayers(game);
         return value;
+    }
+
+    private void updateGameTimer(@NotNull GameImpl game) {
+        var timeout = game.getActionTimeout();
+        game.setNextActionTime(System.currentTimeMillis() + timeout * 1000);
+        var timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                doAction(game, Action.Builder.create(game.getUuid()).buildNextTurn());
+            }
+        }, timeout * 1000);
+        Optional.ofNullable(gameTimers.put(game.getUuid(), timer)).ifPresent(Timer::cancel);
     }
 
     @Override

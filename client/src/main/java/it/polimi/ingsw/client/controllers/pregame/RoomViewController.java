@@ -45,6 +45,7 @@ public class RoomViewController extends BaseViewController {
     private @NotNull UUID roomUuid;
     private @Nullable Clip clip;
     private Timer timer;
+    private boolean game = true;
 
     private @Nullable ChatViewController chatViewController;
 
@@ -69,6 +70,7 @@ public class RoomViewController extends BaseViewController {
                         var updatedRoom = (Room) f;
                         update(updatedRoom);
                         if (updatedRoom.isGameCreated() && getNavigationController() != null) {
+                            game = false;
                             getNavigationController().presentViewController(true, GameViewController.class, Client.API.getActiveGame(e));
                         }
                     } else if (f instanceof Message) {
@@ -147,7 +149,7 @@ public class RoomViewController extends BaseViewController {
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
                 Client.API.removeListener(e);
-                Client.API.quitRoom(e, roomUuid);
+                if (game) Client.API.quitRoom(e, roomUuid);
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
                 jumpBackToLogin(getNavigationController());

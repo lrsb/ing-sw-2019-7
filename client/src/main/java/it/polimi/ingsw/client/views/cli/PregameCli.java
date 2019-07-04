@@ -212,6 +212,19 @@ public class PregameCli {
             PregameCli.room = null;
 
             while (PregameCli.room == null) try {
+                if (System.in.available() > 0) {
+                    if (StartupCli.in.nextLine().equals("*")) {
+                        try {
+                            Client.API.quitRoom(Preferences.getOptionalToken().get(), room.getUuid());
+                            return Segue.of("mainMenu");
+                        } catch (UserRemoteException e) {
+                            System.out.println("Errore nell'autenticazione, ritorni al login");
+                            return Segue.of("login", StartupCli.class);
+                        } catch (RemoteException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                }
                 Thread.onSpinWait();
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -244,7 +257,7 @@ public class PregameCli {
     /**
      * The cli lobby
      */
-    private static @Nullable Segue lobby() throws IOException {
+    private static @Nullable Segue lobby() {
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login");
         System.out.println("LOBBY");
         System.out.println();
@@ -255,23 +268,10 @@ public class PregameCli {
         System.out.println("Giocatori nella partita: " + room.getUsers().parallelStream().map(User::getNickname).collect(Collectors.joining(", ")));
         var formatter = new SimpleDateFormat("HH:mm:ss");
         if (room.getUsers().size() < 3)
-            System.out.println("numero di giocatori insufficienti per creare la partita");
+            System.out.println("numero di giocatori insufficiente per iniziare la partita");
         else
             System.out.println("inizio alle " + formatter.format(new Date(room.getStartTime())));
         System.out.println("scrivi * per abbandonare la lobby o attendi la partenza della partita");
-        if (System.in.available() > 0) {
-            if (StartupCli.in.nextLine().equals("*")) {
-                try {
-                    Client.API.quitRoom(Preferences.getOptionalToken().get(), room.getUuid());
-                    return Segue.of("mainMenu");
-                } catch (UserRemoteException e) {
-                    System.out.println("Errore nell'autenticazione, ritorni al login");
-                    return Segue.of("login", StartupCli.class);
-                } catch (RemoteException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-        }
         return null;
     }
 

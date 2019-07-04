@@ -201,7 +201,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
             if (JOptionPane.showConfirmDialog(null,
                     Utils.getStrings("cli", "actions").get("borning_action").getAsString(),
                     game.getActualPlayer().getPosition() == null ? "Nasci" : "Rinasci", OK_CANCEL_OPTION) == OK_OPTION) {
-                getPowerup(game.getActualPlayer().getPowerUps(), powerUps -> {
+                getPowerupNoAsk(game.getActualPlayer().getPowerUps(), powerUps -> {
                     if (powerUps.size() == 1)
                         doAction(Action.Builder.create(game.getUuid()).buildReborn(powerUps.get(0).getType(), powerUps.get(0).getAmmoColor()));
                     else if (powerUps.size() > 1) showMessage("Scegli solo un powerup!");

@@ -47,8 +47,8 @@ public class Game implements Displayable, Serializable {
     protected ArrayList<Weapon> blueWeapons = new ArrayList<>();
     protected ArrayList<Weapon> yellowWeapons = new ArrayList<>();
     protected int remainedActions = 2;
-    protected String nextActionTime;
-    protected int actionTimeout;
+    private String nextActionTime;
+    private int actionTimeout;
 
     protected Game(@NotNull UUID uuid, @NotNull Type type, @NotNull Cell[][] cells, @NotNull List<Player> players, int skulls, int actionTimeout) {
         this.uuid = uuid;
@@ -134,8 +134,7 @@ public class Game implements Displayable, Serializable {
      * @param nextActionTime The timestamp when the next action starts.
      */
     public void setNextActionTime(long nextActionTime) {
-        if (nextActionTime >= 0) this.nextActionTime = Long.toString(nextActionTime);
-        else this.nextActionTime = Long.toString(1);
+        this.nextActionTime = Long.toString(nextActionTime);
     }
 
     /**
