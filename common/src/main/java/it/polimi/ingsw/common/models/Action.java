@@ -315,6 +315,11 @@ public class Action implements Serializable {
         this.secondAdditionalTargetPoint = secondAdditionalTargetPoint;
     }
 
+    /**
+     * the @powerUp will be used as alternative payment for this action
+     *
+     * @param powerUp a power up
+     */
     public void addPowerUpPayment(@NotNull PowerUp powerUp) {
         powerUpPayment.add(powerUp);
     }
