@@ -178,11 +178,12 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                 0, new ArrayList<>(), null, new ArrayList<>(),
                                 null, new ArrayList<>(), null);
                         if (game.getActualPlayer().getDamagesTaken().size() > 5 || game.getSkulls() == 0) {
+                            showMessage("scegli dove spostare il tuo personaggio");
                             type = Action.Type.MOVE;
                         } else continueBuildWeapon();
                     });
                 } else {
-                    JOptionPane.showMessageDialog(null, (game.getActualPlayer().getWeapons().size() == 0) ? "Non hai armi!" : "Non hai armi cariche");
+                    showMessage((game.getActualPlayer().getWeapons().size() == 0) ? "Non hai armi!" : "Non hai armi cariche");
                 }
                 type = Action.Type.FIRE;
                 reloadActionPanel();
@@ -213,7 +214,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
             if (yourTurn) {
                 getWeapon(game.getActualPlayer().getWeapons().parallelStream().filter(f -> !game.getActualPlayer().isALoadedGun(f)).collect(Collectors.toList()), f -> {
                     if (yesOrNo("Vuoi pagare con powerup?")) {
-                        getPowerup(game.getActualPlayer().getPowerUps(), c -> doAction(Action.Builder.create(game.getUuid()).buildReload(f, c)));
+                        getPowerupNoAsk(game.getActualPlayer().getPowerUps(), c -> doAction(Action.Builder.create(game.getUuid()).buildReload(f, c)));
                     } else doAction(Action.Builder.create(game.getUuid()).buildReload(f, null));
                 });
             }
@@ -226,7 +227,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         powerupButton.addActionListener(e -> {
             if (yourTurn) {
                 if (game.getActualPlayer().getPowerUps().size() != 0 && !game.isATagbackResponse()) {
-                    getPowerup(game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() != PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), f -> {
+                    getPowerupNoAsk(game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() != PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), f -> {
                         if (f.size() == 1) {
                             switch (f.get(0).getType()) {
                                 case TARGETING_SCOPE:
@@ -246,7 +247,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         else showMessage("Scegli un powerup!");
                     });
                 } else if (game.getActualPlayer().getPowerUps().parallelStream().anyMatch(l -> l.getType() == PowerUp.Type.TAGBACK_GRENADE) && game.isATagbackResponse()) {
-                    getPowerup(game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() == PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), f -> {
+                    getPowerupNoAsk(game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() == PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), f -> {
                         if (f.size() == 1) {
                             doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(f.get(0).getType(), f.get(0).getAmmoColor(), null, null));
                             reloadActionPanel();
@@ -895,7 +896,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         showMessage("Scegli la tessera delle munizioni o l'arma da raccogliere");
                         break;
                     case FIRE:
-                        showMessage("Stai per sparare");
+                        showMessage("Scegli l'arma con cui sparare");
                         break;
                     case USE_POWER_UP:
                         break;
@@ -925,18 +926,21 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     spawnButton.setVisible(true);
 
                 } else if (game.isATagbackResponse()) {
-                    powerupButton.setVisible(true);
+                    if (game.getActualPlayer().getPowerUps().parallelStream().anyMatch(e -> e.getType().equals(PowerUp.Type.TAGBACK_GRENADE)))
+                        powerupButton.setVisible(true);
 
                 } else if (game.getRemainedActions() == 0) {
                     if (game.getActualPlayer().getWeapons().parallelStream().anyMatch(e -> !game.getActualPlayer().isALoadedGun(e)) && game.getSkulls() != 0)
                         reloadButton.setVisible(true);
-                    powerupButton.setVisible(true);
+                    if (game.getActualPlayer().getPowerUps().parallelStream().anyMatch(e -> !e.getType().equals(PowerUp.Type.TAGBACK_GRENADE)))
+                        powerupButton.setVisible(true);
 
                 } else if (!game.isCompleted()) {//azione standard
                     moveButton.setVisible(true);
                     shootButton.setVisible(true);
                     grabButton.setVisible(true);
-                    powerupButton.setVisible(true);
+                    if (game.getActualPlayer().getPowerUps().parallelStream().anyMatch(e -> !e.getType().equals(PowerUp.Type.TAGBACK_GRENADE)))
+                        powerupButton.setVisible(true);
                 }
                 cancelPanel.setVisible(false);
             }
@@ -958,6 +962,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
         if (JOptionPane.showConfirmDialog(null, "Vuoi usare powerup?", "Pagamento alternativo", YES_NO_OPTION) == YES_OPTION)
             new PowerUpSelectorViewController(null, powerUps, callback).setVisible(true);
         else callback.userDidSelect(new ArrayList<>());
+    }
+
+    private void getPowerupNoAsk(java.util.List<PowerUp> powerUps, PowerUpSelectorViewController.PowerCallback callback) {
+        new PowerUpSelectorViewController(null, powerUps, callback).setVisible(true);
     }
 
     private void getWeapon(java.util.List<Weapon> weapons, WeaponSelectorViewController.WeaponCallback callback) {
@@ -1010,14 +1018,14 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                         if (yesOrNo("Vuoi scartare questa arma?")) {
 
                                             if (finalTemp == YES_OPTION) {
-                                                getPowerup(game.getActualPlayer().getPowerUps(), powerUps ->
+                                                getPowerupNoAsk(game.getActualPlayer().getPowerUps(), powerUps ->
                                                         doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, f, powerUps)));
                                             } else
                                                 doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, f, null));
                                         }
                                     });
                                 } else if (temp == YES_OPTION) {
-                                    getPowerup(game.getActualPlayer().getPowerUps(), powerUps ->
+                                    getPowerupNoAsk(game.getActualPlayer().getPowerUps(), powerUps ->
                                             doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, null, powerUps)));
                                 } else {
                                     todo = Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, null, null);
@@ -1055,6 +1063,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 if (weaponAction != null) {
                     weaponAction.setDestination(point);
                     continueBuildWeapon();
+                    return false;
                 } else if (point != null && game.canMove(game.getActualPlayer().getPosition(), point, nMosse))
                     todo = Action.Builder.create(game.getUuid()).buildMoveAction(point);
                 else showMessage("Non ti puoi muovere lì");
