@@ -256,7 +256,8 @@ public class PregameCli {
         var formatter = new SimpleDateFormat("HH:mm:ss");
         if (room.getStartTime() == -1)
             System.out.println("numero di giocatori insufficienti per creare la partita");
-        else System.out.println("inizio alle " + formatter.format(new Date(room.getStartTime())));
+        else
+            System.out.println("inizio alle " + formatter.format(new Date(room.getStartTime() + System.currentTimeMillis())));
         System.out.println("scrivi * per abbandonare la lobby o attendi la partenza della partita");
         if (System.in.available() > 0) {
             if (StartupCli.in.nextLine().equals("*")) {

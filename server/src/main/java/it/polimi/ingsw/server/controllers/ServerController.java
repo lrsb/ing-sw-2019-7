@@ -120,6 +120,7 @@ public class ServerController implements API {
         if (roomUuid != null) try {
             var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", roomUuid.toString())).first()).e(Document::toJson).get(""), Room.class);
             room.removeUser(user);
+            if (room.getUsers().size() < 3) room.setStartTime(-1);
             if (room.getUsers().isEmpty()) rooms.deleteOne(eq("uuid", roomUuid.toString()));
             else rooms.replaceOne(eq("uuid", roomUuid.toString()), Document.parse(new Gson().toJson(room)));
             informRoomUsers(room);
@@ -237,10 +238,12 @@ public class ServerController implements API {
     public void sendMessage(@Nullable String token, @Nullable Message message) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (message != null) try {
-            var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", message.getUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
-            if (game.getPlayers().parallelStream().anyMatch(e -> e.getUuid().equals(user.getUuid())))
-                sendMessageToGame(game, new Message(user, message.getUuid(), message.getMessage(), System.currentTimeMillis()));
-            else {
+            var gameList = games.find(eq("uuid", message.getUuid().toString()));
+            if (gameList.iterator().hasNext()) {
+                var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", message.getUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
+                if (game.getPlayers().parallelStream().anyMatch(e -> e.getUuid().equals(user.getUuid())))
+                    sendMessageToGame(game, new Message(user, message.getUuid(), message.getMessage(), System.currentTimeMillis()));
+            } else {
                 var room = new Gson().fromJson(Opt.of(rooms.find(eq("uuid", message.getUuid().toString())).first()).e(Document::toJson).get(""), Room.class);
                 if (room.getUsers().parallelStream().anyMatch(e -> e.getUuid().equals(user.getUuid())))
                     sendMessageToRoom(room, new Message(user, message.getUuid(), message.getMessage(), System.currentTimeMillis()));
