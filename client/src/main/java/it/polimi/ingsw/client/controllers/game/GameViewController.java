@@ -190,19 +190,15 @@ public class GameViewController extends BaseViewController implements GameBoardL
         });
 
         spawnButton.addActionListener(e -> {
-            try {
-                if (JOptionPane.showConfirmDialog(null,
-                        Utils.getStrings("cli", "actions").get("borning_action").getAsString(),
-                        game.getActualPlayer().getPosition() == null ? "Nasci" : "Rinasci", OK_CANCEL_OPTION) == OK_OPTION) {
-                    new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(), (PowerUpSelectorViewController.PowerCallback) powerUps -> {
-                        if (powerUps.size() == 1)
-                            doAction(Action.Builder.create(game.getUuid()).buildReborn(powerUps.get(0).getType(), powerUps.get(0).getAmmoColor()));
-                        else if (powerUps.size() > 1) JOptionPane.showMessageDialog(null, "Scegli solo un powerup!");
-                        else JOptionPane.showMessageDialog(null, "scegli un powerup!");
-                    }).setVisible(true);
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            if (JOptionPane.showConfirmDialog(null,
+                    Utils.getStrings("cli", "actions").get("borning_action").getAsString(),
+                    game.getActualPlayer().getPosition() == null ? "Nasci" : "Rinasci", OK_CANCEL_OPTION) == OK_OPTION) {
+                new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(), (PowerUpSelectorViewController.PowerCallback) powerUps -> {
+                    if (powerUps.size() == 1)
+                        doAction(Action.Builder.create(game.getUuid()).buildReborn(powerUps.get(0).getType(), powerUps.get(0).getAmmoColor()));
+                    else if (powerUps.size() > 1) JOptionPane.showMessageDialog(null, "Scegli solo un powerup!");
+                    else JOptionPane.showMessageDialog(null, "scegli un powerup!");
+                }).setVisible(true);
             }
         });
 
@@ -213,12 +209,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
                             game.getActualPlayer().getWeapons().parallelStream().filter(f -> !game.getActualPlayer().isALoadedGun(f)).collect(Collectors.toList()),
                             (WeaponSelectorViewController.WeaponCallback) f -> {
                                 if (JOptionPane.showConfirmDialog(null, "Vuoi pagare con powerup?", "Ricarica", YES_NO_OPTION) == YES_OPTION) {
-                                    try {
-                                        new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
-                                                (PowerUpSelectorViewController.PowerCallback) c -> doAction(Action.Builder.create(game.getUuid()).buildReload(f, c))).setVisible(true);
-                                    } catch (IOException ex) {
-                                        ex.printStackTrace();
-                                    }
+                                    new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
+                                            (PowerUpSelectorViewController.PowerCallback) c -> doAction(Action.Builder.create(game.getUuid()).buildReload(f, c))).setVisible(true);
                                 } else doAction(Action.Builder.create(game.getUuid()).buildReload(f, null));
                             }).setVisible(true);
                 } catch (IOException ex) {
@@ -234,41 +226,33 @@ public class GameViewController extends BaseViewController implements GameBoardL
         powerupButton.addActionListener(e -> {
             if (yourTurn) {
                 if (game.getActualPlayer().getPowerUps().size() != 0 && !game.isATagbackResponse()) {
-                    try {
-                        new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() != PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), (PowerUpSelectorViewController.PowerCallback) f -> {
-                            if (f.size() == 1) {
-                                switch (f.get(0).getType()) {
-                                    case TARGETING_SCOPE:
-                                        JOptionPane.showMessageDialog(null, "Scegli il bersaglio che vuoi colpire");
-                                        break;
-                                    case NEWTON:
-                                        JOptionPane.showMessageDialog(null, "sposta il bersaglio");
-                                        break;
-                                    case TELEPORTER:
-                                        JOptionPane.showMessageDialog(null, "Scegli dove vuoi teletrasportarti");
-                                        break;
-                                }
-                                type = Action.Type.USE_POWER_UP;
-                                powerUp = f.get(0);
-                                reloadActionPanel();
-                            } else if (f.size() > 1) JOptionPane.showMessageDialog(null, "Scegli un solo powerup!");
-                            else JOptionPane.showMessageDialog(null, "Scegli un powerup!");
-                        }).setVisible(true);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                    new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() != PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), (PowerUpSelectorViewController.PowerCallback) f -> {
+                        if (f.size() == 1) {
+                            switch (f.get(0).getType()) {
+                                case TARGETING_SCOPE:
+                                    JOptionPane.showMessageDialog(null, "Scegli il bersaglio che vuoi colpire");
+                                    break;
+                                case NEWTON:
+                                    JOptionPane.showMessageDialog(null, "sposta il bersaglio");
+                                    break;
+                                case TELEPORTER:
+                                    JOptionPane.showMessageDialog(null, "Scegli dove vuoi teletrasportarti");
+                                    break;
+                            }
+                            type = Action.Type.USE_POWER_UP;
+                            powerUp = f.get(0);
+                            reloadActionPanel();
+                        } else if (f.size() > 1) JOptionPane.showMessageDialog(null, "Scegli un solo powerup!");
+                        else JOptionPane.showMessageDialog(null, "Scegli un powerup!");
+                    }).setVisible(true);
                 } else if (game.getActualPlayer().getPowerUps().parallelStream().anyMatch(l -> l.getType() == PowerUp.Type.TAGBACK_GRENADE) && game.isATagbackResponse()) {
-                    try {
-                        new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() == PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), (PowerUpSelectorViewController.PowerCallback) f -> {
-                            if (f.size() == 1) {
-                                doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(f.get(0).getType(), f.get(0).getAmmoColor(), null, null));
-                                reloadActionPanel();
-                            } else if (f.size() < 1) JOptionPane.showMessageDialog(null, "Scegli un powerup!");
-                            else JOptionPane.showMessageDialog(null, "scegli un solo powerup!");
-                        }).setVisible(true);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                    new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() == PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), (PowerUpSelectorViewController.PowerCallback) f -> {
+                        if (f.size() == 1) {
+                            doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(f.get(0).getType(), f.get(0).getAmmoColor(), null, null));
+                            reloadActionPanel();
+                        } else if (f.size() < 1) JOptionPane.showMessageDialog(null, "Scegli un powerup!");
+                        else JOptionPane.showMessageDialog(null, "scegli un solo powerup!");
+                    }).setVisible(true);
 
                 } else JOptionPane.showMessageDialog(null, "non hai powerup a disposizione!");
             }
@@ -508,7 +492,11 @@ public class GameViewController extends BaseViewController implements GameBoardL
     }
 
     private void getTarget(GamePickerViewController.BoardPlayerPickerCallback callback) {
-        new GamePickerViewController(null, "Scegli un obeittivo", game, callback).setVisible(true);
+        new GamePickerViewController(null, "Scegli un obiettivo", game, callback).setVisible(true);
+    }
+
+    private void getPowerup(ArrayList<PowerUp> powerUps, PowerUpSelectorViewController.PowerCallback callback) {
+        new PowerUpSelectorViewController(null, powerUps, callback).setVisible(true);
     }
 
     @Override
@@ -549,14 +537,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                                 (WeaponSelectorViewController.WeaponCallback) f -> {
                                                     if (JOptionPane.showConfirmDialog(null, "Vuoi scartare questa arma?", "Conferma", YES_NO_OPTION) == YES_OPTION) {
                                                         if (finalTemp == YES_OPTION) {
-                                                            try {
-                                                                new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
-                                                                        (PowerUpSelectorViewController.PowerCallback) powerUps ->
-                                                                                doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, f, powerUps)))
-                                                                        .setVisible(true);
-                                                            } catch (IOException e) {
-                                                                e.printStackTrace();
-                                                            }
+                                                            new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
+                                                                    (PowerUpSelectorViewController.PowerCallback) powerUps ->
+                                                                            doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, f, powerUps)))
+                                                                    .setVisible(true);
                                                         } else
                                                             doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, f, null)); //TODO da vedere su server
                                                     }
@@ -565,14 +549,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                         e.printStackTrace();
                                     }
                                 if (temp == YES_OPTION) {
-                                    try {
-                                        new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
-                                                (PowerUpSelectorViewController.PowerCallback) powerUps ->
-                                                        doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, null, powerUps)))
-                                                .setVisible(true);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
+                                    new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
+                                            (PowerUpSelectorViewController.PowerCallback) powerUps ->
+                                                    doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, null, powerUps)))
+                                            .setVisible(true);
                                 } else {
                                     todo = Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, null, null);
                                 }
