@@ -317,7 +317,20 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     if (yesOrNo("Vuoi selezionare altri bersagli per l'effetto base?")) {
                         getTarget(f -> {
                             weaponAction.addBasicTarget(f);
-                            //todo
+                            if (finalOption == 1 || finalOption == 3) {
+                                printMessage("select_target_first");
+                                getTarget(g -> {
+                                    weaponAction.addFirstAdditionalTarget(g);
+                                    if (finalOption == 3) {
+                                        printMessage("select_target_second");
+                                        getTarget(h -> {
+
+                                        });
+                                    }
+                                });
+                            } else if (finalOption == 2) {
+
+                            } else doAction(weaponAction);
                         });
                     } else {
 
@@ -515,18 +528,108 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         printMessage("select_point_basic");
                         getPoint(f -> {
                             weaponAction.setBasicTargetPoint(f);
+                            if (finalOption > 0) {
+                                printMessage("select_point_first");
+                                getPoint(g -> {
+                                    weaponAction.setFirstAdditionalTargetPoint(g);
+                                    getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                        doAction(weaponAction);
+                                    });
+                                });
+                            } else doAction(weaponAction);
                         });
                     } else {
-
+                        if (finalOption > 0) {
+                            printMessage("select_point_first");
+                            getPoint(f -> {
+                                weaponAction.setFirstAdditionalTargetPoint(f);
+                                getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                    doAction(weaponAction);
+                                });
+                            });
+                        } else doAction(weaponAction);
                     }
                 });
                 break;
             case ROCKET_LAUNCHER:
+                printMessage("select_target_basic");
+                getTarget(e -> {
+                    weaponAction.addBasicTarget(e);
+                    if (finalOption == 1 || finalOption == 3) {
+                        printMessage("select_point_first");
+                        getPoint(f -> {
+                            weaponAction.setFirstAdditionalTargetPoint(f);
+                            getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                doAction(weaponAction);
+                            });
+                        });
+                    } else if (finalOption == 2) {
+                        getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                            p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                            doAction(weaponAction);
+                        });
+                    } else doAction(weaponAction);
+                });
                 break;
             case RAILGUN:
+                if (weaponAction.getAlternativeFire()) {
+                    printMessage("select_target_basic_alt");
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        if (yesOrNo("Vuoi selezionare un secondo bersaglio?")) {
+                            getTarget(f -> {
+                                weaponAction.addBasicTarget(f);
+                                doAction(weaponAction);
+                            });
+                        } else doAction(weaponAction);
+                    });
+                } else {
+                    printMessage("select_target_basic");
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        doAction(weaponAction);
+                    });
+                }
                 break;
             case CYBERBLADE:
-
+                if (yesOrNo("Vuoi usare lo \"shadowstep\"?")) {
+                    printMessage("select_point_basic");
+                    getPoint(e -> {
+                        weaponAction.setBasicTargetPoint(e);
+                        printMessage("select_target_basic");
+                        getTarget(f -> {
+                            weaponAction.addBasicTarget(f);
+                            if (finalOption == 2) {
+                                printMessage("select_target_second");
+                                getTarget(g -> {
+                                    weaponAction.addSecondAdditionalTarget(g);
+                                    getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                        doAction(weaponAction);
+                                    });
+                                });
+                            } else doAction(weaponAction);
+                        });
+                    });
+                } else {
+                    printMessage("select_target_basic");
+                    getTarget(f -> {
+                        weaponAction.addBasicTarget(f);
+                        if (finalOption == 2) {
+                            printMessage("select_target_second");
+                            getTarget(g -> {
+                                weaponAction.addSecondAdditionalTarget(g);
+                                getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                    doAction(weaponAction);
+                                });
+                            });
+                        } else doAction(weaponAction);
+                    });
+                }
                 break;
             case ZX2:
                 printMessage("select_target_basic");

@@ -353,10 +353,10 @@ public class GameImpl extends Game implements Serializable {
                 if (remainedActions < 1) return false;
                 if (action.getWeapon() != null && getActualPlayer().hasWeapon(action.getWeapon()) &&
                         (getActualPlayer().isALoadedGun(action.getWeapon()) || skulls == 0)) {
-                    if (action.getDestination() != null && (getActualPlayer().getDamagesTaken().size() >= 6 &&
+                    if (action.getDestination() != null && ((getActualPlayer().getDamagesTaken().size() >= 6 &&
                             canMove(getActualPlayer().getPosition(), action.getDestination(), 1)) ||
                             (skulls == 0 && canMove(getActualPlayer().getPosition(), action.getDestination(), 1)) ||
-                            (lastTurn && canMove(getActualPlayer().getPosition(), action.getDestination(), 2)))
+                            (lastTurn && canMove(getActualPlayer().getPosition(), action.getDestination(), 2))))
                         getActualPlayer().setPosition(action.getDestination());
                     if (fireAction(action)) {
                         addTagbackPlayers();
