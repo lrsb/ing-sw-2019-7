@@ -629,7 +629,7 @@ public class ActionManager {
                 mockPlayer.setPosition(basicTargetPoint);
                 List<UUID> selectablePlasmaTargets = game.getPlayers().stream().filter(e -> game.getActualPlayer().canSeeNotSame(e, game.getCells()) ||
                         mockPlayer.canSeeNotSame(e, game.getCells())).map(Player::getUuid).collect(Collectors.toList());
-                System.out.println(Utils.getStrings("cli", "weapons_details", "plasma_gun", "fire_details").get("selecet_target_basic").getAsString());
+                System.out.println(Utils.getStrings("cli", "weapons_details", "plasma_gun", "fire_details").get("select_target_basic").getAsString());
                 printSelectableTargets(game, selectablePlasmaTargets);
                 simpleBasicTargetSelection(selectablePlasmaTargets);
                 if (options == 1) {
