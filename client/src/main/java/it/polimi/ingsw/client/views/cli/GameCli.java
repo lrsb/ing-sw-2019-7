@@ -334,7 +334,8 @@ public class GameCli {
             System.out.println();
             System.out.print("ARMI: " + e.getWeapons().stream().map(c -> c.getColor().escape() + c.name() + "\u001b[0m").collect(Collectors.joining(", ")));
             System.out.println();
-            System.out.print("N° POWERUP: " + e.getPowerUps().size());
+            System.out.print(e.getUuid().equals(Preferences.getUuid()) ? ("POWERUP: " + e.getPowerUps().stream().map(c -> c.getAmmoColor().escape() + c.getType().name() + "\u001b[0m").collect(Collectors.joining(", ")))
+                    : ("N° POWERUP: " + e.getPowerUps().size()));
             System.out.println();
             System.out.print("COLPI SUBITI: ");
             e.getDamagesTaken().forEach(f -> game.getPlayers().parallelStream().filter(g -> g.getUuid().equals(f))

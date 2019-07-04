@@ -32,11 +32,20 @@ public enum Weapon implements Displayable {
         this.grabCost = grabCost;
     }
 
+    /**
+     *
+     * @return the color of the weapon
+     */
     @Contract(pure = true)
     public @NotNull AmmoCard.Color getColor() {
         return color;
     }
 
+    /**
+     *
+     * @param color one of the cubes color
+     * @return the cost to grab this weapon relatives to @color
+     */
     @Contract(pure = true)
     public int getGrabCost(@NotNull AmmoCard.Color color) {
         return grabCost[color.getIndex()];
