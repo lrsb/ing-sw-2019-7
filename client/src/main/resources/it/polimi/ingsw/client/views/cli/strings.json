@@ -171,7 +171,7 @@
                 "fire_details": {
                     "select_point_basic": "Seleziona \"il vortice\":\n",
                     "select_target_basic": "Seleziona il bersaglio del \"basic effect\":\n",
-                    "select_target_first": "Seleziona il/i bersaglio/i del \"black hole\":\n"
+                    "select_target_first": "Seleziona un bersaglio del \"black hole\":\n"
                 }
             },
             "furnace": {

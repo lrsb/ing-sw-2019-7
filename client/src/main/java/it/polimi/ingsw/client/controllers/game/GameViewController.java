@@ -429,14 +429,46 @@ public class GameViewController extends BaseViewController implements GameBoardL
                             doAction(weaponAction);
                         });
                     } else if (yesOrNo("Vuoi spostare il bersaglio prima di sparargli?")) {
-                            printMessage("");
-                        //todo
+                            printMessage("select_point_basic");
+                            getPoint(f -> {
+                                weaponAction.setBasicTargetPoint(f);
+                                doAction(weaponAction);
+                            });
                         } else doAction(weaponAction);
                 });
                 break;
             case VORTEX_CANNON:
-                break;
-            case FURNACE:
+                printMessage("select_point_basic");
+                    getPoint(e -> {
+                        weaponAction.setBasicTargetPoint(e);
+                        printMessage("select_target_basic");
+                        getTarget(f -> {
+                            weaponAction.addBasicTarget(f);
+                            if (finalOption > 0) {
+                                printMessage("select_target_first");
+                                getTarget(g -> {
+                                    weaponAction.addFirstAdditionalTarget(g);
+                                    if (yesOrNo("Vuoi selezionare un altro bersaglio per il \"black hole\"?")) {
+                                        printMessage("select_target_first");
+                                        getTarget(h -> {
+                                            weaponAction.addFirstAdditionalTarget(h);
+                                            getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                                p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                                doAction(weaponAction);
+                                            });
+                                        });
+                                    } else {
+                                        getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                            p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                            doAction(weaponAction);
+                                        });
+                                    }
+                                });
+                            } else doAction(weaponAction);
+                        });
+                    });
+                    break;
+                case FURNACE:
                 if (!weaponAction.getAlternativeFire()) {
                     getPoint(e -> {
                         weaponAction.setBasicTargetPoint(e);
@@ -447,9 +479,13 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         weaponAction.setBasicTargetPoint(e);
                         doAction(weaponAction);
                     });
-                }
-                break;
-            case HEATSEEKER:
+                }    break;
+                case HEATSEEKER:
+                    printMessage("select_target_basic");
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        doAction(weaponAction);
+                    });
                 break;
             case HELLION:
                 if (!weaponAction.getAlternativeFire()) {
