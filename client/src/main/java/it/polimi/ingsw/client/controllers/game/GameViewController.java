@@ -289,7 +289,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
         JOptionPane.showMessageDialog(null, list, "Scegli la modalità di fuoco", JOptionPane.PLAIN_MESSAGE);
         var index = list.getSelectedIndices();
         if (index.length > 0) {
-            if (index[0] != 0) switch (weaponAction.getWeapon()) {
+            var option = index[0];
+            if (index[0] == 1) switch (weaponAction.getWeapon()) {
                 case ELECTROSCYTHE:
                 case TRACTOR_BEAM:
                 case FURNACE:
@@ -302,8 +303,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 case SHOCKWAVE:
                 case SLEDGEHAMMER:
                     weaponAction.setAlternativeFire(true);
+                    option--;
             }
-            var option = index[0];
             switch (weaponAction.getWeapon()) {
                 case THOR:
                     if (option == 2) option++;
@@ -453,18 +454,77 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 case CYBERBLADE:
                     break;
                 case ZX2:
+
                     break;
                 case SHOTGUN:
-                    break;
-                case POWER_GLOVE:
-                    break;
-                case SHOCKWAVE:
-                    if (option == 0) {
+                    if (!weaponAction.getAlternativeFire()) {
                         getTarget(e -> {
                             weaponAction.addBasicTarget(e);
-                            if (otherTarget()) getTarget(f -> {
+                            if (yesOrNo("Vuoi muovere il target?")) {
+                                getPoint(f -> {
+                                    weaponAction.setBasicTargetPoint(f);
+                                    doAction(weaponAction);
+                                });
+                            } else doAction(weaponAction);
+                        });
+                    } else {
+                        getTarget(e -> {
+                            weaponAction.addBasicTarget(e);
+                            doAction(weaponAction);
+                        });
+                    }
+                    break;
+                case POWER_GLOVE:
+                    if (!weaponAction.getAlternativeFire()) getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        doAction(weaponAction);
+                    });
+                    else getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                        if (yesOrNo("Vuoi selezionare un bersaglio o punto?")) {
+                            getTarget(e -> {
+                                weaponAction.addBasicTarget(e);
+                                if (yesOrNo("Vuoi selezionare un altro bersaglio?")) {
+                                    if (yesOrNo("Vuoi selezionare un bersaglio o punto?")) {
+                                        getTarget(f -> {
+                                            weaponAction.addBasicTarget(f);
+                                            doAction(weaponAction);
+                                        });
+                                    } else {
+                                        getPoint(f -> {
+                                            weaponAction.setBasicTargetPoint(f);
+                                            doAction(weaponAction);
+                                        });
+                                    }
+                                } else doAction(weaponAction);
+                            });
+                        } else {
+                            getPoint(e -> {
+                                weaponAction.setBasicTargetPoint(e);
+                                if (yesOrNo("Vuoi selezionare un altro bersaglio?")) {
+                                    if (yesOrNo("Vuoi selezionare un bersaglio o punto?")) {
+                                        getTarget(f -> {
+                                            weaponAction.addBasicTarget(f);
+                                            doAction(weaponAction);
+                                        });
+                                    } else {
+                                        getPoint(f -> {
+                                            weaponAction.setBasicTargetPoint(f);
+                                            doAction(weaponAction);
+                                        });
+                                    }
+                                } else doAction(weaponAction);
+                            });
+                        }
+                    });
+                    break;
+                case SHOCKWAVE:
+                    if (!weaponAction.getAlternativeFire()) {
+                        getTarget(e -> {
+                            weaponAction.addBasicTarget(e);
+                            if (yesOrNo("Vuoi selezionare un altro bersaglio?")) getTarget(f -> {
                                 weaponAction.addBasicTarget(f);
-                                if (otherTarget()) getTarget(g -> {
+                                if (yesOrNo("Vuoi selezionare un altro bersaglio?")) getTarget(g -> {
                                     weaponAction.addBasicTarget(g);
                                     doAction(weaponAction);
                                 });
@@ -592,8 +652,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
         else callback.userDidSelect(new ArrayList<>());
     }
 
-    private boolean otherTarget() {
-        return JOptionPane.showConfirmDialog(null, "Vuoi selezionare un altro bersaglio?", "", YES_NO_OPTION) == YES_OPTION;
+    private boolean yesOrNo(String message) {
+        return JOptionPane.showConfirmDialog(null, message, "", YES_NO_OPTION) == YES_OPTION;
     }
 
     @Override
