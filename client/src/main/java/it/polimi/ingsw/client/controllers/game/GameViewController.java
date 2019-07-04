@@ -334,13 +334,35 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         if (JOptionPane.showConfirmDialog(null, "Vuoi selezioanre un altro bersaglio per l'effetto base?", "", YES_NO_OPTION) == YES_OPTION) {
                             getTarget(f -> {
                                 weaponAction.addBasicTarget(f);
+                                //todo
                             });
                         }
-
+                        //todo
                     });
                     break;
                 case THOR:
-
+                    printMessage("select_target_basic");
+                    getTarget(e -> {
+                        weaponAction.addBasicTarget(e);
+                        if (finalOption > 0) {
+                            printMessage("select_target_first");
+                            getTarget(f -> {
+                                weaponAction.addFirstAdditionalTarget(f);
+                                if (finalOption > 1) {
+                                    printMessage("select_target_second");
+                                    getTarget(g -> {
+                                        weaponAction.addSecondAdditionalTarget(g);
+                                        //todo
+                                        getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                            p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                        });
+                                    });
+                                } else getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                });
+                            });
+                        }
+                    });
                     break;
                 case PLASMA_GUN:
                     break;
