@@ -340,7 +340,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     printMessage("select_target_basic");
                     getTarget(e -> {
                         weaponAction.addBasicTarget(e);
-                        if (otherTarget()) {
+                        if (yesOrNo("Vuoi selezionare altri bersagli per l'effetto base?")) {
                             getTarget(f -> {
                                 weaponAction.addBasicTarget(f);
                                 //todo
@@ -430,9 +430,10 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                 p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
                                 doAction(weaponAction);
                             });
-                        } else {
-
-                        }
+                        } else if (yesOrNo("Vuoi spostare il bersaglio prima di sparargli?")) {
+                            printMessage("");
+                            //todo
+                        } else doAction(weaponAction);
                     });
                     break;
                 case VORTEX_CANNON:
