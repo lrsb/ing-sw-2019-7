@@ -944,14 +944,29 @@ class ActionManager {
                     for (UUID tar : basicTarget) {
                         for (Player player : game.getPlayers()) {
                             if (player.getUuid().equals(tar) && Stream.of(Bounds.Direction.values())
-                                    .noneMatch(d -> game.getActualPlayer().isPointAtMaxDistanceInDirection(player.getPosition(), game.getCells(), 2, d)))
+                                    .noneMatch(d -> game.getActualPlayer().isPointAtMaxDistanceInDirection(player.getPosition(), game.getCells(), 1, d)))
                                 basicTargetPoint = player.getPosition();
                         }
                     }
-                    if (basicTargetPoint == null)
-                        for (Player player : game.getPlayers())
+                    if (basicTargetPoint == null) {
+                        for (Player player : game.getPlayers()) {
                             if (player.getUuid().equals(basicTarget.get(0)))
-                                basicTargetPoint = player.getPosition();
+                                for (int i = 0; i < Game.MAX_Y; i++) {
+                                    for (int j = 0; j < Game.MAX_X; j++) {
+                                        var point = new Point(i, j);
+                                        if (!player.getPosition().equals(point) && Stream.of(Bounds.Direction.values()).anyMatch(d -> game.getActualPlayer()
+                                                .isPointAtMaxDistanceInDirection(point, game.getCells(), 2, d) &&
+                                                game.getActualPlayer().isPointAtMaxDistanceInDirection(player.getPosition(), game.getCells(), 1, d)))
+                                            basicTargetPoint = point;
+                                    }
+                                }
+                        }
+                        if (basicTargetPoint == null)
+                            for (Player player : game.getPlayers())
+                                if (player.getUuid().equals(basicTarget.get(0)))
+                                    basicTargetPoint = player.getPosition();
+                        else chooseGloveStop(game);
+                    }
                     selectAlternativePayment(game);
                 } else {
                     game.getPlayers().stream().filter(e -> selectableGloveTargets.contains(e.getUuid()) &&
@@ -1295,6 +1310,19 @@ class ActionManager {
         else {
             System.out.println(invalidChoice);
             selectColor(game, selectableColor);
+        }
+    }
+
+    private void chooseGloveStop(@NotNull Game game) throws InterruptedException {
+        System.out.println("Dove vuoi fermarti con l'attacco?\n1. Nella cella del bersaglio\n2. Oltre la cella del bersaglio" + basicTargetPoint);
+        String choice = getLine();
+        if (Integer.parseInt(choice) == 1)
+            for (Player player : game.getPlayers())
+                if (player.getUuid().equals(basicTarget.get(0)))
+                    basicTargetPoint = player.getPosition();
+        else if (Integer.parseInt(choice) != 2) {
+                    System.out.println(invalidChoice);
+                    chooseGloveStop(game);
         }
     }
 }
