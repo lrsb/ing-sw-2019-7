@@ -352,16 +352,19 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                     printMessage("select_target_second");
                                     getTarget(g -> {
                                         weaponAction.addSecondAdditionalTarget(g);
-                                        //todo
                                         getPowerup(game.getActualPlayer().getPowerUps(), p -> {
                                             p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                            doAction(weaponAction);
                                         });
                                     });
-                                } else getPowerup(game.getActualPlayer().getPowerUps(), p -> {
-                                    p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
-                                });
+                                } else {
+                                    getPowerup(game.getActualPlayer().getPowerUps(), p -> {
+                                        p.forEach(pp -> weaponAction.addPowerUpPayment(pp));
+                                        doAction(weaponAction);
+                                    });
+                                }
                             });
-                        }
+                        } else doAction(weaponAction);
                     });
                     break;
                 case PLASMA_GUN:

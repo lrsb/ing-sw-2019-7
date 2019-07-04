@@ -51,9 +51,10 @@ public class GameImpl extends Game implements Serializable {
     private boolean grabWeapon(@NotNull Point to, @NotNull Weapon weapon, @Nullable Weapon discardedWeaponName, @Nullable List<PowerUp> powerUpPayment) {
         var cell = getCell(to);
         if (cell == null) return false;
-        if (!canMove(getActualPlayer().getPosition(), to, 1) && !(skulls == 0 &&
-                canMove(getActualPlayer().getPosition(), to, 2)) && !(lastTurn &&
-                canMove(getActualPlayer().getPosition(), to, 3)) ||
+        int step = 1;
+        if (getActualPlayer().getDamagesTaken().size() > 2 || getSkulls() == 0) step = 2;
+        if (isLastTurn()) step = 3;
+        if (!canMove(getActualPlayer().getPosition(), to, step) ||
                 !cell.isSpawnPoint() || !getWeapons(cell.getColor()).contains(weapon) ||
                 getActualPlayer().getWeapons().size() > 2 && (discardedWeaponName == null ||
                         !getActualPlayer().hasWeapon(discardedWeaponName))) return false;
