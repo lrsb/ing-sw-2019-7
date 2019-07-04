@@ -40,8 +40,8 @@ public class PowerUpSelectorViewController extends BaseViewController {
             var list = new ArrayList<PowerUp>();
             if (checkBox1.isSelected()) list.add(powerList.get(0));
             if (checkBox2.isSelected()) list.add(powerList.get(1));
-            if (checkBox4.isSelected()) list.add(powerList.get(2));
-            if (checkBox3.isSelected()) list.add(powerList.get(3));
+            if (checkBox3.isSelected()) list.add(powerList.get(2));
+            if (checkBox4.isSelected()) list.add(powerList.get(3));
             ((PowerCallback) args[1]).userDidSelect(list);
             dispose();
         });

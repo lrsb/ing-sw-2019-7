@@ -27,7 +27,7 @@ public class WeaponSelectorViewController extends BaseViewController {
     private JPanel panel3;
     private JPanel panel1;
 
-    public WeaponSelectorViewController(@Nullable NavigationController navigationController, @NotNull Object... args) throws IOException {
+    public WeaponSelectorViewController(@Nullable NavigationController navigationController, @NotNull Object... args) {
         super("Scegli", 800, 500, navigationController);
         setContentPane(panel);
         //noinspection unchecked
@@ -39,11 +39,29 @@ public class WeaponSelectorViewController extends BaseViewController {
             dispose();
         });
         cancelButton.addActionListener(l -> dispose());
-        if (weapons.size() > 0) label1.setIcon(new ImageIcon(weapons.get(0).getFrontImage()));
+        if (weapons.size() > 0) {
+            try {
+                label1.setIcon(new ImageIcon(weapons.get(0).getFrontImage()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         else panel1.setVisible(false);
-        if (weapons.size() > 1) label2.setIcon(new ImageIcon(weapons.get(1).getFrontImage()));
+        if (weapons.size() > 1) {
+            try {
+                label2.setIcon(new ImageIcon(weapons.get(1).getFrontImage()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         else panel2.setVisible(false);
-        if (weapons.size() > 2) label3.setIcon(new ImageIcon(weapons.get(2).getFrontImage()));
+        if (weapons.size() > 2) {
+            try {
+                label3.setIcon(new ImageIcon(weapons.get(2).getFrontImage()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         else panel3.setVisible(false);
     }
 

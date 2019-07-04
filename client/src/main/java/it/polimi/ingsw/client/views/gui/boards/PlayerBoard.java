@@ -86,6 +86,7 @@ public class PlayerBoard extends AbstractBoard {
                 var y = 139 + i * 199;
                 var cube = new Sprite(x, y, 50, 50, Utils.readPngImage(AmmoCard.class, AmmoCard.Color.values()[i].name().substring(0, 3)));
                 cube.setTag("p:" + x + "," + y);
+                cube.setClickable(false);
                 cube.setDraggable(true);
                 addSprite(cube);
             }
