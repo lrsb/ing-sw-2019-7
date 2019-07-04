@@ -97,7 +97,7 @@ public class PlayerBoard extends AbstractBoard {
             var x = 1035 - i * 170;
             var weapon = new Sprite(x, 770, 150, 250, weaponImage);
             weapon.setDraggable(false);
-            if (!player.isALoadedGun(player.getWeapons().get(i))) weapon.setFade(0.8);
+            if (!player.isALoadedGun(player.getWeapons().get(i))) weapon.setFade(0.7);
             weapon.setAssociatedObject(player.getWeapons().get(i));
             addSprite(weapon);
         }

@@ -32,7 +32,7 @@ public class PowerUpSelectorViewController extends BaseViewController {
     private JPanel panel4;
 
     PowerUpSelectorViewController(@Nullable NavigationController navigationController, @NotNull Object... args) throws IOException {
-        super("Scegli", 500, 500, navigationController);
+        super("Scegli", 800, 800, navigationController);
         setContentPane(panel);
         //noinspection unchecked
         var powerList = (ArrayList<PowerUp>) args[0];
