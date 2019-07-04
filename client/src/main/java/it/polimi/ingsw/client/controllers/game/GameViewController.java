@@ -254,9 +254,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                } else JOptionPane.showMessageDialog(null, "non hai powerup a disposizione!");
-
-                if (game.getActualPlayer().getPowerUps().parallelStream().anyMatch(l -> l.getType() == PowerUp.Type.TAGBACK_GRENADE) && game.isATagbackResponse()) {
+                } else if (game.getActualPlayer().getPowerUps().parallelStream().anyMatch(l -> l.getType() == PowerUp.Type.TAGBACK_GRENADE) && game.isATagbackResponse()) {
                     try {
                         new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps().parallelStream().filter(f -> f.getType() == PowerUp.Type.TAGBACK_GRENADE).collect(Collectors.toList()), (PowerUpSelectorViewController.PowerCallback) f -> {
                             if (f.size() == 1) {
@@ -269,7 +267,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         ex.printStackTrace();
                     }
 
-                }
+                } else JOptionPane.showMessageDialog(null, "non hai powerup a disposizione!");
             }
         });
 
@@ -360,6 +358,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 if (type == Action.Type.USE_POWER_UP && powerUp.getType() == PowerUp.Type.TARGETING_SCOPE) {
                     if ((game.getLastsDamaged().parallelStream().anyMatch(e -> e.equals(((Player) data).getUuid()))))
                         doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), null, ((Player) data).getUuid()));
+                    else JOptionPane.showMessageDialog(null, "non lo puoi fare su questo gicatore");
                 }
             }
         }
@@ -374,6 +373,8 @@ public class GameViewController extends BaseViewController implements GameBoardL
                     for (ref.j = 0; ref.j < Game.MAX_X; ref.j++)
                         if (game.getCell(new Point(ref.i, ref.j)) != null && game.getCell(new Point(ref.i, ref.j)).isSpawnPoint() && game.getCell(new Point(ref.i, ref.j)).getColor() == cellColor) {
                             if (game.canMove(game.getActualPlayer().getPosition(), new Point(ref.i, ref.j), 1)) {
+                                int i = ref.i;
+                                int j = ref.j;
                                 var temp = NO_OPTION;
                                 if (game.getActualPlayer().getPowerUps().size() == 0) temp = NO_OPTION;
                                 else
@@ -389,13 +390,13 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                                             try {
                                                                 new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
                                                                         (PowerUpSelectorViewController.PowerCallback) powerUps ->
-                                                                                doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(ref.i, ref.j), (Weapon) data, f, powerUps)))
+                                                                                doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, f, powerUps)))
                                                                         .setVisible(true);
                                                             } catch (IOException e) {
                                                                 e.printStackTrace();
                                                             }
                                                         } else
-                                                            doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(ref.i, ref.j), (Weapon) data, f, null)); //TODO da vedere su server
+                                                            doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, f, null)); //TODO da vedere su server
                                                     }
                                                 }).setVisible(true);
                                     } catch (IOException e) {
@@ -405,13 +406,13 @@ public class GameViewController extends BaseViewController implements GameBoardL
                                     try {
                                         new PowerUpSelectorViewController(null, game.getActualPlayer().getPowerUps(),
                                                 (PowerUpSelectorViewController.PowerCallback) powerUps ->
-                                                        doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(ref.i, ref.j), (Weapon) data, null, powerUps)))
+                                                        doAction(Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, null, powerUps)))
                                                 .setVisible(true);
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
                                 } else {
-                                    todo = Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(ref.i, ref.j), (Weapon) data, null, null);
+                                    todo = Action.Builder.create(game.getUuid()).buildWeaponGrabAction(new Point(i, j), (Weapon) data, null, null);
                                 }
                             } else JOptionPane.showMessageDialog(null, "arma troppo lontana!");
                         }
@@ -442,8 +443,12 @@ public class GameViewController extends BaseViewController implements GameBoardL
             } else JOptionPane.showMessageDialog(null, "Muovi il tuo giocatore");
 
         if (data instanceof Player && type == Action.Type.USE_POWER_UP && powerUp != null && powerUp.getType() == PowerUp.Type.NEWTON) {
-
-            doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), point, ((Player) data).getUuid()));
+            if ((((Player) data).getPosition().getX() == point.getX() || ((Player) data).getPosition().getY() == point.getY())) {
+                if ((((Player) data).getPosition().getX() == point.getX() && ((Player) data).getPosition().getY() == point.getY()))
+                    JOptionPane.showMessageDialog(null, "non ha senso non muovere il giocatore!");
+                else
+                    doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), point, ((Player) data).getUuid()));
+            } else JOptionPane.showMessageDialog(null, "non puoi spostare lì " + ((Player) data).getNickname() + "!");
         }
 
         return doAction(todo);
