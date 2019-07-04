@@ -515,6 +515,18 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 }
                 break;
             case GRENADE_LAUNCHER:
+                printMessage("select_target_basic");
+                getTarget(e -> {
+                    weaponAction.addBasicTarget(e);
+                    if (yesOrNo("Vuoi spostare il bersaglio?")) {
+                        printMessage("select_point_basic");
+                        getPoint(f -> {
+                            weaponAction.setBasicTargetPoint(f);
+                        });
+                    } else {
+
+                    }
+                });
                 break;
             case ROCKET_LAUNCHER:
                 break;
