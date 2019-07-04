@@ -23,7 +23,7 @@ public class Action implements Serializable {
     private @Nullable Point destination;
     private @Nullable PowerUp.Type powerUpType;
     private @Nullable AmmoCard.Color color;
-    private @Nullable ArrayList<PowerUp> powerUpPayment;
+    private @Nullable ArrayList<PowerUp> powerUpPayment = new ArrayList<>();
 
     private boolean alternativeFire;
     private int options;
@@ -313,6 +313,10 @@ public class Action implements Serializable {
      */
     public void setSecondAdditionalTargetPoint(@Nullable Point secondAdditionalTargetPoint) {
         this.secondAdditionalTargetPoint = secondAdditionalTargetPoint;
+    }
+
+    public void addPowerUpPayment(@NotNull PowerUp powerUp) {
+        powerUpPayment.add(powerUp);
     }
 
     /**

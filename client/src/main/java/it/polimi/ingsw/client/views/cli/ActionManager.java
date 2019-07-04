@@ -765,7 +765,7 @@ class ActionManager {
                                 if (game.getActualPlayer().isPointAtMaxDistanceInDirection(new Point(i, j), game.getCells(), 2, dir))
                                     selectablePoints.add(new Point(i, j));
                             }
-                    System.out.println(Utils.getStrings("cli", "weapons_details", "flamethrower", "fire_details").get("select_point"));
+                    System.out.println(Utils.getStrings("cli", "weapons_details", "flamethrower", "fire_details").get("select_point_basic"));
                     printSelectablePoints(selectablePoints);
                     simpleBasicPointSelection(selectablePoints);
                     selectAlternativePayment(game);
@@ -784,7 +784,7 @@ class ActionManager {
                                 !e.getPosition().equals(game.getActualPlayer().getPosition()) &&
                                 Stream.of(Bounds.Direction.values()).anyMatch(f -> game.getActualPlayer().isPointAtMaxDistanceInDirection(e.getPosition(), game.getCells(), 2, f)))
                                 .map(Player::getUuid).forEach(selectableFlameTargets::add);
-                        System.out.println(Utils.getStrings("cli", "weapons_details", "flamethrower", "fire_details").get("select_target"));
+                        System.out.println(Utils.getStrings("cli", "weapons_details", "flamethrower", "fire_details").get("select_target_basic"));
                         printSelectableTargets(game, selectableFlameTargets);
                         simpleBasicTargetSelection(selectableFlameTargets);
                         if (basicTarget.size() < 2) doneQuestion();

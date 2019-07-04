@@ -31,11 +31,11 @@ public class PowerUpSelectorViewController extends BaseViewController {
     private JPanel panel3;
     private JPanel panel4;
 
-    PowerUpSelectorViewController(@Nullable NavigationController navigationController, @NotNull Object... args) throws IOException {
+    PowerUpSelectorViewController(@Nullable NavigationController navigationController, @NotNull Object... args) {
         super("Scegli", 800, 800, navigationController);
         setContentPane(panel);
         //noinspection unchecked
-        var powerList = (ArrayList<PowerUp>) args[0];
+        var powerList = (java.util.List<PowerUp>) args[0];
         okButton.addActionListener(l -> {
             var list = new ArrayList<PowerUp>();
             if (checkBox1.isSelected()) list.add(powerList.get(0));
@@ -46,13 +46,37 @@ public class PowerUpSelectorViewController extends BaseViewController {
             dispose();
         });
         cancelButton.addActionListener(l -> dispose());
-        if (powerList.size() > 0) label1.setIcon(new ImageIcon(powerList.get(0).getFrontImage()));
+        if (powerList.size() > 0) {
+            try {
+                label1.setIcon(new ImageIcon(powerList.get(0).getFrontImage()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         else panel1.setVisible(false);
-        if (powerList.size() > 1) label2.setIcon(new ImageIcon(powerList.get(1).getFrontImage()));
+        if (powerList.size() > 1) {
+            try {
+                label2.setIcon(new ImageIcon(powerList.get(1).getFrontImage()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         else panel2.setVisible(false);
-        if (powerList.size() > 2) label3.setIcon(new ImageIcon(powerList.get(2).getFrontImage()));
+        if (powerList.size() > 2) {
+            try {
+                label3.setIcon(new ImageIcon(powerList.get(2).getFrontImage()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         else panel3.setVisible(false);
-        if (powerList.size() > 3) label4.setIcon(new ImageIcon(powerList.get(3).getFrontImage()));
+        if (powerList.size() > 3) {
+            try {
+                label4.setIcon(new ImageIcon(powerList.get(3).getFrontImage()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         else panel4.setVisible(false);
     }
 
