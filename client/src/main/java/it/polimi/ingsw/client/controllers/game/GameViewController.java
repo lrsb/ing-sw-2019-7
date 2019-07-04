@@ -524,6 +524,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
                 break;
             case ZX2:
+                printMessage("select_target_basic");
                 if (!weaponAction.getAlternativeFire()) {
                     getTarget(e -> {
                         weaponAction.addBasicTarget(e);
@@ -545,6 +546,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 }
                 break;
             case SHOTGUN:
+                printMessage("select_target_basic");
                 if (!weaponAction.getAlternativeFire()) {
                     getTarget(e -> {
                         weaponAction.addBasicTarget(e);
@@ -608,6 +610,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 break;
             case SHOCKWAVE:
                 if (!weaponAction.getAlternativeFire()) {
+                    printMessage("select_target_basic");
                     getTarget(e -> {
                         weaponAction.addBasicTarget(e);
                         if (yesOrNo("Vuoi selezionare un altro bersaglio?")) getTarget(f -> {
