@@ -326,14 +326,14 @@ class ActionManager {
             }
         printDestinations(game, possibleDestination);
         String choice = getLine();
-        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestination.size())
+        if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= possibleDestination.size()) {
             if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
                     .buildAmmoCardGrabAction(possibleDestination.get(Integer.parseInt(choice) - 1))))
                 throw new InterruptedException();
-            else {
-                System.out.println(invalidChoice);
-                selectGrabAmmoDestination(game, step);
-            }
+        } else {
+            System.out.println(invalidChoice);
+            selectGrabAmmoDestination(game, step);
+        }
     }
 
     private void selectGrabWeaponDestination(@NotNull Game game, int step) throws InterruptedException {
@@ -854,7 +854,7 @@ class ActionManager {
                 System.out.println(Utils.getStrings("cli", "weapons_details", "cyberblade").get("fire_description").getAsString());
                 doubleChoice();
                 selectBasicMovementPoint(game, 1);
-                List<UUID> selectableBladeTargets = game.getPlayers().stream().filter(e -> e.getPosition() != null &&
+                List<UUID> selectableBladeTargets = game.getPlayers().stream().filter(e -> e.getPosition() != null && !e.equals(game.getActualPlayer()) &&
                         (e.getPosition().equals(game.getActualPlayer().getPosition()) || e.getPosition().equals(basicTargetPoint)))
                         .map(Player::getUuid).collect(Collectors.toList());
                 System.out.println(Utils.getStrings("cli", "weapons_details", "cyberblade", "fire_details").get("select_target_basic").getAsString());

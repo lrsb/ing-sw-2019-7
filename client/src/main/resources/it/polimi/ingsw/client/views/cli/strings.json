@@ -49,7 +49,7 @@
                     "heatseeker": "1. effect\n",
                     "hellion": "1. basic mode\n2. nano-tracer mode (costo: 1 cubo rosso)\n",
                     "flamethrower": "1. basic mode\n2. barbecue mode (costo: 2 cubi gialli)\n",
-                    "grenade launcher": "1. basic effect\n2. basic effect + with extra grenade (costo: 1 cubo rosso)\n",
+                    "grenade_launcher": "1. basic effect\n2. basic effect + with extra grenade (costo: 1 cubo rosso)\n",
                     "rocket_launcher": "1. basic effect\n2. basic effect + with rocke jump (costo: 1 cubo blu)\n3. basic effect + with fragmenting warhead (costo: 1 cubo giallo)\n4. basic effect + with rocket jump + with fragmenting warhead (costo: 1 cubo giallo + 1 cubo blu)\n",
                     "railgun": "1. basic mode\n2. piercing mode\n",
                     "cyberblade": "1. basic effect\n2. basic effect + with slice and dice (costo: 1 cubo giallo)\nNota: \"with shadowstep\" sarà già compreso nella richiesta dei dettagli di fuoco\n",
