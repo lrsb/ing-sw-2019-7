@@ -159,14 +159,14 @@ public class GameImpl extends Game implements Serializable {
             if (responsivePlayers.isEmpty()) {
                 clearLastsDamaged();
                 tagbackTime = false;
+                return;
             }
-            return;
         }
         deathPointsRedistribution();
         if (lastTurn && seqPlay % players.size() == players.size() - 1) endGame();
         if (beforeSkulls > 0 && skulls == 0) players.forEach(Player::setEasyBoard);
         if (skulls == 0 && seqPlay % players.size() == players.size() - 1) lastTurn = true;
-        seqPlay++;
+        if (responsivePlayers.isEmpty()) seqPlay++;
         if (getActualPlayer().getPosition() == null)
             for (int i = 0; i < 2; i++) getActualPlayer().addPowerUp(powerUpsDeck.exitCard());
         if (lastTurn) remainedActions = 1;
