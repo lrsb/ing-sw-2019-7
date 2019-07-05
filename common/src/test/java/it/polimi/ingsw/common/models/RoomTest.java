@@ -35,8 +35,9 @@ class RoomTest {
         boolean bool = room.addUser(fake);
         assertTrue(room.getUsers().size() == 5 && !bool || room.getUsers().size() <= 5 && bool);
         room.removeUser(fake);
-        room.setStartTime(rand.nextInt(100) - 25);
-        assertTrue(room.getStartTime() >= 0);
+        var time = rand.nextInt(100) - 25;
+        room.setStartTime(time);
+        assertEquals(room.getStartTime(), time);
         room.setActionTimeout(rand.nextInt(200));
         assertTrue(room.getActionTimeout() >= 60 && room.getActionTimeout() <= 120 || room.getActionTimeout() == 30);
         room.setGameCreated();
