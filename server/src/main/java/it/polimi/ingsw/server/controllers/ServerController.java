@@ -193,10 +193,7 @@ public class ServerController implements API {
     public boolean doAction(@Nullable String token, @Nullable Action action) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (action != null) try {
-            var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
-            if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid())) &&
-                    !game.getActualPlayer().getUuid().equals(user.getUuid())) return false;
-            return doAction(game, action);
+            return doAction(user, action);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RemoteException("Something went wrong, sometimes it happens!!");
@@ -204,7 +201,9 @@ public class ServerController implements API {
         else throw new RemoteException("The action is not valid!!");
     }
 
-    private boolean doAction(@NotNull GameImpl game, @NotNull Action action) {
+    private synchronized boolean doAction(@Nullable User user, @NotNull Action action) {
+        var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
+        if (user != null && !game.getActualPlayer().getUuid().equals(user.getUuid())) return false;
         var message = game.getActualPlayer().getNickname() +
                 (action.getActionType() != Action.Type.NEXT_TURN ? " ha fatto: " + action.getActionType().name() + " " : " ha passato il turno");
         var value = game.doAction(action);
@@ -212,7 +211,8 @@ public class ServerController implements API {
         System.out.println(value);
         if (value) {
             updateGameTimer(game);
-            games.replaceOne(eq("uuid", action.getGameUuid().toString()), Document.parse(new Gson().toJson(game)));
+            if (game.isCompleted()) games.deleteOne(eq("uuid", action.getGameUuid().toString()));
+            else games.replaceOne(eq("uuid", action.getGameUuid().toString()), Document.parse(new Gson().toJson(game)));
             switch (action.getActionType()) {
                 case MOVE:
                     message += "in " + action.getDestination();
@@ -224,7 +224,14 @@ public class ServerController implements API {
                     message += "in " + game.getActualPlayer().getPosition();
                     break;
                 case FIRE:
-                    message += "con " + action.getWeapon().name();
+                    var targets = action.getBasicTarget();
+                    targets.addAll(action.getFirstAdditionalTarget());
+                    targets.addAll(action.getSecondAdditionalTarget());
+                    var targetsMessage = targets.parallelStream()
+                            .map(e -> game.getPlayers().parallelStream()
+                                    .filter(f -> f.getUuid().equals(e)).findAny().get().getNickname())
+                            .distinct().collect(Collectors.joining(", "));
+                    message += "con " + action.getWeapon().name() + " e ha colpito " + targetsMessage;
                     break;
                 case USE_POWER_UP:
                     message += ": " + action.getPowerUpType().name();
@@ -246,7 +253,7 @@ public class ServerController implements API {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                doAction(game, Action.Builder.create(game.getUuid()).buildNextTurn());
+                doAction((User) null, Action.Builder.create(game.getUuid()).buildNextTurn());
             }
         }, timeout * 1000);
         Optional.ofNullable(gameTimers.put(game.getUuid(), timer)).ifPresent(Timer::cancel);

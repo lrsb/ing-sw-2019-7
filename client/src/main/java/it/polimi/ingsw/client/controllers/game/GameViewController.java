@@ -295,6 +295,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         }
         yourTurn = Preferences.getUuid().equals(game.getActualPlayer().getUuid());
         updateTimer();
+        reset();
         reloadActionPanel();
 
         actualPlayerLabel.setText(yourTurn ? "TE" : game.getActualPlayer().getNickname());

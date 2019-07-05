@@ -35,11 +35,17 @@ public class LeaderBoardViewController extends BaseViewController {
         };
         tableModel.addColumn("Posizione");
         tableModel.addColumn("Player");
-        var position = 1;
-        if (game.getFinalRanking() != null) game.getFinalRanking().stream().map(e -> new Object[]{
-                Integer.toString(position),
-                e.stream().map(f -> game.getPlayers().parallelStream().filter(g -> g.getUuid().equals(f)).findAny().map(Player::getNickname).get())
-                        .collect(Collectors.joining(", "))}).forEachOrdered(tableModel::addRow);
+        var ref = new Object() {
+            int position = 1;
+        };
+        if (game.getFinalRanking() != null) game.getFinalRanking().stream().map(e -> {
+            var array = new Object[]{
+                    Integer.toString(ref.position),
+                    e.stream().map(f -> game.getPlayers().parallelStream().filter(g -> g.getUuid().equals(f)).findAny().map(Player::getNickname).get())
+                            .collect(Collectors.joining(", "))};
+            ref.position++;
+            return array;
+        }).forEachOrdered(tableModel::addRow);
         leaderboardTable.setModel(tableModel);
     }
 

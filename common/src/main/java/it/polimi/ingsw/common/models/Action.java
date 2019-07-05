@@ -158,7 +158,7 @@ public class Action implements Serializable {
      *
      * @return targets of basic effect
      */
-    public @Nullable List<UUID> getBasicTarget() {
+    public @NotNull List<UUID> getBasicTarget() {
         return basicTarget;
     }
 
@@ -176,7 +176,7 @@ public class Action implements Serializable {
      *
      * @return targets of first additional effect
      */
-    public @Nullable List<UUID> getFirstAdditionalTarget() {
+    public @NotNull List<UUID> getFirstAdditionalTarget() {
         return firstAdditionalTarget;
     }
 
@@ -194,7 +194,7 @@ public class Action implements Serializable {
      *
      * @return targets of second additional effect
      */
-    public @Nullable List<UUID> getSecondAdditionalTarget() {
+    public @NotNull List<UUID> getSecondAdditionalTarget() {
         return secondAdditionalTarget;
     }
 
