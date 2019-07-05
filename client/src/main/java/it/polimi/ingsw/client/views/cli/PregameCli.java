@@ -242,7 +242,7 @@ public class PregameCli {
     public static @NotNull Segue postLobby() {
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
         try {
-            Client.API.removeListener(Preferences.getOptionalToken().get());
+            //Client.API.removeListener(Preferences.getOptionalToken().get());
             return Segue.of("preGame", GameCli.class, Client.API.getActiveGame(Preferences.getOptionalToken().get()));
         } catch (UserRemoteException ex) {
             ex.printStackTrace();

@@ -155,7 +155,7 @@ public class RoomViewController extends BaseViewController {
         if (clip != null) clip.stop();
         Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(e -> {
             try {
-                Client.API.removeListener(e);
+                //Client.API.removeListener(e);
                 if (game) Client.API.quitRoom(e, roomUuid);
             } catch (UserRemoteException ex) {
                 ex.printStackTrace();
