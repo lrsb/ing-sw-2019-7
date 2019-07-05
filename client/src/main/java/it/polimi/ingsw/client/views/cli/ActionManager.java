@@ -553,7 +553,7 @@ class ActionManager {
     private void printDestinations(@NotNull Game game, @NotNull List<Point> possibleDestination) {
         for (int i = 0; i < possibleDestination.size(); i++)
             System.out.println((i + 1) + ". " + (possibleDestination.get(i).equals(game.getActualPlayer().getPosition()) ?
-                    "Rimani fermo" : possibleDestination.get(i)));
+                    "La tua stessa cella" : possibleDestination.get(i)));
         System.out.println(Utils.getStrings("cli").get("back_to_menu").getAsString());
     }
 
@@ -1092,10 +1092,10 @@ class ActionManager {
     private void selectFirstThorTarget(@NotNull Game game) throws InterruptedException {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_first"));
         List<UUID> selectableTargets = new ArrayList<>();
-        //todo: controllare
-        Player bTarget = game.getPlayers().stream().filter(e -> e.getUuid().equals(basicTarget.get(0))).findFirst().get();
-        game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && !e.getUuid().equals(basicTarget.get(0)) &&
-                bTarget.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);
+        for (Player player : game.getPlayers()) {
+            if (player.getUuid().equals(basicTarget.get(0))) game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && !e.getUuid().equals(basicTarget.get(0)) &&
+                    player.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);;
+        }
         printSelectableTargets(game, selectableTargets);
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableTargets.size())
@@ -1122,10 +1122,11 @@ class ActionManager {
     private void selectSecondThorTarget(@NotNull Game game) throws InterruptedException {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_second"));
         List<UUID> selectableTargets = new ArrayList<>();
-        //todo: controllare
-        Player fTarget = game.getPlayers().stream().filter(e -> e.getUuid().equals(firstAdditionalTarget.get(0))).findFirst().get();
-        game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && !e.getUuid().equals(basicTarget.get(0)) && !e.equals(fTarget) &&
-                fTarget.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);
+        for (Player player : game.getPlayers()) {
+            if (player.getUuid().equals(firstAdditionalTarget.get(0))) game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) &&
+                    !e.getUuid().equals(basicTarget.get(0)) && !e.equals(player) &&
+                    player.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);
+        }
         printSelectableTargets(game, selectableTargets);
         String choice = getLine();
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableTargets.size())
