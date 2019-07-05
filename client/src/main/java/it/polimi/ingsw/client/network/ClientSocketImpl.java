@@ -20,9 +20,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SuppressWarnings("ConstantConditions")
 public class ClientSocketImpl implements API, AdrenalineSocketListener {
+    private static final @NotNull ExecutorService executorService = Executors.newCachedThreadPool();
+
     private final @NotNull AdrenalineSocket adrenalineSocket;
 
     private volatile @Nullable User.Auth authUser;
@@ -186,15 +190,13 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                 case UPDATE:
                     List<String> data = packet.getAssociatedObject(new TypeToken<List<String>>() {
                     });
-                    if (data != null) Optional.ofNullable(listener).ifPresent(f -> {
-                        new Thread(() -> {
-                            try {
-                                f.onUpdate(new Gson().fromJson(data.get(1), TypeToken.get(Class.forName(data.get(0))).getType()));
-                            } catch (RemoteException | ClassNotFoundException e) {
-                                e.printStackTrace();
-                            }
-                        }).start();
-                    });
+                    if (data != null) Optional.ofNullable(listener).ifPresent(f -> executorService.submit(() -> {
+                        try {
+                            f.onUpdate(new Gson().fromJson(data.get(1), TypeToken.get(Class.forName(data.get(0))).getType()));
+                        } catch (RemoteException | ClassNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }));
                     break;
                 case REMOVE_UPDATE:
                     updateRemoved = true;

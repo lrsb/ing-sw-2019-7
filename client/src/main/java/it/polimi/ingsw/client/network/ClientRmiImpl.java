@@ -11,8 +11,12 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientRmiImpl implements API {
+    private static final @NotNull ExecutorService executorService = Executors.newCachedThreadPool();
+
     private final @NotNull API remote;
 
     @Contract(pure = true)
@@ -77,7 +81,13 @@ public class ClientRmiImpl implements API {
 
     @Override
     public void addListener(@NotNull String token, @NotNull Listener listener) throws RemoteException {
-        remote.addListener(token, (Listener) UnicastRemoteObject.exportObject(listener, 0));
+        remote.addListener(token, (Listener) UnicastRemoteObject.exportObject((Listener) o -> executorService.submit(() -> {
+            try {
+                listener.onUpdate(o);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }), 0));
     }
 
     @Override

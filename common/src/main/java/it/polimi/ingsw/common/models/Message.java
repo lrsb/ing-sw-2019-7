@@ -3,12 +3,15 @@ package it.polimi.ingsw.common.models;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * In game message wrapper class.
  */
-public class Message implements Comparable<Message> {
+public class Message implements Comparable<Message>, Serializable {
+    private static final long serialVersionUID = 1;
+
     private @NotNull User from;
     private @NotNull UUID uuid;
     private @NotNull String message;
