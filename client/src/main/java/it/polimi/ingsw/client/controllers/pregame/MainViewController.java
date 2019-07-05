@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 
 import static it.polimi.ingsw.client.others.Utils.jumpBackToLogin;
@@ -26,6 +28,7 @@ public class MainViewController extends BaseViewController {
     private JButton elencoPartiteButton;
     private JButton nuovaPartitaButton;
     private JButton esciButton;
+    private JButton paypalButton;
 
     public MainViewController(@NotNull NavigationController navigationController) throws IOException {
         super("Benvenuto", 400, 300, navigationController);
@@ -40,6 +43,13 @@ public class MainViewController extends BaseViewController {
         elencoPartiteButton.addActionListener(e -> {
             if (getNavigationController() != null)
                 getNavigationController().presentViewController(RoomsListViewController.class);
+        });
+        paypalButton.addActionListener(e -> {
+            try {
+                Desktop.getDesktop().browse(new URI("https://paypal.me/pools/c/8gciTmkaam"));
+            } catch (IOException | URISyntaxException ex) {
+                ex.printStackTrace();
+            }
         });
         esciButton.addActionListener(e -> jumpBackToLogin(getNavigationController()));
     }
@@ -95,11 +105,12 @@ public class MainViewController extends BaseViewController {
         panel2.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer4 = new Spacer();
         panel2.add(spacer4, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final Spacer spacer5 = new Spacer();
-        panel2.add(spacer5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         esciButton = new JButton();
         esciButton.setText("Esci");
         panel2.add(esciButton, new GridConstraints(3, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        paypalButton = new JButton();
+        paypalButton.setText("Paga");
+        panel2.add(paypalButton, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

@@ -1017,7 +1017,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 type == Action.Type.USE_POWER_UP && powerUp.getType() == PowerUp.Type.TARGETING_SCOPE) {
             if ((game.getLastsDamaged().parallelStream().anyMatch(e -> e.equals(((Player) data).getUuid()))))
                 doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), null, ((Player) data).getUuid()));
-            else showMessage("non lo puoi fare su questo gicatore");
+            else showMessage("non lo puoi fare su questo giocatore");
         }
 
         var availableMovement = 1;
@@ -1104,7 +1104,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 if (position != null && game.canMove(position, point, 2)) {
                     if ((position.getX() == point.getX() || position.getY() == point.getY())) {
                         if (position.equals(point))
-                            showMessage("non ha senso non muovere il giocatore!");
+                            showMessage("sposta il giocatore di almeno una cella");
                         else
                             doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), point, ((Player) data).getUuid()));
                     } else
