@@ -126,9 +126,11 @@ public class GameViewController extends BaseViewController implements GameBoardL
         timer = new Timer(1000, e -> {
             if (game.getNextActionTime() - System.currentTimeMillis() <= 0) {
                 timerLabel.setText("");
-                if (game.getNextActionTime() - System.currentTimeMillis() <= 1500)
+                if (game.getNextActionTime() - System.currentTimeMillis() <= 3000)
                     Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
                         try {
+                            if (timer != null) timer.stop();
+                            connect();
                             updateBoards(Client.API.getActiveGame(f));
                         } catch (UserRemoteException ex) {
                             ex.printStackTrace();
@@ -1075,7 +1077,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         @Nullable Action todo = null;
 
         if (data instanceof Player && type == Action.Type.USE_POWER_UP && point != null) {
-            if ((powerUp != null ? powerUp.getType() : null) == PowerUp.Type.TELEPORTER) {
+            if (powerUp != null && powerUp.getType() == PowerUp.Type.TELEPORTER) {
                 doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), point, null));
             }
         }

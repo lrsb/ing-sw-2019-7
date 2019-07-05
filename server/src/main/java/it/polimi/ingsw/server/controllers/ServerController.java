@@ -180,7 +180,7 @@ public class ServerController implements API {
                 games.deleteOne(eq("uuid", gameUuid.toString()));
                 game.endGame();
             } else games.replaceOne(eq("uuid", gameUuid.toString()), Document.parse(new Gson().toJson(game)));*/
-            sendBroadcastToGame(game, user.getNickname() + " left the game." + (game.isCompleted() ? "\nNot enough players." : ""));
+            sendBroadcastToGame(game, user.getNickname() + " ha lasciato il gioco." + (game.isCompleted() ? "\nNot enough players." : ""));
             informGamePlayers(game);
         } catch (Exception e) {
             e.printStackTrace();
@@ -193,7 +193,6 @@ public class ServerController implements API {
     public boolean doAction(@Nullable String token, @Nullable Action action) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (action != null) try {
-            System.out.println(new Gson().toJson(action));
             var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
             if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid())) &&
                     !game.getActualPlayer().getUuid().equals(user.getUuid())) return false;
@@ -209,6 +208,8 @@ public class ServerController implements API {
         var message = game.getActualPlayer().getNickname() +
                 (action.getActionType() != Action.Type.NEXT_TURN ? " ha fatto: " + action.getActionType().name() + " " : " ha passato il turno");
         var value = game.doAction(action);
+        System.out.println(new Gson().toJson(action));
+        System.out.println(value);
         if (value) {
             updateGameTimer(game);
             games.replaceOne(eq("uuid", action.getGameUuid().toString()), Document.parse(new Gson().toJson(game)));
