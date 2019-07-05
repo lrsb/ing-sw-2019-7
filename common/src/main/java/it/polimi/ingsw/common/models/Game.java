@@ -188,7 +188,7 @@ public class Game implements Displayable, Serializable {
      * @return list of identifiers of the players that achieved killshots
      */
     public @NotNull List<UUID> getKillshotsTrack() {
-        return new ArrayList<>(arrayKillshotsTrack);
+        return arrayKillshotsTrack;
     }
 
     void addToLastsDamaged(@NotNull Player player) {

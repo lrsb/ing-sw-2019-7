@@ -813,7 +813,7 @@ class ActionManager {
                 mockPlayer2.setPosition(basicTargetPoint);
                 List<UUID> selectableRocketTargets = game.getPlayers().stream().filter(e -> game.getActualPlayer().canSeeNotSame(e, game.getCells()) ||
                         mockPlayer2.canSeeNotSame(e, game.getCells())).map(Player::getUuid).collect(Collectors.toList());
-                System.out.println(Utils.getStrings("cli", "weapons_details", "rocket_launcher", "fire_details").get("selecet_target_basic").getAsString());
+                System.out.println(Utils.getStrings("cli", "weapons_details", "rocket_launcher", "fire_details").get("select_target_basic").getAsString());
                 printSelectableTargets(game, selectableRocketTargets);
                 simpleBasicTargetSelection(selectableRocketTargets);
                 selectBasicTargetMovementInDirection(game, 1);
