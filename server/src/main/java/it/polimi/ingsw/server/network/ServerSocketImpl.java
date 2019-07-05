@@ -64,10 +64,11 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     socket.send(new AdrenalinePacket(AdrenalinePacket.Type.QUIT_GAME, null, null));
                     break;
                 case DO_ACTION:
-                    Server.controller.doAction(token, packet.getAssociatedObject(Action.class));
+                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.DO_ACTION, null, Server.controller.doAction(token, packet.getAssociatedObject(Action.class))));
                     break;
                 case SEND_MESSAGE:
                     Server.controller.sendMessage(token, packet.getAssociatedObject(Message.class));
+                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.SEND_MESSAGE, null, null));
                     break;
                 case UPDATE:
                     Server.controller.addListener(token, (object) ->
@@ -75,6 +76,7 @@ public class ServerSocketImpl implements AdrenalineServerSocketListener, Adrenal
                     break;
                 case REMOVE_UPDATE:
                     Server.controller.removeListener(token);
+                    socket.send(new AdrenalinePacket(AdrenalinePacket.Type.REMOVE_UPDATE, null, null));
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + packet.getType());

@@ -198,7 +198,6 @@ public class PregameCli {
         try {
             Client.API.addListener(Preferences.getOptionalToken().get(), f -> {
                 if (f instanceof Room && ((Room) f).getUuid().equals(room.getUuid())) PregameCli.room = (Room) f;
-                PregameCli.room.notifyAll();
             });
         } catch (UserRemoteException ex) {
             ex.printStackTrace();

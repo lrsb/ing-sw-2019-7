@@ -187,11 +187,13 @@ public class ClientSocketImpl implements API, AdrenalineSocketListener {
                     List<String> data = packet.getAssociatedObject(new TypeToken<List<String>>() {
                     });
                     if (data != null) Optional.ofNullable(listener).ifPresent(f -> {
-                        try {
-                            f.onUpdate(new Gson().fromJson(data.get(1), TypeToken.get(Class.forName(data.get(0))).getType()));
-                        } catch (RemoteException | ClassNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                        new Thread(() -> {
+                            try {
+                                f.onUpdate(new Gson().fromJson(data.get(1), TypeToken.get(Class.forName(data.get(0))).getType()));
+                            } catch (RemoteException | ClassNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        }).start();
                     });
                     break;
                 case REMOVE_UPDATE:
