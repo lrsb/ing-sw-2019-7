@@ -38,17 +38,15 @@ class SecureUserController {
 
     @Contract("null, _ -> fail; !null, null -> fail")
     static @NotNull User.Auth createUser(@Nullable String nickname, @Nullable String password) throws RemoteException {
-        if (nickname != null && password != null) synchronized (users) {
-            try {
-                if (users.find(eq("nickname", nickname)).iterator().hasNext())
-                    throw new UserRemoteException("User already exists!");
-                var user = new SecureUser(nickname, password);
-                users.insertOne(Document.parse(new Gson().toJson(user)));
-                return new User.Auth(user, user.getToken());
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new UserRemoteException("User not exists!");
-            }
+        if (nickname != null && password != null) try {
+            if (users.find(eq("nickname", nickname)).iterator().hasNext())
+                throw new UserRemoteException("User already exists!");
+            var user = new SecureUser(nickname, password);
+            users.insertOne(Document.parse(new Gson().toJson(user)));
+            return new User.Auth(user, user.getToken());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UserRemoteException("User not exists!");
         }
         else throw new RemoteException("Incomplete credentials!");
     }

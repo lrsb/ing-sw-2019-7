@@ -203,7 +203,7 @@ public class ServerController implements API {
         else throw new RemoteException("The action is not valid!!");
     }
 
-    private synchronized boolean doAction(@Nullable User user, @NotNull Action action) {
+    private boolean doAction(@Nullable User user, @NotNull Action action) {
         var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
         if (user != null && !game.getActualPlayer().getUuid().equals(user.getUuid())) return false;
         var message = game.getActualPlayer().getNickname() +
