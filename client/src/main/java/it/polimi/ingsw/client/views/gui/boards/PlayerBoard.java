@@ -117,16 +117,15 @@ public class PlayerBoard extends AbstractBoard {
             }
         }
 
-        for (var i = 0; i < player.getDeaths(); i++) {
-            var skull = new Sprite((int) (249 + 63.7 * i), 620, 60, 60, Utils.readPngImage(Game.class, "skull"));
-            skull.setTag("p:" + (int) (249 + 63.7 * i) + ",620");
-            skull.setDraggable(true);
-            skull.fade(new LinearFadeInterpolator(0, 1, 1000) {
-            });
-            addSprite(skull);
-        }
-
-
+        if (!player.isEasyBoard())
+            for (var i = 0; i < player.getDeaths(); i++) {
+                var skull = new Sprite((int) (249 + 63.7 * i), 620, 60, 60, Utils.readPngImage(Game.class, "skull"));
+                skull.setTag("p:" + (int) (249 + 63.7 * i) + ",620");
+                skull.setDraggable(true);
+                skull.fade(new LinearFadeInterpolator(0, 1, 1000) {
+                });
+                addSprite(skull);
+            }
     }
 
     @Override

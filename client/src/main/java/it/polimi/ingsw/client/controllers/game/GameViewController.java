@@ -298,7 +298,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
         reset();
         reloadActionPanel();
 
-        actualPlayerLabel.setText(yourTurn ? "TE" : game.getActualPlayer().getNickname());
+        actualPlayerLabel.setText(yourTurn ? (game.isATagbackResponse() ? "TE (TAGBACK)" : "TE") : game.getActualPlayer().getNickname());
     }
 
     private void continueBuildWeapon() {

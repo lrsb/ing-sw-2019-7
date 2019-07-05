@@ -331,7 +331,7 @@ public class GameCli {
                     e.getColoredCubes(AmmoCard.Color.RED) + "   " + e.getColoredCubes(AmmoCard.Color.YELLOW) + "   " + e.getColoredCubes(AmmoCard.Color.BLUE), e.getDeaths(),
                     e.getPoints());
             System.out.println();
-            System.out.print("ARMI: " + e.getWeapons().stream().map(c -> c.getColor().escape() + c.name() + "\u001b[0m").collect(Collectors.joining(", ")));
+            System.out.print("ARMI: " + e.getWeapons().stream().map(c -> c.getColor().escape() + c.name() + "\u001b[0m" + (e.isALoadedGun(c) ? "" : " (scarica)")).collect(Collectors.joining(", ")));
             System.out.println();
             System.out.print(e.getUuid().equals(Preferences.getUuid()) ? ("POWERUP: " + e.getPowerUps().stream().map(c -> c.getAmmoColor().escape() + c.getType().name() + "\u001b[0m").collect(Collectors.joining(", ")))
                     : ("N° POWERUP: " + e.getPowerUps().size()));
