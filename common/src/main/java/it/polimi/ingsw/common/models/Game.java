@@ -40,6 +40,8 @@ public class Game implements Displayable, Serializable {
     protected int skulls;
 
     protected int startingSkulls;
+    protected @NotNull ArrayList<UUID> visibleCliKillshotsTrack = new ArrayList<>();
+    protected @NotNull ArrayList<UUID> visibleGuiKillshotsTrack = new ArrayList<>();
     protected @NotNull ArrayList<UUID> arrayKillshotsTrack = new ArrayList<>();
     protected boolean isCompleted = false;
     protected boolean lastTurn = false;
@@ -187,8 +189,12 @@ public class Game implements Displayable, Serializable {
      *
      * @return list of identifiers of the players that achieved killshots
      */
-    public @NotNull List<UUID> getKillshotsTrack() {
-        return arrayKillshotsTrack;
+    public @NotNull List<UUID> getVisibleCliKillshotsTrack() {
+        return visibleCliKillshotsTrack;
+    }
+
+    public @NotNull List<UUID> getVisibleGuiKillshotsTrack() {
+        return visibleGuiKillshotsTrack;
     }
 
     void addToLastsDamaged(@NotNull Player player) {

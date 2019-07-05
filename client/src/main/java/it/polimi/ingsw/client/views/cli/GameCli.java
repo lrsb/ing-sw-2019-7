@@ -305,7 +305,7 @@ public class GameCli {
         System.out.println(game.getTurn());
         System.out.println("Teschi: " + game.getSkulls());
         System.out.print("Colpi Mortali: ");
-        game.getKillshotsTrack().forEach(e -> game.getPlayers().parallelStream().filter(f -> f.getUuid().equals(e))
+        game.getVisibleCliKillshotsTrack().forEach(e -> game.getPlayers().parallelStream().filter(f -> f.getUuid().equals(e))
                 .forEach(f -> System.out.print(f.getBoardType().escape() + "■ " + "\u001b[0m")));
         System.out.println();
         System.out.print(RED.escape() + "■ " + "\u001b[0m" + "Armi SP rosso: " + game.getWeapons(RED).stream()

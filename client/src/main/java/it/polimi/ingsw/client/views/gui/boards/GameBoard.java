@@ -227,7 +227,7 @@ public class GameBoard extends AbstractBoard {
             addSprite(skull);
         }
         //noinspection OptionalGetWithoutIsPresent
-        var killshots = game.getKillshotsTrack().stream().map(e -> game.getPlayers().parallelStream()
+        var killshots = game.getVisibleGuiKillshotsTrack().stream().map(e -> game.getPlayers().parallelStream()
                 .filter(f -> e.equals(f.getUuid())).findAny().get()).map(Player::getBoardType).collect(Collectors.toList());
         for (int i = 0, x = 96 + 50 * (8 - game.getStartingSkulls()); i < killshots.size(); i++, x += 50) {
             var killshot = new Sprite(x, 56, 35, 50, applyColorToMask(mask, killshots.get(i).getColor()));

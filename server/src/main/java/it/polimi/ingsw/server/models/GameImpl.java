@@ -433,6 +433,8 @@ public class GameImpl extends Game implements Serializable {
     }
 
     private void addToKillshotsTrack(UUID uuid) {
+        visibleCliKillshotsTrack.add(uuid);
+        if (getStartingSkulls() >= visibleGuiKillshotsTrack.size() + getSkulls()) visibleGuiKillshotsTrack.add(uuid);
         if (!hashKillshotsTrack.containsKey(uuid)) {
             hashKillshotsTrack.put(uuid, 1);
             arrayKillshotsTrack.add(uuid);
