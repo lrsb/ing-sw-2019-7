@@ -896,14 +896,14 @@ class ActionManager {
                 options = 0;
                 List<UUID> selectableShotgunTargets = new ArrayList<>();
                 if (alternativeFire) {
-                    game.getPlayers().stream().filter(e -> e.getPosition() != null && !e.getPosition().equals(game.getActualPlayer().getPosition()) &&
+                    game.getPlayers().stream().filter(e -> e.getPosition() != null && !e.equals(game.getActualPlayer()) && !e.getPosition().equals(game.getActualPlayer().getPosition()) &&
                             Stream.of(Bounds.Direction.values()).anyMatch(f -> game.getActualPlayer().isPointAtMaxDistanceInDirection(e.getPosition(), game.getCells(), 1, f)))
                             .map(Player::getUuid).forEach(selectableShotgunTargets::add);
                     System.out.println(Utils.getStrings("cli", "weapons_details", "shotgun", "fire_details").get("select_target_basic").getAsString());
                     printSelectableTargets(game, selectableShotgunTargets);
                     simpleBasicTargetSelection(selectableShotgunTargets);
                 } else {
-                    game.getPlayersAtPosition(game.getActualPlayer().getPosition()).stream().map(Player::getUuid).forEach(selectableShotgunTargets::add);
+                    game.getPlayersAtPosition(game.getActualPlayer().getPosition()).stream().filter(e -> !e.equals(game.getActualPlayer())).map(Player::getUuid).forEach(selectableShotgunTargets::add);
                     System.out.println(Utils.getStrings("cli", "weapons_details", "shotgun", "fire_details").get("select_target_basic").getAsString());
                     printSelectableTargets(game, selectableShotgunTargets);
                     simpleBasicTargetSelection(selectableShotgunTargets);
