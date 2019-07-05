@@ -924,7 +924,6 @@ public class GameViewController extends BaseViewController implements GameBoardL
                         showMessage("Scegli la tessera delle munizioni o l'arma da raccogliere");
                         break;
                     case FIRE:
-                        showMessage("Scegli l'arma con cui sparare");
                         break;
                     case USE_POWER_UP:
                         break;
