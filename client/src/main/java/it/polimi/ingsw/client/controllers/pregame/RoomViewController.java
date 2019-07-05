@@ -133,7 +133,6 @@ public class RoomViewController extends BaseViewController {
         timer = new Timer(1000, e -> {
             if (room.getStartTime() - System.currentTimeMillis() <= 0) {
                 startLabel.setText("");
-                if (room.getStartTime() - System.currentTimeMillis() <= 1500) connect();
             }
             else
                 startLabel.setText("Partenza tra: " + (room.getStartTime() - System.currentTimeMillis()) / 1000 + " sec");

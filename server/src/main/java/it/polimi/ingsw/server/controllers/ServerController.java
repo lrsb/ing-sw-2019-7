@@ -193,7 +193,7 @@ public class ServerController implements API {
     public boolean doAction(@Nullable String token, @Nullable Action action) throws RemoteException {
         var user = SecureUserController.getUser(token);
         if (action != null) try {
-            System.out.println(action);
+            System.out.println(new Gson().toJson(action));
             var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
             if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid())) &&
                     !game.getActualPlayer().getUuid().equals(user.getUuid())) return false;

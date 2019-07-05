@@ -23,7 +23,7 @@ public class Action implements Serializable {
     private @Nullable Point destination;
     private @Nullable PowerUp.Type powerUpType;
     private @Nullable AmmoCard.Color color;
-    private @Nullable ArrayList<PowerUp> powerUpPayment = new ArrayList<>();
+    private @NotNull ArrayList<PowerUp> powerUpPayment = new ArrayList<>();
 
     private boolean alternativeFire;
     private int options;
@@ -303,16 +303,6 @@ public class Action implements Serializable {
      */
     public void addSecondAdditionalTarget(UUID secondAdditionalTarget) {
         this.secondAdditionalTarget.add(secondAdditionalTarget);
-    }
-
-    /**
-     * set a point which meaning depends on second additional fire mode
-     * of a weapon you want to use to fire
-     *
-     * @param secondAdditionalTargetPoint coordinates of a point in game board
-     */
-    public void setSecondAdditionalTargetPoint(@Nullable Point secondAdditionalTargetPoint) {
-        this.secondAdditionalTargetPoint = secondAdditionalTargetPoint;
     }
 
     /**

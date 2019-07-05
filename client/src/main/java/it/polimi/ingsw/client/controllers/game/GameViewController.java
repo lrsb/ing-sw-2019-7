@@ -126,7 +126,20 @@ public class GameViewController extends BaseViewController implements GameBoardL
         timer = new Timer(1000, e -> {
             if (game.getNextActionTime() - System.currentTimeMillis() <= 0) {
                 timerLabel.setText("");
-                if (game.getNextActionTime() - System.currentTimeMillis() <= 1500) connect();
+                if (game.getNextActionTime() - System.currentTimeMillis() <= 1500)
+                    Preferences.getTokenOrJumpBack(getNavigationController()).ifPresent(f -> {
+                        try {
+                            updateBoards(Client.API.getActiveGame(f));
+                        } catch (UserRemoteException ex) {
+                            ex.printStackTrace();
+                            Utils.jumpBackToLogin(getNavigationController());
+                        } catch (RemoteException ex) {
+                            ex.printStackTrace();
+                            JOptionPane.showMessageDialog(null, ex.getMessage());
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
             } else {
                 if ((game.getNextActionTime() - System.currentTimeMillis()) / 1000 < 10)
                     timerLabel.setForeground(Color.RED);
@@ -324,6 +337,7 @@ public class GameViewController extends BaseViewController implements GameBoardL
                 break;
         }
         int finalOption = option;
+        weaponAction.setOptions(option);
         switch (weaponAction.getWeapon()) {
             case LOCK_RIFLE:
                 printMessage("select_target_basic");
