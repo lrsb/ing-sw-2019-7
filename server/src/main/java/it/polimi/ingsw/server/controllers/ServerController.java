@@ -43,6 +43,7 @@ public class ServerController implements API {
             var game = findGame(user.getUuid());
             if (game == null) throw new RemoteException("No active game!!");
             updateGameTimer(game);
+            informGamePlayers(game);
             return new Gson().fromJson(new Gson().toJson(game), Game.class);
         } catch (Exception e) {
             e.printStackTrace();
@@ -163,8 +164,9 @@ public class ServerController implements API {
             throw new RemoteException("Too much players!");
         var game = GameImpl.Creator.newGame(room);
         rooms.deleteOne(eq("uuid", roomUuid.toString()));
-        updateGameTimer(game);
+        Optional.ofNullable(roomTimers.remove(roomUuid)).ifPresent(Timer::cancel);
         games.insertOne(Document.parse(new Gson().toJson(game)));
+        updateGameTimer(game);
         room.setGameCreated();
         informRoomUsers(room);
     }
