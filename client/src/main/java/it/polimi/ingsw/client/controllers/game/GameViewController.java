@@ -85,8 +85,9 @@ public class GameViewController extends BaseViewController implements GameBoardL
         moveLabel.setForeground(WHITE_ACCENT);
         timerLabel.setForeground(WHITE_ACCENT);
         actualPlayerLabel.setForeground(WHITE_ACCENT);
+        timerLabel.setText("");
 
-        connect();
+        new Thread(this::connect).start();
 
         setupButtons();
     }
