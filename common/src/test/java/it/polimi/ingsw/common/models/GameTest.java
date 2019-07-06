@@ -85,7 +85,7 @@ class GameTest {
         gameTest = new Game(UUID.randomUUID(), type, cells, players, new SecureRandom().nextInt(4) + 5, 60);
         assertTrue(gameTest.getSkulls() >= 5 && gameTest.getSkulls() <= 8);
         assertTrue(gameTest.getTagbackPlayers().isEmpty());
-        assertThrows(SelfResponseException.class , gameTest::getTagbackedPlayer);
+        assertThrows(SelfResponseException.class, gameTest::getTagbackedPlayer);
         assertFalse(gameTest.isAReborn());
         assertFalse(gameTest.isATagbackResponse());
         assertNull(gameTest.getCell(null));

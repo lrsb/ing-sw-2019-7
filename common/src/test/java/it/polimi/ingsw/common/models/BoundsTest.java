@@ -4,7 +4,8 @@ import org.junit.jupiter.api.RepeatedTest;
 
 import java.security.SecureRandom;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class BoundsTest {
 

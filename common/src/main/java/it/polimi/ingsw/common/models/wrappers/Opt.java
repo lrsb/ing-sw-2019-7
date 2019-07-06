@@ -8,6 +8,8 @@ import java.util.function.Function;
 
 /**
  * Optionals in Java sucks.
+ *
+ * @param <T> the type
  */
 public class Opt<T> {
     private @Nullable T opt;
@@ -21,6 +23,7 @@ public class Opt<T> {
      * Create a new Opt with a nullable object.
      *
      * @param nullable The nullable object
+     * @param <T>      the type
      * @return A new Opt with a nullable object.
      */
     @Contract(value = "_ -> new", pure = true)
@@ -31,6 +34,7 @@ public class Opt<T> {
     /**
      * Call a method on a not null object. If the object is null the null propagates until {@code get()} is called.
      *
+     * @param <U> the return type
      * @return A Opt that contains the return object.
      */
     public <U> @NotNull Opt<U> e(Function<T, U> function) {

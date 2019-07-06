@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="Docs" pattern="src:it.polimi.ingsw.client.views..*||src:it.polimi.ingsw.client.controllers.viewcontrollers.base.*||src:it.polimi.ingsw.common.models..*||src:it.polimi.ingsw.common.network..*||src:it.polimi.ingsw.server.network.socket.AdrenalineServerSocket||src:it.polimi.ingsw.server.network.AdrenalineServerSocketListener||src:it.polimi.ingsw.server.network.AdrenalineServerSocket||src:it.polimi.ingsw.server.controllers..*" />
+  <scope name="Docs" pattern="src[common]:*..*||src[server]:it.polimi.ingsw.server.models..*" />
 </component>

@@ -28,7 +28,8 @@ class PlayerTest {
             assertFalse(player.isEasyBoard());
             for (AmmoCard.Color color : AmmoCard.Color.values()) {
                 assertEquals(1, player.getColoredCubes(color));
-                for (PowerUp.Type type : PowerUp.Type.values()) assertFalse(player.hasPowerUp(new PowerUp(color, type)));
+                for (PowerUp.Type type : PowerUp.Type.values())
+                    assertFalse(player.hasPowerUp(new PowerUp(color, type)));
             }
             for (Weapon weapon : Weapon.values()) assertFalse(player.hasWeapon(weapon));
             assertEquals(8, player.getMaximumPoints());
@@ -44,7 +45,7 @@ class PlayerTest {
     }
 
     @RepeatedTest(value = 100)
-    void testModifierOfItems () {
+    void testModifierOfItems() {
         Game game = createGame(Game.Type.values()[new SecureRandom().nextInt(Game.Type.values().length)]);
         for (Player player : game.getPlayers()) {
             for (AmmoCard.Color color : AmmoCard.Color.values()) {
@@ -133,7 +134,7 @@ class PlayerTest {
     }
 
     @Test
-    void couldSeeFIVE_FIVE(){
+    void couldSeeFIVE_FIVE() {
         Game game = createGame(Game.Type.FIVE_FIVE);
         ArrayList<Point> seeable = new ArrayList<>();
         ArrayList<Point> unseeable = new ArrayList<>();
@@ -377,7 +378,7 @@ class PlayerTest {
     }
 
     @Test
-    void couldSeeFIVE_SIX(){
+    void couldSeeFIVE_SIX() {
         Game game = createGame(Game.Type.FIVE_SIX);
         ArrayList<Point> seeable = new ArrayList<>();
         ArrayList<Point> unseeable = new ArrayList<>();
@@ -583,7 +584,7 @@ class PlayerTest {
         unseeable.add(new Point(0, 0));
         unseeable.add(new Point(0, 1));
         unseeable.add(new Point(0, 2));
-        unseeable.add(new Point(0 , 3));
+        unseeable.add(new Point(0, 3));
         seeable.add(new Point(1, 0));
         seeable.add(new Point(1, 1));
         seeable.add(new Point(1, 2));
@@ -654,7 +655,7 @@ class PlayerTest {
     }
 
     @Test
-    void couldSeeSIX_FIVE(){
+    void couldSeeSIX_FIVE() {
         Game game = createGame(Game.Type.SIX_FIVE);
         ArrayList<Point> seeable = new ArrayList<>();
         ArrayList<Point> unseeable = new ArrayList<>();
@@ -931,7 +932,7 @@ class PlayerTest {
     }
 
     @Test
-    void couldSeeSIX_SIX(){
+    void couldSeeSIX_SIX() {
         Game game = createGame(Game.Type.SIX_SIX);
         ArrayList<Point> seeable = new ArrayList<>();
         ArrayList<Point> unseeable = new ArrayList<>();

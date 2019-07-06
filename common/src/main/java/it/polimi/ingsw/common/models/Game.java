@@ -71,7 +71,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return the number of action a player can still do
      */
     public int getRemainedActions() {
@@ -79,7 +78,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return the ranking of the match
      */
     public @Nullable List<ArrayList<UUID>> getFinalRanking() {
@@ -87,7 +85,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return the initial number of skulls
      */
     public int getStartingSkulls() {
@@ -95,7 +92,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return the identifier of the match
      */
     public @NotNull UUID getUuid() {
@@ -103,7 +99,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return the board as bi-dimensional array of cell
      */
     public @NotNull Cell[][] getCells() {
@@ -111,7 +106,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @param point coordinates of a cell in the board
      * @return the cell corresponding to the coordinates
      */
@@ -149,7 +143,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return the setting of the board
      */
     public @NotNull Type getType() {
@@ -157,7 +150,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return a list of the game's players
      */
     public @NotNull List<Player> getPlayers() {
@@ -178,7 +170,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return true if the current is the last the turn
      */
     public boolean isLastTurn() {
@@ -186,7 +177,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return list of identifiers of the players that achieved killshots
      */
     public @NotNull List<UUID> getVisibleCliKillshotsTrack() {
@@ -202,7 +192,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return a list of identifiers of the players damaged in the last action
      */
     public @NotNull List<UUID> getLastsDamaged() {
@@ -219,7 +208,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return true if game finished, false otherwise
      */
     public boolean isCompleted() {
@@ -250,7 +238,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return the number of deaths needed to achieved the frenzy actions
      */
     public int getSkulls() {
@@ -258,7 +245,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return a string which says which number of turn the current is
      */
     public @NotNull String getTurn() {
@@ -309,7 +295,6 @@ public class Game implements Displayable, Serializable {
     }
 
     /**
-     *
      * @param point coordinates of a cell in the board
      * @return list of players that are in the cell of coordinates @point
      */

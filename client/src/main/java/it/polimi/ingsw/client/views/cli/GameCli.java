@@ -369,7 +369,8 @@ public class GameCli {
         } else {
             System.out.print(game.getActualPlayer().getBoardType().escape() + game.getActualPlayer().getNickname());
             if (game.isAReborn()) System.out.println("\u001b[0m" + " sta rinascendo");
-            else if (game.isATagbackResponse()) System.out.println("\u001b[0m" + " sta valutando se rispondere al fuoco");
+            else if (game.isATagbackResponse())
+                System.out.println("\u001b[0m" + " sta valutando se rispondere al fuoco");
             else System.out.println("\u001b[0m" + " sta facendo la sua mossa...");
         }
         //TODO if (exited) return Segue.of(PregameCli.class, "mainMenu");

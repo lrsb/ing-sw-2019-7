@@ -33,7 +33,6 @@ public enum Weapon implements Displayable {
     }
 
     /**
-     *
      * @return the color of the weapon
      */
     @Contract(pure = true)
@@ -42,7 +41,6 @@ public enum Weapon implements Displayable {
     }
 
     /**
-     *
      * @param color one of the cubes color
      * @return the cost to grab this weapon relatives to @color
      */

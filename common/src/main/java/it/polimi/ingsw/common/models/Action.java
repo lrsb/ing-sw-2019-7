@@ -45,7 +45,6 @@ public class Action implements Serializable {
     }
 
     /**
-     *
      * @return the type of action that a player is trying to make
      */
     public @NotNull Type getActionType() {
@@ -53,7 +52,6 @@ public class Action implements Serializable {
     }
 
     /**
-     *
      * @return the identifier of the game which this action is referred to
      */
     public @NotNull UUID getGameUuid() {
@@ -90,12 +88,28 @@ public class Action implements Serializable {
      * - GRAB_WEAPON: the point where a player wants to grab a weapon;
      * - USE_POWER_UP: depends on type of using power up;
      * - FIRE: if player can move before shooting, this point represents
-     *          the position that he wants to reach before shooting
+     * the position that he wants to reach before shooting
      *
      * @return a point of the board
      */
     public @Nullable Point getDestination() {
         return destination;
+    }
+
+    /**
+     * set coordinates of a point of the game board
+     * the meaning of the point depends on action type:
+     * - MOVE: the destination of the player;
+     * - GRAB_AMMOCARD: the point where a player wants to grab the tile;
+     * - GRAB_WEAPON: the point where a player wants to grab a weapon;
+     * - USE_POWER_UP: depends on type of using power up;
+     * - FIRE: if player can move before shooting, this point represents
+     * the position that he wants to reach before shooting
+     *
+     * @param destination coordinates of a point in board game
+     */
+    public void setDestination(@Nullable Point destination) {
+        this.destination = destination;
     }
 
     /**
@@ -134,10 +148,20 @@ public class Action implements Serializable {
      * maybe he has to choose which effect wants to use
      *
      * @return true if he wants to use the alternative effect of the weapon,
-     *          false otherwise
+     * false otherwise
      */
     public boolean getAlternativeFire() {
         return alternativeFire;
+    }
+
+    /**
+     * set true if you are building a FIRE action and you want to use
+     * alternative fire mode, false otherwise
+     *
+     * @param alternativeFire a boolean
+     */
+    public void setAlternativeFire(boolean alternativeFire) {
+        this.alternativeFire = alternativeFire;
     }
 
     /**
@@ -151,6 +175,19 @@ public class Action implements Serializable {
      */
     public int getOptions() {
         return options;
+    }
+
+    /**
+     * set modes of fire (depends on the specific weapon):
+     * 0 -> only basic effect;
+     * 1 -> basic effect + first additional effect
+     * 2 -> basic effect + second additional effect
+     * 3 -> basic effect + first + second additional effect
+     *
+     * @param options a number
+     */
+    public void setOptions(int options) {
+        this.options = options;
     }
 
     /**
@@ -172,6 +209,16 @@ public class Action implements Serializable {
     }
 
     /**
+     * set a point which meaning depends on basic or alternative fire mode
+     * of a weapon you want to use to fire
+     *
+     * @param basicTargetPoint coordinates of a point in game board
+     */
+    public void setBasicTargetPoint(@Nullable Point basicTargetPoint) {
+        this.basicTargetPoint = basicTargetPoint;
+    }
+
+    /**
      * if action is FIRE, gets the targets of the first additional effect
      *
      * @return targets of first additional effect
@@ -187,6 +234,16 @@ public class Action implements Serializable {
      */
     public @Nullable Point getFirstAdditionalTargetPoint() {
         return firstAdditionalTargetPoint;
+    }
+
+    /**
+     * set a point which meaning depends on first additional fire mode
+     * of a weapon you want to use to fire
+     *
+     * @param firstAdditionalTargetPoint coordinates of a point in game board
+     */
+    public void setFirstAdditionalTargetPoint(@Nullable Point firstAdditionalTargetPoint) {
+        this.firstAdditionalTargetPoint = firstAdditionalTargetPoint;
     }
 
     /**
@@ -217,29 +274,6 @@ public class Action implements Serializable {
     }
 
     /**
-     * set true if you are building a FIRE action and you want to use
-     * alternative fire mode, false otherwise
-     *
-     * @param alternativeFire a boolean
-     */
-    public void setAlternativeFire(boolean alternativeFire) {
-        this.alternativeFire = alternativeFire;
-    }
-
-    /**
-     * set modes of fire (depends on the specific weapon):
-     * 0 -> only basic effect;
-     * 1 -> basic effect + first additional effect
-     * 2 -> basic effect + second additional effect
-     * 3 -> basic effect + first + second additional effect
-     *
-     * @param options a number
-     */
-    public void setOptions(int options) {
-        this.options = options;
-    }
-
-    /**
      * add the identifier of a player you want to fire with
      * basic or alternative fire mode
      *
@@ -250,32 +284,6 @@ public class Action implements Serializable {
     }
 
     /**
-     * set a point which meaning depends on basic or alternative fire mode
-     * of a weapon you want to use to fire
-     *
-     * @param basicTargetPoint coordinates of a point in game board
-     */
-    public void setBasicTargetPoint(@Nullable Point basicTargetPoint) {
-        this.basicTargetPoint = basicTargetPoint;
-    }
-
-    /**
-     * set coordinates of a point of the game board
-     * the meaning of the point depends on action type:
-     * - MOVE: the destination of the player;
-     * - GRAB_AMMOCARD: the point where a player wants to grab the tile;
-     * - GRAB_WEAPON: the point where a player wants to grab a weapon;
-     * - USE_POWER_UP: depends on type of using power up;
-     * - FIRE: if player can move before shooting, this point represents
-     *           the position that he wants to reach before shooting
-     *
-     * @param destination coordinates of a point in board game
-     */
-    public void setDestination(@Nullable Point destination) {
-        this.destination = destination;
-    }
-
-    /**
      * add the identifier of a player you want to fire with
      * first additional fire mode
      *
@@ -283,16 +291,6 @@ public class Action implements Serializable {
      */
     public void addFirstAdditionalTarget(UUID firstAdditionalTarget) {
         this.firstAdditionalTarget.add(firstAdditionalTarget);
-    }
-
-    /**
-     * set a point which meaning depends on first additional fire mode
-     * of a weapon you want to use to fire
-     *
-     * @param firstAdditionalTargetPoint coordinates of a point in game board
-     */
-    public void setFirstAdditionalTargetPoint(@Nullable Point firstAdditionalTargetPoint) {
-        this.firstAdditionalTargetPoint = firstAdditionalTargetPoint;
     }
 
     /**

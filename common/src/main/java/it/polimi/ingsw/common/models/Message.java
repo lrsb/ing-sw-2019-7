@@ -21,7 +21,7 @@ public class Message implements Comparable<Message>, Serializable {
      * Instantiates a new Message.
      *
      * @param from      the from
-     * @param uuid   room or game uuid
+     * @param uuid      room or game uuid
      * @param message   the message
      * @param timestamp the timestamp
      */

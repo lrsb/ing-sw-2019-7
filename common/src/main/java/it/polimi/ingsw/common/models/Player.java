@@ -37,8 +37,7 @@ public class Player implements Displayable, Serializable {
     private boolean easyBoard = false;
 
     /**
-     *
-     * @param user the user
+     * @param user      the user
      * @param boardType the player board
      */
     public Player(@NotNull User user, @NotNull BoardType boardType) {
@@ -48,7 +47,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return the board of the player
      */
     public @NotNull BoardType getBoardType() {
@@ -56,7 +54,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return the identifier of the player
      */
     public @NotNull UUID getUuid() {
@@ -64,7 +61,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return the nickname of the player
      */
     public @NotNull String getNickname() {
@@ -72,7 +68,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return a list of the weapons owned by the player
      */
     public @NotNull List<Weapon> getWeapons() {
@@ -80,7 +75,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return a list of identifiers of players that damaged this player
      */
     public @NotNull List<UUID> getDamagesTaken() {
@@ -100,7 +94,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return a list of identifiers of the players that gave a mark to this player
      */
     public @NotNull List<UUID> getMarksTaken() {
@@ -108,7 +101,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return number of deaths of this player till now
      */
     public int getDeaths() {
@@ -123,7 +115,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return true if he has the "easy board", false otherwise
      */
     public boolean isEasyBoard() {
@@ -156,7 +147,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return points achieved by this player till now
      */
     public int getPoints() {
@@ -164,7 +154,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @param powerUp a generic power up
      * @return true if this player has @powerUp, false otherwise
      */
@@ -173,7 +162,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @param weapon a generic weapon
      * @return true if this player has @weapon, false otherwise
      */
@@ -182,7 +170,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @param weapon a generic weapon
      * @return true if this player has this @weapon and it's reloaded
      */
@@ -257,7 +244,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @param color one of the cubes color
      * @return the number of cubes fo the color @color owned by the player
      */
@@ -268,7 +254,7 @@ public class Player implements Displayable, Serializable {
     /**
      * removes @number cubes of color @color from player
      *
-     * @param color one of the cubes color
+     * @param color  one of the cubes color
      * @param number a integer
      */
     public void removeColoredCubes(@NotNull AmmoCard.Color color, int number) {
@@ -288,7 +274,7 @@ public class Player implements Displayable, Serializable {
     /**
      * add @powerUp to this player
      *
-     * @param powerUp  a power up
+     * @param powerUp a power up
      */
     public void addPowerUp(@NotNull PowerUp powerUp) {
         powerUps.add(powerUp);
@@ -316,7 +302,7 @@ public class Player implements Displayable, Serializable {
      * recharge this player with elements of the tile @ammoCard
      *
      * @param ammoCard a tile
-     * @param powerUp a power up, if tile contains it and player does not have 3,
+     * @param powerUp  a power up, if tile contains it and player does not have 3,
      *                 null otherwise
      */
     public void ammoCardRecharging(@NotNull AmmoCard ammoCard, @Nullable PowerUp powerUp) {
@@ -339,7 +325,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return a list of power ups owned by this player
      */
     public @NotNull List<PowerUp> getPowerUps() {
@@ -347,7 +332,6 @@ public class Player implements Displayable, Serializable {
     }
 
     /**
-     *
      * @return coordinates of this player in the board, null if he does not have played his first turn
      */
     public @Nullable Point getPosition() {
@@ -451,7 +435,6 @@ public class Player implements Displayable, Serializable {
         }
 
         /**
-         *
          * @return the color of the player board
          */
         @Contract(pure = true)
@@ -460,7 +443,6 @@ public class Player implements Displayable, Serializable {
         }
 
         /**
-         *
          * @return string that represents the color of the player board
          */
         @Contract(pure = true)

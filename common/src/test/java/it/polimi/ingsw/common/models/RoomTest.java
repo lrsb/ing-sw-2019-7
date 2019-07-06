@@ -29,7 +29,7 @@ class RoomTest {
         while (room.getUsers().size() < nPlayers) {
             var userPlayer = possibleUserPlayer.get(rand.nextInt(possibleUserPlayer.size()));
             if (room.addUser(userPlayer) && rand.nextBoolean())
-               room.removeUser(possibleUserPlayer.get(rand.nextInt(possibleUserPlayer.size())));
+                room.removeUser(possibleUserPlayer.get(rand.nextInt(possibleUserPlayer.size())));
         }
         User fake = new User("");
         boolean bool = room.addUser(fake);
@@ -45,8 +45,8 @@ class RoomTest {
         assertNotEquals(null, room.getName(), "Lack of game's name");
         assertNotEquals(null, room.getUuid(), "Lack of game's uuid");
         assertNotEquals(null, room.getGameType(), "Lack of map");
-       assert (room.getSkulls() >= 5 && room.getSkulls() <= 8) : "Wrong number of skulls";
-       assert (room.isGameCreated()) : "Game not created";
-       assert (room.getUsers().parallelStream().allMatch(e -> possibleUserPlayer.contains(e) || e.equals(creator)));
+        assert (room.getSkulls() >= 5 && room.getSkulls() <= 8) : "Wrong number of skulls";
+        assert (room.isGameCreated()) : "Game not created";
+        assert (room.getUsers().parallelStream().allMatch(e -> possibleUserPlayer.contains(e) || e.equals(creator)));
     }
 }

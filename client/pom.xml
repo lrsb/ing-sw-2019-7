@@ -71,6 +71,7 @@
             <groupId>it.polimi.ingsw</groupId>
             <artifactId>server</artifactId>
             <version>1.0</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

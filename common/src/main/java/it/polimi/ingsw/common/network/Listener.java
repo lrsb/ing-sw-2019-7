@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 public interface Listener extends Remote {
     /**
      * @param object {@link it.polimi.ingsw.common.models.Game} {@link it.polimi.ingsw.common.models.Room} {@link String}
-     * @throws RemoteException
+     * @throws RemoteException An exception
      */
     void onUpdate(@NotNull Object object) throws RemoteException;
 }

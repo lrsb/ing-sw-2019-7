@@ -271,7 +271,6 @@ public class GameImpl extends Game implements Serializable {
     }
 
     /**
-     *
      * @param isCompleted true if the game is finished, false otherwise
      */
     public void setCompleted(boolean isCompleted) {

@@ -1093,8 +1093,9 @@ class ActionManager {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_first"));
         List<UUID> selectableTargets = new ArrayList<>();
         for (Player player : game.getPlayers()) {
-            if (player.getUuid().equals(basicTarget.get(0))) game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && !e.getUuid().equals(basicTarget.get(0)) &&
-                    player.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);;
+            if (player.getUuid().equals(basicTarget.get(0)))
+                game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) && !e.getUuid().equals(basicTarget.get(0)) &&
+                        player.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);
         }
         printSelectableTargets(game, selectableTargets);
         String choice = getLine();
@@ -1123,9 +1124,10 @@ class ActionManager {
         System.out.println(Utils.getStrings("cli", "weapons_details", weapon.name().toLowerCase(), "fire_details").get("select_target_second"));
         List<UUID> selectableTargets = new ArrayList<>();
         for (Player player : game.getPlayers()) {
-            if (player.getUuid().equals(firstAdditionalTarget.get(0))) game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) &&
-                    !e.getUuid().equals(basicTarget.get(0)) && !e.equals(player) &&
-                    player.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);
+            if (player.getUuid().equals(firstAdditionalTarget.get(0)))
+                game.getPlayers().stream().filter(e -> !e.equals(game.getActualPlayer()) &&
+                        !e.getUuid().equals(basicTarget.get(0)) && !e.equals(player) &&
+                        player.canSeeNotSame(e, game.getCells())).map(Player::getUuid).forEach(selectableTargets::add);
         }
         printSelectableTargets(game, selectableTargets);
         String choice = getLine();
