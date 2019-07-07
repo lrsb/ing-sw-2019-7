@@ -206,12 +206,12 @@ public class ServerController implements API {
     }
 
     private boolean doAction(@Nullable User user, @NotNull Action action) {
+        System.out.println(new Gson().toJson(action));
         var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", action.getGameUuid().toString())).first()).e(Document::toJson).get(""), GameImpl.class);
         if (user != null && !game.getActualPlayer().getUuid().equals(user.getUuid())) return false;
         var message = game.getActualPlayer().getNickname() +
                 (action.getActionType() != Action.Type.NEXT_TURN ? " ha fatto: " + action.getActionType().name() + " " : " ha passato il turno");
         var value = game.doAction(action);
-        System.out.println(new Gson().toJson(action));
         System.out.println(value);
         if (value) {
             updateGameTimer(game);
