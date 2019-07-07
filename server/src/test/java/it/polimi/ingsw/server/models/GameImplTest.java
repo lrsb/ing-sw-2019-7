@@ -343,6 +343,7 @@ class GameImplTest {
         assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
         assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
         assertTrue(game.doAction(Action.Builder.create(game.getUuid()).buildNextTurn()));
+        assertTrue(game.isCompleted());
         assertEquals(32, game.getPlayers().get(0).getPoints());
         assertEquals(28, game.getPlayers().get(1).getPoints());
         assertEquals(22, game.getPlayers().get(2).getPoints());

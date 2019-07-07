@@ -197,9 +197,9 @@ public class GameImpl extends Game implements Serializable {
 
     private void finalPointsRedistribution() {
         players.parallelStream().filter(e -> !e.getDamagesTaken().isEmpty()).forEachOrdered(e -> e.getSortedHitters().forEach(f -> getPlayers().parallelStream()
-                .filter(g -> g.getUuid() == f).forEachOrdered(g -> {
+                .filter(g -> g.getUuid().equals(f)).forEachOrdered(g -> {
                     g.addPoints(2 * e.getSortedHitters().indexOf(f) >= e.getMaximumPoints() ? 1 : e.getMaximumPoints() - 2 * e.getSortedHitters().indexOf(f));
-                    g.addPoints(e.getDamagesTaken().get(0) == f ? 1 : 0);
+                    g.addPoints(e.getDamagesTaken().get(0).equals(f) ? 1 : 0);
                 })));
         int points = 8;
         for (int i = 0; i < getSortedKillshooters().size(); i++) {
@@ -273,7 +273,7 @@ public class GameImpl extends Game implements Serializable {
     /**
      * @param isCompleted true if the game is finished, false otherwise
      */
-    public void setCompleted(boolean isCompleted) {
+    private void setCompleted(boolean isCompleted) {
         this.isCompleted = isCompleted;
     }
 
