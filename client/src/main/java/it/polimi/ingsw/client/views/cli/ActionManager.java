@@ -58,6 +58,7 @@ class ActionManager {
     }
 
     void actionMenu(@NotNull Game game) throws RemoteException {
+        System.out.println("Per uscire dalla partita premere 'q'");
         try {
             if (game.getActualPlayer().getPosition() == null) {
                 System.out.println(game.getActualPlayer().getNickname() + " è la tua prima mossa: scegli " +
@@ -85,7 +86,7 @@ class ActionManager {
         }
     }
 
-    private void selectReborningPowerUp(@NotNull Game game) throws InterruptedException {
+    private void selectReborningPowerUp(@NotNull Game game) throws InterruptedException, RemoteException {
         if (Preferences.getToken() == null) throw new InterruptedException();
         if (game.getActualPlayer().getPowerUps().size() == 1) {
             try {
@@ -102,6 +103,7 @@ class ActionManager {
             System.out.println((1 + i) + ". " + game.getActualPlayer().getPowerUps().get(i).getAmmoColor().escape() +
                     game.getActualPlayer().getPowerUps().get(i).getType().name() + stdColor);
         String choice = getLine();
+        if (choice.equals("q")) Client.API.quitGame(Preferences.getToken(), game.getUuid());
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= game.getActualPlayer().getPowerUps().size()) {
             try {
                 if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
@@ -146,6 +148,7 @@ class ActionManager {
                     selectableTagbackGrenade.get(i).getType().name() + stdColor);
         System.out.println((selectableTagbackGrenade.size() + 1) + ". Non rispondere");
         String choice = getLine();
+        if (choice.equals("q")) Client.API.quitGame(Preferences.getToken(), game.getUuid());
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= selectableTagbackGrenade.size())
             if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid()).buildUsePowerUp(selectableTagbackGrenade.get(Integer.parseInt(choice) - 1).getType(),
                     selectableTagbackGrenade.get(Integer.parseInt(choice) - 1).getAmmoColor(), destination, target)))
@@ -167,6 +170,7 @@ class ActionManager {
                     "standard_actions_plus2").getAsString());
         else System.out.println(Utils.getStrings("cli", "possible_actions").get("frenzy_actions"));
         String choice = getLine();
+        if (choice.equals("q")) Client.API.quitGame(Preferences.getToken(), game.getUuid());
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 7) {
             switch (Integer.parseInt(choice)) {
                 case 1:
@@ -226,6 +230,7 @@ class ActionManager {
         if (Preferences.getToken() == null) throw new InterruptedException();
         System.out.println(Utils.getStrings("cli", "possible_actions").get("last_standard_actions").getAsString());
         String choice = getLine();
+        if (choice.equals("q")) Client.API.quitGame(Preferences.getToken(), game.getUuid());
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 4) {
             switch (Integer.parseInt(choice)) {
                 case 1:
@@ -254,6 +259,7 @@ class ActionManager {
         if (Preferences.getToken() == null) throw new InterruptedException();
         System.out.println(Utils.getStrings("cli", "possible_actions").get("last_turn_actions").getAsString());
         String choice = getLine();
+        if (choice.equals("q")) Client.API.quitGame(Preferences.getToken(), game.getUuid());
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) < 6) {
             switch (Integer.parseInt(choice)) {
                 case 1:
