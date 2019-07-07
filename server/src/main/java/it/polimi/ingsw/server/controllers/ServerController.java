@@ -297,7 +297,8 @@ public class ServerController implements API {
         listeners.remove(user.getUuid());
     }
 
-    private void informGamePlayers(@NotNull Game game) {
+    private void informGamePlayers(@NotNull Game gameImpl) {
+        var game = new Gson().fromJson(new Gson().toJson(gameImpl), Game.class);
         game.getPlayers().parallelStream().map(Player::getUuid).forEach(e -> {
             try {
                 listeners.getOrDefault(e, f -> {

@@ -611,7 +611,7 @@ memberSearchIndex = [{
     "p": "it.polimi.ingsw.common.models",
     "c": "Weapon",
     "l": "HELLION"
-}, {
+}, {"p": "it.polimi.ingsw.common.models", "c": "Player", "l": "isActive()"}, {
     "p": "it.polimi.ingsw.common.models",
     "c": "Player",
     "l": "isALoadedGun(Weapon)",
@@ -842,6 +842,10 @@ memberSearchIndex = [{
     "c": "Room",
     "l": "setActionTimeout(int)"
 }, {
+    "p": "it.polimi.ingsw.common.models",
+    "c": "Player",
+    "l": "setActive(boolean)"
+}, {
     "p": "it.polimi.ingsw.common.network.socket",
     "c": "AdrenalineSocket",
     "l": "setAdrenalineSocketListener(AdrenalineSocketListener)",
@@ -860,10 +864,6 @@ memberSearchIndex = [{
     "c": "Action",
     "l": "setBasicTargetPoint(Point)",
     "url": "setBasicTargetPoint(java.awt.Point)"
-}, {
-    "p": "it.polimi.ingsw.server.models",
-    "c": "GameImpl",
-    "l": "setCompleted(boolean)"
 }, {
     "p": "it.polimi.ingsw.common.models",
     "c": "Action",
