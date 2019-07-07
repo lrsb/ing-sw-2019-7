@@ -122,5 +122,4 @@ public class LoginViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
-
 }

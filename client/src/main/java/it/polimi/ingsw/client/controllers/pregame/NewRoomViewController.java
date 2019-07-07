@@ -177,5 +177,4 @@ public class NewRoomViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
-
 }

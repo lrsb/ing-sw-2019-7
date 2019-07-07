@@ -120,5 +120,4 @@ public class RoomsListViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
-
 }

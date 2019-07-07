@@ -148,5 +148,4 @@ public class ConnTypeViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
-
 }

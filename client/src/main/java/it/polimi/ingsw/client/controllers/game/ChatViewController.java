@@ -122,5 +122,4 @@ public class ChatViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
-
 }

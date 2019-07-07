@@ -35,6 +35,7 @@ public class Player implements Displayable, Serializable {
     private @NotNull ArrayList<PowerUp> powerUps = new ArrayList<>();
     private @NotNull HashMap<Weapon, Boolean> weapons = new HashMap<>();
     private boolean easyBoard = false;
+    private boolean isActive = true;
 
     /**
      * @param user      the user
@@ -44,6 +45,24 @@ public class Player implements Displayable, Serializable {
         this.uuid = user.getUuid();
         this.nickname = user.getNickname();
         this.boardType = boardType;
+    }
+
+    /**
+     * Check if a player is playing the game
+     *
+     * @return a player is playing the game
+     */
+    public boolean isActive() {
+        return isActive;
+    }
+
+    /**
+     * Sets if a player is playing the game
+     *
+     * @param active a player is playing the game
+     */
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     /**

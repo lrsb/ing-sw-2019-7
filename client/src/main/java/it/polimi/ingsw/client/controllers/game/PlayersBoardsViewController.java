@@ -25,7 +25,8 @@ public class PlayersBoardsViewController extends BaseViewController {
         //noinspection ComparatorMethodParameterNotUsed
         ((Game) params[0]).getPlayers().parallelStream().sorted((e, f) -> e.getUuid().equals(Preferences.getUuid()) ? 1 : 0).forEachOrdered(e -> {
             try {
-                tabbedPane.addTab(e.getUuid().equals(Preferences.getUuid()) ? "La tua plancia" : e.getNickname(), new PlayerBoard(((Game) params[0]), e));
+                tabbedPane.addTab(e.getUuid().equals(Preferences.getUuid()) ? "La tua plancia" : (e.getNickname() + (e.isActive() ? "" : "(Non attivo)")),
+                        new PlayerBoard(((Game) params[0]), e));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -59,5 +60,4 @@ public class PlayersBoardsViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
-
 }

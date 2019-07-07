@@ -1270,5 +1270,4 @@ public class GameViewController extends BaseViewController implements GameBoardL
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
-
 }

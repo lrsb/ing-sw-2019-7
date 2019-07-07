@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
 public class ServerController implements API {
@@ -40,7 +41,8 @@ public class ServerController implements API {
     public @NotNull Game getActiveGame(@Nullable String token) throws RemoteException {
         var user = SecureUserController.getUser(token);
         try {
-            var game = findGame(user.getUuid());
+            var game = new Gson().fromJson(Opt.of(games.find(and(eq("players.isActive", true),
+                    eq("players.uuid", user.getUuid().toString()))).first()).e(Document::toJson).get(""), GameImpl.class);
             if (game == null) throw new RemoteException("No active game!!");
             updateGameTimer(game);
             informGamePlayers(game);
@@ -177,12 +179,12 @@ public class ServerController implements API {
         if (gameUuid != null) try {
             var game = new Gson().fromJson(Opt.of(games.find(eq("uuid", gameUuid.toString())).first()).e(Document::toJson).get(""), GameImpl.class);
             if (game.getPlayers().parallelStream().noneMatch(e -> e.getUuid().equals(user.getUuid()))) return;
-            game.getPlayers().remove(new Player(user, Player.BoardType.BANSHEE));
-            /*if (game.getPlayers().size() < 3) {
+            game.getPlayers().parallelStream().filter(e -> e.getUuid().equals(user.getUuid())).findAny().ifPresent(e -> e.setActive(false));
+            if (game.getPlayers().parallelStream().filter(Player::isActive).count() < 3) {
                 games.deleteOne(eq("uuid", gameUuid.toString()));
                 game.endGame();
-            } else games.replaceOne(eq("uuid", gameUuid.toString()), Document.parse(new Gson().toJson(game)));*/
-            sendBroadcastToGame(game, user.getNickname() + " ha lasciato il gioco." + (game.isCompleted() ? "\nNot enough players." : ""));
+            } else games.replaceOne(eq("uuid", gameUuid.toString()), Document.parse(new Gson().toJson(game)));
+            sendBroadcastToGame(game, user.getNickname() + " ha lasciato il gioco." + (game.isCompleted() ? "\nIl gioco termina." : ""));
             informGamePlayers(game);
         } catch (Exception e) {
             e.printStackTrace();
