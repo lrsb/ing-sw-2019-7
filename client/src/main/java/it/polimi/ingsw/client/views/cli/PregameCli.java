@@ -33,10 +33,8 @@ public class PregameCli {
         try {
             return Segue.of("preGame", GameCli.class, Client.API.getActiveGame(Preferences.getOptionalToken().get()));
         } catch (UserRemoteException ex) {
-            ex.printStackTrace();
             return Segue.of("login", StartupCli.class);
-        } catch (RemoteException ex) {
-            System.out.println(ex.getMessage());
+        } catch (RemoteException ignored) {
         }
         System.out.println("Adrenalina");
         System.out.println(" ");
@@ -205,9 +203,10 @@ public class PregameCli {
         } catch (RemoteException ex) {
             System.out.println(ex.getMessage());
         }
-        while (!room.isGameCreated()) {
+        while (true) {
             var segue = lobby();
             if (segue != null) return segue;
+            if (PregameCli.room.isGameCreated()) break;
             PregameCli.room = null;
 
             while (PregameCli.room == null) try {
@@ -242,7 +241,7 @@ public class PregameCli {
     public static @NotNull Segue postLobby() {
         if (Preferences.getOptionalToken().isEmpty()) return Segue.of("login", StartupCli.class);
         try {
-            //Client.API.removeListener(Preferences.getOptionalToken().get());
+            Client.API.removeListener(Preferences.getOptionalToken().get());
             return Segue.of("preGame", GameCli.class, Client.API.getActiveGame(Preferences.getOptionalToken().get()));
         } catch (UserRemoteException ex) {
             ex.printStackTrace();

@@ -269,9 +269,12 @@ public class GameCli {
         } catch (RemoteException ex) {
             System.out.println(ex.getMessage());
         }
-        while (!game.isCompleted()) {
-            var segue = printGame();
-            if (segue != null) return segue;
+        while (true) {
+            printGame(GameCli.game);
+            if (GameCli.game.isCompleted()) {
+                printRanking(GameCli.game);
+                break;
+            }
             GameCli.game = null;
 
             while (GameCli.game == null) try {
@@ -347,7 +350,7 @@ public class GameCli {
         });
     }
 
-    public static @Nullable Segue printGame() {
+    public static void printGame(@NotNull Game game) {
         var board = buildBoard(game);
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < board.length; i++) {
@@ -373,11 +376,9 @@ public class GameCli {
                 System.out.println("\u001b[0m" + " sta valutando se rispondere al fuoco");
             else System.out.println("\u001b[0m" + " sta facendo la sua mossa...");
         }
-        //TODO if (exited) return Segue.of(PregameCli.class, "mainMenu");
-        return null;
     }
 
-    private void printRanking(@NotNull Game game) {
+    private static void printRanking(@NotNull Game game) {
         final List<ArrayList<UUID>> ranking = game.getFinalRanking();
         if (ranking == null) return;
         System.out.println("CLASSIFICA\n");
@@ -392,5 +393,6 @@ public class GameCli {
                 else System.out.println();
             }
         }
+        System.out.println();
     }
 }

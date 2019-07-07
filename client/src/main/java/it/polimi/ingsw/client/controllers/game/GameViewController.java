@@ -1079,7 +1079,9 @@ public class GameViewController extends BaseViewController implements GameBoardL
 
         if (data instanceof Player && type == Action.Type.USE_POWER_UP && point != null) {
             if (powerUp != null && powerUp.getType() == PowerUp.Type.TELEPORTER) {
-                doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), point, null));
+                if (((Player) data).getUuid().equals(Preferences.getUuid()))
+                    doAction(Action.Builder.create(game.getUuid()).buildUsePowerUp(powerUp.getType(), powerUp.getAmmoColor(), point, null));
+                else showMessage("Muovi il tuo giocatore");
             }
         }
 
