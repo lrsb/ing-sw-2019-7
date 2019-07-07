@@ -42,11 +42,11 @@ public class ServerController implements API {
         var user = SecureUserController.getUser(token);
         try {
             var game = new Gson().fromJson(Opt.of(games.find(and(eq("players.isActive", true),
-                    eq("players.uuid", user.getUuid().toString()))).first()).e(Document::toJson).get(""), GameImpl.class);
+                    eq("players.uuid", user.getUuid().toString()))).first()).e(Document::toJson).get(""), Game.class);
             if (game == null) throw new RemoteException("No active game!!");
             updateGameTimer(game);
             informGamePlayers(game);
-            return new Gson().fromJson(new Gson().toJson(game), Game.class);
+            return game;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RemoteException("No active game!!");
@@ -250,7 +250,7 @@ public class ServerController implements API {
         return value;
     }
 
-    private void updateGameTimer(@NotNull GameImpl game) {
+    private void updateGameTimer(@NotNull Game game) {
         var timeout = game.getActionTimeout();
         game.setNextActionTime(System.currentTimeMillis() + timeout * 1000);
         var timer = new Timer();
