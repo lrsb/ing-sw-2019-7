@@ -89,15 +89,11 @@ class ActionManager {
     private void selectReborningPowerUp(@NotNull Game game) throws InterruptedException, RemoteException {
         if (Preferences.getToken() == null) throw new InterruptedException();
         if (game.getActualPlayer().getPowerUps().size() == 1) {
-            try {
-                System.out.println("Ops...non hai molta scelta");
-                if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
-                        .buildReborn(game.getActualPlayer().getPowerUps().get(0).getType(), game.getActualPlayer().getPowerUps().get(0).getAmmoColor())))
-                    throw new InterruptedException();
-                return;
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            System.out.println("Ops...non hai molta scelta");
+            if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                    .buildReborn(game.getActualPlayer().getPowerUps().get(0).getType(), game.getActualPlayer().getPowerUps().get(0).getAmmoColor())))
+                throw new InterruptedException();
+            return;
         }
         for (int i = 0; i < game.getActualPlayer().getPowerUps().size(); i++)
             System.out.println((1 + i) + ". " + game.getActualPlayer().getPowerUps().get(i).getAmmoColor().escape() +
@@ -105,14 +101,10 @@ class ActionManager {
         String choice = getLine();
         if (choice.equals("q")) Client.API.quitGame(Preferences.getToken(), game.getUuid());
         if (Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= game.getActualPlayer().getPowerUps().size()) {
-            try {
-                if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
-                        .buildReborn(game.getActualPlayer().getPowerUps().get(Integer.parseInt(choice) - 1).getType(),
-                                game.getActualPlayer().getPowerUps().get(Integer.parseInt(choice) - 1).getAmmoColor())))
-                    throw new InterruptedException();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            if (!Client.API.doAction(Preferences.getToken(), Action.Builder.create(game.getUuid())
+                    .buildReborn(game.getActualPlayer().getPowerUps().get(Integer.parseInt(choice) - 1).getType(),
+                            game.getActualPlayer().getPowerUps().get(Integer.parseInt(choice) - 1).getAmmoColor())))
+                throw new InterruptedException();
         } else {
             System.out.println(invalidChoice);
             selectReborningPowerUp(game);

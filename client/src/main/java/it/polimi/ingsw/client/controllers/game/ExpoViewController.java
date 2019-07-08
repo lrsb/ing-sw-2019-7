@@ -124,4 +124,5 @@ public class ExpoViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
+
 }

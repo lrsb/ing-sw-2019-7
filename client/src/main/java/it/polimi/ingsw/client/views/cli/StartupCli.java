@@ -34,7 +34,7 @@ public class StartupCli {
         var input = 0;
         try {
             input = Integer.parseInt(in.nextLine());
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
         }
         if (input > 3 || input < 1) {
             return Segue.of("connType");
