@@ -122,4 +122,5 @@ public class SignupViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
+
 }

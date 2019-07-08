@@ -60,4 +60,5 @@ public class PlayersBoardsViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
+
 }

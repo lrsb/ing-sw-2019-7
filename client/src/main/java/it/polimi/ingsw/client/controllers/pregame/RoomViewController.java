@@ -250,4 +250,5 @@ public class RoomViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
+
 }

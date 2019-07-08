@@ -119,8 +119,7 @@ public class PregameCli {
             System.out.println("gioco creato correttamente!");
             return Segue.of("preLobby", room);
         } catch (RemoteException e) {
-            System.out.println("errore nella creazione della partita!");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
             return Segue.of("newGame");
         }
         return Segue.of("newGame");
@@ -198,7 +197,7 @@ public class PregameCli {
                 if (f instanceof Room && ((Room) f).getUuid().equals(room.getUuid())) PregameCli.room = (Room) f;
             });
         } catch (UserRemoteException ex) {
-            ex.printStackTrace();
+            System.out.println(ex.getMessage());
             return Segue.of("login", StartupCli.class);
         } catch (RemoteException ex) {
             System.out.println(ex.getMessage());
@@ -226,7 +225,6 @@ public class PregameCli {
                 Thread.onSpinWait();
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                e.printStackTrace();
                 Thread.currentThread().interrupt();
             }
         }
@@ -244,7 +242,7 @@ public class PregameCli {
             Client.API.removeListener(Preferences.getOptionalToken().get());
             return Segue.of("preGame", GameCli.class, Client.API.getActiveGame(Preferences.getOptionalToken().get()));
         } catch (UserRemoteException ex) {
-            ex.printStackTrace();
+            System.out.println(ex.getMessage());
             return Segue.of("login", StartupCli.class);
         } catch (RemoteException ex) {
             System.out.println(ex.getMessage());

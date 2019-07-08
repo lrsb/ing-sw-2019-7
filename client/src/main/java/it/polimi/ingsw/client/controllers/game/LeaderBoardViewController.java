@@ -81,4 +81,5 @@ public class LeaderBoardViewController extends BaseViewController {
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }
+
 }

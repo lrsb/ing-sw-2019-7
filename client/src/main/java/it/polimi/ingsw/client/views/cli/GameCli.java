@@ -264,7 +264,7 @@ public class GameCli {
                 }
             });
         } catch (UserRemoteException ex) {
-            ex.printStackTrace();
+            System.out.println(ex.getMessage());
             return Segue.of("login", StartupCli.class);
         } catch (RemoteException ex) {
             System.out.println(ex.getMessage());
@@ -281,7 +281,6 @@ public class GameCli {
                 Thread.onSpinWait();
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                e.printStackTrace();
                 Thread.currentThread().interrupt();
             }
         }
@@ -294,7 +293,7 @@ public class GameCli {
             Client.API.removeListener(Preferences.getOptionalToken().get());
             return Segue.of("mainMenu", PregameCli.class);
         } catch (UserRemoteException ex) {
-            ex.printStackTrace();
+            System.out.println(ex.getMessage());
             return Segue.of("login", StartupCli.class);
         } catch (RemoteException ex) {
             System.out.println(ex.getMessage());
@@ -366,8 +365,7 @@ public class GameCli {
         if (game.getActualPlayer().getUuid().equals(Preferences.getUuid())) {
             try {
                 new ActionManager().actionMenu(game);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            } catch (RemoteException ignored) {
             }
         } else {
             System.out.print(game.getActualPlayer().getBoardType().escape() + game.getActualPlayer().getNickname());
