@@ -2,11 +2,8 @@ language: java
 jdk: openjdk11
 sudo: false
 
-services: docker
-
 script:
   - mvn clean verify
-  - bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
 
 deploy:
   - provider: heroku
