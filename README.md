@@ -1,6 +1,7 @@
 <h1 align="center">
 <br>
 <a href="https://czechgames.com/en/adrenaline/"><img src="https://raw.githubusercontent.com/lrsb/ing-sw-2019-7/master/client/src/main/resources/it/polimi/ingsw/client/controllers/pregame/MainViewController/logo.png" alt="Adrenaline" width="600"></a>
+<br>
 Adrenaline
 </h1>
 <h3 align="center">First person shooter board game.</h3>
