@@ -1,9 +1,8 @@
 <h1 align="center">
-  <br>
-  <a href="https://czechgames.com/en/adrenaline/"><img src="https://raw.githubusercontent.com/lrsb/ing-sw-2019-7/master/client/src/main/resources/it/polimi/ingsw/client/controllers/pregame/MainViewController/logo.png" alt="Adrenaline" width="600"></a>
+<br>
+<a href="https://czechgames.com/en/adrenaline/"><img src="https://raw.githubusercontent.com/lrsb/ing-sw-2019-7/master/client/src/main/resources/it/polimi/ingsw/client/controllers/pregame/MainViewController/logo.png" alt="Adrenaline" width="600"></a>
+Adrenaline
 </h1>
-
-<h1 align="center">Adrenaline</h1>
 <h3 align="center">First person shooter board game.</h3>
 <h5 align="center">A Java implementation for <a href="https://www11.ceda.polimi.it/schedaincarico/schedaincarico/controller/scheda_pubblica/SchedaPublic.do?&evn_default=evento&c_classe=691149&__pj0=0&__pj1=214fcd028567da8bc874b070cc3683eb">085923 - PROVA FINALE (PROGETTO DI INGEGNERIA DEL SOFTWARE</a>.</h5>
 
@@ -42,10 +41,9 @@ A server is available here: [https://ing-sw-2019-7.herokuapp.com/](https://ing-s
 
 ## Rules
 
-<embed src="https://raw.githubusercontent.com/lrsb/ing-sw-2019-7/master/specs/Manuali/adrenaline-rules-en.pdf" type="application/pdf">
+General rules [here](specs/Manuali/adrenaline-rules-en.pdf).
 
-<object data="https://raw.githubusercontent.com/lrsb/ing-sw-2019-7/master/specs/Manuali/adrenaline-rules-en.pdf" type="application/pdf" width="100%"> 
-</object>
+Weapon rules [here](specs/Manuali/adrenaline-rules-weapons-en.pdf).
 
 ## Screenshots
 ### GUI
