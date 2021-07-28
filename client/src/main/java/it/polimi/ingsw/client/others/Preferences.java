@@ -5,11 +5,11 @@ import it.polimi.ingsw.common.models.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class Preferences {
     private static final @NotNull java.util.prefs.Preferences preferences = java.util.prefs.Preferences.userRoot().node(Preferences.class.getName());
+    //private static final @NotNull Hashtable<String, String> preferences = new Hashtable<>();
 
     public static @Nullable String getToken() {
         return preferences.get("token", null);

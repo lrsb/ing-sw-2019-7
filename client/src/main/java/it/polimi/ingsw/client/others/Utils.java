@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -51,26 +52,14 @@ public class Utils {
         return masked;
     }
 
-    public static JsonObject getStrings(@NotNull String... args) {
+    public static JsonObject getStrings(@NotNull String @NotNull ... args) {
         var json = new JsonParser().parse(new JsonReader(new InputStreamReader(GameCli.class.getResourceAsStream("strings.json")))).getAsJsonObject();
         for (var arg : args) json = json.get(arg).getAsJsonObject();
         return json;
     }
 
-    public static boolean isRetina() {
-        var isRetina = false;
-        GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        try {
-            //TODO: Illegal reflective access
-            var field = graphicsDevice.getClass().getDeclaredField("scale");
-            if (field != null) {
-                field.setAccessible(true);
-                Object scale = field.get(graphicsDevice);
-                if (scale instanceof Integer && (Integer) scale == 2) isRetina = true;
-            }
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {
-        }
-        return isRetina;
+    public static boolean isRetina(@NotNull Graphics2D graphics) {
+        return graphics.getFontRenderContext().getTransform().equals(AffineTransform.getScaleInstance(2.0, 2.0));
     }
 
     public static @Nullable Color hexToColor(@NotNull String hex) {

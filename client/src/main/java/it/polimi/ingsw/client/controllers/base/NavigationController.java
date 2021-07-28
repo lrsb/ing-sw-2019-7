@@ -34,7 +34,7 @@ public class NavigationController {
 
     /**
      * When you have to present a new BaseViewController, you can use this method.
-     * After the new viewController is presented, the previous is hided.
+     * After the new viewController is presented, the previous is hidden.
      *
      * @param controllerClass The BaseViewController to present.
      * @param <T>             View controller type.
@@ -58,7 +58,7 @@ public class NavigationController {
 
     /**
      * When you have to present a new BaseViewController, you can use this method.
-     * After the new viewController is presented, the previous is hided.
+     * After the new viewController is presented, the previous is hidden.
      *
      * @param controllerClass The BaseViewController to present.
      * @param <T>             View controller type.
@@ -83,9 +83,9 @@ public class NavigationController {
      */
     public void popToRootViewController() {
         if (viewControllers.size() < 2) return;
-        var rootViewController = viewControllers.remove(0);
-        close();
-        viewControllers.add(rootViewController);
+        var viewControllersToDispose = new ArrayList<>(viewControllers);
+        var rootViewController = viewControllersToDispose.remove(0);
+        viewControllersToDispose.forEach(this::disposeViewController);
         rootViewController.setVisible(true);
     }
 

@@ -26,6 +26,7 @@ public class RoomsListViewController extends BaseViewController {
     private JButton ricaricaButton;
     private JTable table;
     private JButton joinButton;
+    private JButton backButton;
 
     private List<Room> rooms;
 
@@ -48,6 +49,9 @@ public class RoomsListViewController extends BaseViewController {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         }));
+        backButton.addActionListener(e -> {
+            if (getNavigationController() != null) getNavigationController().popViewController();
+        });
     }
 
     private void update() {
@@ -104,14 +108,15 @@ public class RoomsListViewController extends BaseViewController {
         scrollPane1.setViewportView(table);
         final Spacer spacer1 = new Spacer();
         panel.add(spacer1, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        panel.add(spacer2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         joinButton = new JButton();
         joinButton.setText("Entra");
         panel.add(joinButton, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         ricaricaButton = new JButton();
         ricaricaButton.setText("Ricarica");
         panel.add(ricaricaButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(10, 10), null, 1, false));
+        backButton = new JButton();
+        backButton.setText("Indietro");
+        panel.add(backButton, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

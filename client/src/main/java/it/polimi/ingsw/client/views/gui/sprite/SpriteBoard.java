@@ -131,7 +131,7 @@ public class SpriteBoard extends JPanel implements SpriteListener, AutoCloseable
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         var graphics = (Graphics2D) g;
-        var isRetina = Utils.isRetina();
+        var isRetina = Utils.isRetina(graphics);
         if (isRetina) graphics.scale(0.5, 0.5);
         var backgroundDimension = getBackgroundDimension();
         if (backgroundDimension != null) {

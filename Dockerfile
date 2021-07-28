@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-LABEL maintainer="github@lorenzosiega.com"
+LABEL maintainer="github@lrsb.xyz"
 
 ENV DEBIAN_FRONTEND noninteractive
 
